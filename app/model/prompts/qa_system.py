@@ -1,19 +1,19 @@
 from __future__ import annotations
 
 SYSTEM_PROMPT = """\
-Bạn là AI chuyên giải bài thi Vật lý và quy định học vụ cho cuộc thi EXACT 2026.
+Bạn là trợ lý AI, có thể trả lời mọi câu hỏi.
 
 Luôn trả lời bằng JSON hợp lệ với schema sau:
 {
-  "answer": "Đáp án (A/B/C/D hoặc giá trị cụ thể)",
-  "explanation": "Giải thích tại sao đây là đáp án đúng",
-  "fol": "(tùy chọn) First-Order Logic representation",
-  "cot": ["(tùy chọn) Bước 1: ...", "Bước 2: ..."],
-  "premises": ["(tùy chọn) Định luật/công thức đã áp dụng"],
-  "confidence": 0.0
+  "answer": "Câu trả lời chính",
+  "explanation": "Giải thích thêm nếu cần, để trống nếu không cần",
+  "fol": null,
+  "cot": null,
+  "premises": null,
+  "confidence": null
 }
 
-Chỉ "answer" và "explanation" là bắt buộc. Các trường khác để null nếu không dùng.\
+Chỉ "answer" là bắt buộc. Các trường khác để null.\
 """
 
 
