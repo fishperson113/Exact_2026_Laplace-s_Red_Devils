@@ -1,46 +1,28 @@
-# Chatbot QA — XAI System
+# Exact 2026 QA Backend — Laplace's Red Devils
 
-A Retrieval-Augmented Generation (RAG) chatbot with explainable AI (xAI) output.  
-Built on LlamaIndex + Pinecone + self-hosted Ollama.
+A math QA backend with explainable AI output, built on FastAPI + LangGraph + Ollama + Redis.
 
 ---
 
 ## Architecture
 
 ```
-[ API Layer ]          ← FastAPI — expose endpoints, handle request/response
-      ↓
-[ Core Engine ]        ← orchestration, pipeline control flow
-      ↓
-[ Retrieval Layer ]    ← LlamaIndex + Pinecone — chunking, search, context building
-      ↓
-[ Model Layer ]        ← Ollama (Mistral / Qwen / ...) — generate + reasoning
-      ↓
-[ Validation Layer ]   ← xAI — source attribution, confidence scoring, explanation
-      ↓
-[ Tool Layer ]         ← (optional) web search, calculator, external APIs
+[load_history] → [generate] → [parse] → [save_memory] → END
 ```
 
-### Layer responsibilities
+All pipeline nodes live in `app/core/pipeline.py::_build_graph()`.  
+New features are added by inserting nodes — existing nodes are never modified.
 
-| Layer | Role | Mandatory |
-|---|---|---|
-| **API** | HTTP interface, auth, rate limit | ✅ |
-| **Core Engine** | Orchestrate the QA pipeline end-to-end | ✅ |
-| **Retrieval** | Deterministic context retrieval — always runs before LLM | ✅ |
-| **Model** | LLM inference only — generate answer from given context | ✅ |
-| **Validation** | Attach sources, explain reasoning, score confidence | ✅ |
-| **Tools** | Supplemental actions when pipeline needs external data | ⚙️ optional |
+### Layer overview
 
-### Why retrieval is NOT a tool
-
-In agent systems: LLM decides when/whether to call retrieval → unstable, hard to debug.  
-In this QA system: retrieval is a **mandatory pipeline step** — LLM only sees what we decide to give it.
-
-```
-Agent style:   LLM → decide → call retrieval tool → get context   ← ❌ not this
-RAG style:     query → retrieval → context → LLM                  ← ✅ this
-```
+| Layer | Role |
+|---|---|
+| **API** (`app/api/`) | HTTP interface — routes, schemas, middleware |
+| **Core** (`app/core/`) | LangGraph pipeline, config |
+| **Model** (`app/model/`) | Ollama async client, prompt templates |
+| **Memory** (`app/memory/`) | Redis — conversation history per session |
+| **Retrieval** (`app/retrieval/`) | Pinecone stub — not yet active |
+| **Validation** (`app/validation/`) | JSON → `QAResponse` parsing |
 
 ---
 
@@ -49,10 +31,11 @@ RAG style:     query → retrieval → context → LLM                  ← ✅ 
 | Concern | Choice |
 |---|---|
 | API framework | FastAPI |
-| Orchestration | LlamaIndex (pipeline) / LangGraph (future) |
-| Vector store | Pinecone |
-| LLM | Ollama (self-hosted) |
-| Embedding | (TBD — e.g. nomic-embed-text via Ollama) |
+| Pipeline orchestration | LangGraph (`StateGraph`) |
+| LLM | Ollama (self-hosted, `qwen2.5-math:7b`) |
+| Short-term memory | Redis 7 |
+| Vector store | Pinecone (stub — not yet active) |
+| Runtime | Python 3.11 |
 
 ---
 
@@ -61,114 +44,159 @@ RAG style:     query → retrieval → context → LLM                  ← ✅ 
 ```
 .
 ├── app/
-│   ├── api/                  # API Layer
-│   │   ├── routes/           # chat, health, ingest endpoints
-│   │   └── middleware/       # auth, rate limit, logging
+│   ├── api/
+│   │   ├── routes/
+│   │   │   ├── ask.py          # POST /ask
+│   │   │   ├── health.py       # GET /health
+│   │   │   └── dev.py          # GET|DELETE /dev/history
+│   │   ├── middleware/
+│   │   └── schemas.py          # AskRequest, QAResponse
 │   │
-│   ├── core/                 # Core Engine
-│   │   ├── pipeline.py       # main QA pipeline (entry point)
-│   │   └── orchestrator.py   # step sequencing
+│   ├── core/
+│   │   ├── pipeline.py         # Graph definition + all nodes (entry point)
+│   │   └── config.py           # Settings from .env
 │   │
-│   ├── retrieval/            # Retrieval Layer
-│   │   ├── indexer.py        # document ingestion, chunking → Pinecone
-│   │   ├── retriever.py      # query → top-k chunks
-│   │   └── context_builder.py# format retrieved chunks into LLM context
+│   ├── model/
+│   │   ├── llm_client.py       # Ollama async client
+│   │   └── prompts/
+│   │       └── qa_system.py    # Base prompt + build_prompt()
 │   │
-│   ├── model/                # Model Layer
-│   │   ├── llm_client.py     # Ollama client wrapper
-│   │   └── prompts/          # prompt templates
+│   ├── memory/
+│   │   └── redis_client.py     # get_history(), append()
 │   │
-│   ├── validation/           # Validation Layer (xAI)
-│   │   ├── explainer.py      # source attribution, reasoning explanation
-│   │   └── scorer.py         # confidence scoring
+│   ├── retrieval/
+│   │   └── retriever.py        # Pinecone stub — fill when ready
 │   │
-│   └── tools/                # Tool Layer (optional)
-│       └── web_search.py
+│   ├── validation/
+│   │   └── parser.py           # JSON → QAResponse
+│   │
+│   └── main.py
 │
-├── data/
-│   └── documents/            # raw source documents for ingestion
-│
-├── scripts/
-│   ├── ingest.py             # one-off: chunk + embed + push to Pinecone
-│   └── health_check.py       # smoke test pipeline end-to-end
-│
-├── tests/
-│   ├── test_retrieval.py
-│   ├── test_pipeline.py
-│   └── test_validation.py
-│
-├── Dockerfile                # Ollama self-host
-├── docker-compose.yml
-├── entrypoint.sh
+├── Dockerfile                  # Ollama service (pulls model on start)
+├── Dockerfile.api              # FastAPI service
+├── docker-compose.yml          # Orchestrates ollama + redis + api
+├── entrypoint.sh               # Ollama startup: serve → pull model
 ├── .env.example
 └── README.md
 ```
 
 ---
 
-## QA Pipeline Flow
+## Getting Started
+
+### 1. Configure environment
+
+```bash
+cp .env.example .env
+```
+
+Mở `.env` và set `OLLAMA_MODEL`. Model mặc định để test end-to-end:
 
 ```
-User question
-     │
-     ▼
-[Core Engine] ── trigger pipeline
-     │
-     ▼
-[Retrieval Layer]
-  ├─ embed query
-  ├─ search Pinecone (top-k)
-  └─ build context window
-     │
-     ▼
-[Model Layer]
-  ├─ inject context + question into prompt
-  └─ generate answer via Ollama
-     │
-     ▼
-[Validation Layer]
-  ├─ attach source chunks used
-  ├─ score answer confidence
-  └─ produce explanation (xAI)
-     │
-     ▼
-API response: { answer, sources, confidence, explanation }
+OLLAMA_MODEL=qwen2.5:7b
+```
+
+Có thể thay bằng bất kỳ model Ollama nào khác tùy mục đích thử nghiệm. Sản phẩm cuối sẽ dùng model do đội AI tự train — sẽ cập nhật khi có.
+
+Các biến khác (`OLLAMA_BASE_URL`, `REDIS_URL`) được docker-compose tự inject cho internal networking — không cần sửa.
+
+### 2. Build và start toàn bộ stack
+
+```bash
+docker compose up -d --build
+```
+
+Ba service sẽ khởi động theo thứ tự:
+1. `ollama` — khởi động server, tự pull model qua `OLLAMA_MODEL` (lần đầu mất vài phút)
+2. `redis` — sẵn sàng khi ping OK
+3. `api` — chờ ollama + redis healthy rồi mới start
+
+### 3. Kiểm tra liveness
+
+```bash
+curl http://localhost:8000/health
+```
+
+### 4. Gửi câu hỏi
+
+```bash
+curl -X POST http://localhost:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Tính đạo hàm của x^2 + 3x"}'
+```
+
+### 5. Reset lịch sử hội thoại (dev)
+
+```bash
+curl -X POST http://localhost:8000/dev/reset
+```
+
+### Dừng stack
+
+```bash
+docker compose down
+```
+
+Dữ liệu Ollama model và Redis được giữ trong Docker volumes (`ollama_data`, `redis_data`).  
+Để xóa luôn volumes: `docker compose down -v`
+
+---
+
+## GPU (optional)
+
+Mặc định Ollama chạy CPU. Để enable GPU, bỏ comment phần `deploy` trong `docker-compose.yml`:
+
+```yaml
+# deploy:
+#   resources:
+#     reservations:
+#       devices:
+#         - driver: nvidia
+#           count: all
+#           capabilities: [gpu]
 ```
 
 ---
 
-## Getting Started
+## Endpoints
 
-### 1. Start Ollama
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/` | Root — kiểm tra backend đang chạy |
+| `POST` | `/ask` | Gửi câu hỏi, nhận câu trả lời |
+| `GET` | `/health` | Liveness check (Ollama + Redis) |
+| `POST` | `/dev/reset` | Xóa lịch sử hội thoại hiện tại |
 
-```bash
-cp .env.example .env
-# Set OLLAMA_MODEL in .env (e.g. qwen2.5:7b)
-docker compose up -d
-```
+### Request / Response
 
-### 2. Ingest documents
+**`POST /ask`**
 
-```bash
-# (after BE is implemented)
-python scripts/ingest.py --source data/documents/
-```
+```json
+// Request
+{ "question": "Tính đạo hàm của x^2 + 3x" }
 
-### 3. Run API
-
-```bash
-# (after BE is implemented)
-uvicorn app.api.main:app --reload
+// Response
+{
+  "answer": "...",
+  "explanation": "...",
+  "fol": "...",          // optional — first-order logic form
+  "cot": ["..."],        // optional — chain-of-thought steps
+  "premises": ["..."],   // optional — premises used
+  "confidence": 0.95     // optional — [0.0, 1.0]
+}
 ```
 
 ---
 
 ## Environment Variables
 
-| Variable | Description |
-|---|---|
-| `OLLAMA_MODEL` | Model to pull and serve (e.g. `qwen2.5:7b`) |
-| `OLLAMA_BASE_URL` | Ollama API URL (default: `http://localhost:11434`) |
-| `PINECONE_API_KEY` | Pinecone API key |
-| `PINECONE_INDEX` | Pinecone index name |
-| `EMBED_MODEL` | Embedding model name |
+| Variable | Default | Description |
+|---|---|---|
+| `OLLAMA_MODEL` | *(xem .env.example)* | Model để pull và serve |
+| `OLLAMA_BASE_URL` | `http://ollama:11434` | URL Ollama API (tự inject bởi docker-compose) |
+| `REDIS_URL` | `redis://redis:6379` | Redis connection URL (tự inject bởi docker-compose) |
+| `SESSION_TTL` | `3600` | TTL lịch sử hội thoại (giây) |
+| `MAX_HISTORY_TURNS` | `5` | Số lượt hội thoại giữ trong memory |
+| `PINECONE_API_KEY` | — | Pinecone API key (chưa dùng) |
+| `PINECONE_INDEX` | — | Pinecone index name (chưa dùng) |
+| `EMBED_MODEL` | `nomic-embed-text` | Embedding model (chưa dùng) |
