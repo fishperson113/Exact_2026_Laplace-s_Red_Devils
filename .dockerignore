@@ -1,0 +1,10 @@
+.git/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.env
+*.gguf
+data/documents/*
+tests/
+*.md

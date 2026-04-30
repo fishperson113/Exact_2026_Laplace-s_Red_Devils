@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Env
+.env
+
+# Data / models
+data/documents/*
+*.gguf
+*.bin
+*.safetensors
+
+# Docker volumes (nếu mount local)
+ollama_data/
+redis_data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+*.gitkeep
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+.claude/
+CLAUDE.md
+CC-Session-Logs/
