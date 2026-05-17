@@ -3,7 +3,7 @@ record_id,q_idx,n_premises_nl,n_premises_used,premise_use_ratio,question,answer,
 A. If a Python project is not optimized, then it is not well-tested
 B. If all Python projects are optimized, then all Python projects are well-structured
 C. If a Python project is well-tested, then it must be clean and readable
-D. If a Python project is not optimized, then it does not follow PEP 8 standards",Unknown,Unknown,True,False,False,71,1,True,True
+D. If a Python project is not optimized, then it does not follow PEP 8 standards",A,MCQ_A,True,False,False,71,1,True,True
 0,1,14,2,0.14285714285714285,"Does it follow that if all Python projects are well-structured, then all Python projects are optimized, according to the premises?",Yes,Yes,False,True,False,31,2,True,False
 1,0,11,9,0.8181818181818182,"Based on the above premises, which is the strongest conclusion?
 A. Sophia qualifies for the university scholarship
@@ -39,13 +39,13 @@ D. He is eligible for extended library access but cannot apply for projects",B,M
 A. John can transport hazardous materials but cannot cross state lines
 B. John can cross state lines with hazardous cargo
 C. John cannot transport hazardous materials
-D. John is not qualified to transport any kind of goods",Unknown,Unknown,True,False,False,81,4,True,False
+D. John is not qualified to transport any kind of goods",C,MCQ_C,True,False,False,81,4,True,False
 6,1,8,8,1.0,"Does John meet all requirements to cross state lines with hazardous cargo, according to the premises?",No,No,False,True,False,69,4,True,False
 7,0,8,5,0.625,"Based on the premises, which capabilities does Dr. John have?
 A. Can teach undergraduate courses only
 B. Can be a research mentor
 C. Cannot teach graduate courses
-D. Needs additional certification to mentor",Unknown,Unknown,True,False,False,77,3,True,False
+D. Needs additional certification to mentor",B,MCQ_B,True,False,False,77,3,True,False
 7,1,8,5,0.625,"Does Dr. John’s PhD qualification make him eligible to be a research mentor, according to the premises?",No,No,False,True,False,47,5,True,False
 8,0,6,6,1.0,"Based on the premises, what can we conclude about the curriculum?
 A. It enhances student engagement but not critical thinking
@@ -81,13 +81,13 @@ D. Her active status alone qualifies her",D,MCQ_D,True,False,False,75,3,True,Fal
 A. Can teach graduate courses but cannot supervise research
 B. Can supervise Master's students but not graduate research
 C. Can both teach graduate courses and supervise research
-D. Needs additional certification to supervise",Unknown,Unknown,True,False,False,71,3,True,False
+D. Needs additional certification to supervise",C,MCQ_C,True,False,False,71,3,True,False
 13,1,5,3,0.6,"Can Professor John supervise graduate-level research based on his PhD qualification, according to the premises?",No,No,False,True,False,36,3,True,False
 14,0,7,3,0.42857142857142855,"Based on Dr. John's qualifications, which statement is correct?
 A. He can teach undergraduate courses
 B. He qualifies as department head but cannot teach
 C. He needs a Master's degree to teach undergraduates
-D. His PhD is insufficient for teaching",Unknown,Unknown,True,False,False,72,3,True,False
+D. His PhD is insufficient for teaching",A,MCQ_A,True,False,False,72,3,True,False
 14,1,7,3,0.42857142857142855,"Can Dr. John teach undergraduate courses, according to the premises?",No,No,False,True,False,39,3,True,False
 15,0,4,4,1.0,"Based on Nurse John's qualifications, which statement is correct?
 A. He can prescribe medication
@@ -105,7 +105,7 @@ D. Alex must pay additional fees",B,MCQ_B,True,False,False,63,0,True,False
 A. Minh has met the criteria to pursue Biochemistry
 B. Minh cannot take Biochemistry without Lab Safety Certification
 C. Minh is not eligible to enroll in Organic Chemistry
-D. Minh needs to repeat Chemistry 101",Unknown,Unknown,True,False,False,71,2,True,True
+D. Minh needs to repeat Chemistry 101",A,MCQ_A,True,False,False,71,2,True,True
 17,1,8,2,0.25,"Does Minh qualify to take Biochemistry based on her completed coursework, according to the premises?",No,No,False,True,False,28,2,True,False
 18,0,6,2,0.3333333333333333,Have all employees paid?,Yes,Yes,False,False,True,25,2,True,False
 18,1,6,2,0.3333333333333333,Are all employees registered?,Yes,Yes,False,False,True,25,2,True,False
@@ -115,19 +115,19 @@ D. Minh needs to repeat Chemistry 101",Unknown,Unknown,True,False,False,71,2,Tru
 A. A student with low attendance, assignment completion, and professor approval can pass the course if they complete the exam.
 B. A student with less than 80% attendance who doesn’t complete the assignment can still take the exam.
 C. A student with 60% attendance and a scholarship automatically passes all courses.
-D. A student who attends every class but doesn’t complete the exam can still pass.",Unknown,Unknown,True,False,False,86,4,False,True
+D. A student who attends every class but doesn’t complete the exam can still pass.",A,MCQ_A,True,False,False,86,4,False,True
 20,1,10,3,0.3,"Is it true that a student who completes 3 courses with scores above 8.5 will graduate, according to the premises?",No,No,False,True,False,48,3,True,True
 21,0,10,5,0.5,"Based on the premises, which conclusion is correct?
 A. A student who studies >12 hours, doesn’t debate, and writes a high-quality essay in political studies can qualify for a fellowship
 B. A student studying <6 hours who avoids both debates and essays will pass
 C. Understanding ideologies without policy analysis leads to automatic recognition
-D. All students must participate in debates regardless of their study hours",Unknown,Unknown,True,False,False,89,8,False,True
+D. All students must participate in debates regardless of their study hours",A,MCQ_A,True,False,False,89,8,False,True
 21,1,10,2,0.2,"Does writing a high-quality analytical essay guarantee qualification for a research fellowship, according to the premises?",No,No,False,True,False,38,2,True,False
 22,0,10,5,0.5,"Based on the premises, which conclusion is correct?
 A. A student mastering superposition who writes an original research paper in quantum mechanics qualifies for a scholarship
 B. Limited study time (<8h) doesn’t impair superposition understanding
 C. Merely explaining quantum measurement guarantees recognition
-D. All students must analyze entanglement regardless of their expertise",Unknown,Unknown,True,False,False,87,8,False,True
+D. All students must analyze entanglement regardless of their expertise",A,MCQ_A,True,False,False,87,8,False,True
 22,1,10,3,0.3,"Is producing original research while avoiding presentations sufficient to qualify for a scholarship, according to the premises?",No,No,False,True,False,40,3,True,False
 23,0,14,12,0.8571428571428571,"Based on the premises, which conclusion is correct?
 A. A student who develops through the quantum theory chain, from duality to advanced research preparation, can make academic contributions through publication or seminar
@@ -135,37 +135,37 @@ B. Laboratory access is independent of publication/seminar participation
 C. Interpretation critique alone qualifies for research positions
 D. Understanding wave-particle duality guarantees lab access",A,MCQ_A,True,False,False,30,0,True,False
 23,1,14,4,0.2857142857142857,"According to the premises, is the following statement true?
-Statement: A student who reaches advanced research preparation but avoids both publication and seminar opportunities will still qualify for laboratory access",False,other_short,False,True,False,33,0,True,False
+Statement: A student who reaches advanced research preparation but avoids both publication and seminar opportunities will still qualify for laboratory access",No,No,False,True,False,33,0,True,False
 24,0,10,2,0.2,"Based on the learning science principles, which statement is correct?
 A. Spaced repetition improves both memory and academic performance
 B. Excessively long intervals preserve knowledge without review
 C. AI cannot optimize study schedules for memory retention
-D. Passive reading is more effective than active recall",Unknown,Unknown,True,False,False,63,5,False,False
+D. Passive reading is more effective than active recall",A,MCQ_A,True,False,False,63,5,False,False
 24,1,10,3,0.3,"Which of these conclusions is supported by the forgetting curve research?
 A. Review timing has no impact on retention
 B. Optimal intervals prevent both premature review and excessive forgetting
 C. Sleep has no effect on memory consolidation
-D. All learning methods yield identical results",Unknown,Unknown,True,False,False,64,5,False,False
+D. All learning methods yield identical results",B,MCQ_B,True,False,False,64,5,False,False
 25,0,10,3,0.3,"Based on the learning science principles, which statement is correct?
 A. Spaced repetition improves both memory and academic performance
 B. Excessively long intervals preserve knowledge without review
 C. AI cannot optimize study schedules for memory retention
-D. Passive reading is more effective than active recall",Unknown,Unknown,True,False,False,37,3,True,False
+D. Passive reading is more effective than active recall",A,MCQ_A,True,False,False,37,3,True,False
 25,1,10,3,0.3,"Which of these conclusions is supported by the forgetting curve research?
 A. Review timing has no impact on retention
 B. Optimal intervals prevent both premature review and excessive forgetting
 C. Sleep has no effect on memory consolidation
-D. All learning methods yield identical results",Unknown,Unknown,True,False,False,32,3,True,False
+D. All learning methods yield identical results",B,MCQ_B,True,False,False,32,3,True,False
 26,0,8,3,0.375,"Based on the geometric principles, which statement about quadrilaterals is correct?
 A. A quadrilateral with opposite angles summing to 180° and a perpendicular bisecting diagonal must be a cyclic trapezium
 B. All quadrilaterals with perpendicular diagonals are cyclic
 C. Only rectangles can have opposite angles summing to 180°
-D. A quadrilateral cannot be both cyclic and have perpendicular diagonals",Unknown,Unknown,True,False,False,48,3,True,True
+D. A quadrilateral cannot be both cyclic and have perpendicular diagonals",A,MCQ_A,True,False,False,48,3,True,True
 26,1,8,3,0.375,"Which premises support that a quadrilateral with opposite angles summing to 180° and a perpendicular bisecting diagonal is a cyclic trapezium?
 A. Premises 1, 3, 7
 B. Premises 2, 5, 6
 C. Premises 4, 8
-D. Premises 1, 2, 5",Unknown,Unknown,True,False,False,31,3,True,True
+D. Premises 1, 2, 5",A,MCQ_A,True,False,False,31,3,True,True
 27,0,10,10,1.0,"Based on the learning principles, which combination of factors most significantly decreases learning efficiency?
 A. Procrastination + passive review + sleep deprivation
 B. Clear deadlines + high stress
@@ -181,20 +181,20 @@ D. Perfect execution, instant breakthrough, permanent Mars base",Unknown,Unknown
 A. A student with 6h downtime must retake a rescheduled exam
 B. A student with 6h downtime earns a certificate despite failing courses
 C. External proctors block exam rescheduling after 6h downtime
-D. 100% live attendance overrides 6h downtime effects",Unknown,Unknown,True,False,False,68,4,True,True
+D. 100% live attendance overrides 6h downtime effects",A,MCQ_A,True,False,False,68,4,True,True
 30,0,20,3,0.15,"Based on the learning strategies, which combination is most effective for comprehension and retention?
 A. Structured plan + hands-on experiments + visualization
 B. Interactive tools + excessive screen time + cognitive fatigue
 C. Minimal distractions + historical perspectives + leisure overload
 D. Physical exercise + parallel subjects + scattered focus",Unknown,Unknown,True,False,False,48,3,True,False
-30,1,20,3,0.15,"Do the premises support that a student using structured plans, hands-on experiments, and visualization will have improved comprehension and retention?",No,No,False,False,True,36,3,True,False
-31,0,20,5,0.25,"If a student engages in play-based learning, participates in simulations, receives immediate and constructive feedback, and reflects on their learning, they will retain knowledge more effectively and develop problem-solving skills. Is this statement true?",No,No,False,False,True,69,5,True,False
-32,0,20,9,0.45,"Do schools that implement structured disciplinary policies, restorative justice, and positive reinforcement strategies experience fewer infractions, higher student morale, and improved academic performance?",No,No,False,False,True,88,8,True,False
-33,0,27,20,0.7407407407407407,"Does Alex earn a scholarship despite initial fears of fund depletion that were unfounded, attend university and gain internship opportunities through a professional network that nearly dissolved but was saved, complete an internship with mentorship despite initial mentor shortages that were resolved, develop professional skills and secure job offers at career fairs that were almost canceled but proceeded, and start a successful career after graduating with honors despite a competitive job market that improved just in time?",No,No,False,False,True,93,11,True,False
+30,1,20,3,0.15,"Do the premises support that a student using structured plans, hands-on experiments, and visualization will have improved comprehension and retention?",Yes,Yes,False,False,True,36,3,True,False
+31,0,20,5,0.25,"If a student engages in play-based learning, participates in simulations, receives immediate and constructive feedback, and reflects on their learning, they will retain knowledge more effectively and develop problem-solving skills. Is this statement true?",Yes,Yes,False,False,True,69,5,True,False
+32,0,20,9,0.45,"Do schools that implement structured disciplinary policies, restorative justice, and positive reinforcement strategies experience fewer infractions, higher student morale, and improved academic performance?",Yes,Yes,False,False,True,88,8,True,False
+33,0,27,20,0.7407407407407407,"Does Alex earn a scholarship despite initial fears of fund depletion that were unfounded, attend university and gain internship opportunities through a professional network that nearly dissolved but was saved, complete an internship with mentorship despite initial mentor shortages that were resolved, develop professional skills and secure job offers at career fairs that were almost canceled but proceeded, and start a successful career after graduating with honors despite a competitive job market that improved just in time?",Yes,Yes,False,False,True,93,11,True,False
 33,1,27,5,0.18518518518518517,"Does Alex not secure job offers because the job market weakened unexpectedly, and fail to start a successful career despite graduating with honors?",No,No,False,False,True,44,2,True,False
-34,0,27,14,0.5185185185185185,"Can Mai successfully change majors from Information Technology to Biomedical Engineering, considering the entrance exam score, scholarship, and make-up course requirements, while assessing the risks of academic warnings or scholarship loss if she doesn't meet the requirements within 1 year after the transfer?",Yes,Yes,False,False,True,133,12,True,True
+34,0,27,14,0.5185185185185185,"Can Mai successfully change majors from Information Technology to Biomedical Engineering, considering the entrance exam score, scholarship, and make-up course requirements, while assessing the risks of academic warnings or scholarship loss if she doesn't meet the requirements within 1 year after the transfer?",No,No,False,False,True,133,12,True,True
 35,0,17,7,0.4117647058823529,"Can Lan participate in the flight practice session, and if not, does she have to take a make-up session within 2 weeks to retain her flight exam eligibility, considering the weather, absent instructor, and cancellation notification time?",No,No,False,False,True,131,9,False,True
-36,0,34,19,0.5588235294117647,"Should Student A be confirmed as cheating and suspended from the exam, considering the signs from the exam, behavior during the exam, AI analysis, personal history, and the possibility of appeal being denied, and assessing additional penalties if there is evidence from the camera?",No,No,False,False,True,155,5,True,False
+36,0,34,19,0.5588235294117647,"Should Student A be confirmed as cheating and suspended from the exam, considering the signs from the exam, behavior during the exam, AI analysis, personal history, and the possibility of appeal being denied, and assessing additional penalties if there is evidence from the camera?",Yes,Yes,False,False,True,155,5,True,False
 37,0,4,2,0.5,"Which of the following can be inferred about students?
 A. All students complete all assigned exercises
 B. Some students seek help from teaching assistants when needed
@@ -210,13 +210,13 @@ Statement: All students attend lectures regularly.",Yes,Yes,False,True,False,29,
 39,0,10,3,0.3,"Based on the premises, which statement is correct?
 A. At least one student graduates.
 B. Some students actively participate in class discussions but do not submit homework on time.
-C. All students fail the exams.",Unknown,Unknown,True,False,False,58,4,True,True
+C. All students fail the exams.",A,MCQ_A,True,False,False,58,4,True,True
 39,1,10,5,0.5,"According to the premises, is the following statement true?
-Statement: If a student is registered for an advanced course, they will achieve success.",No,No,False,True,False,57,5,True,False
+Statement: If a student is registered for an advanced course, they will achieve success.",Yes,Yes,False,True,False,57,5,True,False
 40,0,10,1,0.1,"Based on the premises, which statement is correct?
 A. Students who solve math problems correctly must have practiced them.
 B. Some students ask questions in math class even if they do not attend lectures.
-C. All students who practice math problems ask questions in class.",Unknown,Unknown,True,False,False,38,1,True,False
+C. All students who practice math problems ask questions in class.",A,MCQ_A,True,False,False,38,1,True,False
 40,1,10,2,0.2,"According to the premises, is the following statement true?
 Statement: If a student passes the math exam, they will excel in mathematics.",No,No,False,True,False,43,2,True,False
 41,0,10,1,0.1,"Based on the premises, which statement is correct?
@@ -235,26 +235,26 @@ Statement: There exists at least one student on the honor roll who is eligible f
 A. Attending lectures leads to performing well in exams.
 B. A student with a scholarship always has high grades.
 C. If a student does not understand the material, they cannot perform well in exams.
-D. More study time guarantees high achievement.",Unknown,Unknown,True,False,False,80,2,True,False
+D. More study time guarantees high achievement.",A,MCQ_A,True,False,False,80,2,True,False
 43,1,9,6,0.6666666666666666,"Is the following statement true according to the premises?
 Statement: There exists a positive feedback loop where improved grades lead to scholarship eligibility which leads to more study time and further grade improvement.",No,No,False,True,False,45,0,True,False
 44,0,12,3,0.25,"Based on the premises, which statement is best supported?
 A. Failing to secure an internship prevents improved job prospects.
 B. Attending lectures regularly leads to a high GPA.
 C. Financial benefits imply participation in research projects.
-D. Practical experience guarantees eligibility for academic awards.",Unknown,Unknown,True,False,False,65,3,True,True
+D. Practical experience guarantees eligibility for academic awards.",B,MCQ_B,True,False,False,65,3,True,True
 44,1,12,5,0.4166666666666667,"Does attending lectures initiate a causal chain leading to increased earning potential, according to the premises?",No,No,False,True,False,40,0,True,False
 45,0,12,2,0.16666666666666666,"Based on the above premises, which conclusion is most supported?
 A. Students who do not perform well in internships will never receive full-time job offers.
 B. Having industry connections can help a student gain practical experience indirectly.
 C. Building a strong resume directly increases a student’s earning potential.
-D. Students who do not have a mentor cannot make any career decisions.",Unknown,Unknown,True,False,False,61,2,True,False
+D. Students who do not have a mentor cannot make any career decisions.",B,MCQ_B,True,False,False,61,2,True,False
 45,1,12,3,0.25,"Is there a logical chain from applying for internships to increasing one’s earning potential, according to the premises?",No,No,False,True,False,43,0,True,False
 46,0,12,3,0.25,"Based on the premises, which of the following is best supported?
 A. Students who attend career workshops are guaranteed to get hired after interviews.
 B. Building a strong resume directly leads to financial stability.
 C. Having a career mentor leads to better long-term career growth.
-D. Gaining relevant work experience prevents the need for strong interview performance.",Unknown,Unknown,True,False,False,68,3,True,False
+D. Gaining relevant work experience prevents the need for strong interview performance.",C,MCQ_C,True,False,False,68,3,True,False
 46,1,12,3,0.25,"Is there a logical path from attending career workshops to achieving financial stability, according to the premises?",No,No,False,True,False,40,0,True,False
 47,0,12,1,0.08333333333333333,"Based on the premises, which statement is correct?
 A. If a student manages their time effectively, they receive feedback on assignments.
@@ -267,7 +267,7 @@ Statement: There exists a complete pathway from attending lectures regularly to 
 A. If a student gains academic recognition, they must have received a research grant.
 B. A student who does not publish research can still receive a research grant.
 C. If a student does not engage in independent study, they will never publish research.
-D. If a student engages in independent study, they are likely to publish research and may gain academic recognition.",Unknown,Unknown,True,False,False,36,2,False,False
+D. If a student engages in independent study, they are likely to publish research and may gain academic recognition.",D,MCQ_D,True,False,False,36,2,False,False
 48,1,12,0,0.0,"According to the above premises, is the following statement true?
 Statement: If a student engages in independent study, they have a higher chance of accessing advanced research opportunities.",Unknown,Unknown,False,True,False,48,1,False,False
 49,0,12,2,0.16666666666666666,"Based on the premises, which statement is correct?
@@ -279,9 +279,9 @@ Statement: There exists a complete pathway from engaging in research to receivin
 50,0,12,2,0.16666666666666666,"Based on the premises, which statement is correct?
 A. If a student maintains a high GPA, they are more likely to receive a scholarship.
 B. A student who does not maintain a high GPA can still qualify for a merit-based scholarship.
-C. If a student does not engage in extracurricular activities, they will never receive a scholarship.",Unknown,Unknown,True,False,False,30,2,True,True
+C. If a student does not engage in extracurricular activities, they will never receive a scholarship.",A,MCQ_A,True,False,False,30,2,True,True
 50,1,12,2,0.16666666666666666,"According to the premises, is the following statement true?
-Statement: There exists a complete pathway from maintaining a high GPA to receiving a scholarship.",No,No,False,True,False,24,0,True,True
+Statement: There exists a complete pathway from maintaining a high GPA to receiving a scholarship.",Yes,Yes,False,True,False,24,0,True,True
 51,0,12,3,0.25,"Based on the premises above, which of the following statements can be logically concluded?
 A. If a student applies for financial aid and qualifies, they are more likely to receive support and reduce financial stress.
 B. If a student has less financial stress, they are more likely to perform better academically.
@@ -314,23 +314,23 @@ Statement: If a Raspberry Pi system is cost-effective, then it is necessarily ve
 A. It is not the case that if an EV charging station being not widely available implies that it is not thoroughly maintained then every EV charging station meets safety standards.
 B. If it is true that if an EV charging station being not widely available implies that it is not thoroughly maintained then every EV charging station meets safety standards, then it follows that if an EV charging station being not widely available implies that it is not thoroughly maintained then every EV charging station meets safety standards.
 C. Both that if an EV charging station being not widely available implies that it is not thoroughly maintained then every EV charging station meets safety standards, and that it is not the case that if an EV charging station being not widely available implies that it is not thoroughly maintained then every EV charging station meets safety standards.
-D. If an EV charging station being not widely available implies that it is not thoroughly maintained, then every EV charging station meets safety standards.",Unknown,Unknown,True,False,False,31,2,False,False
+D. If an EV charging station being not widely available implies that it is not thoroughly maintained, then every EV charging station meets safety standards.",D,MCQ_D,True,False,False,31,2,False,False
 55,1,11,2,0.18181818181818182,"Based on the above premises, answer the following: Is the following statement true?
 ""If an EV charging station being not widely available implies that it is not thoroughly maintained, then every EV charging station that is widely available supports fast charging.""",No,No,False,True,False,26,2,False,False
 56,0,19,2,0.10526315789473684,"Based on the above premises, which of the following conclusions can be inferred?
 A. If it is the case that if a microchip not being functional implies that it does not have a stable power supply then there exists at least one microchip that meets performance standards, then it follows that if a microchip not being functional implies that it does not have a stable power supply then there exists at least one microchip that meets performance standards.
 B. If a microchip not being functional implies that it does not have a stable power supply, then there exists at least one microchip that meets performance standards.
 C. Both the statement that if a microchip not being functional implies that it does not have a stable power supply then there exists at least one microchip that meets performance standards and the statement that it is not the case that if a microchip not being functional implies that it does not have a stable power supply then there exists at least one microchip that meets performance standards are true.
-D. It is not the case that if a microchip not being functional implies that it does not have a stable power supply, then there exists at least one microchip that meets performance standards.",Unknown,Unknown,True,False,False,35,0,True,True
+D. It is not the case that if a microchip not being functional implies that it does not have a stable power supply, then there exists at least one microchip that meets performance standards.",B,MCQ_B,True,False,False,35,0,True,True
 56,1,19,1,0.05263157894736842,"Based on the above premises, is the following statement true?
 Statement: If a microchip is not functional, then it does not have a stable power supply.",No,No,False,True,False,19,1,False,False
 57,0,12,2,0.16666666666666666,"Based on the above premises, which statement can be inferred?
 A. It is false that if every transportation system in the city is safe, then there exists at least one transportation system that is cost-effective.
 B. Both (every transportation system in the city is safe implies there exists at least one cost-effective transportation system) and its negation hold, leading to a contradiction.
 C. If every transportation system in the city is safe implies there exists at least one cost-effective transportation system, then this implication is always true.
-D. If every transportation system in the city is safe, then there exists at least one transportation system that is cost-effective.",Unknown,Unknown,True,False,False,29,0,True,True
-57,1,12,1,0.08333333333333333,"Based on the above premises, is the statement true?
-Statement: If a transportation system is safe, then it is necessarily cost-effective.",No,No,False,False,True,21,1,True,False
+D. If every transportation system in the city is safe, then there exists at least one transportation system that is cost-effective.",D,MCQ_D,True,False,False,29,0,True,True
+57,1,12,0,0.0,"Based on the above premises, is the statement true?
+Statement: If a transportation system is safe, then it is necessarily cost-effective.",No,No,False,False,True,21,1,False,False
 58,0,14,2,0.14285714285714285,Does it follow that every hardware component is thoroughly validated?,Yes,Yes,False,True,False,61,4,True,False
 59,0,12,2,0.16666666666666666,Does every drone have a GPS system?,No,No,False,False,True,56,4,True,False
 59,1,12,2,0.16666666666666666,Are all drones operating safely?,No,No,False,False,True,57,4,True,False
@@ -367,11 +367,11 @@ C. If a student does not submit their research paper, then they are excellent.
 D. If all enrolled students are excellent, then no student without excellence can receive a scholarship.",Unknown,Unknown,True,False,False,34,2,True,False
 73,1,22,1,0.045454545454545456,"Based on the above premises, is the statement true?
 Statement: If a student receives a scholarship, they must be excellent.",No,No,False,False,True,21,1,True,False
-74,0,12,2,0.16666666666666666,"Based on the above premises, which statement can be inferred?
+74,0,12,1,0.08333333333333333,"Based on the above premises, which statement can be inferred?
 A. If a school does not have a principal, then it cannot have students.
 B. If a school has students, then it must also have staff and teachers.
 C. If a school has staff, then it must have a principal.
-D. Every school has both students and teachers.",Unknown,Unknown,True,False,False,39,2,True,False
+D. Every school has both students and teachers.",Unknown,Unknown,True,False,False,39,2,False,False
 74,1,12,1,0.08333333333333333,"Based on the above premises, is the statement true?
 Statement: If a school has students, then it has teachers.",No,No,False,False,True,31,1,True,False
 75,0,12,3,0.25,"Based on the above premises, which statement can be inferred?
@@ -381,18 +381,18 @@ C. If everyone is a teacher, then there is no researcher.
 D. If someone is not a student, then they are a researcher.",Unknown,Unknown,True,False,False,39,3,True,True
 75,1,12,1,0.08333333333333333,"Based on the above premises, is the statement true?
 Statement: If everyone is a teacher, then there is at least one researcher.",No,No,False,False,True,22,1,True,True
-76,0,13,2,0.15384615384615385,"Based on the above premises, which statement can be inferred?
+76,0,13,1,0.07692307692307693,"Based on the above premises, which statement can be inferred?
 A. If someone does not fully participate in conduct training, then they are not eligible for graduation.
 B. If someone does not fully participate in social work, then everyone is a student.
 C. If everyone in the university is a student, then there is at least one student eligible for graduation.
-D. If there exists a student eligible for graduation, then no student fully participates in conduct training.",Unknown,Unknown,True,False,False,31,2,True,True
+D. If there exists a student eligible for graduation, then no student fully participates in conduct training.",Unknown,Unknown,True,False,False,31,2,False,True
 76,1,13,2,0.15384615384615385,"Based on the above premises, is the statement true?
 Statement: If someone does not fully participate in social work, then everyone fully participates in conduct training.",No,No,False,False,True,42,3,True,False
-77,0,5,2,0.4,"Based on the above premises, which statement can be inferred?
+77,0,5,1,0.2,"Based on the above premises, which statement can be inferred?
 A. If a student participates in social work, then they meet academic requirements.
 B. If someone participates in social work, then they meet extracurricular requirements.
 C. If someone meets academic requirements, then they are not a student.
-D. If a student meets academic requirements, they are not eligible for graduation.",Unknown,Unknown,True,False,False,40,2,True,False
+D. If a student meets academic requirements, they are not eligible for graduation.",Unknown,Unknown,True,False,False,40,2,False,False
 77,1,5,2,0.4,"Based on the above premises, is the statement true?
 Statement: If someone meets academic requirements, then if they fully participate in conduct training, they are eligible for graduation.",No,No,False,False,True,43,2,True,False
 78,0,5,1,0.2,"Based on the above premises, which statement can be inferred?
@@ -402,11 +402,11 @@ C. If a student submits assignments on time, they do not achieve good grades.
 D. If a student does not complete fundamental courses, then they did not attend review sessions.",Unknown,Unknown,True,False,False,25,1,True,True
 78,1,5,2,0.4,"Based on the above premises, is the statement true?
 Statement: If submitting assignments on time implies achieving good grades, then not attending review sessions implies not completing the fundamental courses.",No,No,False,False,True,37,2,True,False
-79,0,6,1,0.16666666666666666,"Based on the above premises, which statement can be inferred?
+79,0,6,0,0.0,"Based on the above premises, which statement can be inferred?
 A. If a student attends classes, then they receive extra credit.
 B. If a student receives extra credit, then they do not study regularly.
 C. If a student studies regularly, then they do not achieve good grades.
-D. If a student submits assignments on time, then they do not receive extra credit.",Unknown,Unknown,True,False,False,19,1,True,True
+D. If a student submits assignments on time, then they do not receive extra credit.",Unknown,Unknown,True,False,False,19,1,False,True
 79,1,6,2,0.3333333333333333,"Based on the above premises, is the statement true?
 Statement: If achieving good grades implies studying regularly, then not receiving extra credit implies that the student does not submit assignments on time.",No,No,False,False,True,34,2,True,True
 80,0,6,2,0.3333333333333333,"Based on the above premises, which statement can be inferred?
@@ -416,13 +416,13 @@ C. If a student does not attend class, they will achieve high scores.
 D. If a student achieves high scores, then they did not study regularly.",Unknown,Unknown,True,False,False,48,2,True,False
 80,1,6,1,0.16666666666666666,"Based on the above premises, is the statement true?
 Statement: If a student studies regularly, then they complete their assignments.",No,No,False,False,True,15,1,True,False
-81,0,5,1,0.2,"Based on the above premises, which statement can be inferred?
+81,0,5,0,0.0,"Based on the above premises, which statement can be inferred?
 A. If a student submits assignments on time, then they receive extra credit.
 B. If a student receives extra credit, then they study regularly.
 C. If a student achieves good grades, then they do not receive extra credit.
-D. If a student does not submit assignments on time, then they study regularly.",Unknown,Unknown,True,False,False,21,1,True,True
-81,1,5,1,0.2,"Based on the above premises, is the statement true?
-Statement: If a student submits assignments on time, then they receive extra credit.",No,No,False,False,True,18,1,True,True
+D. If a student does not submit assignments on time, then they study regularly.",Unknown,Unknown,True,False,False,21,1,False,True
+81,1,5,0,0.0,"Based on the above premises, is the statement true?
+Statement: If a student submits assignments on time, then they receive extra credit.",No,No,False,False,True,18,1,False,True
 82,0,6,3,0.5,"Based on the above premises, which statement can be inferred?
 A. If a student does not achieve good grades, then they do not receive extra credit.
 B. If a student receives extra credit, then they achieve good grades.
@@ -430,46 +430,46 @@ C. If a student does not attend class, they receive extra credit.
 D. If a student submits assignments on time, then they do not receive extra credit.",Unknown,Unknown,True,False,False,54,3,True,True
 82,1,6,1,0.16666666666666666,"Based on the above premises, is the statement true?
 Statement: If a student attends classes, then they receive extra credit.",No,No,False,False,True,20,1,True,True
-83,0,6,2,0.3333333333333333,"Based on the above premises, which statement can be inferred?
+83,0,6,1,0.16666666666666666,"Based on the above premises, which statement can be inferred?
 A. If every student participates in research, then every student takes advanced courses.
 B. If a student does not participate in research, then they do not win a scholarship.
 C. If a student takes advanced courses, then they participate in research.
-D. If every student wins a scholarship, then no student participates in research.",Unknown,Unknown,True,False,False,53,2,True,False
+D. If every student wins a scholarship, then no student participates in research.",Unknown,Unknown,True,False,False,53,2,False,False
 83,1,6,1,0.16666666666666666,"Based on the above premises, is the statement true?
 Statement: If every student wins a scholarship, then at least one student wins a scholarship.",No,No,False,False,True,25,1,True,True
-84,0,5,3,0.6,"Based on the above premises, which statement can be inferred?
+84,0,5,2,0.4,"Based on the above premises, which statement can be inferred?
 A. If a student wins a scholarship, then they publish research.
 B. If a student publishes research, then they take advanced courses.
 C. If a student is not a student, then they do not win a scholarship.
-D. If someone does not take advanced courses, then they cannot publish research.",Unknown,Unknown,True,False,False,38,3,True,False
-84,1,5,2,0.4,"Based on the above premises, is the statement true?
-Statement: There exists someone who wins a scholarship.",No,No,False,False,True,32,2,True,False
+D. If someone does not take advanced courses, then they cannot publish research.",Unknown,Unknown,True,False,False,38,3,False,False
+84,1,5,1,0.2,"Based on the above premises, is the statement true?
+Statement: There exists someone who wins a scholarship.",No,No,False,False,True,32,2,False,False
 85,0,5,1,0.2,"Based on the above premises, which statement can be inferred?
 A. If someone is a researcher, then they are qualified.
 B. If someone is a professor, then they are not qualified.
 C. If someone is qualified, then they are a student.
 D. If someone takes courses, then they are a professor.",Unknown,Unknown,True,False,False,27,1,True,False
-85,1,5,3,0.6,"Based on the above premises, is the statement true?
-Statement: There exists someone who is qualified.",No,No,False,False,True,37,3,True,False
+85,1,5,2,0.4,"Based on the above premises, is the statement true?
+Statement: There exists someone who is qualified.",No,No,False,False,True,37,3,False,False
 86,0,5,1,0.2,"Based on the above premises, which statement can be inferred?
 A. If someone passes the exam, they are qualified.
 B. If someone takes courses, then they are qualified.
 C. If someone is not a student, they take courses.
 D. If someone understands the lecture, then they are not a student.",Unknown,Unknown,True,False,False,29,1,True,False
-86,1,5,2,0.4,"Based on the above premises, is the statement true?
-Statement: Everyone is a student.",No,No,False,False,True,41,2,True,False
-87,0,5,2,0.4,"Based on the above premises, which statement can be inferred?
+86,1,5,1,0.2,"Based on the above premises, is the statement true?
+Statement: Everyone is a student.",No,No,False,False,True,41,2,False,False
+87,0,5,1,0.2,"Based on the above premises, which statement can be inferred?
 A. If someone takes the course, then they are a student.
 B. If someone is a student, then they understand the lecture.
 C. If someone is not registered for the course, they pass the exam.
-D. If someone understands the lecture, then they are not a student.",Unknown,Unknown,True,False,False,45,2,True,False
+D. If someone understands the lecture, then they are not a student.",Unknown,Unknown,True,False,False,45,2,False,False
 87,1,5,1,0.2,"Based on the above premises, is the following statement true?
 Statement: If someone understands the lecture, then they pass the exam.",No,No,False,True,False,19,1,True,False
-88,0,6,2,0.3333333333333333,"Based on the above premises, which statement can be inferred?
+88,0,6,1,0.16666666666666666,"Based on the above premises, which statement can be inferred?
 A. A person is qualified if and only if they are registered.
 B. A person is qualified only if they are not registered.
 C. A person is registered only if they do not study.
-D. A person is qualified only if they do not train.",Unknown,Unknown,True,False,False,48,2,True,False
+D. A person is qualified only if they do not train.",Unknown,Unknown,True,False,False,48,2,False,False
 88,1,6,2,0.3333333333333333,"Based on the above premises, is the following statement true?
 Statement: If someone studies, then they are registered.",No,No,False,True,False,41,2,True,False
 89,0,5,2,0.4,"Based on the above premises, which statement can be inferred?
@@ -477,13 +477,13 @@ A. Everyone studies.
 B. Everyone is not registered.
 C. If someone is registered, then they are not an undergraduate.
 D. No one is qualified.",Unknown,Unknown,True,False,False,43,2,True,False
-89,1,5,1,0.2,"Based on the above premises, is the following statement true?
-Statement: If someone is an undergraduate, then they are registered.",No,No,False,True,False,20,1,True,False
+89,1,5,0,0.0,"Based on the above premises, is the following statement true?
+Statement: If someone is an undergraduate, then they are registered.",No,No,False,True,False,20,1,False,False
 90,0,12,2,0.16666666666666666,"Based on the above premises, which statement can be inferred?
 A. 'If a student does not attend all lectures and does not participate in class discussions, they will fail the final exam and receive a low participation grade.'
 B. 'If a student attends a tutoring session and completes at least 80% of the assignments, they are more likely to improve their grades and pass the course.'
 C. 'Every teacher in the school has at least a doctoral degree in their subject area and provides detailed feedback on assignments.'
-D. 'If a student does not complete at least 80% of the assignments and does not submit their research paper, they will fail the course and be placed on academic probation.'",Unknown,Unknown,True,False,False,81,4,True,True
+D. 'If a student does not complete at least 80% of the assignments and does not submit their research paper, they will fail the course and be placed on academic probation.'",B,MCQ_B,True,False,False,81,4,True,True
 90,1,12,2,0.16666666666666666,"Based on the above premises, is the statement true?
 Statement: 'If a student does not submit their research paper and fails two or more courses in a semester, they automatically fail the course and are placed on academic probation.'",No,No,False,False,True,83,4,True,False
 91,0,16,2,0.125,"Based on the above premises, which conclusion is correct?
@@ -574,14 +574,14 @@ Statement: If there exists at least one student who has been disciplined for vio
 A. 'If a student participates in extracurricular activities and completes assignments, they will receive points and gain additional points.'
 B. 'If a student does not complete assignments and does not follow the attendance policy, they will lose points and lose participation points.'
 C. 'If a student participates in extracurricular activities and violates the school policy on mobile phones, they will gain additional points and receive a warning.'
-D. 'If a student participates in group projects and completes their final project, they will be penalized and eligible for extra participation points.'",Unknown,Unknown,True,False,False,64,2,True,False
+D. 'If a student participates in group projects and completes their final project, they will be penalized and eligible for extra participation points.'",B,MCQ_B,True,False,False,64,2,True,False
 103,1,13,2,0.15384615384615385,"Based on the premises above, is the following statement true?
 Statement: 'If a student violates the school policy on mobile phones, the student will receive a warning and be penalized.'",No,No,False,True,False,64,2,True,False
 104,0,12,3,0.25,"Based on the above premises, which statement can be inferred?
 A. 'If a student participates in extracurricular activities and follows the attendance policy, they will gain extra credit and be eligible for participation points.'
 B. 'If a student does not complete assignments and does not follow the study plan, they will not pass the exam and not be eligible for extra credit.'
 C. 'If a student participates in group projects and does not follow the attendance policy, they will gain extra credit and lose participation points.'
-D. 'If a student follows the study plan and completes assignments, they will pass the exam and not be eligible for extra credit.'",Unknown,Unknown,True,False,False,96,4,True,True
+D. 'If a student follows the study plan and completes assignments, they will pass the exam and not be eligible for extra credit.'",B,MCQ_B,True,False,False,96,4,True,True
 104,1,12,2,0.16666666666666666,"Based on the above premises, is the statement true?
 Statement: 'If a student does not complete assignments and does not follow the study plan, they will not pass the exam and not be eligible for extra credit.'",No,No,False,False,True,76,4,True,True
 105,0,7,2,0.2857142857142857,Do all students graduate?,Yes,Yes,False,False,True,37,3,True,False
@@ -594,7 +594,7 @@ Statement: 'If a student does not complete assignments and does not follow the s
 A. ((ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x)))) ∧ ¬(ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x))))
 B. ((ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x)))) → (ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x))))
 C. ¬(ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x))))
-D. (ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x))))",Unknown,Unknown,True,False,False,59,3,True,False
+D. (ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x))))",D,MCQ_D,True,False,False,59,3,True,False
 108,1,7,2,0.2857142857142857,"Based on the above premises, is the statement true?
 Statement: ForAll(x, ResearchProject(x))",Yes,Yes,False,False,True,46,2,True,False
 109,0,7,2,0.2857142857142857,"Based on the above premises, which statement can be inferred?
@@ -608,21 +608,21 @@ Statement: (Exists(x, Enrolled(x)) → ForAll(x, Enrolled(x)))",Yes,Yes,False,Fa
 A. If the lack of motivation leads to not participating in discussions, then all students attending class regularly ensures that attending class implies completing assignments.
 B. It is false that if the lack of motivation leads to not participating in discussions, then all students attending class regularly ensures that attending class implies completing assignments.
 C. Both statement A and its negation are true at the same time, leading to a contradiction.
-D. If the lack of motivation leads to not participating in discussions, then all students attending class regularly ensures that attending class implies completing assignments, and this always holds.",Unknown,Unknown,True,False,False,54,2,True,False
+D. If the lack of motivation leads to not participating in discussions, then all students attending class regularly ensures that attending class implies completing assignments, and this always holds.",A,MCQ_A,True,False,False,54,2,True,False
 110,1,7,2,0.2857142857142857,"Based on the above premises, is the following statement true?
 Statement: If a student is not motivated, then they do not participate in discussions.",No,No,False,True,False,39,2,True,False
 111,0,7,3,0.42857142857142855,"Based on the premises above, which of the following statements can be logically concluded?
 A. ((∀x U(x) → (R(x) → P(x))) ∧ ¬(∀x U(x) → (R(x) → P(x))))
 B. ¬(∀x U(x) → (R(x) → P(x)))
 C. (∀x U(x) → (R(x) → P(x)))
-D. ((∀x U(x) → (R(x) → P(x))) → (∀x U(x) → (R(x) → P(x))))",Unknown,Unknown,True,False,False,63,3,True,False
+D. ((∀x U(x) → (R(x) → P(x))) → (∀x U(x) → (R(x) → P(x))))",C,MCQ_C,True,False,False,63,3,True,False
 111,1,7,2,0.2857142857142857,"Based on the premises, is the following statement true?
 Statement: ∃x U(x)",No,No,False,True,False,41,2,True,False
 112,0,7,2,0.2857142857142857,"Based on the above premises, which statement can be inferred?
 A. If not doing homework leads to failing the course, then all students attend class regularly.
 B. It is false that if not doing homework leads to failing the course, then all students attend class regularly.
 C. The statement 'If not doing homework leads to failing the course, then all students attend class regularly' is both true and false simultaneously.
-D. The statement 'If not doing homework leads to failing the course, then all students attend class regularly' is a tautology.",Unknown,Unknown,True,False,False,59,2,True,False
+D. The statement 'If not doing homework leads to failing the course, then all students attend class regularly' is a tautology.",A,MCQ_A,True,False,False,59,2,True,False
 112,1,7,2,0.2857142857142857,"Based on the above premises, is the following statement true?
 Statement: All students complete their homework.",Yes,Yes,False,True,False,32,2,True,False
 113,0,7,2,0.2857142857142857,"Based on the above premises, which statement can be inferred?
@@ -636,7 +636,7 @@ Statement: If a student does not do their homework, then they will not attend cl
 A. The statement 'If studying leads to passing the exam, then the previous rule (if taking a test leads to passing the exam, then studying also leads to passing the exam) holds' is both true and false at the same time.
 B. If the statement 'If studying leads to passing the exam, then the previous rule holds' is true, then it is always true.
 C. The statement 'If studying leads to passing the exam, then the previous rule holds' is true.
-D. The statement 'If studying leads to passing the exam, then the previous rule holds' is false.",Unknown,Unknown,True,False,False,48,2,True,False
+D. The statement 'If studying leads to passing the exam, then the previous rule holds' is false.",C,MCQ_C,True,False,False,48,2,True,False
 114,1,7,2,0.2857142857142857,"Based on the above premises, is the following statement true?
 Statement: There exists at least one student who does research.",No,No,False,True,False,40,3,True,True
 115,0,7,2,0.2857142857142857,Do all students excel academically?,Unknown,Unknown,False,False,True,39,2,True,False
@@ -668,15 +668,15 @@ A. All AI models have sufficient data.
 B. All AI models are untrained.
 C. If an AI model is trained, then it does not have sufficient data.
 D. No AI models use deep learning.",Unknown,Unknown,True,False,False,32,2,True,False
-125,1,15,1,0.06666666666666667,"Based on the above premises, is the following statement true?
+125,1,15,0,0.0,"Based on the above premises, is the following statement true?
 Statement: If an AI model performs classification, then it requires training data.",No,No,False,True,False,26,2,False,False
-126,0,15,2,0.13333333333333333,"Based on the above premises, which statement can be inferred?
+126,0,15,1,0.06666666666666667,"Based on the above premises, which statement can be inferred?
 A. If a programmer understands loops, then they understand object-oriented programming.
 B. If a programmer does not understand recursion, then they do not understand loops.
 C. If a programmer does not study regularly, they will not improve debugging skills.
-D. If a programmer does not use functions, then they do not understand modular programming.",Unknown,Unknown,True,False,False,39,2,True,False
-126,1,15,3,0.2,"Based on the above premises, is the following statement true?
-Statement: There exists at least one programmer who understands object-oriented programming.",No,No,False,True,False,32,3,True,True
+D. If a programmer does not use functions, then they do not understand modular programming.",Unknown,Unknown,True,False,False,39,2,False,False
+126,1,15,2,0.13333333333333333,"Based on the above premises, is the following statement true?
+Statement: There exists at least one programmer who understands object-oriented programming.",No,No,False,True,False,32,3,False,True
 127,0,17,2,0.11764705882352941,"Based on the above premises, which conclusion is correct?
 A. If a student scores above 90%, then they are honored.
 B. If a student is honored, then they scored above 90%.
@@ -696,8 +696,8 @@ A. All Python code is optimized.
 B. All optimized code is not well-tested.
 C. If a Python code is optimized, then it is not well-tested.
 D. No Python code follows PEP 8 standards.",Unknown,Unknown,True,False,False,21,2,True,True
-129,1,13,1,0.07692307692307693,"Based on the above premises, is the statement true?
-Statement: If a Python code is optimized, then it is well-tested.",No,No,False,False,True,25,1,True,False
+129,1,13,0,0.0,"Based on the above premises, is the statement true?
+Statement: If a Python code is optimized, then it is well-tested.",No,No,False,False,True,25,1,False,False
 130,0,12,1,0.08333333333333333,"Based on the above premises, which statement can be inferred?
 A. All stoichiometrically correct reactions are balanced.
 B. If a reaction is balanced, then it is not stoichiometrically correct.
@@ -713,7 +713,11 @@ D. A person understands content if and only if they gain wisdom.",Unknown,Unknow
 131,1,11,1,0.09090909090909091,"Based on the above premises, is the following statement true?
 Statement: If a person gains both knowledge and wisdom, they have mastered the content.",No,No,False,True,False,19,1,True,False
 132,0,10,6,0.6,Can the variable 'Math' be accessed in the class 'Science_subject'?,A,MCQ_A,False,False,True,59,4,True,False
-133,0,5,2,0.4,"Based on the premises, which of the following must be true?",B,MCQ_B,True,False,False,25,0,True,False
+133,0,5,2,0.4,"Based on the premises, which of the following must be true?
+A. I ate a Banh Mi.
+B. I passed the test.
+C. It is raining.
+D. I slept.",B,MCQ_B,True,False,False,25,0,True,False
 134,0,4,4,1.0,"Based on the premises, which of the following can be inferred?
 A) Bob will graduate the school because he studies hard.
 B) Bob will be happy because he studies hard and graduates the school.
@@ -849,21 +853,21 @@ Statement: In C++, 'new' is used to dynamically allocate memory and 'delete' is 
 A. If there exists a student, then someone has submitted a scholarship application, but not everyone who submitted a scholarship application meets the scholarship eligibility criteria.
 B. If there exists a student, then someone has submitted a scholarship application, and every person who submitted a scholarship application meets the scholarship eligibility criteria.
 C. If there exists a student, then someone has submitted a scholarship application, and every person is a student.
-D. If there exists a student, then someone has submitted a scholarship application, but not every person is a student.",Unknown,Unknown,True,False,False,80,3,True,False
+D. If there exists a student, then someone has submitted a scholarship application, but not every person is a student.",B,MCQ_B,True,False,False,80,3,True,False
 167,1,7,2,0.2857142857142857,"Based on the above premises, is the statement true?
 Statement: There exists at least one person who has submitted a scholarship application and meets the scholarship eligibility criteria.",No,No,False,False,True,63,2,True,True
 168,0,7,2,0.2857142857142857,"Based on the above premises, which statement can be inferred?
 A. If everyone is allowed to attend class, then if a person has not complied with the new attendance rule, they are not allowed to attend class, and there exists someone who has not complied with the new attendance rule.
 B. If a person received a warning for previous absences, then they acknowledged the new attendance policy, and if they acknowledged the new attendance policy, then not complying with the new rule implies they are not allowed to attend class.
 C. If everyone is allowed to attend class, then if a person has not complied with the new attendance rule, they are allowed to attend class.
-D. If a person received a warning for previous absences, then they acknowledged the new attendance policy, and if they acknowledged the new attendance policy, then they are allowed to attend class even if they have not complied with the new rule.",Unknown,Unknown,True,False,False,107,2,True,False
+D. If a person received a warning for previous absences, then they acknowledged the new attendance policy, and if they acknowledged the new attendance policy, then they are allowed to attend class even if they have not complied with the new rule.",B,MCQ_B,True,False,False,107,2,True,False
 168,1,7,2,0.2857142857142857,"Based on the above premises, is the following statement true?
 Statement: If a person received a warning for previous absences, then they acknowledged the new attendance policy, and if they acknowledged the new attendance policy, then not complying with the new rule implies they are not allowed to attend class.",No,No,False,True,False,107,2,True,False
 169,0,7,2,0.2857142857142857,"Based on the above premises, which statement can be inferred?
 A. If a person did not submit the seminar participation form, then they did not register to attend the seminar, and there exists someone who did not submit the form.
 B. If a person did not submit the seminar participation form, then they did not register to attend the seminar, and if they registered, they are allowed to attend the seminar.
 C. If a person did not submit the seminar participation form, then they are allowed to attend the seminar even if they did not register.
-D. If a person did not submit the seminar participation form, then they did not register to attend the seminar, and if they did not register, they are still allowed to attend the seminar.",Unknown,Unknown,True,False,False,91,2,True,False
+D. If a person did not submit the seminar participation form, then they did not register to attend the seminar, and if they did not register, they are still allowed to attend the seminar.",B,MCQ_B,True,False,False,91,2,True,False
 169,1,7,2,0.2857142857142857,"Based on the above premises, is the following statement true?
 Statement: If a person did not submit the seminar participation form, then they did not register to attend the seminar, and if they registered, they are allowed to attend the seminar.",No,No,False,True,False,91,2,True,False
 170,0,7,2,0.2857142857142857,"Based on the above premises, which statement can be inferred?
@@ -877,28 +881,28 @@ Statement: If everyone attends the English club, then everyone improves their En
 A. If a person applied for the exchange opportunity, then they are eligible for the exchange program, and if they are eligible, they were selected for the exchange program.
 B. If a person applied for the exchange opportunity, then they are eligible for the exchange program, and if they are not eligible, they were not selected for the exchange program.
 C. If a person applied for the exchange opportunity, then they are eligible for the exchange program, but if they are eligible, they were not selected for the exchange program.
-D. If a person applied for the exchange opportunity, then they are eligible for the exchange program, and if they are eligible, they were not selected for the exchange program.",Unknown,Unknown,True,False,False,105,3,False,False
+D. If a person applied for the exchange opportunity, then they are eligible for the exchange program, and if they are eligible, they were not selected for the exchange program.",B,MCQ_B,True,False,False,105,3,False,False
 171,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If a person applied for the exchange opportunity, then they are eligible for the exchange program, and if they are not eligible, they were not selected for the exchange program.",No,No,False,True,False,105,3,False,False
 172,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
 A. If a person did not participate in organizing the cultural festival, then they did not present any performance or exhibit, and there exists someone who attended the festival.
 B. If a person did not participate in organizing the cultural festival, then they did not present any performance or exhibit, and if someone attended the festival, then someone learned about different cultures.
 C. If a person did not participate in organizing the cultural festival, then they did not present any performance or exhibit, and everyone learned about different cultures through the festival.
-D. If a person did not participate in organizing the cultural festival, then they did not present any performance or exhibit, and if they did not present, they did not learn about different cultures.",Unknown,Unknown,True,False,False,119,4,False,False
+D. If a person did not participate in organizing the cultural festival, then they did not present any performance or exhibit, and if they did not present, they did not learn about different cultures.",B,MCQ_B,True,False,False,119,4,False,False
 172,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If a person did not participate in organizing the cultural festival, then they did not present any performance or exhibit, and if someone attended the festival, then someone learned about different cultures.",No,No,False,True,False,119,4,False,False
 173,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
 A. If a person did not follow the school’s physical activity schedule, then they did not avoid penalty points, and everyone received bonus points.
 B. If a person did not follow the school’s physical activity schedule, then they did not avoid penalty points, but not everyone received bonus points.
 C. If a person did not follow the school’s physical activity schedule, then they did not avoid penalty points, and if they did not avoid penalty points, they did not receive bonus points.
-D. If a person did not follow the school’s physical activity schedule, then they did not avoid penalty points, and if they did not avoid penalty points, they received bonus points.",Unknown,Unknown,True,False,False,87,3,True,False
+D. If a person did not follow the school’s physical activity schedule, then they did not avoid penalty points, and if they did not avoid penalty points, they received bonus points.",A,MCQ_A,True,False,False,87,3,True,False
 173,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If a person did not follow the school’s physical activity schedule, then they did not avoid penalty points, and everyone received bonus points.",No,No,False,True,False,87,3,True,False
 174,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
 A. If all students are active in school activities, then participating in the workshop implies teamwork improvement, and there exists someone who received positive feedback from peers.
 B. If all students are active in school activities, then participating in the workshop implies teamwork improvement, and if a person participated in the workshop, they improved their teamwork ability.
 C. If all students are active in school activities, then participating in the workshop implies teamwork improvement, but if a person participated in the workshop, they did not improve their teamwork ability.
-D. If all students are active in school activities, then participating in the workshop implies teamwork improvement, and if a person did not improve their teamwork ability, they were not selected to represent the class in a school event.",Unknown,Unknown,True,False,False,87,3,True,False
+D. If all students are active in school activities, then participating in the workshop implies teamwork improvement, and if a person did not improve their teamwork ability, they were not selected to represent the class in a school event.",B,MCQ_B,True,False,False,87,3,True,False
 174,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If all students are active in school activities, then participating in the workshop implies teamwork improvement, and if a person participated in the workshop, they improved their teamwork ability.",No,No,False,True,False,87,3,True,False
 175,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
@@ -912,21 +916,21 @@ Statement: If all individuals attend soft skill seminars, then learning new skil
 A. If there exists someone who attended the midterm exam, then all students attend the course, and there exists someone who attended the final exam.
 B. If there exists someone who attended the midterm exam, then all students attend the course, and if a person did not complete the required attendance, then they did not attend the course.
 C. If there exists someone who attended the midterm exam, then all students attend the course, but if a person did not complete the required attendance, they still attended the course.
-D. If there exists someone who attended the midterm exam, then all students attend the course, and if a person did not attend the course, they did not attend the final exam.",Unknown,Unknown,True,False,False,77,3,True,False
+D. If there exists someone who attended the midterm exam, then all students attend the course, and if a person did not attend the course, they did not attend the final exam.",A,MCQ_A,True,False,False,77,3,True,False
 176,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If there exists someone who attended the midterm exam, then all students attend the course, and there exists someone who attended the final exam.",No,No,False,True,False,77,3,True,False
 177,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
 A. If there exists someone who lends money to a friend, then a person having the maturity to lend money implies they lend money to a friend, and if a person lends money to a friend, they have learned from the experience.
 B. If there exists someone who lends money to a friend, then a person having the maturity to lend money implies they lend money to a friend, but if a person lends money to a friend, they have not learned from the experience.
 C. If there exists someone who lends money to a friend, then a person having the maturity to lend money implies they lend money to a friend, and if a person is reckless with money, they cannot make responsible financial decisions.
-D. If there exists someone who lends money to a friend, then a person having the maturity to lend money implies they lend money to a friend, but if a person is reckless with money, they can still make responsible financial decisions.",Unknown,Unknown,True,False,False,113,3,True,False
+D. If there exists someone who lends money to a friend, then a person having the maturity to lend money implies they lend money to a friend, but if a person is reckless with money, they can still make responsible financial decisions.",A,MCQ_A,True,False,False,113,3,True,False
 177,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If there exists someone who lends money to a friend, then a person having the maturity to lend money implies they lend money to a friend, and if a person lends money to a friend, they have learned from the experience.",No,No,False,True,False,113,3,True,False
 178,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
 A. If there exists someone who uses university facilities responsibly, then a person having the maturity to use facilities responsibly implies they use them responsibly, and if a person uses university facilities responsibly, they respect the university’s policies.
 B. If there exists someone who uses university facilities responsibly, then a person having the maturity to use facilities responsibly implies they use them responsibly, but if a person uses university facilities responsibly, they do not respect the university’s policies.
 C. If there exists someone who uses university facilities responsibly, then a person having the maturity to use facilities responsibly implies they use them responsibly, and if a person misuses university facilities, they cannot understand the proper rules and usage.
-D. If there exists someone who uses university facilities responsibly, then a person having the maturity to use facilities responsibly implies they use them responsibly, but if a person misuses university facilities, they can still understand the proper rules and usage.",Unknown,Unknown,True,False,False,104,3,True,False
+D. If there exists someone who uses university facilities responsibly, then a person having the maturity to use facilities responsibly implies they use them responsibly, but if a person misuses university facilities, they can still understand the proper rules and usage.",A,MCQ_A,True,False,False,104,3,True,False
 178,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If there exists someone who uses university facilities responsibly, then a person having the maturity to use facilities responsibly implies they use them responsibly, and if a person uses university facilities responsibly, they respect the university’s policies.",No,No,False,True,False,104,3,True,False
 179,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
@@ -940,48 +944,48 @@ Statement: If everyone engages in self-study regularly, then there exists someon
 A. If a person has permission to borrow books from the library, then they are a student allowed to borrow books, and if there exists a student who is allowed to borrow books, then there exists someone who has not borrowed more than 5 books at once.
 B. If a person has permission to borrow books from the library, then they are a student allowed to borrow books, but if there exists a student who is allowed to borrow books, then there exists someone who has borrowed more than 5 books at once.
 C. If a person has permission to borrow books from the library, then they are a student allowed to borrow books, and if a person does not have permission to borrow books, then they are not allowed to borrow books.
-D. If a person has permission to borrow books from the library, then they are a student allowed to borrow books, but if a person does not have permission to borrow books, then they are still allowed to borrow books.",Unknown,Unknown,True,False,False,119,3,False,True
+D. If a person has permission to borrow books from the library, then they are a student allowed to borrow books, but if a person does not have permission to borrow books, then they are still allowed to borrow books.",A,MCQ_A,True,False,False,119,3,False,True
 180,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If a person has permission to borrow books from the library, then they are a student allowed to borrow books, and if there exists a student who is allowed to borrow books, then there exists someone who has not borrowed more than 5 books at once.",No,No,False,True,False,119,3,False,True
 181,0,7,4,0.5714285714285714,"Based on the above premises, which statement can be inferred?
 A. If all students are participating in the buddy program, then if a person is participating in the buddy program, they gain 5 bonus points and money, and there exists a student who gains 5 bonus points and money through the program.
 B. If all students are participating in the buddy program, then if a person is participating in the buddy program, they gain 5 bonus points and money, but there does not exist a student who gains 5 bonus points and money through the program.
 C. If all students are participating in the buddy program, then if a person is participating in the buddy program, they gain 5 bonus points and money, and if a person is participating in the buddy program, they are a student receiving help.
-D. If all students are participating in the buddy program, then if a person is participating in the buddy program, they gain 5 bonus points and money, but if a person is participating in the buddy program, they are not a student receiving help.",Unknown,Unknown,True,False,False,130,4,True,True
+D. If all students are participating in the buddy program, then if a person is participating in the buddy program, they gain 5 bonus points and money, but if a person is participating in the buddy program, they are not a student receiving help.",A,MCQ_A,True,False,False,130,4,True,True
 181,1,7,4,0.5714285714285714,"Based on the above premises, is the following statement true?
 Statement: If all students are participating in the buddy program, then if a person is participating in the buddy program, they gain 5 bonus points and money, and there exists a student who gains 5 bonus points and money through the program.",No,No,False,True,False,130,4,True,True
 182,0,7,4,0.5714285714285714,"Based on the above premises, which statement can be inferred?
 A. If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, and there exists a student who is enrolled in the PE course.
 B. If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, but there does not exist a student who is enrolled in the PE course.
 C. If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, and if a person has not attended the PE course, they have not fulfilled all course requirements.
-D. If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, but if a person has not attended the PE course, they have fulfilled all course requirements.",Unknown,Unknown,True,False,False,128,4,True,False
+D. If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, but if a person has not attended the PE course, they have fulfilled all course requirements.",A,MCQ_A,True,False,False,128,4,True,False
 182,1,7,4,0.5714285714285714,"Based on the above premises, is the following statement true?
 Statement: If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, and there exists a student who attended at least 2 PE courses during the 9 semesters.",No,No,False,True,False,124,4,True,True
 183,0,7,4,0.5714285714285714,"Based on the above premises, which statement can be inferred?
 A. If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, and there exists a student who is enrolled in the PE course.
 B. If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, but there does not exist a student who is enrolled in the PE course.
 C. If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, and if a person has not attended the PE course, they have not fulfilled all course requirements.
-D. If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, but if a person has not attended the PE course, they have fulfilled all course requirements.",Unknown,Unknown,True,False,False,128,4,True,False
+D. If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, but if a person has not attended the PE course, they have fulfilled all course requirements.",A,MCQ_A,True,False,False,128,4,True,False
 183,1,7,4,0.5714285714285714,"Based on the above premises, is the following statement true?
-Statement: If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, and there exists a student who attended at least 2 PE courses during the 9 semesters.",No,No,False,True,False,124,4,True,True
+Statement: If all students are enrolled in the PE course, then if a person has not attended the PE course, they are not attending the PE course this semester, and there exists a student who attended at least 2 PE courses during the 9 semesters.",Yes,Yes,False,True,False,124,4,True,True
 184,0,7,4,0.5714285714285714,"Based on the above premises, which statement can be inferred?
 A. If there exists someone who has successfully obtained the English certificate, then everyone is required to have the English certificate, and if a person has an English certificate, then they have at least 6.0 IELTS or a TOEFL score above 600.
 B. If there exists someone who has successfully obtained the English certificate, then everyone is required to have the English certificate, but if a person has an English certificate, then they do not have at least 6.0 IELTS or a TOEFL score above 600.
 C. If there exists someone who has successfully obtained the English certificate, then everyone is required to have the English certificate, and there exists someone who has completed the language proficiency test.
-D. If there exists someone who has successfully obtained the English certificate, then everyone is required to have the English certificate, but there does not exist someone who has completed the language proficiency test.",Unknown,Unknown,True,False,False,140,4,True,True
+D. If there exists someone who has successfully obtained the English certificate, then everyone is required to have the English certificate, but there does not exist someone who has completed the language proficiency test.",A,MCQ_A,True,False,False,140,4,True,True
 184,1,7,4,0.5714285714285714,"Based on the above premises, is the following statement true?
 Statement: If there exists someone who has successfully obtained the English certificate, then everyone is required to have the English certificate, and if a person has an English certificate, then they have at least 6.0 IELTS or a TOEFL score above 600.",No,No,False,True,False,140,4,True,True
 185,0,5,2,0.4,"Based on the premises, which statement can be inferred?
 A. If someone is eligible for the seminar, they have completed registration requirements.
 B. Everyone who submits a report has both certifications.
 C. Someone eligible for the seminar has both certifications.
-D. Not registering for the seminar means you have certifications.",Unknown,Unknown,True,False,False,64,2,True,False
+D. Not registering for the seminar means you have certifications.",C,MCQ_C,True,False,False,64,2,True,False
 185,1,5,1,0.2,"Is it true that registering for the seminar does not imply completing all requirements to register, according to the premises?",No,No,False,True,False,29,1,True,False
 186,0,5,2,0.4,"Which of the following can be inferred about student eligibility?
 A. All students are eligible to register.
 B. Some students are not eligible to register.
 C. No students are eligible to register.
-D. Eligibility to register depends on year level.",Unknown,Unknown,True,False,False,39,2,True,False
+D. Eligibility to register depends on year level.",A,MCQ_A,True,False,False,39,2,True,False
 186,1,5,2,0.4,Are there any students who are not required to attend the orientation?,No,No,False,False,True,34,2,True,False
 187,0,7,2,0.2857142857142857,"Which of the following can be inferred about healthcare eligibility?
 A. All individuals are eligible for healthcare services.
@@ -1207,70 +1211,70 @@ Statement: All students have skills.",No,No,False,False,True,21,1,True,False
 A. If a student is familiar with HCMUT's code of conduct, then they adhere to HCMUT's code of conduct, and if they adhere to the code of conduct, they uphold HCMUT's values.
 B. If a student is familiar with HCMUT's code of conduct, then they adhere to HCMUT's code of conduct, but if they adhere to the code of conduct, they do not uphold HCMUT's values.
 C. If a student is familiar with HCMUT's code of conduct, then they adhere to HCMUT's code of conduct, and if there are vibrant student clubs at HCMUT, then all students adhere to HCMUT's code of conduct.
-D. If a student is familiar with HCMUT's code of conduct, then they adhere to HCMUT's code of conduct, but if there are vibrant student clubs at HCMUT, then not all students adhere to HCMUT's code of conduct.",Unknown,Unknown,True,False,False,101,3,True,False
+D. If a student is familiar with HCMUT's code of conduct, then they adhere to HCMUT's code of conduct, but if there are vibrant student clubs at HCMUT, then not all students adhere to HCMUT's code of conduct.",C,MCQ_C,True,False,False,101,3,True,False
 221,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If there are vibrant student clubs at HCMUT, then all students adhere to HCMUT's code of conduct, and all students adhere to HCMUT's code of conduct.",No,No,False,True,False,81,3,True,False
 222,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
 A. If a student is enrolled in a university program and has access to academic resources, then there exists at least one student who has completed a research project, and there exists at least one student who is participating in an internship program.
 B. If a student is enrolled in a university program and has access to academic resources, then there exists at least one student who has completed a research project, but there does not exist at least one student who is participating in an internship program.
 C. If a student is enrolled in a university program and has access to academic resources, then there exists at least one student who has completed a research project, and if a student is conducting research, then the student has completed a research project.
-D. If a student is enrolled in a university program and has access to academic resources, then there exists at least one student who has completed a research project, but if a student is conducting research, then the student has not completed a research project.",Unknown,Unknown,True,False,False,154,4,False,True
+D. If a student is enrolled in a university program and has access to academic resources, then there exists at least one student who has completed a research project, but if a student is conducting research, then the student has not completed a research project.",A,MCQ_A,True,False,False,154,4,False,True
 222,1,7,6,0.8571428571428571,"Based on the above premises, is the following statement true?
 Statement: If a student is enrolled in a university program, then there exists at least one student who is participating in an internship program, and there exists at least one student who has completed a research project.",No,No,False,True,False,182,6,True,True
 223,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
 A. If a student is enrolled in a course, then they have access to study materials, and if every student has access to study materials, then there exists at least one student who is enrolled in a course.
 B. If a student is enrolled in a course, then they have access to study materials, but if every student has access to study materials, then there does not exist at least one student who is enrolled in a course.
 C. If a student is enrolled in a course, then they have access to study materials, and if a student doesn’t have a scholarship, then they don’t pay full tuition.
-D. If a student is enrolled in a course, then they have access to study materials, but if a student doesn’t have a scholarship, then they pay full tuition.",Unknown,Unknown,True,False,False,103,3,True,True
+D. If a student is enrolled in a course, then they have access to study materials, but if a student doesn’t have a scholarship, then they pay full tuition.",A,MCQ_A,True,False,False,103,3,True,True
 223,1,7,2,0.2857142857142857,"Based on the above premises, is the following statement true?
 Statement: If a student is enrolled in a course, then they have access to study materials, and every student has access to study materials.",No,No,False,True,False,64,2,True,False
 224,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
 A. If a student is not studying, then they are not revising, and if a student is not understanding the material, then they are not revising.
 B. If a student is not studying, then they are not revising, but if a student is not understanding the material, then they are revising.
 C. If a student is not studying, then they are not revising, and if a student is revising, then they are taking an exam.
-D. If a student is not studying, then they are not revising, but if a student is revising, then they are not taking an exam.",Unknown,Unknown,True,False,False,94,3,True,False
+D. If a student is not studying, then they are not revising, but if a student is revising, then they are not taking an exam.",A,MCQ_A,True,False,False,94,3,True,False
 224,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If a student is not studying, then they are not revising, and if a student is not understanding the material, then they are not revising.",No,No,False,True,False,94,3,True,False
 225,0,7,4,0.5714285714285714,"Based on the above premises, which statement can be inferred?
 A. If there exists at least one student who is studying, then there exists at least one student who is preparing for an exam, and if there exists at least one student who is preparing for an exam, then there exists at least one student who is studying.
 B. If there exists at least one student who is studying, then there exists at least one student who is preparing for an exam, but if there exists at least one student who is preparing for an exam, then there does not exist at least one student who is studying.
 C. If there exists at least one student who is studying, then there exists at least one student who is preparing for an exam, and every student is asking questions.
-D. If there exists at least one student who is studying, then there exists at least one student who is preparing for an exam, but not every student is asking questions.",Unknown,Unknown,True,False,False,140,4,True,True
+D. If there exists at least one student who is studying, then there exists at least one student who is preparing for an exam, but not every student is asking questions.",A,MCQ_A,True,False,False,140,4,True,True
 225,1,7,4,0.5714285714285714,"Based on the above premises, is the following statement true?
 Statement: If there exists at least one student who is studying, then there exists at least one student who is preparing for an exam, and if there exists at least one student who is preparing for an exam, then there exists at least one student who is studying.",No,No,False,True,False,140,4,True,True
 226,0,7,4,0.5714285714285714,"Based on the above premises, which statement can be inferred?
 A. If there exists at least one student who is revising, then if a student is revising, they are studying, and if a student is studying, then they are revising.
 B. If there exists at least one student who is revising, then if a student is revising, they are studying, but if a student is studying, then they are not revising.
 C. If there exists at least one student who is revising, then if a student is revising, they are studying, and every student is attending tutorials.
-D. If there exists at least one student who is revising, then if a student is revising, they are studying, but not every student is attending tutorials.",Unknown,Unknown,True,False,False,101,4,True,True
+D. If there exists at least one student who is revising, then if a student is revising, they are studying, but not every student is attending tutorials.",A,MCQ_A,True,False,False,101,4,True,True
 226,1,7,5,0.7142857142857143,"Based on the above premises, is the following statement true?
 Statement: If there exists at least one student who is revising, then if a student is revising, they are studying, and every student is attending tutorials.",Yes,Yes,False,True,False,112,5,True,True
 227,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
 A. If a student is preparing for an exam, then they are asking questions, and if a student is not studying, then they are not attending tutorials.
 B. If a student is preparing for an exam, then they are asking questions, but if a student is not studying, then they are attending tutorials.
 C. If a student is preparing for an exam, then they are asking questions, and if a student is not revising, then they are not preparing for an exam.
-D. If a student is preparing for an exam, then they are asking questions, but if a student is not revising, then they are preparing for an exam.",Unknown,Unknown,True,False,False,97,3,True,False
+D. If a student is preparing for an exam, then they are asking questions, but if a student is not revising, then they are preparing for an exam.",A,MCQ_A,True,False,False,97,3,True,False
 227,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If a student is preparing for an exam, then they are asking questions, and if a student is not studying, then they are not attending tutorials.",No,No,False,True,False,97,3,True,False
 228,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
 A. If a student is preparing for an exam, then they are understanding the material, and every student is attending tutorials.
 B. If a student is preparing for an exam, then they are understanding the material, but not every student is attending tutorials.
 C. If a student is preparing for an exam, then they are understanding the material, and if a student is understanding the material, then they are revising.
-D. If a student is preparing for an exam, then they are understanding the material, but if a student is understanding the material, then they are not revising.",Unknown,Unknown,True,False,False,81,3,True,False
+D. If a student is preparing for an exam, then they are understanding the material, but if a student is understanding the material, then they are not revising.",A,MCQ_A,True,False,False,81,3,True,False
 228,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: If a student is preparing for an exam, then they are understanding the material, and every student is attending tutorials.",No,No,False,True,False,81,3,True,False
 229,0,7,4,0.5714285714285714,"Based on the above premises, which statement can be inferred?
 A. If there exists at least one student who is attending tutorials, then if a student is not asking questions, they are not attending tutorials, and every student is preparing for an exam.
 B. If there exists at least one student who is attending tutorials, then if a student is not asking questions, they are not attending tutorials, but not every student is preparing for an exam.
 C. If there exists at least one student who is attending tutorials, then if a student is not asking questions, they are not attending tutorials, and every student is understanding the material.
-D. If there exists at least one student who is attending tutorials, then if a student is not asking questions, they are not attending tutorials, but not every student is understanding the material.",Unknown,Unknown,True,False,False,112,4,True,True
+D. If there exists at least one student who is attending tutorials, then if a student is not asking questions, they are not attending tutorials, but not every student is understanding the material.",A,MCQ_A,True,False,False,112,4,True,True
 229,1,7,4,0.5714285714285714,"Based on the above premises, is the following statement true?
 Statement: If there exists at least one student who is attending tutorials, then if a student is not asking questions, they are not attending tutorials, and every student is preparing for an exam.",No,No,False,True,False,112,4,True,True
 230,0,7,5,0.7142857142857143,"Based on the above premises, which statement can be inferred?
 A. If there exists at least one student who is asking questions, then if a student is not revising, they are not studying, and if a student is not revising, then they are not asking questions.
 B. If there exists at least one student who is asking questions, then if a student is not revising, they are not studying, but if a student is not revising, then they are asking questions.
 C. If there exists at least one student who is asking questions, then if a student is not revising, they are not studying, and if a student is asking questions, then they are revising.
-D. If there exists at least one student who is asking questions, then if a student is not revising, they are not studying, but if a student is asking questions, then they are not revising.",Unknown,Unknown,True,False,False,143,5,True,True
+D. If there exists at least one student who is asking questions, then if a student is not revising, they are not studying, but if a student is asking questions, then they are not revising.",A,MCQ_A,True,False,False,143,5,True,True
 230,1,7,5,0.7142857142857143,"Based on the above premises, is the following statement true?
 Statement: If there exists at least one student who is asking questions, then if a student is not revising, they are not studying, and if a student is not revising, then they are not asking questions.",No,No,False,True,False,143,5,True,True
 231,0,7,4,0.5714285714285714,"Based on the above premises, which statement can be inferred?
@@ -1297,14 +1301,14 @@ D. Understanding the material implies not revising.",A,MCQ_A,True,False,False,64
 A. If a student is not understanding the material, then they are not revising, and if a student is attending tutorials, then they are revising.
 B. If a student is not understanding the material, then they are not revising, but if a student is attending tutorials, then they are not revising.
 C. If a student is not understanding the material, then they are not revising, and every student is revising.
-D. If a student is not understanding the material, then they are not revising, but not every student is revising.",Unknown,Unknown,True,False,False,142,5,True,False
+D. If a student is not understanding the material, then they are not revising, but not every student is revising.",A,MCQ_A,True,False,False,142,5,True,False
 234,1,7,5,0.7142857142857143,"Based on the above premises, is the following statement true?
 Statement: If a student is not understanding the material, then they are not revising, and if a student is attending tutorials, then they are revising.",No,No,False,True,False,142,5,True,False
 235,0,7,4,0.5714285714285714,"Based on the above premises, which statement can be inferred?
 A. If a university student is revising, then they are preparing for an exam, and if a university student is studying, then they are understanding the material.
 B. If a university student is revising, then they are preparing for an exam, but if a university student is studying, then they are not understanding the material.
 C. If a university student is revising, then they are preparing for an exam, and if a university student is understanding the material, then they are asking questions.
-D. If a university student is revising, then they are preparing for an exam, but if a university student is understanding the material, then they are not asking questions.",Unknown,Unknown,True,False,False,142,4,True,False
+D. If a university student is revising, then they are preparing for an exam, but if a university student is understanding the material, then they are not asking questions.",A,MCQ_A,True,False,False,142,4,True,False
 235,1,7,4,0.5714285714285714,"Based on the above premises, is the following statement true?
 Statement: If a university student is revising, then they are preparing for an exam, and if a university student is studying, then they are understanding the material.",No,No,False,True,False,142,4,True,False
 236,0,7,4,0.5714285714285714,"Based on the above premises, which statement can be inferred?
@@ -1318,14 +1322,14 @@ Statement: If there exists at least one student who is revising, then every stud
 A. If a high school student is not proficient in algebra, then they will not ace calculus, and if a high school student studies math diligently, then they understand trigonometry.
 B. If a high school student is not proficient in algebra, then they will not ace calculus, but if a high school student studies math diligently, then they do not understand trigonometry.
 C. If a high school student is not proficient in algebra, then they will not ace calculus, and there exists at least one high school student who understands trigonometry.
-D. If a high school student is not proficient in algebra, then they will not ace calculus, but there does not exist at least one high school student who understands trigonometry.",Unknown,Unknown,True,False,False,153,4,True,True
+D. If a high school student is not proficient in algebra, then they will not ace calculus, but there does not exist at least one high school student who understands trigonometry.",C,MCQ_C,True,False,False,153,4,True,True
 237,1,7,4,0.5714285714285714,"Based on the above premises, is the following statement true?
 Statement: If a high school student is not proficient in algebra, then they will not ace calculus, and there exists at least one high school student who understands trigonometry.",No,No,False,True,False,153,4,True,True
 238,0,7,3,0.42857142857142855,"Based on the above premises, which statement can be inferred?
 A. Every high school student is studious, and if every high school student is studious, then every high school student upholds school values.
 B. Every high school student is studious, but if every high school student is studious, then every high school student does not uphold school values.
 C. Every high school student is studious, and every high school student participates in extracurricular activities.
-D. Every high school student is studious, but not every high school student participates in extracurricular activities.",Unknown,Unknown,True,False,False,73,3,True,False
+D. Every high school student is studious, but not every high school student participates in extracurricular activities.",A,MCQ_A,True,False,False,73,3,True,False
 238,1,7,3,0.42857142857142855,"Based on the above premises, is the following statement true?
 Statement: Every high school student is studious, and every high school student participates in extracurricular activities.",No,No,False,True,False,59,3,True,False
 239,0,7,4,0.5714285714285714,"Based on the above premises, which statement can be inferred?
@@ -1564,7 +1568,7 @@ Statement: Exists(x, AttendsTutoring(x))",No,No,False,False,True,18,0,True,False
 A. If a broader understanding implies mentoring, then investing time in project-based learning implies a broader understanding.
 B. If a broader understanding implies mentoring, and we deny that implication, both remain true.
 C. It is impossible that a broader understanding implies mentoring leads to investing time in project-based learning implying a broader understanding.
-D. If a broader understanding implies mentoring, then investing time in project-based learning implies a broader understanding.",Unknown,Unknown,True,False,False,87,7,False,False
+D. If a broader understanding implies mentoring, then investing time in project-based learning implies a broader understanding.",D,MCQ_D,True,False,False,87,7,False,False
 275,1,11,3,0.2727272727272727,"If all students complete the end-of-term research paper, does it follow that if a broader understanding implies mentoring, then investing time in project-based learning implies a broader understanding?",No,No,False,True,False,87,7,False,False
 276,0,11,3,0.2727272727272727,"Based on the above premises, which statement can be inferred if we know that all researchers write publications?
 A. If a researcher writes a publication and provides novel insights, then if students enrolled in advanced courses excel, they will remain successful.
@@ -1668,61 +1672,61 @@ D. All students have finished their graduation requirements",Unknown,Unknown,Tru
 A. Excessive competition leads to stress and prioritizing grades.
 B. Excessive competition improves motivation and performance.
 C. Excessive competition has no impact on students.
-D. Excessive competition enhances deep understanding.",Unknown,Unknown,True,False,False,35,2,True,False
+D. Excessive competition enhances deep understanding.",A,MCQ_A,True,False,False,35,2,True,False
 293,1,10,2,0.2,Can students with excessive competition mitigate stress through self-reflection?,No,No,False,False,True,32,2,True,False
 294,0,10,2,0.2,"Which can be inferred about effective policies?
 A. Some policies are effective.
 B. All policies are effective.
 C. No policies are effective.
-D. Effectiveness is unrelated to engagement.",Unknown,Unknown,True,False,False,32,2,True,False
+D. Effectiveness is unrelated to engagement.",A,MCQ_A,True,False,False,32,2,True,False
 294,1,10,2,0.2,Do well-structured curricula improve learning outcomes?,No,No,False,False,True,27,2,True,False
 295,0,10,2,0.2,"Which can be inferred about teaching methods in innovative schools?
 A. Some teaching methods are effective.
 B. All teaching methods are effective.
 C. No teaching methods are effective.
-D. Effectiveness requires modern facilities.",Unknown,Unknown,True,False,False,32,2,True,False
+D. Effectiveness requires modern facilities.",A,MCQ_A,True,False,False,32,2,True,False
 295,1,10,2,0.2,Do modern facilities enhance learning environments?,No,No,False,False,True,25,2,True,False
 296,0,10,3,0.3,"Which can be inferred about students who attend lectures?
 A. Some students solve complex problems.
 B. All students solve complex problems.
 C. No students solve complex problems.
-D. Problem-solving depends on mock tests.",Unknown,Unknown,True,False,False,39,3,True,False
+D. Problem-solving depends on mock tests.",A,MCQ_A,True,False,False,39,3,True,False
 296,1,10,2,0.2,Do students who practice excel in exams?,No,No,False,False,True,33,2,True,False
 297,0,10,2,0.2,"Which can be inferred about universities with online courses?
 A. Some universities increase accessibility.
 B. All universities increase accessibility.
 C. No universities increase accessibility.
-D. Accessibility depends on research programs.",Unknown,Unknown,True,False,False,32,2,True,False
+D. Accessibility depends on research programs.",A,MCQ_A,True,False,False,32,2,True,False
 297,1,10,2,0.2,Do well-ranked universities improve student satisfaction?,No,No,False,False,True,29,2,True,False
 298,0,10,2,0.2,"Which can be inferred about students with personalized support?
 A. Some students improve academic performance.
 B. All students develop teamwork skills.
 C. No students are motivated.
-D. Students struggle with critical thinking.",Unknown,Unknown,True,False,False,30,2,True,False
+D. Students struggle with critical thinking.",A,MCQ_A,True,False,False,30,2,True,False
 298,1,10,2,0.2,Can students avoid burnout by managing time effectively?,No,No,False,False,True,34,2,True,False
 299,0,10,2,0.2,"Which can be inferred about students in interactive learning environments?
 A. Some students develop better problem-solving skills.
 B. All students lack engagement.
 C. No students improve cultural awareness.
-D. Students neglect creativity.",Unknown,Unknown,True,False,False,33,2,True,False
+D. Students neglect creativity.",A,MCQ_A,True,False,False,33,2,True,False
 299,1,10,2,0.2,Can students with metacognitive skills avoid academic pressure’s negative effects?,No,No,False,False,True,34,2,True,False
 300,0,10,2,0.2,"Which can be inferred about students with self-directed learning?
 A. Some students enhance creativity.
 B. Some students improve reasoning.
 C. No students improve reasoning.
-D. Students struggle with progress tracking.",Unknown,Unknown,True,False,False,33,2,True,False
+D. Students struggle with progress tracking.",B,MCQ_B,True,False,False,33,2,True,False
 300,1,10,2,0.2,Can students with open-ended projects avoid rigid curriculum struggles?,No,No,False,False,True,30,2,True,False
 301,0,10,2,0.2,"Which can be inferred about students with personalized learning plans?
 A. Some students handle workloads efficiently.
 B. All students struggle with critical thinking.
 C. No students achieve better outcomes.
-D. Some students improve academic performance.",Unknown,Unknown,True,False,False,33,2,True,False
+D. Some students improve academic performance.",D,MCQ_D,True,False,False,33,2,True,False
 301,1,10,2,0.2,Can students in flexible learning environments improve decision-making?,No,No,False,False,True,27,2,True,False
 302,0,10,2,0.2,"Which can be inferred about students with clear learning objectives?
 A. Some students improve cognitive function.
 B. All students lack motivation.
 C. No students apply practical knowledge.
-D. Some students set better academic goals.",Unknown,Unknown,True,False,False,37,2,True,False
+D. Some students set better academic goals.",D,MCQ_D,True,False,False,37,2,True,False
 302,1,10,2,0.2,Can students in problem-based learning improve self-learning?,No,No,False,False,True,29,2,True,False
 303,0,9,2,0.2222222222222222,"Based on the above premises, which statement can be inferred?
 A. All students install the software.
@@ -1791,98 +1795,98 @@ Statement: Exists(x, CompletingAssignments(x))",No,No,False,False,True,16,0,True
 A. Frieren is required to pay the tutor fee.
 B. Frieren must register for the BKA program due to her status as an OISP student.
 C. Frieren can choose to delay the tutor fee.
-D. Frieren must register for the BKA program.",Unknown,Unknown,True,False,False,48,3,True,False
+D. Frieren must register for the BKA program.",D,MCQ_D,True,False,False,48,3,True,False
 312,1,5,3,0.6,"Based on the above premises, is the statement true?
 Statement: Frieren must register for the BKA program.",No,No,False,False,True,41,3,False,False
 313,0,4,3,0.75,"Which can be inferred about Sarifi’s academic status?
 A. Sarifi failed due to absence.
 B. Sarifi didn’t fail and wasn’t absent.
 C. Sarifi failed despite bringing a paper.
-D. Sarifi was absent but didn’t fail.",Unknown,Unknown,True,False,False,38,4,True,False
+D. Sarifi was absent but didn’t fail.",B,MCQ_B,True,False,False,38,4,True,False
 313,1,4,3,0.75,Did Sarifi avoid failing by not being absent?,No,No,False,False,True,34,4,True,False
 314,0,7,3,0.42857142857142855,"Which can be inferred about Mia’s preparation?
 A. Mia lacked knowledge.
 B. Mia received help from others.
 C. Mia did well due to knowledge.
-D. Mia didn’t study hard.",Unknown,Unknown,True,False,False,33,3,True,False
+D. Mia didn’t study hard.",C,MCQ_C,True,False,False,33,3,True,False
 314,1,7,2,0.2857142857142857,Did Mia pass due to not helping others?,No,No,False,False,True,29,3,False,False
 315,0,7,3,0.42857142857142855,"How did Mia pass the course?
 A. Mia lacked knowledge but got help.
 B. Mia studied hard.
 C. Mia helped others.
-D. Mia did well without helping others.",Unknown,Unknown,True,False,False,38,3,True,False
+D. Mia did well without helping others.",D,MCQ_D,True,False,False,38,3,True,False
 315,1,7,2,0.2857142857142857,Did Mia rely on her own performance to pass?,No,No,False,False,True,31,2,True,False
 316,0,5,3,0.6,"What can be inferred about Iruma’s academic progress?
 A. Iruma completed a graduation project.
 B. Iruma gained enough labor days.
 C. Iruma’s graduation status is uncertain.
-D. Iruma is eligible for the graduation project.",Unknown,Unknown,True,False,False,34,3,True,False
+D. Iruma is eligible for the graduation project.",C,MCQ_C,True,False,False,34,3,True,False
 316,1,5,3,0.6,Can Iruma do a graduation project?,No,No,False,False,True,32,3,True,False
 317,0,8,3,0.375,"Which statement can be inferred about Yashiro?
 A. Yashiro passed the course.
 B. Yashiro failed the course.
 C. Yashiro did not redo the assignment.
-D. It is uncertain whether Yashiro passed the course.",Unknown,Unknown,True,False,False,42,3,True,False
+D. It is uncertain whether Yashiro passed the course.",D,MCQ_D,True,False,False,42,3,True,False
 317,1,8,3,0.375,Did Yashiro redo the assignment?,Yes,Yes,False,False,True,29,3,True,False
 318,0,5,3,0.6,"What can be inferred about Ponko’s class status?
 A. Ponko passed the final exam.
 B. Ponko failed due to low exam score.
 C. Ponko’s failure depends on quiz attendance.
-D. Ponko failed due to missing a class.",Unknown,Unknown,True,False,False,30,3,True,False
+D. Ponko failed due to missing a class.",C,MCQ_C,True,False,False,30,3,True,False
 318,1,5,3,0.6,Will Ponko fail the class?,Yes,Yes,False,False,True,33,2,False,False
 319,0,5,3,0.6,"Which statement can be inferred about Dio?
 A. Dio is not hardworking.
 B. Dio did not gain knowledge.
 C. Dio read books.
-D. It is uncertain whether Dio read books.",Unknown,Unknown,True,False,False,39,3,True,False
+D. It is uncertain whether Dio read books.",D,MCQ_D,True,False,False,39,3,True,False
 319,1,5,3,0.6,Did Dio pass by reading books?,No,No,False,False,True,33,3,True,False
 320,0,7,3,0.42857142857142855,"What enabled Rillance to qualify for a scholarship?
 A. Rillance skipped classes.
 B. Rillance stayed on the basketball team.
 C. Rillance scored high without attending.
-D. Rillance got external help.",Unknown,Unknown,True,False,False,31,3,False,False
+D. Rillance got external help.",B,MCQ_B,True,False,False,31,3,False,False
 320,1,7,3,0.42857142857142855,Did Rillance’s basketball team status help qualify for a scholarship?,Yes,Yes,False,False,True,28,3,True,False
 321,0,15,6,0.4,"What can be inferred about students’ societal impact?
 A. No student develops skills.
 B. All students achieve success.
 C. Some student contributes to society.
-D. No student accesses education.",Unknown,Unknown,True,False,False,39,2,True,False
+D. No student accesses education.",C,MCQ_C,True,False,False,39,2,True,False
 321,1,15,5,0.3333333333333333,Do students guided by teachers contribute to society?,No,No,False,False,True,28,1,True,False
 322,0,7,6,0.8571428571428571,"Which statement can be inferred about Ruri?
 A. Ruri failed the assignment.
 B. Ruri did the assignment by herself.
 C. Ruri did not gain experience.
-D. It is uncertain whether Ruri did the assignment by herself.",Unknown,Unknown,True,False,False,40,6,True,False
+D. It is uncertain whether Ruri did the assignment by herself.",B,MCQ_B,True,False,False,40,6,True,False
 322,1,7,5,0.7142857142857143,Did Ruri gain experience from the assignment?,No,No,False,False,True,29,5,True,False
 323,0,15,6,0.4,"What can be inferred about students taught by teachers?
 A. They don’t learn.
 B. Some have motivation.
 C. They don’t improve.
-D. They lack experience.",Unknown,Unknown,True,False,False,49,7,False,False
+D. They lack experience.",B,MCQ_B,True,False,False,49,7,False,False
 323,1,15,6,0.4,Does Mia have motivation?,No,No,False,False,True,40,7,False,False
 324,0,18,3,0.16666666666666666,"What do students gain from attending school?
 A. Knowledge.
 B. No skills.
 C. Movies.
-D. Certificates.",Unknown,Unknown,True,False,False,31,3,True,False
+D. Certificates.",A,MCQ_A,True,False,False,31,3,True,False
 324,1,18,3,0.16666666666666666,Do all students gain knowledge?,No,No,False,False,True,24,3,True,False
 325,0,18,3,0.16666666666666666,"What follows from students attending school?
 A. Some like sports.
 B. All gain knowledge.
 C. None solve problems.
-D. Some skip education.",Unknown,Unknown,True,False,False,27,3,True,False
+D. Some skip education.",B,MCQ_B,True,False,False,27,3,True,False
 325,1,18,6,0.3333333333333333,Do students contribute to society?,No,No,False,False,True,36,6,True,False
 326,0,12,4,0.3333333333333333,"What affects model performance?
 A. Overfitting captures noise.
 B. Clustering predicts outputs.
 C. Underfitting enhances generalization.
-D. Regression groups data.",Unknown,Unknown,True,False,False,44,4,True,False
+D. Regression groups data.",A,MCQ_A,True,False,False,44,4,True,False
 326,1,12,4,0.3333333333333333,How do supervised learning models function?,Unknown,Unknown,False,False,True,35,4,True,False
 327,0,14,4,0.2857142857142857,"What optimizes SQL query performance?
 A. Indexes speed up retrieval.
 B. DELETE adds records.
 C. PRIMARY KEY groups rows.
-D. INSERT sorts data.",Unknown,Unknown,True,False,False,35,4,True,False
+D. INSERT sorts data.",A,MCQ_A,True,False,False,35,4,True,False
 327,1,14,3,0.21428571428571427,What does the GROUP BY clause achieve in SQL queries?,Unknown,Unknown,False,False,True,30,3,True,False
 328,0,15,1,0.06666666666666667,"Based on the above premises, which statement can be inferred?
 A. If a student cannot apply concepts, they cannot engage in the learning process.
@@ -1926,13 +1930,13 @@ C. ∀x (¬S(x) → V(x))
 D. ∀x (¬(T(x) → V(x)))",Unknown,Unknown,True,False,False,31,2,True,False
 333,1,15,1,0.06666666666666667,"Based on the above premises, is the following statement true?
 Statement: If an AI model is not trained, it cannot generalize to unseen data.",No,No,False,True,False,25,1,True,False
-334,0,15,2,0.13333333333333333,"Based on the above premises, which statement can be inferred?
+334,0,15,1,0.06666666666666667,"Based on the above premises, which statement can be inferred?
 A. ∀x (B(x) → P2(x))
 B. ∀x (G(x) → ¬V(x))
 C. ∀x (F(x) → ¬D(x))
-D. ∀x (T2(x) → ¬L2(x))",Unknown,Unknown,True,False,False,35,2,True,True
-334,1,15,1,0.06666666666666667,"Based on the above premises, is the following statement true?
-Statement: A student who uses security measures will protect user data on their website.",No,No,False,True,False,25,1,True,False
+D. ∀x (T2(x) → ¬L2(x))",Unknown,Unknown,True,False,False,35,2,False,True
+334,1,15,0,0.0,"Based on the above premises, is the following statement true?
+Statement: A student who uses security measures will protect user data on their website.",No,No,False,True,False,25,1,False,False
 335,0,7,2,0.2857142857142857,"Based on the above premises, which statement can be inferred?
 A. ∀x ((B(x) ∧ A(x) ∧ (S(x) ∨ T(x))) → (R(x) ∧ L(x)))
 B. ∀x ((R2(x) ∧ T3(x)) → B3(x))
@@ -2058,12 +2062,12 @@ D. If it is true that if an object having property U implies it has property T t
 A. It is not true that if participating in extracurricular activities helps students develop social skills, then understanding the material will help them perform well in exams.
 B. Both the statement 'if participating in extracurricular activities helps students develop social skills, then understanding the material will help them perform well in exams' and its negation are true.
 C. If participating in extracurricular activities helps students develop social skills, then understanding the material will not help them perform well in exams.
-D. If participating in extracurricular activities helps students develop social skills, then understanding the material will help them perform well in exams.",Unknown,Unknown,True,False,False,32,2,True,False
+D. If participating in extracurricular activities helps students develop social skills, then understanding the material will help them perform well in exams.",D,MCQ_D,True,False,False,32,2,True,False
 355,1,4,3,0.75,"Which activities contribute to students performing well in exams?
 A. Attending classes regularly, participating in extracurricular activities.
 B. Developing social skills, pursuing interests.
 C. Accessing quality education, understanding material.
-D. Participating in extracurricular activities, pursuing interests.",Unknown,Unknown,True,False,False,31,3,True,False
+D. Participating in extracurricular activities, pursuing interests.",A,MCQ_A,True,False,False,31,3,True,False
 356,0,7,2,0.2857142857142857,"Which statement can be inferred?
 A. It is both true and false that if there exists at least one student who has completed the Thesis Writing course, then all students are enrolled in Research Methods.
 B. It is false that if there exists at least one student who has completed the Thesis Writing course, then all students are enrolled in Research Methods.
@@ -2086,37 +2090,37 @@ D. It is both true and false that if all students have access to online learning
 A. Studying less than 10 hours.
 B. Failing to gain knowledge.
 C. Studying 15 hours or completing a project.
-D. Taking an assessment.",Unknown,Unknown,True,False,False,47,3,True,True
+D. Taking an assessment.",C,MCQ_C,True,False,False,47,3,True,True
 359,1,9,3,0.3333333333333333,What qualifies a student for a scholarship?,Unknown,Unknown,False,False,True,33,3,True,False
 360,0,9,5,0.5555555555555556,"Can Tuan take the Machine Learning 101 course?
 A. No, he lacks enrollment.
 B. Yes.
 C. No, he failed Linear Algebra.
-D. Only if he takes another prerequisite.",Unknown,Unknown,True,False,False,50,6,False,True
+D. Only if he takes another prerequisite.",B,MCQ_B,True,False,False,50,6,False,True
 360,1,9,3,0.3333333333333333,What allows a student to take a course?,Unknown,Unknown,False,False,True,33,3,True,False
 361,0,11,3,0.2727272727272727,"Can Nam apply for early graduation?
 A. No, insufficient credits.
 B. Yes.
 C. No, low GPA.
-D. Only with special approval.",Unknown,Unknown,True,False,False,45,3,True,True
+D. Only with special approval.",B,MCQ_B,True,False,False,45,3,True,True
 361,1,11,3,0.2727272727272727,Can Nam register for Advanced Algorithms?,No,No,False,False,True,32,3,True,False
 362,0,10,3,0.3,"Can Tuan receive a scholarship?
 A. Yes, he has five A grades.
 B. No.
 C. Only with A+ grades.
-D. Only if friends understand.",Unknown,Unknown,True,False,False,34,3,True,False
+D. Only if friends understand.",B,MCQ_B,True,False,False,34,3,True,False
 362,1,10,3,0.3,Does Tuan have knowledge of his A-grade subjects?,No,No,False,False,True,34,3,True,False
 363,0,6,3,0.5,"Do all students earn an A or A+?
 A. Yes, all mastered the subject.
 B. Uncertain.
 C. No, only some earn A+.
-D. Only if they explain it.",Unknown,Unknown,True,False,False,38,3,True,False
+D. Only if they explain it.",B,MCQ_B,True,False,False,38,3,True,False
 363,1,6,3,0.5,What follows if a student earns an A?,Unknown,Unknown,False,False,True,34,3,True,False
 364,0,7,2,0.2857142857142857,"Which statement can be inferred?
 A. If a student wants to understand the lesson, then there exists at least one student who listens to the teacher's instructions.
 B. It is both true and false that if a student wants to understand the lesson, then there exists at least one student who does extra exercises at home.
 C. It is false that if a student wants to understand the lesson, then there exists at least one student who does extra exercises at home.
-D. If a student wants to understand the lesson, then there exists at least one student who does extra exercises at home.",Unknown,Unknown,True,False,False,26,2,True,True
+D. If a student wants to understand the lesson, then there exists at least one student who does extra exercises at home.",D,MCQ_D,True,False,False,26,2,True,True
 364,1,7,3,0.42857142857142855,Do all students who want to understand the lesson pay attention?,No,No,False,False,True,32,3,True,False
 365,0,6,2,0.3333333333333333,Do all students pass Algorithms?,Yes,Yes,False,False,True,25,2,True,False
 365,1,6,2,0.3333333333333333,"Which conditions would prevent a student from meeting Software Engineering requirements?
@@ -2190,12 +2194,12 @@ C. ∃x (¬R(x) ∧ J(x))
 D. ∀x (¬P(x) → A(x))",Unknown,Unknown,True,False,False,47,3,True,False
 375,1,9,1,0.1111111111111111,"Based on the above premises, is the following statement true?
 Statement: If students fail to meet the standards, they must take up the project the following semester.",Unknown,Unknown,False,True,False,44,1,True,False
-376,0,13,5,0.38461538461538464,"Based on the above premises, which statement can be inferred if we know that Kelvin submitted his CH3002 lab report on time?
+376,0,13,3,0.23076923076923078,"Based on the above premises, which statement can be inferred if we know that Kelvin submitted his CH3002 lab report on time?
 A. Kelvin is allowed to take the exam for CH3002.
 B. Liam is allowed to take the exam for CH3002.
 C. Kelvin must submit a project for CH3002.
 D. Kelvin’s Homework score in CH3001 affects his eligibility for CH3002’s exam.",A,MCQ_A,True,False,False,179,10,False,True
-376,1,13,5,0.38461538461538464,"If Kelvin submitted his CH3002 lab report on time, does it follow that Kelvin is allowed to take the exam for CH3002?",Yes,Yes,False,True,False,189,10,False,True
+376,1,13,3,0.23076923076923078,"If Kelvin submitted his CH3002 lab report on time, does it follow that Kelvin is allowed to take the exam for CH3002?",Yes,Yes,False,True,False,189,10,False,True
 377,0,13,3,0.23076923076923078,"Based on the above premises, which statement can be inferred if we know that Lan is enrolled in Chemistry 101?
 A. Lan is allowed to enter the laboratory for Chemistry 101.
 B. Lan is not allowed to enter the laboratory for Chemistry 101.
@@ -2224,14 +2228,14 @@ D. Phong is ranked Poor.",A,MCQ_A,True,False,False,76,4,False,True
 A. Tâm is a second-year student.
 B. Tâm is in an accelerated program.
 C. Nam meets the language standard for year two.
-D. Tâm is eligible for the mentorship program.",B,MCQ_B,True,False,False,129,6,True,True
+D. Tâm is eligible for the mentorship program.",A,MCQ_A,True,False,False,129,6,True,True
 381,1,13,3,0.23076923076923078,"If Tâm has met the foreign language standard for year two, does it follow that Tâm is eligible for the mentorship program?",Yes,Yes,False,True,False,182,9,False,False
 382,0,13,3,0.23076923076923078,"Based on the above premises, which statement can be inferred if we know that Phong has accumulated 70 credits and has met the foreign language standard for year three?
 A. Phong is a third-year student.
 B. Phong has not met the foreign language standard for year three.
 C. Lan is eligible for study abroad.
 D. Phong has not completed the capstone project.",B,MCQ_B,True,False,False,138,6,True,True
-382,1,13,2,0.15384615384615385,"If Phong has met the foreign language standard for year three, does it follow that Phong is eligible to apply for study abroad?",No,No,False,True,False,173,8,False,False
+382,1,13,1,0.07692307692307693,"If Phong has met the foreign language standard for year three, does it follow that Phong is eligible to apply for study abroad?",No,No,False,True,False,173,8,False,False
 383,0,8,1,0.125,"Based on the above premises, which statement can be inferred if we know that students work in groups?
 A. If students work in groups, then their performance improves.
 B. If students work in groups, then their performance does not improve.
@@ -2242,8 +2246,8 @@ D. None of the above can be concluded.",Unknown,Unknown,True,False,False,54,2,Tr
 A. It is not true that if every teacher is respected, then someone is prepared.
 B. Teachers are respected if they graduate from famous universities.
 C. All teachers are disrespected.
-D. If every teacher is respected, then someone must be prepared.",Unknown,Unknown,True,False,False,84,4,True,False
-384,1,9,2,0.2222222222222222,"If every teacher is respected, does it follow that someone is prepared?",No,No,False,True,False,83,4,True,False
+D. If every teacher is respected, then someone must be prepared.",D,MCQ_D,True,False,False,84,4,True,False
+384,1,9,2,0.2222222222222222,"If every teacher is respected, does it follow that someone is prepared?",Yes,Yes,False,True,False,83,4,True,False
 385,0,8,1,0.125,"Based on the above premises, which statement can be inferred if we know that every student is participating in the training session?
 A. It is not true that If a student attends the seminar, they will be eligible for the certification.
 B. It is both true and false that If a student attends the seminar, they will be eligible for the certification.
@@ -2303,13 +2307,13 @@ D. Passing course, good performance, submitting thesis.",A,MCQ_A,True,False,Fals
 A. Completing training module, participating in project, giving seminar, earning certification.
 B. Completing training module, writing paper, giving seminar.
 C. Participating in project, earning certification, writing paper.
-D. Completing training module, giving seminar, receiving recommendation.",Unknown,Unknown,True,False,False,38,4,True,False
+D. Completing training module, giving seminar, receiving recommendation.",A,MCQ_A,True,False,False,38,4,True,False
 395,0,6,3,0.5,Do all students receive a recommendation?,No,No,False,False,True,49,5,False,False
 395,1,6,4,0.6666666666666666,"Which activities do all students perform?
 A. Completing training module, participating in project, giving seminar, earning certification.
 B. Completing training module, writing paper, giving seminar.
 C. Participating in project, earning certification, writing paper.
-D. Completing training module, giving seminar, receiving recommendation.",Unknown,Unknown,True,False,False,38,4,True,False
+D. Completing training module, giving seminar, receiving recommendation.",A,MCQ_A,True,False,False,38,4,True,False
 396,0,7,2,0.2857142857142857,Do all students submit their assignment?,Yes,Yes,False,False,True,25,2,True,False
 396,1,7,5,0.7142857142857143,"Which activities do all students perform?
 A. Attending university, taking exam, submitting assignment, passing course, qualifying for graduation.
@@ -2368,9 +2372,9 @@ D. The statement that if some student is allowed to enroll, then passing Classic
 A. ∀x (F(x) → (W(x) ∧ R(x)))
 B. ∀x (¬F(x) → W(x))
 C. ∃x (¬A(x) ∧ W(x))
-D. ∀x (R(x) → ¬G(x))",Unknown,Unknown,True,False,False,33,2,True,False
+D. ∀x (R(x) → ¬G(x))",A,MCQ_A,True,False,False,33,2,True,False
 405,1,29,1,0.034482758620689655,"Based on the above premises, is the statement true?
-Statement: ∀x (¬H(x) → ¬W(x))",Unknown,Unknown,False,False,True,37,2,False,False
+Statement: ∀x (¬H(x) → ¬W(x))",Yes,Yes,False,False,True,37,2,False,False
 406,0,27,2,0.07407407407407407,"Based on the above premises, which statement can be inferred?
 A. ∀x (A(x) → (R(x) ∧ P(x)))
 B. ∀x (¬A(x) → R(x))

@@ -7,7 +7,7 @@
 • Premise dùng / câu: P50=2, P90=4
 • MCQ: premise dùng P50=3
 • Y/N:  premise dùng P50=2
-• % Unknown: 39.0%
-• % explanation cite ⊆ idx: 91.2%
-• % mẫu có FOL: 99.5%
+• % Unknown: 25.9%
+• % explanation cite ⊆ idx: 88.7%
+• % mẫu có FOL: 100.0%
 • Loại câu (chồng): MCQ=359, Y/N=216, Open=233
