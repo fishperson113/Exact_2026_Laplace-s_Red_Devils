@@ -1,0 +1,248 @@
+id,question,cot,answer,unit
+CH085,"A circuit needs to resonate at 1000 Hz. Given an inductor L=0.005 H, what capacitance C is needed?","Step 1: Identify the given values: resonance frequency (f) = 1000 Hz and inductance (L) = 0.005 H.
+Step 2: Recall the formula for the resonance frequency (f) in an LC circuit: f = 1 / (2π√(LC)).
+Step 3: Rearrange the formula to solve for capacitance (C): C = 1 / ((2πf)²L).
+Step 4: Substitute the given values into the rearranged formula: C = 1 / ((2π × 1000)² × 0.005) = 5.07 μF.",5.07,μF
+CH245,"Consider a circuit AB with R1 = 60 Ω, R2 = 30 Ω, satisfying LCω² = 1, and uAM is in quadrature (90° out of phase) with uMB. The total power consumed by the circuit when U = 80 V is applied across AB is 64.0 W. If this same voltage is applied to the MB segment (containing R2 and L), what is the power consumed by MB?","Step 1: Analyze resonance and 90° phase conditions
+From LCω² = 1 we obtain Z_L = Z_C. Since u_AM is perpendicular to u_MB (90° phase difference), we have the characteristic relationship Z_L² = Z_C² = R₁ × R₂.
+Step 2: Set up the total circuit power P_AB
+When the circuit is at resonance, the total impedance becomes purely resistive and equals R₁ + R₂. The power consumed by the entire circuit is therefore P_AB = U² / (R₁ + R₂) = 64.0 W.
+Step 3: Transform the power of segment MB (P_MB)
+When the voltage U is applied directly across segment MB (consisting of R₂ and L), the power consumed by this segment is P_MB = (U² × R₂) / (R₂² + Z_L²). Substituting Z_L² = R₁ × R₂ into the denominator gives P_MB = (U² × R₂) / (R₂² + R₁ × R₂) = (U² × R₂) / [R₂(R₂ + R₁)] = U² / (R₁ + R₂).
+Step 4: Conclusion
+From the expressions above, we see that P_MB is always equal to P_AB under these conditions. Therefore P_MB = P_AB = 64.0 W.",64.0,W
+CH109,"R = 40Ω, resonance frequency f = 60Hz. The current is halved when f = 120Hz. What is ZL?","Step 1: Determine the total impedance (Z') at 120 Hz relative to the resistance (R). At the resonant frequency (f = 60 Hz), the current is at its maximum (I_max = U / R). When the frequency is doubled to 120 Hz, the current I' becomes half of the maximum value (I' = I_max / 2). Using the relationship I = U / Z: U / Z' = (1/2) × (U / R) ⇒ Z' = 2 × R. Given R = 40 Ω, the total impedance at 120 Hz is Z' = 2 × 40 = 80 Ω.
+Step 2: Calculate the net reactance at 120 Hz. Using the impedance formula (Z')² = R² + (Z_L' - Z_C')², where Z_L' and Z_C' are the reactances at 120 Hz: (Z_L' - Z_C')² = (Z')² - R² = 80² - 40² = 6400 - 1600 = 4800 ⇒ |Z_L' - Z_C'| = √4800 = 40√3 Ω
+Step 3: Relate the reactances at 120 Hz to the initial inductive reactance (Z_L). At the resonant frequency (60 Hz), let the inductive reactance be Z_L (where Z_L = Z_C). Since the frequency has doubled (120 Hz = 2 × 60 Hz): The new inductive reactance is Z_L' = 2 × Z_L and The new capacitive reactance is Z_C' = Z_C / 2 = Z_L / 2. The net reactance at 120 Hz is: |Z_L' - Z_C'| = 2 × Z_L - Z_L / 2 = (3 × Z_L)/2
+Step 4: Solve for the initial inductive reactance (Z_L) at 60 Hz. Substitute the expression from Step 3 into the result from Step 2: Z_L = (80√3)/3 = 46.19 Ω",46.19,Ω
+CH261,"Given XL = 28 Ω, XC = 112 Ω, and the total supply voltage U = 130 V. If the frequency is doubled, what is the RMS voltage across the resistor?","Step 1: Change in parameters when frequency is doubled (f' = 2f)
+Inductive reactance Z_L is directly proportional to frequency so Z_L' = 2 × 28 = 56 Ω. Capacitive reactance Z_C is inversely proportional to frequency so Z_C' = 112 / 2 = 56 Ω.
+Step 2: Determine the circuit state
+Because Z_L' = Z_C' = 56 Ω the circuit reaches electrical resonance.
+Step 3: Calculate the voltage across the resistor R
+At the resonance state, the RMS voltages across the inductor and capacitor cancel each other out completely (U_L = U_C). Therefore the entire source voltage is concentrated across the resistor so U_R = U = 130 V.",130,V
+CH144,A series RLC circuit at resonance is connected to an AC supply with an RMS voltage of 90 V. The RMS voltage measured across the R-C section and across the C-L section are both 110 V. Calculate the RMS voltage across the capacitor C.,"Step 1: Identify the circuit as a series RLC circuit operating at resonance.
+Step 2: At resonance, the total RMS voltage of the source (U_total) is equal to the RMS voltage across the resistor (U_R). Also, the RMS voltage across the inductor (U_L) equals the RMS voltage across the capacitor (U_C).
+Step 3: Given U_total = 90 V, it implies U_R = 90 V.
+Step 4: The RMS voltage across the R-C section (U_RC) is given as 110 V. In a series circuit, U_RC² = U_R² + U_C². Solve euqation we have U_C = √(12100 - 8100) = 63.3 V.",63.3,V
+CH355,"L = 0.25 H. If it resonates at 25 Hz, what is C?","Step 1: Identify the given values: Inductance (L) = 0.25 H and resonance frequency (f) = 25 Hz.
+Step 2: Recall the formula for the resonance frequency in an LC circuit: f = 1 / (2π√(LC)).
+Step 3: Rearrange the formula to solve for capacitance (C): C = 1 / (L × (2πf)²).
+Step 4: Substitute the given values into the rearranged formula: C = 1 / (0.25 H × (2 × π × 25 Hz)²) = 162.11 µF.",162.11,µF
+CH191,"Consider an RLC series circuit with fixed components. When the angular frequency is ω0, the inductive reactance XL = 50 Ω and the capacitive reactance XC = 200 Ω. By what factor must the angular frequency be adjusted (relative to ω0) for the circuit to resonate?","Step 1: The inductive reactance (XL) is given by XL = ωL, and the capacitive reactance (XC) is given by XC = 1/(ωC).
+Step 2: At the initial angular frequency ω₀, we are given XL = 50 Ω and XC = 200 Ω. Therefore, ω₀L = 50 Ω and 1/(ω₀C) = 200 Ω.
+Step 3: Divide the eXpression for ω₀L by the eXpression for 1/(ω₀C): (ω₀L) / (1/(ω₀C)) = 50 / 200. This simplifies to ω₀²LC = 1/4.
+Step 4: For resonance in a series RLC circuit, the inductive reactance must equal the capacitive reactance. If the resonant angular frequency is ω_res, then ω_res L = 1/(ω_res C). This condition implies ω_res²LC = 1. Then, angular frequency must be multiplied by 2.",2.0,-
+CH079,What inductance L is required for a circuit with C=30 μF to resonate at 120 Hz?,"Step 1: Identify the given values from the question: the capacitance C = 30 μF and the resonant frequency f = 120 Hz.
+Step 2: Convert the capacitance to SI units: C = 30 × 10⁻⁶ F.
+Step 3: Recall the formula for the resonant frequency (f) of an LC circuit: f = 1 / (2π√(LC)).
+Step 4: Rearrange the formula to solve for the inductance L: L = 1 / (4π²f²C) = 1 / (4π² × 120² × 30 × 10⁻⁶) = 58.63 mH.",58.63,mH
+CH047,"In an RLC resonant circuit, the voltage U = 60 V, and the resistance R = 20 Ω. What is the power consumed?","Step 1: Identify the given values from the question: the voltage U = 60 V and the resistance R = 20 Ω.
+Step 2: Recognize that for an RLC resonant circuit, the impedance (Z) of the circuit is equal to the resistance (R), meaning Z = R = 20 Ω.
+Step 3: Recall the formula for power dissipated in a circuit when voltage and resistance are known, which is P = U² / Z. Since Z = R at resonance, the formula simplifies to P = U² / R.
+Step 4: Substitute the given values into the power formula: P = 60² / 20 = 180 W.",180,W
+CH071,What value of C is needed for a circuit to resonate at 400 Hz with L=0.01 H?,"Step 1: The given resonant frequency is f = 400 Hz and the inductance is L = 0.01 H.
+Step 2: The formula for the resonant frequency (f) of an LC circuit is f = 1 / (2π√(LC)).
+Step 3: To find C, rearrange the formula: 2πf = 1 / √(LC) => (2πf)² = 1 / (LC) => C = 1 / (4π²f²L).
+Step 4: Substitute the given values into the formula: C = 1 / (4π² × 400² × 0.01) = 15.83 μF.",15.83,μF
+CH052,What is the power consumed by a resonant circuit with U=90 V and R=45 Ω?,"Step 1: Identify the given values: the voltage (U) is 90 V and the resistance (R) is 45 Ω.
+Step 2: Recall that in an RLC resonant circuit, the impedance (Z) of the circuit is equal to the resistance (R).
+Step 3: Use the formula for power (P) consumed in a resistive AC circuit, which is P = U² / R.
+Step 4: Substitute the given values into the formula: P = 90² / 45 = 180 W.",180,W
+CH040,A 0.4 H inductor is connected in series with a 20 μF capacitor. Determine the resonant frequency.,"Step 1: Identify the given inductance (L) and capacitance (C) values from the question.
+Step 2: Convert the capacitance from 20 microfarads (μF) to 20 × 10⁻⁶ farads (F).
+Step 3: Use the formula for the resonant frequency (f) of an LC circuit: f = 1 / (2π√(LC)).
+Step 4: Substitute the given values into the formula f = 1 / (2π√(0.01 × 250 × 10⁻⁶)) = 56.27 Hz.",56.27,Hz
+CH010,The total impedance of a series RLC circuit at resonance is measured as 18 Ω. What is the value of R?,"Step 1: Identify the given information from the problem: the circuit is a series RLC circuit at resonance and the measured impedance is Z=18 Ω.
+Step 2: Recall the resonance condition in a series RLC circuit: X_L=X_C.
+Step 3: Determine the consequence of the resonance condition: the net reactance becomes X_L−X_C=0.
+Step 4: Recall the impedance formula for a series RLC circuit: Z=√(R²+(X_L−X_C)²).
+Step 5: Simplify the impedance expression using the resonance condition: Z=√(R²+0²).
+Step 6: Determine the relationship between impedance and resistance at resonance: Z=R.
+Step 7: Substitute the given impedance value to determine the resistance: R=18 Ω.",18,Ω
+CH259,"A circuit has XL = 35 Ω, XC = 140 Ω, and a source voltage U = 180 V. If the frequency is doubled, what is the voltage across R?","Step 1: Change in parameters when frequency is doubled (f' = 2f)
+Inductive reactance Z_L is directly proportional to frequency so Z_L' = 2 × 35 = 70 Ω. Capacitive reactance Z_C is inversely proportional to frequency so Z_C' = 140 / 2 = 70 Ω.
+Step 2: Determine the circuit state
+Because Z_L' = Z_C' = 70 Ω the circuit reaches electrical resonance.
+Step 3: Calculate the voltage across the resistor R
+At the resonance state, the RMS voltages across the inductor and capacitor cancel each other out completely (U_L = U_C). Therefore the RMS voltage across the resistor (U_R) is exactly equal to the source voltage U. Therefore U_R = U = 180 V.
+Step 4: Conclusion
+When the frequency changes and causes the circuit to resonate, the entire source voltage is concentrated across the resistor R. Therefore U_R = 180 V.",180,V
+CH005,"Determine the resistance R of an RLC circuit at resonance, if the measured impedance is 25 Ω?","Step 1: Identify the given information: the circuit is an RLC circuit operating at resonance and the measured impedance is Z=25 Ω.
+Step 2: Recall the resonance condition in a series RLC circuit: X_L=X_C.
+Step 3: State the consequence of the resonance condition: the net reactance becomes X_L−X_C=0.
+Step 4: Recall the formula for the total impedance of a series RLC circuit: Z=√(R²+(X_L−X_C)²).
+Step 5: Simplify the impedance expression using the resonance condition: Z=√(R²+0²).
+Step 6: Determine the relationship between impedance and resistance at resonance: Z=R.
+Step 7: Substitute the given impedance value to determine the resistance: R=25 Ω.",25,Ω
+LD125,"Two electric forces have magnitudes of 8 N and 7 N, and are inclined at an angle of 120° to each other. Calculate the resultant force of these two electric forces.","Step 1: Identify the magnitudes of the two electric forces as F1 = 8 N and F2 = 7 N.
+Step 2: Identify the angle between the two forces as θ = 120°.
+Step 3: Use the formula for the magnitude of the resultant force (R) of two forces: R = sqrt(F1^2 + F2^2 + 2×F1×F2×cos(θ)).
+Step 4: Substitute the given values into the formula: R = sqrt(8^2 + 7^2 + 2×8×7×cos(120°)).
+Step 5: The magnitude of the net resultant force is approximately 7.5498 N.",7.5498,N
+LD276,"Two electric charges q1 = +9 × 10^-7 C and q2 = -9 × 10^-7 C are placed at points A and B, separated by 8 cm. A charge q3 = -9 × 10^-7 C is placed at the midpoint of AB. Calculate the electric force acting on q3.","Step 1: Identify the given charges and their positions.
+Step 2: Convert the distance between A and B from cm to meters. Distance AB = 8 cm = 0.08 m.
+Step 3: Determine the distance from q3 to q1 (r13) and from q3 to q2 (r23), since q3 is at the midpoint of AB.
+Step 4: Calculate the electric force F13 exerted by q1 on q3 using Coulomb's Law (F = k |q1 q3| / r13^2).
+Step 5: The magnitude of the net electric force acting on q3 is 9.1125 N.",9.1125,N
+LD064,"Two point charges, q1 = 0.5 nC and q2 = –0.5 nC, are placed at points A and B, 6 cm apart in air. What is the magnitude of the electric field strength at the midpoint of AB?","Step 1: Identify the given charges and distance. q1 = 0.5 nC = 0.5 x 10⁻⁹ C, q2 = -0.5 nC = -0.5 x 10⁻⁹ C, and the separation between A and B is 6 cm.
+Step 2: Determine the distance from each charge to the midpoint. The midpoint is halfway between A and B, so the distance from q1 to the midpoint (r1) and from q2 to the midpoint (r2) is r = 6 cm / 2 = 3 cm = 0.03 m.
+Step 3: Calculate the magnitude of the electric field (E1) due to q1 at the midpoint using the formula E = k|q|/r², where k ≈ 9 x 10⁹ N×m²/C². E1 = (9 x 10⁹ N×m²/C²) × (0.5 x 10⁻⁹ C) / (0.03 m)² = 5000 N/C.
+Step 4: Determine the direction of E1.Since q1 is a positive charge, the electric field E1 at the midpoint points away from q1 (i.e., from A towards B).",10000,V/m
+LD186,"Two electric forces have magnitudes of 11 N and 7 N, and are acting at an angle of 60° to each other. Calculate the resultant force of these two electric forces.","Step 1: Identify the magnitudes of the two electric forces as F1 = 11 N and F2 = 7 N.
+Step 2: Identify the angle between the two forces as θ = 60°.
+Step 3: State the formula for the resultant force (FR) of two forces: FR = sqrt(F1^2 + F2^2 + 2 × F1 × F2 × cos(θ)).
+Step 4: Substitute the given values into the formula: FR = sqrt(11^2 + 7^2 + 2 × 11 × 7 × cos(60°)).
+Step 5: The magnitude of the resultant force of these two electric forces is approximately 15.716 N.",15.716,N
+LD278,"Two electric charges, q1 = +9 × 10^-8 C and q2 = -9 × 10^-8 C, are placed at points A and B respectively, which are 10 cm apart. A test charge q = 10^-6 C is placed at point M, which lies on the perpendicular bisector of the line segment AB, 3 cm away from AB. Calculate the net electric force acting on q.","Step 1: Identify the given charges and Coulomb's constant.
+Step 2: Determine the distances in the setup.
+Step 3: Calculate the magnitude of the force F1 exerted by q1 on q.
+Step 4: Calculate the magnitude of the force F2 exerted by q2 on q.
+Step 5: The magnitude of the net electric force acting on the test charge q is approximately 0.409 N.",0.409,N
+LD024,"Three charges q1 = +1 μC, q2 = -2 μC, q3 = +3 μC are placed at the vertices of an isosceles right triangle with legs of 0.1 m. Calculate the net force acting on q3.","Step 1: Identify the given charges and their values: q1 = +1 μC, q2 = -2 μC, q3 = +3 μC.
+Step 2: Identify the geometric shape as an isosceles right triangle with legs of 0.1 m.
+Step 3: Recognize that the question does not specify the placement of q1, q2, and q3 at the vertices of the triangle.
+Step 4: To calculate the net force on q3, the specific positions of q1 and q2 relative to q3 are required. This determines the distances and angles between the charges.",06.04,N
+LD040,"Two point charges q1 = 3 μC and q2 = -2 μC are placed at points A and B, separated by 6 cm. Find the magnitude of the electric force acting on q1 by q2? (Take k = 9×10^9 N×m²/C²)","Step 1: Identify the given values from the question and convert them to SI units.
+Step 2: State Coulomb's Law for the magnitude of the electric force between two point charges.
+Step 3: Substitute the given values into Coulomb's Law formula.
+Step 4: Calculate the magnitude of the electric force.",15,N
+LD289,"Two electric charges, q1 = +5 × 10^-8 C and q2 = -5 × 10^-8 C, are placed at two points A and B, separated by 10 cm. A third charge, q3 = -5 × 10^-8 C, is placed at the midpoint of AB. Calculate the electric force acting on q3.","Step 1: Identify the given values and their positions. The charges are q1 = +5 × 10⁻⁸ C at point A, q2 = -5 × 10⁻⁸ C at point B, and q3 = -5 × 10⁻⁸ C at the midpoint of AB. The Coulomb's constant is k = 9.0 × 10⁹ N×m²/C².
+Step 2: Convert the total separation distance from centimeters to meters. The distance AB = 10 cm = 0.10 m.
+Step 3: Determine the distance from q3 to q1 and from q3 to q2. Since q3 is at the midpoint, the distance r13 (from q1 to q3) = 0.10 m / 2 = 0.05 m, and the distance r23 (from q2 to q3) = 0.10 m / 2 = 0.05 m.
+Step 4: Calculate the magnitude of the electric force (F13) exerted by q1 on q3 using Coulomb's Law, F13 = k × |q1 × q3| / r13², where F13 = (9.0 × 10⁹ N×m²/C²) × |(5 × 10⁻⁸ C) × (-5 × 10⁻⁸ C)| / (0.05 m)² = 0.0000225 / 0.0025 = 0.009 N. Since q1 is positive and q3 is negative, the force is attractive, acting from q3 toward A.
+Step 5: Calculate the magnitude of the electric force (F23) exerted by q2 on q3 using Coulomb's Law, F23 = k × |q2 × q3| / r23², where F23 = (9.0 × 10⁹ N×m²/C²) × |(-5 × 10⁻⁸ C) × (-5 × 10⁻⁸ C)| / (0.05 m)² = 0.0000225 / 0.0025 = 0.009 N. Since both q2 and q3 are negative, the force is repulsive, acting from q3 away from B (which is toward A).
+Step 6: Apply the vector addition rule for forces acting in the same direction. Since both F13 (attraction to A) and F23 (repulsion from B) act in the same direction toward A, the net force is F13 + F23, where F_net = 0.009 N + 0.009 N = 0.018 N.",0.018,N
+LD249,"Two charges q1 = +6 × 10^-6 C and q2 = -6 × 10^-6 C, and a test charge q = 10^-8 C are placed at points A and B, 6 cm apart. The test charge q is placed at point M, which lies on the perpendicular bisector of AB, 5 cm from AB. Calculate the resultant electric force acting on q.","Step 1: Convert given distances to meters: the distance between points A and B is 0.06 m, and the distance from point M to the line AB is 0.05 m.
+Step 2: Since M is on the perpendicular bisector of AB, the distance from A to the midpoint of AB is 0.06 m / 2 = 0.03 m. The distance from q1 (at A) to q (at M) is the hypotenuse of a right triangle with legs 0.03 m and 0.05 m, so r = sqrt((0.03 m)^2 + (0.05 m)^2) = sqrt(0.0009 + 0.0025) = sqrt(0.0034) m. This is also the distance from q2 (at B) to q.
+Step 3: Calculate the magnitude of the electric force exerted by q1 on q using Coulomb's Law (F = k|q1q| / r^2), where k = 9 × 10^9 N m^2 / C^2. F1 = (9 × 10^9 N m^2 / C^2) × |(6 × 10^-6 C) × (10^-8 C)| / (0.0034 m^2) = 0.1588 N (approximately).
+Step 4: Calculate the magnitude of the electric force exerted by q2 on q. Since |q1| = |q2| and the distances are equal, F2 = F1 = 0.1588 N.
+Step 5: The magnitude of the net electric force acting on the test charge q is approximately 0.163 N.",0.163,N
+LD187,"Two electric forces have magnitudes of 5 N and 4 N, and they act at an angle of 30° to each other. Calculate the resultant force of these two forces.","Step 1: Identify the magnitudes of the two forces as F1 = 5 N and F2 = 4 N.
+Step 2: Identify the angle between the two forces as θ = 30°.
+Step 3: Use the formula for the resultant force (FR) of two forces: FR = sqrt(F1^2 + F2^2 + 2 × F1 × F2 × cos(θ)).
+Step 4: Substitute the given values into the formula: FR = sqrt(5^2 + 4^2 + 2 × 5 × 4 × cos(30°)).
+Step 5: The magnitude of the resultant force of these two electric forces is approximately 8.6972 N.",8.6972,N
+TD176,An air-filled parallel-plate capacitor has a capacitance of 23.22 pF and is charged to a voltage of 77.7 V. Calculate the electric field energy stored in the capacitor. Give your answer rounded to two decimal places.,"Step 1: Identify and convert the given values. The capacitance C = 23.22 × 10⁻¹² F and the voltage V = 77.7 V.
+Step 2: State the formula for the energy stored in the electric field, U = 1/2 × C × V².
+Step 3: Substitute the values into the formula.
+U = 1/2 × (23.22 × 10⁻¹² F) × (77.7 V)² ≈ 70.09 nJ",70.09,nJ
+TD091,"A parallel-plate capacitor consists of two circular plates, each with a radius R = 50 cm. The distance between the plates is d = 1.5 mm. What is the maximum charge that can be stored in the capacitor without causing dielectric breakdown, given that the maximum electric field strength (dielectric strength) of air is E_max = 3×10⁵ V/m?","Step 1: Convert all given values to SI units.
+Step 2: Calculate the area (A) of the circular capacitor plates using the given radius R = 0.50 m.
+Step 3: Calculate the maximum voltage (V_max) the capacitor can withstand using the maximum electric field strength (E_max) and the distance between plates (d = 1.5 × 10⁻³ m).
+Step 4: Calculate the capacitance (C) of the parallel-plate capacitor using the permittivity of free space (ε₀ ≈ 8.854 × 10⁻¹² F / m), the calculated area (A), and the distance (d).
+Step 5: Calculate the maximum charge (Q_max) using the formula Q_max = C × V_max.
+Step 6: Step 6: The maximum charge stored is 2.085 μC.",2.085,μC
+TD079,A parallel-plate air capacitor has a capacitance of 39.72 pF and is charged to a potential difference of 113.6 V. Calculate the electric field energy stored in the capacitor.,"Step 1: Identify the given capacitance (C) and potential difference (V).
+Step 2: Convert the capacitance from picofarads (pF) to farads (F).
+Step 3: Use the formula for the electric field energy (U) stored in a capacitor: U = 0.5 × C × V^2.
+Step 4: The electric field energy stored in the capacitor is approximately 256.29 nJ.",256.29,nJ
+TD019,An air-filled parallel-plate capacitor has a capacitance of 15.76 pF and is charged to a voltage of 91.6 V. Calculate the electric field energy stored in the capacitor.,"Step 1: Identify the given values from the question.
+Step 2: The capacitance (C) is 15.76 pF and the voltage (V) is 91.6 V.
+Step 3: Convert the capacitance from picofarads (pF) to farads (F): C = 15.76 × 10^-12 F.
+Step 4: Recall the formula for the energy (U) stored in a capacitor: U = (1/2) × C × V^2.
+Step 5: The electric field energy stored in the capacitor is approximately 66.16 nJ.",66.16,nJ
+TD100,"A capacitor has a capacitance of 9.2 nF, its plates are square with an area of 10.5 cm², and the distance between the two plates is 1.1×10⁻⁵ m. Calculate the dielectric constant.","Step 1: Identify the given values from the question.
+Step 2: Convert the given values to SI units.
+Step 3: Recall the formula for the capacitance of a parallel plate capacitor with a dielectric material.
+Step 4: Rearrange the formula to solve for the dielectric constant κ.
+Step 5: The dielectric constant of the dielectric material inside the capacitor is 10.89.",10.89,—
+TD372,A capacitor has an energy of 200 μJ and a capacitance of 2 μF. Calculate the voltage across the capacitor.,"Step 1: Identify energy W = 200 μJ and capacitance C = 2 μF.
+Step 2: Rearrange the energy formula to solve for voltage: V = √(2W / C).
+Step 3: Substitute the values: V = √(2 × 200 × 10⁻⁶ / 2 × 10⁻⁶).
+Step 4: Calculate: V = √200 ≈ 14.14 V.",14.14,V
+TD371,"A capacitor has a constant capacitance. If the voltage increases by 3 times, by what factor will the stored energy increase?","Step 1: Use the formula W = 0.5 × C × V².
+Step 2: Identify that the capacitance C is constant.
+Step 3: If the voltage V increases by 3 times, the energy increases by the square of that factor (3²).
+Step 4: Calculate the factor: 3² = 9. The energy increases by 9 times.",9,times
+TD004,An air-filled parallel-plate capacitor has a capacitance C = 500 pF and is charged to a voltage U = 300 V. The capacitor remains connected to the voltage source while it is immersed in a liquid dielectric with a dielectric constant ε = 2. What is the electric field energy between the plates of the capacitor?,"Step 1: Identify the initial capacitance of the air-filled capacitor, C_air = 500 pF, and the voltage it is charged to, U = 300 V.
+Step 2: Note that the capacitor remains connected to the voltage source, meaning the voltage across its plates will stay constant at U = 300 V even after immersion.
+Step 3: Identify the dielectric constant of the liquid, ε = 2.
+Step 4: Calculate the new capacitance (C_liquid) after the capacitor is immersed in the liquid dielectric. The capacitance increases by a factor of the dielectric constant: C_liquid = ε × C_air = 2 × 500 pF = 1000 pF.
+Step 5: Calculate the new electric field energy (W_new) using the constant voltage (U): W_new = 1 / 2 × C_liquid × U^2.
+Step 7: The electric field energy stored between the plates of the capacitor is 45 μJ.",45,μJ
+TD357,A capacitor with a capacitance of 5 μF is connected to a 10 V voltage source. Calculate the charge on the capacitor.,"Step 1: Identify the given parameters: C = 5 μF and V = 10 V.
+Step 2: Use the formula Q = C × V.
+Step 3: Calculate: Q = 5 × 10 = 50 μC.",50,μC
+NL021,"A parallel-plate capacitor with C = 40 μF is charged to 100 V and then isolated. After that, the plates are moved apart, causing the capacitance to decrease to 20 μF. Calculate the energy stored in the electric field (mJ) after the change.","Step 1: The mathematical relationship defining the initial charge stored on the isolated capacitor is Q = C_1 × U_1, where C_1 represents the initial capacitance and U_1 represents the initial voltage.
+Step 2: Substituting the explicitly specified parameters C_1 = 40 × 10^-6 F and U_1 = 100 V yields Q = 40 × 10^-6 × 100 C, which mathematically simplifies to a constant charge of 4 × 10^-3 C.
+Step 3: The energy stored in the electric field after the capacitance changes is defined by the relationship E_2 = Q^2 / (2 × C_2), where E_2 represents the final energy and C_2 represents the final capacitance.
+Step 4: Substituting the derived constant charge Q = 4 × 10^-3 C and the specified final capacitance C_2 = 20 × 10^-6 F yields E_2 = (4 × 10^-3)^2 / (2 × 20 × 10^-6) J = 0.4 J = 400 mJ.",400,mJ
+NL399,A capacitor has a voltage function U(t) = 250 × sin(1000t) V and a capacitance C = 8 µF. Calculate the maximum electric field energy stored in the capacitor.,"CoT:
+Step 1: Identify the given values: Voltage function U(t) = 250 × sin(1000t) V and capacitance C = 8 µF = 8 × 10⁻⁶ F.
+Step 2: Determine the maximum voltage (U_max). Since the maximum value of the sine function is 1, the peak voltage is U_max = 250 V.
+Step 3: State the formula for the maximum electric field energy (U_E_max): U_E_max = (1/2) × C × U_max²
+Step 4: Substitute the values into the formula: U_E_max = 0.5 × (8 × 10⁻⁶) × 250²
+Step 5: Calculate the square of the maximum voltage: 250² = 62,500.
+Step 6: Perform the final calculation: U_E_max = 0.5 × 8 × 10⁻⁶ × 62,500 = 4 × 10⁻⁶ × 62,500 = 0.25 J.",0.25,J
+NL087,A capacitor C = 22 μF is charged to U = 90 V. Calculate the electric field energy (mJ).,"Step 1: Identify the given values: capacitance C = 22 μF and voltage U = 90 V.
+Step 2: Convert the capacitance from microfarads to farads: C = 22 × 10⁻⁶ F.
+Step 3: Recall the formula for the energy (E) stored in a capacitor: E = (1/2) × C × U².
+Step 4: Substitute the values into the formula: E = (1/2) × (22 × 10⁻⁶ F) × (90 V)² = 0.0891 J = 89.10 mJ.",89.10,mJ
+NL387,"An LC circuit has an inductance L = 0.25 H and a capacitance C = 20 µF. When the current is 1 A, what is the magnetic field energy?","Step 1: Identify the relevant given parameters: inductance L = 0.25 H and instantaneous current I = 1 A. (The capacitance C = 20 µF is extra information not needed for this specific calculation).
+Step 2: State the formula for the magnetic energy stored in an inductor: W_L = (1/2) × L × I².
+Step 3: Substitute the given values into the formula: W_L = (1/2) × 0.25 × 1².
+Step 4: Calculate the square of the current: 1² = 1.
+Step 5: Perform the multiplication: W_L = 0.125 × 1.
+Step 6: The final calculation yields the magnetic field energy: W_L = 0.125 J.",0.125,J
+NL340,"An LC circuit has L = 0.1 H and C = 25 µF. The total oscillatory energy is 0.5 J. At the moment when the magnetic field energy is 0.3 J, what is the electric field energy (J)?","Step 1: Identify the total oscillatory energy in the LC circuit: W_total = 0.5 J.
+Step 2: Identify the magnetic field energy at the specific moment: W_L = 0.3 J.
+Step 3: Recall that the total energy in an LC circuit is the sum of the magnetic field energy and the electric field energy (W_total = W_C + W_L).
+Step 4: Substitute the known values into the energy conservation equation: 0.5 J = W_C + 0.3 J. Therefore, the electric field energy is: W_C = 0.5 - 0.3 = 0.2 J.",0.2,J
+NL381,A capacitor with a capacitance of 5 µF is charged to a voltage of 180 V. Calculate the electric field energy of the capacitor.,"Step 1: Identify the given parameters: capacitance C = 5 µF and voltage V = 180 V.
+Step 2: Convert the capacitance to standard SI units (Farads): C = 5 × 10⁻⁶ F.
+Step 3: State the formula for the energy stored in the electric field of a capacitor: W = (1/2) × C × V².
+Step 4: Substitute the given values into the formula: W = (1/2) × (5 × 10⁻⁶) × 180².
+Step 5: Calculate the square of the voltage: 180² = 32400.
+Step 6: Perform the multiplication: W = 2.5 × 10⁻⁶ × 32400.
+Step 7: The final calculation yields the electric field energy: W = 81000 × 10⁻⁶ = 0.081 J.",0.081,J
+NL031,A capacitor with capacitance C = 60 μF is charged to U = 150 V. Calculate the electric field energy (mJ) in the capacitor.,"Step 1: The given capacitance of the capacitor is C = 60 μF.
+Step 2: The given voltage across the capacitor is U = 150 V.
+Step 3: Convert the capacitance from microfarads to farads: C = 60 × 10⁻⁶ F.
+Step 4: The formula for the electric field energy (E) stored in a capacitor is E = (1/2)CU² = 0.675 J = 675.00 mJ.",675.00,mJ
+NL304,"An inductor has an inductance of 0.2 H, and a current of 3 A flows through it. What is the magnetic field energy (J)?","Step 1: Identify the given inductance (L) and current (I) from the question.
+Step 2: Recall the formula for the magnetic energy (W_L) stored in an inductor: W_L = (1/2) × L × I^2.
+Step 3: Substitute the given values L = 0.2 H and I = 3 A into the formula.
+Step 4: Calculate the result: W_L = (1/2) × 0.2 × 3^2 = 0.9 J.",0.9,J
+DDT141,"A solenoid has 1000 turns, the area of each turn is 6 cm², and the uniform magnetic field is 0.005 T. Calculate the magnetic flux through the entire solenoid.","Step 1: Identify the given values from the question. Number of turns (N) = 1000, area of each turn (A) = 6 cm², magnetic field (B) = 0.005 T.
+Step 2: Convert the area of each turn from cm² to m². A = 6 cm² = 6 × (10⁻² m)² = 6 × 10⁻⁴ m².
+Step 3: The formula for magnetic flux (Φ) through a single turn, assuming the magnetic field is perpendicular to the area, is Φ_single = B × A.
+Step 4: The total magnetic flux through the entire solenoid (Φ_total) is the flux through one turn multiplied by the number of turns: Φ_total = N × B × A.
+Step 5: Substitute the values into the formula: Φ_total = 1000 × 0.005 T × 6 × 10⁻⁴ m².
+Step 6: Perform the calculation: Φ_total = 5 × 6 × 10⁻⁴ = 30 × 10⁻⁴ Wb.
+Step 7: Simplify the final result: Φ_total = 0.003 Wb.",0.003,Wb
+DDT343,"Given a series RLC circuit has R = 16 Ω, Z = 40 Ω, calculate the power factor cosφ.","Step 1: Identify the given values from the question: resistance R = 16 Ω and total impedance Z = 40 Ω. The objective is to determine the power factor of the circuit, represented by cosφ.
+Step 2: Recall the formula for the power factor in a series RLC circuit. The power factor represents the ratio between the resistive component of the circuit and the total impedance, and it is calculated using the relation cosφ = R / Z.
+Step 3: Substitute the given numerical values into the formula for the power factor: cosφ = 16 Ω / 40 Ω.
+Step 4: Perform the calculation with units: 16 Ω / 40 Ω = 0.40.
+Step 5: Interpret the result. The power factor indicates the phase relationship between voltage and current in the circuit and shows the fraction of the apparent power that is actually converted into real power.
+Step 6: State the final conclusion: the power factor of the circuit is cosφ = 0.40.",0.40,
+DDT155,A solenoid is 0.3 m long and has 900 turns. What is the turn density?,"Step 1: Identify the given length of the solenoid, L.
+Step 2: Identify the given number of turns, N.
+Step 3: State the formula for turn density (n), which is the number of turns per unit length: n = N / L.
+Step 4: Substitute the given values into the formula: n = 900 turns / 0.3 m = 3000 turns/m.",3000,turns/m
+DDT211,"A solenoid is 0.5 m long, has 2000 turns. Calculate the turn density.","Step 1: Identify the given number of turns (N) as 2000.
+Step 2: Identify the given length of the solenoid (L) as 0.5 m.
+Step 3: Recall the definition of turn density (n) as the number of turns per unit length, so n = N / L.
+Step 4: Substitute the values: n = 2000 turns / 0.5 m.
+Step 5: Calculate n = 4000 turns/m.",4000,turns/m
+DT048,"At the three vertices of a right-angled triangle ABC (with the right angle at A), which has side lengths BC = 50 cm, AC = 40 cm, and AB = 30 cm, charges q1 = q2 = q3 = 10^-9 C are placed. Determine the magnitude of the electric field at point H, which is the foot of the altitude drawn from vertex A.","Step 1: Convert all given lengths to meters and state the charge value.
+Step 2: Determine the position of point H, the foot of the altitude from A to BC.
+Step 3: Calculate the distances from the other two vertices (B and C) to H.
+Step 4: Calculate the magnitude of the electric field produced by each charge at H.
+Step 5: Therefore, the magnitude of the net electric field at the foot of the altitude H is approximately 246 V / m.",246,V/m
+DT003,"Two point charges, q1 = q2 = 16 x 10^-8 C, are placed at points A and B, which are 10 cm apart in the air. Determine the electric field strength caused by these two point charges at point C, given that AC = BC = 8 cm.","Step 1: Identify the given values and the constant for electric field calculations in air.
+Step 2: Calculate the magnitude of the electric field (E) at point C due to each charge individually. Since q1 = q2 and r_AC = r_BC, the magnitudes E1 (due to q1) and E2 (due to q2) will be equal.
+Step 3: Determine the geometry of the triangle ABC and identify the line of symmetry.
+Step 4: Calculate the altitude from C to the midpoint of AB (let's call it M).
+Step 5: Calculate the magnitude of E1 and E2.
+Step 6: Determine the geometric parameters.
+Step 7: The electric field strength caused by these two point charges at point C is 351000 V / m.",351000,V/m
+THCB009,"In a series circuit, resistance R1 = 10 ± 0.5 Ω, R2 = 20 ± 1 Ω. What is the absolute error of the total resistance?","Step 1: Identify resistances and errors: R1 = 10 Ω, ΔR1 = 0.5 Ω; R2 = 20 Ω, ΔR2 = 1 Ω.
+Step 2: For a sum (R_total = R1 + R2), the absolute error is the sum of the individual absolute errors.
+Step 3: Apply the formula: ΔR_total = ΔR1 + ΔR2.
+Step 4: Calculate the total: ΔR_total = 0.5 + 1 = 1.5 Ω.",1.5,Ω
+THCB115,The force measurement result: 15.0 ± 0.3 N. Calculate the percentage relative error.,"Step 1: Identify measured force F = 15.0 N and absolute uncertainty ΔF = 0.3 N.
+Step 2: Calculate relative error: 0.3 / 15.0 = 0.02.
+Step 3: Convert to percentage: 0.02 × 100%.
+Step 4: Final calculation: 2.0%.",2.0,%

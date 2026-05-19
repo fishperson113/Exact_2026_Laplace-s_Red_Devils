@@ -73,10 +73,10 @@ THCB      39           0           4         14     23          0       0    ←
 ### Nhan xet chinh:
 
 1. **CHLT la hoan toan Yes/No** — can classifier rieng, khong can tinh toan
-2. **LD co 48% answer la scientific notation** — pipeline phai parse `× 10^-3` format
+2. **LD co 48% answer la scientific notation** — se normalize ve numeric trong preprocessing
 3. **THCB co 29% multi-value answers** (vd: `0.6; 1.2` voi unit `cm; %`) — can xu ly dac biet
 4. **DDT va NL co answer dang text** (vd: `Doubled`, `Conservation of energy`) — can generate text, khong phai so
-5. **Scientific notation co 2 format KHAC NHAU**: caret `10^-3` (206 rows) vs superscript `10⁻³` (37 rows)
+5. **Scientific notation co 2 format KHAC NHAU**: caret `10^-3` (206 rows) vs superscript `10⁻³` (37 rows) — se normalize tat ca ve float trong preprocessing
 
 ---
 
@@ -266,8 +266,8 @@ THCB      39   0.1      0.83      1.43        10          Tat ca so nho
 
 | # | Van de | So luong | Giai phap |
 |---|---|---|---|
-| 1 | **Scientific notation khong nhat quan** (`10^-3` vs `10⁻³` vs `× 10` vs `x 10`) | 237 | Pipeline normalize thanh 1 format duy nhat |
-| 2 | **Answer khong phai so** (text, formula, Yes/No, multi-value) | 379 (28%) | Classifier phan loai truoc → routing strategy khac nhau |
+| 1 | **Scientific notation khong nhat quan** (`10^-3` vs `10⁻³` vs `× 10` vs `x 10`) | 237 | Normalize tat ca ve dang so thuan (float) trong preprocessing — merge vao Numeric |
+| 2 | **Answer khong phai so** (text, formula, Yes/No, multi-value) | 142 (10.5%) | Classifier phan loai truoc → routing strategy khac nhau |
 | 3 | **14 rows thieu unit** | 14 | Dien unit thu cong hoac suy tu context |
 | 4 | **Multi-value answers** (`0.6; 1.2`) | 25 | Output parser phai handle format `value1; value2` |
 | 5 | **CoT co the sai** (da biet tu CHANGELOG) | Unknown | Cross-check toan bo bang LLM thuong mai + SymPy |
@@ -293,7 +293,10 @@ THCB      39   0.1      0.83      1.43        10          Tat ca so nho
 
 ## 8. Kien nghi cho Pipeline Inference
 
-Dua tren EDA, pipeline inference can xu ly **5 loai bai toan KHAC NHAU**:
+Dua tren EDA, pipeline inference can xu ly **4 loai bai toan KHAC NHAU**:
+
+> **Ghi chu:** Scientific notation (237 rows) se duoc **chuan hoa ve dang so thuan** trong buoc
+> preprocessing data (vd: `24.45 × 10^-3` → `0.02445`), nen merge chung vao nhanh Numeric.
 
 ```
                          Question Input
@@ -305,27 +308,21 @@ Dua tren EDA, pipeline inference can xu ly **5 loai bai toan KHAC NHAU**:
                      │   hoac model)    │
                      └─────┬───────────┘
                            │
-          ┌────────┬───────┼───────┬──────────┐
-          ▼        ▼       ▼       ▼          ▼
-      [Numeric] [SciNot] [Yes/No] [Text]  [Multi-val]
-       972 rows  237 rows  21 rows 87 rows  25 rows
-          │        │       │       │          │
-          ▼        ▼       ▼       ▼          ▼
-      PoT+Calc  PoT+Calc  Logic   Reason   PoT+Parse
-      → float   → parse   → Y/N   → text   → val1;val2
-          │        │       │       │          │
-          └────────┴───────┴───────┴──────────┘
+          ┌────────────────┼───────┬──────────┐
+          ▼                ▼       ▼          ▼
+      [Numeric]         [Yes/No] [Text]  [Multi-val]
+      1210 rows          21 rows 87 rows  25 rows
+      (incl. SciNot       │       │          │
+       da normalize)      │       │          │
+          │                │       │          │
+          ▼                ▼       ▼          ▼
+      PoT+Calc           Logic   Reason   PoT+Parse
+      → float            → Y/N   → text   → val1;val2
+          │                │       │          │
+          └────────────────┴───────┴──────────┘
                            │
                            ▼
                    Response Formatter
-```
-
-### Domain-specific routing co the dua tren ID prefix (neu BTC cung cap):
-- **CHLT** → Yes/No classifier
-- **THCB** → Multi-value parser
-- **LD, DT** → Scientific notation handler
-- **DDT, NL** → Mixed (numeric + text answers)
-- **CH, TD** → Pure numeric calculator
 
 ---
 
@@ -343,7 +340,7 @@ Dua tren EDA, pipeline inference can xu ly **5 loai bai toan KHAC NHAU**:
 ## 10. Key Takeaways cho doi
 
 1. **28% answer KHONG PHAI la so don thuan** — pipeline khong the chi tra ve 1 float + 1 unit
-2. **Scientific notation la thach thuc lon** (237 rows, 2+ formats khac nhau) — can standardize output
+2. **Scientific notation** (237 rows, 2+ formats khac nhau) — se **chuan hoa ve numeric** trong preprocessing, khong con la loai rieng trong pipeline
 3. **CHLT la domain dac biet** (100% Yes/No) — co the dung rule-based + formula check thay vi LLM
 4. **THCB yeu cau multi-value output** — format `val1; val2` voi `unit1; unit2`
 5. **Domain imbalance nghiem trong** — CHLT (20) vs LD (397) = 20x chenh lech
