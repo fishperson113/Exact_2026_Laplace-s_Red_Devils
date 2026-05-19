@@ -5,6 +5,8 @@ services:
     runtime: nvidia          # requires nvidia-container-toolkit on the host
     environment:
       - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN:-}
+      - VLLM_USE_MODELSCOPE=False
+      - FLASHINFER_WORKSPACE_DIR=/tmp/flashinfer
     command:
       - "--model"
       - "${VLLM_MODEL:-Qwen/Qwen2.5-Math-7B-Instruct}"
