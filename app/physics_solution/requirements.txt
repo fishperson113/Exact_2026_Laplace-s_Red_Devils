@@ -1,0 +1,23 @@
+# Minimal deps for v01 zero-shot + HF push.
+# Pin loosely so Colab + local stay compatible.
+
+transformers>=5.8.1,<6.0   # Qwen3.5 needs >= 5.8; upper-cap blocks major-bump surprises
+torch>=2.6,<3.0            # transformers 5.x's modeling code expects torch ≥ 2.6 APIs
+accelerate>=0.30
+sentencepiece
+tokenizers>=0.19
+huggingface_hub>=0.24
+python-dotenv>=1.0
+pandas>=2.0
+numpy>=1.26
+tqdm>=4.66
+langsmith>=0.1.100      # tracing — no-op if LANGSMITH_API_KEY is missing
+langchain-core>=0.3.0   # ChatPromptTemplate, RunnableLambda, LCEL composition
+
+# Future versions will add:
+# sympy>=1.13           # v05+ symbolic verifier
+# sentence-transformers # v03 RAG
+# faiss-cpu             # v03 RAG
+# peft, bitsandbytes, trl, datasets   # v04 LoRA finetune (GPU)
+# unsloth               # faster LoRA finetune
+# vllm                  # serving for final submission
