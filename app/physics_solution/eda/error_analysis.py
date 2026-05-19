@@ -86,9 +86,10 @@ def classify_row(row: pd.Series) -> str:
     log_ratio = math.log10(ratio) if ratio > 0 else float("inf")
 
     # Off-by-power-of-10 (forgot unit prefix conversion).
-    near_int = abs(log_ratio - round(log_ratio))
-    if abs(round(log_ratio)) >= 1 and near_int < 0.05:
-        return "off_by_power10"
+    if not math.isinf(log_ratio):
+        near_int = abs(log_ratio - round(log_ratio))
+        if abs(round(log_ratio)) >= 1 and near_int < 0.05:
+            return "off_by_power10"
 
     # If pred numerically close (within 2%) the only thing wrong is the unit.
     if math.isclose(pred_f, gold, rel_tol=2e-2, abs_tol=1e-4):
