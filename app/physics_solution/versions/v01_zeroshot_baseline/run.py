@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from app.physics_solution.shared.prompts.helpers import build_zeroshot_template
 from app.physics_solution.shared.runtime.runner import run_solver
+from app.physics_solution.versions.v01_zeroshot_baseline.prompts import build_template
 from app.physics_solution.versions.v01_zeroshot_baseline import (
     DEFAULT_BASE_MODEL_ID,
     DESCRIPTION,
@@ -24,6 +24,6 @@ def run(args) -> dict:
         strategy_tag=STRATEGY_TAG,
         default_model_id=DEFAULT_BASE_MODEL_ID,
         description=DESCRIPTION,
-        prompt_template=build_zeroshot_template(),
+        prompt_template=build_template(),
         build_inputs=_build_inputs,
     )
