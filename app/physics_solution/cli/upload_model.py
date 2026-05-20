@@ -3,14 +3,14 @@
 Two modes:
 
 1. Push the *upstream* base weights (baseline versions, no finetune):
-       python -m app.physics_solution.upload_model \\
+       python -m app.physics_solution.cli.upload_model \\
            --version-num 1 --strategy zeroshot \\
            --results app/physics_solution/results/v01_zeroshot.json
    The upstream snapshot is downloaded into a local cache dir, the model
    card is written next to it, then the whole folder is uploaded.
 
 2. Push a *local* model directory (after finetune or merge):
-       python -m app.physics_solution.upload_model \\
+       python -m app.physics_solution.cli.upload_model \\
            --version-num 4 --strategy lora \\
            --local-dir runs/v04_lora/merged \\
            --results app/physics_solution/results/v04_lora.json
@@ -33,7 +33,7 @@ from pathlib import Path
 from huggingface_hub import snapshot_download
 
 from app.physics_solution import config
-from app.physics_solution.shared.hf_uploader import (
+from app.physics_solution.shared.upload.hf import (
     VersionMeta,
     collect_env_info,
     load_token,
@@ -86,7 +86,7 @@ def load_results(path: str | None) -> tuple[dict, list[dict]]:
 
 def count_fewshot_pool() -> int | None:
     """Count examples in the v02 few-shot pool, if any."""
-    p = Path("app/physics_solution/versions/v02_fewshot/examples.json")
+    p = Path("app/physics_solution/versions/v02_fewshot/input/examples.json")
     if not p.exists():
         return None
     try:

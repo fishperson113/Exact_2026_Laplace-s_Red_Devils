@@ -261,14 +261,14 @@ git clone https://github.com/Laplaces-Red-Devils/Exact_2026_Laplace-s_Red_Devils
 cd Exact_2026_Laplace-s_Red_Devils
 
 # 2. Rebuild the exact test sample
-python -m app.physics_solution.data.prepare_sample \\
+python -m app.physics_solution.cli.prepare_sample \\
     --n {_fmt(meta.test_n)} --seed {_fmt(meta.test_seed)}
 
 # 3. Run inference (config.py provides the defaults shown above)
-python -m app.physics_solution.inference --version v{meta.version_num:02d}_{meta.strategy.replace('-', '_')}
+python -m app.physics_solution.cli.inference --version v{meta.version_num:02d}_{meta.strategy.replace('-', '_')}
 
 # 4. Or use this exact upload as the model:
-python -m app.physics_solution.inference \\
+python -m app.physics_solution.cli.inference \\
     --version v{meta.version_num:02d}_{meta.strategy.replace('-', '_')} \\
     --model-id {org}/{meta.repo_name()}
 ```

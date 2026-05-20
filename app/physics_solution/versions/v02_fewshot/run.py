@@ -11,11 +11,9 @@ import json
 import re
 from pathlib import Path
 
-from app.physics_solution.shared.lc_prompts import (
-    build_fewshot_template,
-    fewshot_messages_from,
-)
-from app.physics_solution.shared.runner import run_solver
+from app.physics_solution.shared.prompts.helpers import fewshot_messages_from
+from app.physics_solution.shared.runtime.runner import run_solver
+from app.physics_solution.versions.v02_fewshot.prompts import build_template
 from app.physics_solution.versions.v02_fewshot import (
     DEFAULT_BASE_MODEL_ID,
     DESCRIPTION,
@@ -25,7 +23,7 @@ from app.physics_solution.versions.v02_fewshot import (
 
 
 HERE = Path(__file__).resolve().parent
-EXAMPLES_PATH = HERE / "examples.json"
+EXAMPLES_PATH = HERE / "input" / "examples.json"
 PREFIX_RE = re.compile(r"^([A-Z]+)")
 N_EXAMPLES_DEFAULT = 2
 
@@ -71,7 +69,7 @@ def run(args) -> dict:
         strategy_tag=STRATEGY_TAG,
         default_model_id=DEFAULT_BASE_MODEL_ID,
         description=DESCRIPTION,
-        prompt_template=build_fewshot_template(),
+        prompt_template=build_template(),
         build_inputs=_make_input_builder(pool, n_examples),
         extra_meta={"n_examples": n_examples},
     )

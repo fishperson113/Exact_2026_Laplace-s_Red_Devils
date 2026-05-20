@@ -86,14 +86,14 @@ def main() -> None:
     )
     parser.add_argument(
         "--exclude",
-        default="app/physics_solution/data/sample_test.csv",
+        default="app/physics_solution/data/test/sample_test.csv",
         help="Test CSV whose IDs must be excluded from the few-shot pool.",
     )
     parser.add_argument("--k", type=int, default=2, help="Examples per domain.")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
         "--out",
-        default=str(HERE / "examples.json"),
+        default=str(HERE / "input" / "examples.json"),
     )
     args = parser.parse_args()
 

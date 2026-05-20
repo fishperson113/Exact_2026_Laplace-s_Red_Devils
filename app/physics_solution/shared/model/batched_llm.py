@@ -24,7 +24,7 @@ from langchain_core.prompt_values import ChatPromptValue
 from langchain_core.runnables import Runnable
 from langchain_core.runnables.config import RunnableConfig
 
-from app.physics_solution.shared.model_loader import (
+from app.physics_solution.shared.model.loader import (
     LoadedModel,
     generate_batch,
     generate_text,

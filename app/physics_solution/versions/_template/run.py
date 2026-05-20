@@ -1,19 +1,20 @@
-"""v01 runner — zero-shot baseline via the LangChain LCEL pipeline."""
+"""Version runner template. Customize imports and build_inputs."""
 
 from __future__ import annotations
 
 from app.physics_solution.shared.runtime.runner import run_solver
-from app.physics_solution.versions.v01_zeroshot_baseline.prompts import build_template
-from app.physics_solution.versions.v01_zeroshot_baseline import (
+
+# Update this import to match your version folder name.
+from app.physics_solution.versions._template import (
     DEFAULT_BASE_MODEL_ID,
     DESCRIPTION,
     STRATEGY_TAG,
     VERSION_NUM,
 )
+from app.physics_solution.versions._template.prompts import build_template
 
 
 def _build_inputs(row: dict) -> dict:
-    """Dataset row -> chain template variables. Zero-shot only needs the question."""
     return {"question": str(row["question"])}
 
 
