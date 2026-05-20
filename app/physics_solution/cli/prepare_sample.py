@@ -109,7 +109,7 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
         "--out",
-        default="app/physics_solution/data/sample_test.csv",
+        default="app/physics_solution/data/test/sample_test.csv",
     )
     args = parser.parse_args()
 

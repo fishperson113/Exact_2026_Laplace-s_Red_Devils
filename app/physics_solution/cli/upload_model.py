@@ -86,7 +86,7 @@ def load_results(path: str | None) -> tuple[dict, list[dict]]:
 
 def count_fewshot_pool() -> int | None:
     """Count examples in the v02 few-shot pool, if any."""
-    p = Path("app/physics_solution/versions/v02_fewshot/examples.json")
+    p = Path("app/physics_solution/versions/v02_fewshot/input/examples.json")
     if not p.exists():
         return None
     try:

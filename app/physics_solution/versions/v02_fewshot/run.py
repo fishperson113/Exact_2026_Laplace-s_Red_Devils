@@ -23,7 +23,7 @@ from app.physics_solution.versions.v02_fewshot import (
 
 
 HERE = Path(__file__).resolve().parent
-EXAMPLES_PATH = HERE / "examples.json"
+EXAMPLES_PATH = HERE / "input" / "examples.json"
 PREFIX_RE = re.compile(r"^([A-Z]+)")
 N_EXAMPLES_DEFAULT = 2
 

@@ -164,7 +164,7 @@ def run_solver(
     out_path = (
         Path(args.out)
         if args.out
-        else Path(f"app/physics_solution/results/{version_id}.json")
+        else Path(f"app/physics_solution/versions/{version_id}/output/results.json")
     )
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(

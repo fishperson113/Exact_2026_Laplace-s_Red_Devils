@@ -136,8 +136,9 @@ def setup_colab(
 # Folders we want to keep in version control / on Drive for inspection.
 # Everything else (model weights, HF snapshots, runs, pycache) stays on local SSD.
 _DEFAULT_SYNC_SUBDIRS: tuple[str, ...] = (
-    "app/physics_solution/results",
-    "app/physics_solution/versions/v02_fewshot/examples.json",
+    "app/physics_solution/versions/v01_zeroshot_baseline/output",
+    "app/physics_solution/versions/v02_fewshot/output",
+    "app/physics_solution/versions/v02_fewshot/input/examples.json",
 )
 
 

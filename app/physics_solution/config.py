@@ -35,7 +35,7 @@ TEMPERATURE = 0.0      # math QA → greedy. Raise only if you want diversity.
 
 # -------------------------------------------------------------------- eval
 LIMIT: int | None = None      # set e.g. 5 for smoke tests
-TEST_FILE = "app/physics_solution/data/sample_test.csv"
+TEST_FILE = "app/physics_solution/data/test/sample_test.csv"
 
 # -------------------------------------------------------------------- org
 HF_ORG = "Laplaces-Red-Devils"
