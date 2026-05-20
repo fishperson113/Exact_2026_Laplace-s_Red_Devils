@@ -19,24 +19,24 @@ and the strict `FINAL ANSWER:` / `UNIT:` output format.
 python -m app.physics_solution.versions.v02_fewshot.select_fewshot --k 2
 
 # 2. Inference
-python -m app.physics_solution.inference \
+python -m app.physics_solution.cli.inference \
     --version v02_fewshot \
     --test-file app/physics_solution/data/sample_test.csv \
     --dtype fp16 --device cpu --limit 5
 
 # 3. Push
-python -m app.physics_solution.upload_model \
+python -m app.physics_solution.cli.upload_model \
     --version-num 2 --strategy fewshot --base-tag qwen3.5-4b \
     --base-model-id Qwen/Qwen3.5-4B \
-    --results app/physics_solution/results/v02_fewshot.json
+    --results app/physics_solution/versions/v02_fewshot/output/results.json
 ```
 
 ## Files
 
-- `select_fewshot.py` — curates `examples.json` from the dataset.
-- `examples.json` — generated; one entry per chosen example.
-- `prompt.py` — builds the chat messages with examples injected.
-- `run.py` — version entry point exposed to `inference.py`.
+- `select_fewshot.py` — curates `input/examples.json` from the dataset.
+- `input/examples.json` — generated; one entry per chosen example.
+- `prompts.py` — builds the chat template with few-shot placeholder.
+- `run.py` — version entry point exposed to `cli/inference.py`.
 
 ## Knobs
 

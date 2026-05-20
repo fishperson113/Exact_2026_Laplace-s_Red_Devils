@@ -1,7 +1,7 @@
 """Build a stratified sample of pure-numeric physics questions.
 
 Usage:
-    python -m app.physics_solution.data.prepare_sample \\
+    python -m app.physics_solution.cli.prepare_sample \\
         --n 50 --seed 42 \\
         --csv "EXACT_Materials/Datasets/EXACT2026_dataset_2026-05-15/Physics_Problems_Text_Only/Physics_Problems_Text_Only.csv" \\
         --out app/physics_solution/data/sample_test.csv

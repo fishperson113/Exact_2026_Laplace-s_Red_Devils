@@ -3,11 +3,11 @@
 Defaults come from `app.physics_solution.config`. CLI flags override.
 Inside a Colab notebook you can run with zero flags:
 
-    !python -m app.physics_solution.inference --version v02_fewshot
+    !python -m app.physics_solution.cli.inference --version v02_fewshot
 
 To override one knob ad-hoc:
 
-    !python -m app.physics_solution.inference --version v02_fewshot --batch-size 4
+    !python -m app.physics_solution.cli.inference --version v02_fewshot --batch-size 4
 
 Permanent changes belong in `config.py`, not in notebook cells.
 """
