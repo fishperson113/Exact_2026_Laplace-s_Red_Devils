@@ -21,11 +21,11 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda
 from tqdm import tqdm
 
-from app.physics_solution.shared import evaluator
-from app.physics_solution.shared.lc_model import HFBatchedLLM, RenderPrompt
-from app.physics_solution.shared.model_loader import LoadedModel, load_model
-from app.physics_solution.shared.prompts import ASSISTANT_PREFIX
-from app.physics_solution.shared.tracing import setup_tracing
+from app.physics_solution.shared.eval import scorer as evaluator
+from app.physics_solution.shared.model.batched_llm import HFBatchedLLM, RenderPrompt
+from app.physics_solution.shared.model.loader import LoadedModel, load_model
+from app.physics_solution.shared.prompts.system import ASSISTANT_PREFIX
+from app.physics_solution.shared.runtime.tracing import setup_tracing
 
 
 InputBuilder = Callable[[dict], dict]

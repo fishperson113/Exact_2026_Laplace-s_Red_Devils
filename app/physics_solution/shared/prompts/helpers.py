@@ -18,7 +18,7 @@ from langchain_core.prompts import (
     SystemMessagePromptTemplate,
 )
 
-from app.physics_solution.shared.prompts import (
+from app.physics_solution.shared.prompts.system import (
     PHYSICS_SYSTEM_EN,
     ZEROSHOT_USER_TEMPLATE,
 )

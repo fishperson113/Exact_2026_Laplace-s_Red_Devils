@@ -11,11 +11,11 @@ import json
 import re
 from pathlib import Path
 
-from app.physics_solution.shared.lc_prompts import (
+from app.physics_solution.shared.prompts.helpers import (
     build_fewshot_template,
     fewshot_messages_from,
 )
-from app.physics_solution.shared.runner import run_solver
+from app.physics_solution.shared.runtime.runner import run_solver
 from app.physics_solution.versions.v02_fewshot import (
     DEFAULT_BASE_MODEL_ID,
     DESCRIPTION,

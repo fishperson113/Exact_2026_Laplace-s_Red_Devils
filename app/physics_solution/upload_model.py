@@ -33,7 +33,7 @@ from pathlib import Path
 from huggingface_hub import snapshot_download
 
 from app.physics_solution import config
-from app.physics_solution.shared.hf_uploader import (
+from app.physics_solution.shared.upload.hf import (
     VersionMeta,
     collect_env_info,
     load_token,

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from app.physics_solution.shared.lc_prompts import build_zeroshot_template
-from app.physics_solution.shared.runner import run_solver
+from app.physics_solution.shared.prompts.helpers import build_zeroshot_template
+from app.physics_solution.shared.runtime.runner import run_solver
 from app.physics_solution.versions.v01_zeroshot_baseline import (
     DEFAULT_BASE_MODEL_ID,
     DESCRIPTION,

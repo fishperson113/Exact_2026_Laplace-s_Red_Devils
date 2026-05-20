@@ -16,13 +16,13 @@ Two-step pattern we use on Colab (Drive shortcut paths are unreliable):
     sys.path.insert(0, LOCAL_ROOT)
 
     # Cell 2: from now on we import from the LOCAL copy
-    from app.physics_solution.colab_setup import setup_colab
+    from app.physics_solution.shared.colab.setup import setup_colab
     setup_colab(repo_root=LOCAL_ROOT)
 
     # ... run pipeline ...
 
     # Cell N (end of session): persist results back to Drive
-    from app.physics_solution.colab_setup import sync_results_to_drive
+    from app.physics_solution.shared.colab.setup import sync_results_to_drive
     sync_results_to_drive(drive_root=DRIVE_ROOT, local_root=LOCAL_ROOT)
 
 `setup_colab` chdirs, loads `.env`, wires HF + LangSmith. Everything else
