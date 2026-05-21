@@ -1,15 +1,19 @@
-"""Build a stratified sample of pure-numeric physics questions.
+"""Build a stratified sample of physics questions.
 
 Usage:
+    # Default (backward compatible): pure-numeric only
     python -m app.physics_solution.cli.prepare_sample \\
-        --n 50 --seed 42 \\
-        --csv "EXACT_Materials/Datasets/EXACT2026_dataset_2026-05-15/Physics_Problems_Text_Only/Physics_Problems_Text_Only.csv" \\
-        --out app/physics_solution/data/sample_test.csv
+        --n 973 --seed 42
 
-A row is "pure numeric" iff `float(answer)` parses cleanly. This filters
-out scientific notation (× 10^-3), text answers, Yes/No, multi-value, sqrt.
+    # Full dataset (all answer types)
+    python -m app.physics_solution.cli.prepare_sample \\
+        --n 1352 --seed 42 --answer-types all
 
-Stratification: proportional to the count of pure-numeric rows per domain
+    # Specific subset
+    python -m app.physics_solution.cli.prepare_sample \\
+        --n 200 --answer-types pure_numeric,sci_notation
+
+Stratification: proportional to the count of eligible rows per domain
 prefix (LD, CH, NL, TD, DDT, THCB, DT, CHLT). If a stratum has fewer
 candidates than its quota we take all of them and redistribute the slack
 to larger strata.
@@ -23,6 +27,8 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+from app.physics_solution.shared.eval.scorer import AnswerType, detect_answer_type
 
 
 PREFIX_RE = re.compile(r"^([A-Z]+)")
@@ -39,7 +45,6 @@ def is_pure_numeric(ans: str) -> bool:
     s = str(ans).strip()
     if not s:
         return False
-    # Reject obvious non-numeric markers cheaply before float() (faster + clearer).
     if any(ch in s for ch in [";", "×", "x10", "x 10", "sqrt", "\\sqrt", "π"]):
         return False
     if re.search(r"[a-zA-Z]", s):
@@ -51,6 +56,29 @@ def is_pure_numeric(ans: str) -> bool:
         return False
 
 
+def filter_by_answer_types(
+    df: pd.DataFrame,
+    answer_types: list[str] | None,
+) -> pd.DataFrame:
+    """Filter dataframe by answer types. None or ['pure_numeric'] uses the legacy filter."""
+    if answer_types is None or answer_types == ["pure_numeric"]:
+        return df[df["answer"].map(is_pure_numeric)].reset_index(drop=True)
+
+    valid_types = {t.value for t in AnswerType}
+    requested = set(answer_types)
+    invalid = requested - valid_types - {"all"}
+    if invalid:
+        raise ValueError(f"Unknown answer types: {invalid}. Valid: {sorted(valid_types)} or 'all'")
+
+    if "all" in requested:
+        return df.reset_index(drop=True)
+
+    df = df.copy()
+    df["__answer_type"] = df["answer"].map(lambda a: detect_answer_type(str(a)).value)
+    filtered = df[df["__answer_type"].isin(requested)].drop(columns="__answer_type")
+    return filtered.reset_index(drop=True)
+
+
 def stratified_sample(df: pd.DataFrame, n: int, seed: int) -> pd.DataFrame:
     rng = np.random.default_rng(seed)
     df = df.copy()
@@ -58,8 +86,6 @@ def stratified_sample(df: pd.DataFrame, n: int, seed: int) -> pd.DataFrame:
 
     counts = df["__prefix"].value_counts()
     total = counts.sum()
-    # Initial proportional quota (round-down) then top-up with the largest
-    # residuals.
     quotas = {}
     residuals = {}
     for prefix, c in counts.items():
@@ -72,7 +98,6 @@ def stratified_sample(df: pd.DataFrame, n: int, seed: int) -> pd.DataFrame:
 
     picks = []
     leftover = 0
-    # First pass: take min(quota, available).
     for prefix, quota in quotas.items():
         sub = df[df["__prefix"] == prefix]
         take = min(quota, len(sub))
@@ -80,7 +105,6 @@ def stratified_sample(df: pd.DataFrame, n: int, seed: int) -> pd.DataFrame:
         if take > 0:
             picks.append(sub.sample(n=take, random_state=int(rng.integers(0, 2**31 - 1))))
 
-    # Redistribute leftover slack across remaining rows.
     if leftover:
         picked_ids = pd.concat(picks)["id"] if picks else pd.Series([], dtype=str)
         remaining = df[~df["id"].isin(picked_ids)]
@@ -91,6 +115,12 @@ def stratified_sample(df: pd.DataFrame, n: int, seed: int) -> pd.DataFrame:
 
     out = pd.concat(picks).drop(columns="__prefix").reset_index(drop=True)
     return out
+
+
+def _parse_answer_types(raw: str | None) -> list[str] | None:
+    if raw is None:
+        return None
+    return [t.strip() for t in raw.split(",") if t.strip()]
 
 
 def main() -> None:
@@ -111,17 +141,35 @@ def main() -> None:
         "--out",
         default="app/physics_solution/data/test/sample_test.csv",
     )
+    parser.add_argument(
+        "--answer-types",
+        default=None,
+        help="Comma-separated answer types to include: "
+        "pure_numeric,sci_notation,yes_no,multi_value,text_only,mixed "
+        "or 'all' for full dataset. Default: pure_numeric only.",
+    )
     args = parser.parse_args()
 
     src = pd.read_csv(args.csv)
     print(f"Loaded {len(src)} rows from {args.csv}")
 
-    numeric = src[src["answer"].map(is_pure_numeric)].reset_index(drop=True)
-    print(f"Pure-numeric rows: {len(numeric)}")
+    answer_types = _parse_answer_types(args.answer_types)
+    eligible = filter_by_answer_types(src, answer_types)
 
-    sample = stratified_sample(numeric, n=args.n, seed=args.seed)
+    type_label = "all types" if answer_types and "all" in answer_types else (
+        ", ".join(answer_types) if answer_types else "pure_numeric"
+    )
+    print(f"Eligible rows ({type_label}): {len(eligible)}")
+
+    n = min(args.n, len(eligible))
+    sample = stratified_sample(eligible, n=n, seed=args.seed)
     print(f"Sampled {len(sample)} rows. Domain breakdown:")
     print(sample["id"].map(domain_prefix).value_counts().to_string())
+
+    if answer_types and "all" in answer_types:
+        at_dist = sample["answer"].map(lambda a: detect_answer_type(str(a)).value)
+        print(f"\nAnswer type breakdown:")
+        print(at_dist.value_counts().to_string())
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)

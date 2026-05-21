@@ -1,4 +1,7 @@
-from .eval.scorer import extract, numeric_close, Extraction, RowResult, summarise
+from .eval.scorer import (
+    extract, numeric_close, Extraction, RowResult, summarise,
+    AnswerType, ScoringResult, score, detect_answer_type,
+)
 from .prompts.system import PHYSICS_SYSTEM_EN, ZEROSHOT_USER_TEMPLATE, ASSISTANT_PREFIX
 from .runtime.tracing import setup_tracing, traceable
 
