@@ -10,15 +10,19 @@ Design notes:
 
 PHYSICS_SYSTEM_EN = """You are a physics tutor for electrical circuits and electrostatics. You answer in English using SI units.
 
-Write a short numbered reasoning chain, then the final answer. Use this format exactly:
+Write a short numbered reasoning chain using LaTeX inline math ($...$), then the final answer. Format:
 
 Step 1: <one short sentence>
 Step 2: <one short sentence>
 ...
-FINAL ANSWER: <plain decimal, no unit>
-UNIT: <unit symbol>
+FINAL ANSWER: <number or a * 10^n>
+UNIT: <unit symbol, or - if dimensionless>
 
-Keep it tight: 3-5 steps is usually enough. Commit to one reading of the problem; do not enumerate alternatives. Stop after the UNIT line."""
+FINAL ANSWER must be a plain decimal when |exponent| < 4 (e.g. 0.495, 25).
+When |exponent| >= 4, write it as: a * 10^{{n}} (e.g. 5.07 * 10^{{-6}}, 2.027 * 10^{{6}}).
+NEVER use e-notation in FINAL ANSWER (WRONG: 2.97e6, RIGHT: 2.97 * 10^{{6}}).
+
+Keep it tight: 3-5 steps. Commit to one reading of the problem. Stop after the UNIT line."""
 
 
 ZEROSHOT_USER_TEMPLATE = """{question}"""

@@ -23,7 +23,7 @@ _NUM_RE = re.compile(
 _SUPERSCRIPT_MAP = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺", "0123456789-+")
 
 _SCI_RE = re.compile(
-    r"([-+]?\d+(?:\.\d+)?)\s*[x×·*]\s*10\s*"
+    r"([-+]?\d+(?:\.\d+)?)\s*(?:[x×·*]|\\times)\s*10\s*"
     r"(?:\^?\s*\{?\s*([-+]?\d+)\s*\}?"  # caret: 10^-3 or 10^{-3}
     r"|([⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+))",          # superscript: 10⁻³
     re.IGNORECASE,
@@ -75,7 +75,7 @@ def detect_answer_type(gold_answer: str) -> AnswerType:
     if _BARE_POWER_RE.match(s):
         return AnswerType.SCI_NOTATION
 
-    if any(marker in s for marker in ["×", "x10", "x 10"]):
+    if any(marker in s for marker in ["×", "x10", "x 10", "\\times"]):
         return AnswerType.SCI_NOTATION
 
     if re.search(r"[a-zA-Z\\]", s) and not _E_NOTATION_RE.fullmatch(s.strip()):
@@ -104,6 +104,15 @@ class Extraction:
     numeric: float | None = None
 
 
+def _strip_latex_answer(s: str) -> str:
+    """Strip $...$ wrapper and normalise LaTeX \\times → * for parsing."""
+    s = s.strip()
+    if s.startswith("$") and s.endswith("$"):
+        s = s[1:-1].strip()
+    s = s.replace("\\times", "*")
+    return s
+
+
 def extract(completion: str) -> Extraction:
     """Pull FINAL ANSWER / UNIT from a model completion."""
     ans_match = _FINAL_RE.search(completion)
@@ -111,7 +120,7 @@ def extract(completion: str) -> Extraction:
 
     out = Extraction()
     if ans_match:
-        out.raw_answer = ans_match.group(1).strip()
+        out.raw_answer = _strip_latex_answer(ans_match.group(1).strip())
         num_match = _NUM_RE.search(out.raw_answer)
         if num_match:
             try:
@@ -434,6 +443,10 @@ if __name__ == "__main__":
               score("FINAL ANSWER: 4e-9\nUNIT: F", "4 . 10^{-9}", "F"), True)
         check("bare power",
               score("FINAL ANSWER: 10000\nUNIT: -", "10^4", "-"), True)
+        check("latex \\times pred",
+              score("FINAL ANSWER: $5.07 \\times 10^{-6}$\nUNIT: C", "5.07 * 10^{-6}", "C"), True)
+        check("latex \\times no dollar",
+              score("FINAL ANSWER: 2.027 \\times 10^{6}\nUNIT: V/m", "2.027 * 10^{6}", "V/m"), True)
 
         print("\n=== Yes/No ===")
         check("yes exact",
