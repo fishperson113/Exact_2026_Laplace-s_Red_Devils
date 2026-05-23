@@ -13,6 +13,13 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+try:
+    from dotenv import load_dotenv
+    _ENV_PATH = Path(__file__).resolve().parent / ".env"
+    load_dotenv(_ENV_PATH)
+except ImportError:
+    pass
+
 
 # -------------------------------------------------------------------- model
 BASE_MODEL_ID = "Qwen/Qwen3.5-4B"
@@ -37,6 +44,7 @@ TEMPERATURE = 0.0      # math QA → greedy. Raise only if you want diversity.
 LIMIT: int | None = None      # set e.g. 5 for smoke tests
 TEST_FILE = "app/physics_solution/data/test/full_test.csv"  # 1352 rows, all answer types
 # Legacy pure-numeric only: "app/physics_solution/data/test/sample_test.csv"
+GOLDEN_TEST_FILE = "app/physics_solution/data/golden/deepseek-v4-pro_golden_data.csv"  # 1352 rows, rewritten CoT
 
 # -------------------------------------------------------------------- org
 HF_ORG = "Laplaces-Red-Devils"
@@ -44,6 +52,24 @@ PUSH_PRIVATE = True
 
 # -------------------------------------------------------------------- tracing
 LANGSMITH_PROJECT = "exact26-physics-type2"
+
+
+# -------------------------------------------------------------------- commercial LLM (golden-data generation)
+COMMERCIAL_PROVIDER = "deepseek"             # "deepseek" or "openai"
+COMMERCIAL_MODEL = "deepseek-v4-pro"         # model name for the provider's API
+COMMERCIAL_API_KEY_ENV = {
+    "deepseek": "DEEPSEEK_API_KEY",
+    "openai":   "OPENAI_API_KEY",
+}
+COMMERCIAL_BASE_URL = {
+    "deepseek": "https://api.deepseek.com",
+    "openai":   None,                        # uses SDK default
+}
+
+
+# -------------------------------------------------------------------- golden data
+GOLDEN_DIR = "app/physics_solution/data/golden"
+GOLDEN_SAVE_EVERY = 50
 
 
 # -------------------------------------------------------------------- helpers

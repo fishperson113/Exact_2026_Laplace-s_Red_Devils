@@ -91,13 +91,13 @@ def run_solver(
         temperature=args.temperature,
         assistant_prefix=prefix,
     )
-    chain = (
+    # Split chain into render (CPU) + generate (GPU) so we can capture
+    # the rendered prompt for each row in the output.
+    render_chain = (
         RunnableLambda(build_inputs).with_config(run_name=f"{version_id}_build_inputs")
         | prompt_template
         | render_runnable.with_config(run_name=f"{version_id}_render")
-        | llm.with_config(run_name=f"{version_id}_generate")
     )
-    chain = chain.with_config(run_name=f"{version_id}_solve_one")
 
     df = pd.read_csv(args.test_file)
     if args.limit:
@@ -107,14 +107,17 @@ def run_solver(
 
     extra_meta = dict(extra_meta or {})
 
-    # Process in chunks so each `chain.batch(...)` is one batched GPU call.
+    # Process in chunks so each `llm.batch(...)` is one batched GPU call.
     completions: list[str] = []
+    rendered_prompts: list[str] = []
     elapsed_per_row: list[float] = []
     pbar = tqdm(total=len(rows))
     for i in range(0, len(rows), batch_size):
         chunk = rows[i : i + batch_size]
+        chunk_rendered = render_chain.batch(chunk)
+        rendered_prompts.extend(chunk_rendered)
         t0 = time.time()
-        chunk_completions = chain.batch(chunk)
+        chunk_completions = llm.batch(chunk_rendered)
         batch_elapsed = time.time() - t0
         per_row = batch_elapsed / len(chunk)
         completions.extend(chunk_completions)
@@ -124,7 +127,7 @@ def run_solver(
 
     # ---- Score + assemble results.
     results: list[evaluator.RowResult] = []
-    for row, completion, elapsed_s in zip(rows, completions, elapsed_per_row):
+    for row, completion, elapsed_s, prompt in zip(rows, completions, elapsed_per_row, rendered_prompts):
         qid = str(row.get("id", ""))
         question = str(row["question"])
         gold_answer = str(row.get("answer", ""))
@@ -142,6 +145,7 @@ def run_solver(
                 is_correct=scored["is_correct"],
                 elapsed_s=elapsed_s,
                 extra={
+                    "rendered_prompt": prompt,
                     "raw_answer": scored["raw_answer"],
                     "answer_type": scored.get("answer_type", ""),
                     "partial_correct": scored.get("partial_correct", False),

@@ -1,11 +1,12 @@
-"""Curate few-shot examples keyed by (domain, answer_type).
+"""Curate few-shot examples keyed by (domain, answer_type) from golden data.
 
 Extends v02's logic:
+- Source from DeepSeek-rewritten golden data (high-quality CoT).
 - Covers ALL answer types present in each domain (not just pure_numeric).
 - Each example gets an `answer_type` label via `detect_answer_type()`.
 - Key = (prefix, answer_type) -> pick K examples whose CoT step count
   is near the median for that group.
-- Excludes full_test.csv IDs to prevent leakage.
+- Excludes test IDs to prevent leakage.
 
 Output: `input/examples.json` with field `answer_type` on every example.
 
@@ -64,7 +65,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Curate (domain, answer_type) few-shot examples for v03")
     parser.add_argument(
         "--csv",
-        default="EXACT_Materials/Datasets/EXACT2026_dataset_2026-05-15/Physics_Problems_Text_Only/Physics_Problems_Text_Only.csv",
+        default="app/physics_solution/data/golden/deepseek-v4-pro_golden_data.csv",
     )
     parser.add_argument(
         "--exclude",

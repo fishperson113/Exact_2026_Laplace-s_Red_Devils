@@ -64,6 +64,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--results", default=None,
                    help="Path to a results JSON from inference.py (used to "
                         "populate ALL metrics + config fields on the card).")
+    p.add_argument("--extra-results", nargs="*", default=[],
+                   help="Additional results JSON files to include under reports/.")
+    p.add_argument("--test-file", default=None,
+                   help="Override config.TEST_FILE for the model card.")
     p.add_argument("--test-seed", type=int, default=42,
                    help="Seed used when building the test sample.")
     p.add_argument("--org", default=config.HF_ORG)
@@ -124,6 +128,19 @@ def main() -> None:
     per_at_acc, per_at_cnt = per_answer_type_breakdown(rows) if rows else ({}, {})
     fm_counts = failmode_breakdown(rows) if rows else {}
 
+    # Golden data evaluation (from --extra-results, first file with "golden" in name)
+    golden_summary: dict = {}
+    golden_rows: list[dict] = []
+    golden_file: str | None = None
+    for extra in args.extra_results:
+        if "golden" in extra.lower():
+            golden_summary, golden_rows = load_results(extra)
+            golden_file = extra
+            break
+    g_dom_acc, g_dom_cnt = per_domain_breakdown(golden_rows) if golden_rows else ({}, {})
+    g_at_acc, g_at_cnt = per_answer_type_breakdown(golden_rows) if golden_rows else ({}, {})
+    g_fm_counts = failmode_breakdown(golden_rows) if golden_rows else {}
+
     description = args.description or (
         f"Strategy `{args.strategy}` applied on top of {args.base_model_id}. "
         f"See app/physics_solution/versions/v{args.version_num:02d}_*/ for code."
@@ -163,9 +180,19 @@ def main() -> None:
         transformers_version=env.get("transformers_version"),
         python_version=env.get("python_version"),
         # data
-        test_file=config.TEST_FILE,
+        test_file=args.test_file or config.TEST_FILE,
         test_seed=args.test_seed,
         fewshot_pool_size=count_fewshot_pool(),
+        # golden data evaluation
+        golden_test_file=golden_file,
+        golden_accuracy=golden_summary.get("accuracy"),
+        golden_n=golden_summary.get("n"),
+        golden_correct=golden_summary.get("correct"),
+        golden_per_domain_accuracy=g_dom_acc,
+        golden_per_domain_count=g_dom_cnt,
+        golden_per_answer_type_accuracy=g_at_acc,
+        golden_per_answer_type_count=g_at_cnt,
+        golden_failmode_counts=g_fm_counts,
         # misc
         timestamp_utc=now_utc(),
         notes=args.notes,
@@ -180,6 +207,13 @@ def main() -> None:
             extra_files.append(str(json_path))
         if csv_path.exists():
             extra_files.append(str(csv_path))
+    for extra in args.extra_results:
+        ep = Path(extra)
+        if ep.exists():
+            extra_files.append(str(ep))
+        ec = ep.with_suffix(".csv")
+        if ec.exists():
+            extra_files.append(str(ec))
 
     repo_id = push(
         local_model_dir=local_dir,

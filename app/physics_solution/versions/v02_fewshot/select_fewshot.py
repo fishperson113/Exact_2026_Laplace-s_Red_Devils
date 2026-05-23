@@ -1,8 +1,9 @@
-"""Curate a small set of few-shot examples from the training data.
+"""Curate a small set of few-shot examples from golden data.
 
 Strategy:
-- Only pure-numeric answers (consistent with our v01 test set).
-- Exclude any ID that appears in `sample_test.csv` (no leakage).
+- Source from DeepSeek-rewritten golden data (high-quality CoT).
+- Prefer pure-numeric answers for cleaner few-shot demonstrations.
+- Exclude any ID that appears in the test set (no leakage).
 - For each domain prefix, pick K examples whose CoT step count is near
   the domain median — avoids both 2-step trivia and 13-step monsters.
 
@@ -82,7 +83,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument(
         "--csv",
-        default="EXACT_Materials/Datasets/EXACT2026_dataset_2026-05-15/Physics_Problems_Text_Only/Physics_Problems_Text_Only.csv",
+        default="app/physics_solution/data/golden/deepseek-v4-pro_golden_data.csv",
     )
     parser.add_argument(
         "--exclude",
@@ -104,9 +105,8 @@ def main() -> None:
     print(f"Excluding {len(excl_ids)} test IDs")
 
     src = src[~src["id"].astype(str).isin(excl_ids)].copy()
-    # Prefer pure-numeric examples (format matches our numeric test set).
-    # If the test consumed all pure-numeric rows (e.g. --n 973 full eval),
-    # fall back to any row with a non-null answer + cot.
+    # Prefer pure-numeric examples for cleaner few-shot demonstrations.
+    # Fall back to mixed if the pure-numeric pool is too small.
     pn = src[src["answer"].map(is_pure_numeric)]
     if len(pn) >= args.k * 7:  # ~K per domain × 7 domains
         src = pn.copy()

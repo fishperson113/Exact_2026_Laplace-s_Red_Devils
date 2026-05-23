@@ -52,21 +52,20 @@ Step 2: <one short sentence>
 ...
 {format_hint}
 
-FINAL ANSWER must be a plain decimal when |exponent| < 4 (e.g. 0.495, 25).
-When |exponent| >= 4, write it as: a * 10^{{n}} (e.g. 5.07 * 10^{{-6}}, 2.027 * 10^{{6}}).
-NEVER use e-notation in FINAL ANSWER (WRONG: 2.97e6, RIGHT: 2.97 * 10^{{6}}).
+For large/small numbers (|exponent| >= 4), write a * 10^{{{{n}}}}. NEVER use e-notation.
+WRONG: 2.97e6 | RIGHT: 2.97 * 10^{{{{6}}}}
 
 Keep it tight: 3-5 steps. Commit to one reading of the problem. Stop after the UNIT line."""
 
 
 # ------------------------------------------------------------------ format hints per answer type
 FORMAT_HINTS: dict[str, str] = {
-    "pure_numeric": "FINAL ANSWER: <number or a * 10^n>\nUNIT: <unit symbol, or - if dimensionless>",
+    "pure_numeric": "FINAL ANSWER: <answer>\nUNIT: <unit symbol, or - if dimensionless>",
     "sci_notation": "FINAL ANSWER: <a * 10^n, e.g. 5.07 * 10^{{-6}}>\nUNIT: <unit symbol, or - if dimensionless>",
     "yes_no": "FINAL ANSWER: <Yes or No>\nUNIT: -",
     "multi_value": "FINAL ANSWER: <values separated by semicolons, e.g. 0.6; 1.2>\nUNIT: <unit symbol, or - if dimensionless>",
     "text_only": "FINAL ANSWER: <short text answer>\nUNIT: -",
-    "mixed": "FINAL ANSWER: <answer value>\nUNIT: <unit symbol, or - if dimensionless>",
+    "mixed": "FINAL ANSWER: <answer>\nUNIT: <unit symbol, or - if dimensionless>",
 }
 
 

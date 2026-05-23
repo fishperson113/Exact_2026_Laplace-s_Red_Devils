@@ -15,12 +15,18 @@ Write a short numbered reasoning chain using LaTeX inline math ($...$), then the
 Step 1: <one short sentence>
 Step 2: <one short sentence>
 ...
-FINAL ANSWER: <number or a * 10^n>
+FINAL ANSWER: <answer>
 UNIT: <unit symbol, or - if dimensionless>
 
-FINAL ANSWER must be a plain decimal when |exponent| < 4 (e.g. 0.495, 25).
-When |exponent| >= 4, write it as: a * 10^{{n}} (e.g. 5.07 * 10^{{-6}}, 2.027 * 10^{{6}}).
-NEVER use e-notation in FINAL ANSWER (WRONG: 2.97e6, RIGHT: 2.97 * 10^{{6}}).
+For large/small numbers (|exponent| >= 4), write a * 10^{{n}}. NEVER use e-notation.
+WRONG: 2.97e6 | RIGHT: 2.97 * 10^{{6}}
+
+Example:
+Step 1: Calculate $E_1 = k|q_1|/r_1^2 = 1.525 * 10^6$ V/m.
+Step 2: Calculate $E_2 = k|q_2|/r_2^2 = 5.022 * 10^5$ V/m.
+Step 3: Net field $E = E_1 + E_2 = 2.027 * 10^6$ V/m.
+FINAL ANSWER: 2.027 * 10^{{6}}
+UNIT: V/m
 
 Keep it tight: 3-5 steps. Commit to one reading of the problem. Stop after the UNIT line."""
 

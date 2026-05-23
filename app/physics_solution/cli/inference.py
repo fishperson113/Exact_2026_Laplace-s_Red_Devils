@@ -49,6 +49,13 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--temperature", type=float, default=config.TEMPERATURE)
     p.add_argument("--batch-size", type=int, default=config.BATCH_SIZE)
     p.add_argument("--limit", type=int, default=config.LIMIT)
+    p.add_argument(
+        "--n-examples",
+        type=int,
+        default=None,
+        help="Number of few-shot examples per question (v02+). "
+             "None = use version default.",
+    )
     return p.parse_args()
 
 
