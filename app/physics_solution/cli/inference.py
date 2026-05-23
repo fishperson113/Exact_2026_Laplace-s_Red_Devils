@@ -21,11 +21,10 @@ from app.physics_solution import config
 
 
 VERSIONS = {
-    "v01_zeroshot_baseline": "app.physics_solution.versions.v01_zeroshot_baseline.run",
-    "v02_fewshot":           "app.physics_solution.versions.v02_fewshot.run",
-    # Future:
-    # "v03_rag":             "app.physics_solution.versions.v03_rag.run",
-    # "v04_lora":            "app.physics_solution.versions.v04_lora.run",
+    "v01_zeroshot_baseline":  "app.physics_solution.versions.v01_zeroshot_baseline.run",
+    "v02_fewshot":            "app.physics_solution.versions.v02_fewshot.run",
+    "v03_routed_fewshot":     "app.physics_solution.versions.v03_routed_fewshot.run",
+    "v04_optimized_routing":  "app.physics_solution.versions.v04_optimized_routing.run",
 }
 
 

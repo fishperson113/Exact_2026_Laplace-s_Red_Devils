@@ -76,6 +76,11 @@ class VersionMeta:
     test_seed: int | None = None
     fewshot_pool_size: int | None = None
 
+    # --- error analysis -----------------------------------------------------
+    per_answer_type_accuracy: dict[str, float] = field(default_factory=dict)
+    per_answer_type_count: dict[str, int] = field(default_factory=dict)
+    failmode_counts: dict[str, int] = field(default_factory=dict)
+
     # --- misc ---------------------------------------------------------------
     timestamp_utc: str | None = None
     notes: str = ""
@@ -139,6 +144,41 @@ def per_domain_breakdown(rows: list[dict]) -> tuple[dict[str, float], dict[str, 
     return acc, counts
 
 
+def per_answer_type_breakdown(
+    rows: list[dict],
+) -> tuple[dict[str, float], dict[str, int]]:
+    """Compute accuracy + count per answer type from results rows."""
+    from app.physics_solution.shared.eval.scorer import detect_answer_type
+
+    counts: dict[str, int] = {}
+    correct: dict[str, int] = {}
+    for r in rows:
+        gold = str(r.get("gold_answer", ""))
+        at = detect_answer_type(gold).value
+        counts[at] = counts.get(at, 0) + 1
+        if r.get("is_correct"):
+            correct[at] = correct.get(at, 0) + 1
+    acc = {
+        t: round(correct.get(t, 0) / counts[t], 4) if counts[t] else 0.0 for t in counts
+    }
+    return acc, counts
+
+
+def failmode_breakdown(rows: list[dict]) -> dict[str, int]:
+    """Classify wrong rows into fail modes and return counts."""
+    import pandas as pd
+    from app.physics_solution.eda.scripts.v2.error_analysis import classify_row
+
+    fm_counts: dict[str, int] = {}
+    for r in rows:
+        if r.get("is_correct"):
+            continue
+        row_series = pd.Series(r)
+        mode = classify_row(row_series)
+        fm_counts[mode] = fm_counts.get(mode, 0) + 1
+    return fm_counts
+
+
 # ---------------------------------------------------------------------- file IO
 
 
@@ -175,6 +215,26 @@ def _domain_table(acc: dict[str, float], cnt: dict[str, int]) -> str:
     lines = ["| Domain | n | Accuracy |", "|---|---|---|"]
     for p in sorted(acc, key=lambda k: -cnt.get(k, 0)):
         lines.append(f"| `{p}` | {cnt.get(p, 0)} | {acc[p]:.3f} |")
+    return "\n".join(lines)
+
+
+def _answer_type_table(acc: dict[str, float], cnt: dict[str, int]) -> str:
+    if not acc:
+        return "(no per-answer-type breakdown available)"
+    lines = ["| Answer type | n | Accuracy |", "|---|---|---|"]
+    for t in sorted(acc, key=lambda k: -cnt.get(k, 0)):
+        lines.append(f"| `{t}` | {cnt.get(t, 0)} | {acc[t]:.3f} |")
+    return "\n".join(lines)
+
+
+def _failmode_table(fm: dict[str, int]) -> str:
+    if not fm:
+        return "(no fail-mode breakdown available)"
+    total_wrong = sum(fm.values())
+    lines = ["| Fail mode | Count | % of wrong |", "|---|---:|---:|"]
+    for mode, cnt in sorted(fm.items(), key=lambda kv: -kv[1]):
+        pct = cnt / total_wrong if total_wrong else 0
+        lines.append(f"| `{mode}` | {cnt} | {pct:.1%} |")
     return "\n".join(lines)
 
 
@@ -252,6 +312,14 @@ Team: **Laplace's Red Devils**.
 ### Per-domain accuracy
 
 {_domain_table(meta.per_domain_accuracy, meta.per_domain_count)}
+
+### Per-answer-type accuracy
+
+{_answer_type_table(meta.per_answer_type_accuracy, meta.per_answer_type_count)}
+
+## Error analysis
+
+{_failmode_table(meta.failmode_counts)}
 
 ## How to reproduce
 
