@@ -81,6 +81,17 @@ class VersionMeta:
     per_answer_type_count: dict[str, int] = field(default_factory=dict)
     failmode_counts: dict[str, int] = field(default_factory=dict)
 
+    # --- golden data evaluation (optional) ----------------------------------
+    golden_test_file: str | None = None
+    golden_accuracy: float | None = None
+    golden_n: int | None = None
+    golden_correct: int | None = None
+    golden_per_domain_accuracy: dict[str, float] = field(default_factory=dict)
+    golden_per_domain_count: dict[str, int] = field(default_factory=dict)
+    golden_per_answer_type_accuracy: dict[str, float] = field(default_factory=dict)
+    golden_per_answer_type_count: dict[str, int] = field(default_factory=dict)
+    golden_failmode_counts: dict[str, int] = field(default_factory=dict)
+
     # --- misc ---------------------------------------------------------------
     timestamp_utc: str | None = None
     notes: str = ""
@@ -238,6 +249,33 @@ def _failmode_table(fm: dict[str, int]) -> str:
     return "\n".join(lines)
 
 
+def _golden_section(meta: "VersionMeta") -> str:
+    """Build the optional golden-data evaluation section."""
+    if meta.golden_accuracy is None:
+        return ""
+    return f"""## Golden data evaluation
+
+Evaluated on **golden data** (`{_fmt(meta.golden_test_file)}`) — CoT rewritten by DeepSeek-v4-pro.
+
+| | |
+|---|---|
+| Accuracy | **{_fmt(meta.golden_accuracy)}** ({_fmt(meta.golden_correct)} / {_fmt(meta.golden_n)} correct) |
+
+### Per-domain accuracy (golden)
+
+{_domain_table(meta.golden_per_domain_accuracy, meta.golden_per_domain_count)}
+
+### Per-answer-type accuracy (golden)
+
+{_answer_type_table(meta.golden_per_answer_type_accuracy, meta.golden_per_answer_type_count)}
+
+### Error analysis (golden)
+
+{_failmode_table(meta.golden_failmode_counts)}
+
+"""
+
+
 def build_model_card(meta: VersionMeta, org: str = DEFAULT_ORG) -> str:
     accuracy_line = (
         f"**{_fmt(meta.test_accuracy)}** "
@@ -305,6 +343,7 @@ Team: **Laplace's Red Devils**.
 | | |
 |---|---|
 | File | `{_fmt(meta.test_file)}` |
+| Data variant | {"**Golden** (DeepSeek-rewritten CoT)" if meta.test_file and "golden" in meta.test_file else "Original"} |
 | Size | {_fmt(meta.test_n)} questions |
 | Seed | {_fmt(meta.test_seed)} |
 | Few-shot pool size | {_fmt(meta.fewshot_pool_size)} |
@@ -321,6 +360,7 @@ Team: **Laplace's Red Devils**.
 
 {_failmode_table(meta.failmode_counts)}
 
+{_golden_section(meta)}
 ## How to reproduce
 
 ```bash

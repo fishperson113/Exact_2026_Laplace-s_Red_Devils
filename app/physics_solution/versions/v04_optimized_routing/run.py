@@ -152,6 +152,7 @@ def run(args) -> dict:
     )
 
     completions: list[str] = []
+    all_rendered_prompts: list[str] = []
     elapsed_per_row: list[float] = []
     pbar = tqdm(total=len(rows))
 
@@ -175,6 +176,8 @@ def run(args) -> dict:
             rendered = render.invoke(prompt_value)
             rendered_prompts.append(rendered)
 
+        all_rendered_prompts.extend(rendered_prompts)
+
         t0 = time.time()
         chunk_completions = llm.batch(rendered_prompts)
         batch_elapsed = time.time() - t0
@@ -189,7 +192,7 @@ def run(args) -> dict:
     # ---- Score + assemble results
     extra_meta = {"n_examples": n_examples, "classify_elapsed_s": classify_elapsed}
     results: list[evaluator.RowResult] = []
-    for row, completion, elapsed_s, route in zip(rows, completions, elapsed_per_row, routes):
+    for row, completion, elapsed_s, route, prompt in zip(rows, completions, elapsed_per_row, routes, all_rendered_prompts):
         qid = str(row.get("id", ""))
         question = str(row["question"])
         gold_answer = str(row.get("answer", ""))
@@ -207,6 +210,7 @@ def run(args) -> dict:
                 is_correct=scored["is_correct"],
                 elapsed_s=elapsed_s,
                 extra={
+                    "rendered_prompt": prompt,
                     "raw_answer": scored["raw_answer"],
                     "answer_type": scored.get("answer_type", ""),
                     "partial_correct": scored.get("partial_correct", False),

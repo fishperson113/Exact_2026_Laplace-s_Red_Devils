@@ -45,24 +45,27 @@ CLASSIFY_EXAMPLES: list[dict] = []  # v03: zero-shot classification (no examples
 # Shared output-format block appended to every domain prompt.
 # The {format_hint} placeholder is filled per answer_type.
 _BASE_SUFFIX = """
-Write a short numbered reasoning chain, then the final answer. Use this format exactly:
+Write a short numbered reasoning chain using LaTeX inline math ($...$), then the final answer. Format:
 
 Step 1: <one short sentence>
 Step 2: <one short sentence>
 ...
 {format_hint}
 
-Keep it tight: 3-5 steps is usually enough. Commit to one reading of the problem; do not enumerate alternatives. Stop after the UNIT line."""
+For large/small numbers (|exponent| >= 4), write a * 10^{{{{n}}}}. NEVER use e-notation.
+WRONG: 2.97e6 | RIGHT: 2.97 * 10^{{{{6}}}}
+
+Keep it tight: 3-5 steps. Commit to one reading of the problem. Stop after the UNIT line."""
 
 
 # ------------------------------------------------------------------ format hints per answer type
 FORMAT_HINTS: dict[str, str] = {
-    "pure_numeric": "FINAL ANSWER: <plain decimal number, no unit>\nUNIT: <unit symbol>",
-    "sci_notation": "FINAL ANSWER: <number in scientific notation, e.g. 5.07e-6>\nUNIT: <unit symbol>",
+    "pure_numeric": "FINAL ANSWER: <answer>\nUNIT: <unit symbol, or - if dimensionless>",
+    "sci_notation": "FINAL ANSWER: <a * 10^n, e.g. 5.07 * 10^{{-6}}>\nUNIT: <unit symbol, or - if dimensionless>",
     "yes_no": "FINAL ANSWER: <Yes or No>\nUNIT: -",
-    "multi_value": "FINAL ANSWER: <values separated by semicolons, e.g. 0.6; 1.2>\nUNIT: <unit symbol>",
+    "multi_value": "FINAL ANSWER: <values separated by semicolons, e.g. 0.6; 1.2>\nUNIT: <unit symbol, or - if dimensionless>",
     "text_only": "FINAL ANSWER: <short text answer>\nUNIT: -",
-    "mixed": "FINAL ANSWER: <answer value>\nUNIT: <unit symbol>",
+    "mixed": "FINAL ANSWER: <answer>\nUNIT: <unit symbol, or - if dimensionless>",
 }
 
 
