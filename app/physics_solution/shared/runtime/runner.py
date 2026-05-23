@@ -36,25 +36,21 @@ prompt template needs: at minimum `{"question": ...}`, plus
 `{"few_shot_messages": [...]}` for v02-style versions."""
 
 
-def _to_float(s) -> float | None:
-    try:
-        return float(str(s).strip())
-    except (ValueError, TypeError):
-        return None
-
-
 def _score(completion: str, gold_answer: str, gold_unit: str) -> dict:
+    result = evaluator.score(completion, gold_answer, gold_unit)
     extracted = evaluator.extract(completion)
-    gold = _to_float(gold_answer)
-    correct = gold is not None and evaluator.numeric_close(extracted.numeric, gold)
+    pred_numeric = result.pred_value if isinstance(result.pred_value, float) else extracted.numeric
     return {
         "completion": completion,
-        "pred_numeric": extracted.numeric,
-        "pred_unit": extracted.raw_unit,
+        "pred_numeric": pred_numeric,
+        "pred_unit": result.pred_unit,
         "raw_answer": extracted.raw_answer,
-        "is_correct": correct,
-        "gold_numeric": gold,
+        "is_correct": result.is_correct,
+        "gold_numeric": result.pred_value if isinstance(result.pred_value, float) else None,
         "gold_unit": gold_unit,
+        "answer_type": result.detected_answer_type.value,
+        "partial_correct": result.partial_correct,
+        "scoring_notes": result.notes,
     }
 
 
@@ -145,7 +141,13 @@ def run_solver(
                 pred_unit=scored["pred_unit"],
                 is_correct=scored["is_correct"],
                 elapsed_s=elapsed_s,
-                extra={"raw_answer": scored["raw_answer"], **extra_meta},
+                extra={
+                    "raw_answer": scored["raw_answer"],
+                    "answer_type": scored.get("answer_type", ""),
+                    "partial_correct": scored.get("partial_correct", False),
+                    "scoring_notes": scored.get("scoring_notes", ""),
+                    **extra_meta,
+                },
             )
         )
 

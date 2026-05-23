@@ -36,8 +36,10 @@ from app.physics_solution import config
 from app.physics_solution.shared.upload.hf import (
     VersionMeta,
     collect_env_info,
+    failmode_breakdown,
     load_token,
     now_utc,
+    per_answer_type_breakdown,
     per_domain_breakdown,
     push,
 )
@@ -119,6 +121,8 @@ def main() -> None:
     summary, rows = load_results(args.results)
     env = collect_env_info()
     per_dom_acc, per_dom_cnt = per_domain_breakdown(rows) if rows else ({}, {})
+    per_at_acc, per_at_cnt = per_answer_type_breakdown(rows) if rows else ({}, {})
+    fm_counts = failmode_breakdown(rows) if rows else {}
 
     description = args.description or (
         f"Strategy `{args.strategy}` applied on top of {args.base_model_id}. "
@@ -139,6 +143,9 @@ def main() -> None:
         mean_latency_s=summary.get("mean_latency_s"),
         per_domain_accuracy=per_dom_acc,
         per_domain_count=per_dom_cnt,
+        per_answer_type_accuracy=per_at_acc,
+        per_answer_type_count=per_at_cnt,
+        failmode_counts=fm_counts,
         # inference config (mirrors runner.summary fields)
         dtype=summary.get("dtype"),
         effective_dtype=summary.get("effective_dtype"),
@@ -190,6 +197,9 @@ def main() -> None:
     print(f"    - gpu: {meta.gpu_name} ({meta.gpu_vram_gb} GB)")
     print(f"    - torch: {meta.torch_version}, transformers: {meta.transformers_version}")
     print(f"    - per-domain accuracy across {len(meta.per_domain_accuracy)} domains")
+    print(f"    - per-answer-type accuracy across {len(meta.per_answer_type_accuracy)} types")
+    print(f"    - fail-mode breakdown: {len(meta.failmode_counts)} modes, "
+          f"{sum(meta.failmode_counts.values())} wrong rows")
 
 
 if __name__ == "__main__":
