@@ -80,6 +80,13 @@ class FolSFTConfig:
     eval_gen_batch_size: int = 2
     eval_fol_max_samples: int | None = None
     experiment_inference_sample_n: int = 3
+    # Sau FT: đo greedy 1 prompt/mẫu, trung bình trên N index ngẫu nhiên (0 = tắt).
+    inference_latency_benchmark_n: int = 30
+    inference_latency_warmup: int = 2
+    inference_latency_benchmark_split: str = "test"
+    """train | dev | test — split dùng cho benchmark latency."""
+    inference_latency_benchmark_seed: int | None = None
+    """None = dùng ``train_seed``."""
 
     # --- Unsloth / VRAM (T4): FastLanguageModel + loss chỉ assistant + adamw_8bit ---
     use_unsloth: bool = False
@@ -90,6 +97,11 @@ class FolSFTConfig:
     unsloth_response_marker: str = "<|im_start|>assistant\n"
     use_adamw_8bit: bool = True
     """``SFTConfig.optim=adamw_8bit`` (bitsandbytes), áp dụng cả pipeline HF/PEFT không Unsloth."""
+    unsloth_load_in_4bit: bool = False
+    """Unsloth: NF4 4-bit (VRAM thấp hơn nhiều so với 16-bit / INT8 base). Bật khi T4 vẫn OOM."""
+
+    eval_accumulation_steps: int = 4
+    """Trainer: tích lũy eval theo nhiều micro-batch → giảm đỉnh VRAM lúc ``evaluate()``."""
 
     hf_org: str = "Laplaces-Red-Devils"
     fol_repo_version: str = "v01"
@@ -162,6 +174,23 @@ class FolSFTConfig:
             else:
                 kwargs["experiment_inference_sample_n"] = int(es.strip())
 
+        if (es := _env_opt_str("FOL_INFER_BENCH_N")) is not None:
+            low = es.lower()
+            if low in ("0", "none", "off", ""):
+                kwargs["inference_latency_benchmark_n"] = 0
+            else:
+                kwargs["inference_latency_benchmark_n"] = int(es.strip())
+        if v := _env_int("FOL_INFER_BENCH_WARMUP"):
+            kwargs["inference_latency_warmup"] = v
+        if (v := _env_opt_str("FOL_INFER_BENCH_SPLIT")) is not None:
+            kwargs["inference_latency_benchmark_split"] = v.strip().lower()
+        if (es := _env_opt_str("FOL_INFER_BENCH_SEED")) is not None:
+            low = es.lower()
+            if low in ("", "none", "train", "same"):
+                kwargs["inference_latency_benchmark_seed"] = None
+            else:
+                kwargs["inference_latency_benchmark_seed"] = int(es.strip())
+
         kwargs["run_train"] = _env_bool("FOL_RUN_TRAIN", default=True)
         kwargs["push_to_hub"] = _env_bool("FOL_PUSH_TO_HUB", default=False)
         kwargs["hf_private"] = _env_bool("FOL_HF_PRIVATE", default=False)
@@ -196,6 +225,10 @@ class FolSFTConfig:
             kwargs["unsloth_instruction_marker"] = v
         if (v := _env_opt_str("FOL_UNSLOTH_RESPONSE_MARKER")) is not None:
             kwargs["unsloth_response_marker"] = v
+
+        kwargs["unsloth_load_in_4bit"] = _env_bool("FOL_UNSLOTH_NF4", default=False)
+        if v := _env_int("FOL_EVAL_ACCUMULATION_STEPS"):
+            kwargs["eval_accumulation_steps"] = v
 
         valid = {f.name for f in fields(cls)}
         filtered = {k: v for k, v in kwargs.items() if k in valid}

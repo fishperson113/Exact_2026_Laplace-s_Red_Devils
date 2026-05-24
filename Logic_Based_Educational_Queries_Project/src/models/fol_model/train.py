@@ -1,8 +1,10 @@
 """Huấn luyện LoRA SFT: premises NL → premises FOL (JSON)."""
 from __future__ import annotations
 
+import gc
 import inspect
 import json
+import os
 from typing import Any
 
 import torch
@@ -19,10 +21,19 @@ from .experiment_log import (
 )
 from .fol_preflight import load_preflight_baseline, mean_nll_completion_on_split
 from .generation_fol_eval import (
+    benchmark_fol_greedy_latency_per_sample,
     collect_fol_inference_samples,
     fol_exact_match_on_splits,
     fol_exact_match_rate,
 )
+
+
+def _fol_cuda_bootstrap() -> None:
+    """Giảm phân mảnh VRAM + dọn cache trước train (đặc biệt T4 ~15GB)."""
+    os.environ.setdefault("PYTORCH_ALLOC_CONF", "expandable_segments:True")
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
 
 def load_tokenizer(cfg: FolSFTConfig):
@@ -112,6 +123,8 @@ def _build_fol_sft_config(cfg: FolSFTConfig, train_bf16: bool, train_fp16: bool)
     )
     if "max_seq_length" in inspect.signature(SFTConfig.__init__).parameters:
         sft_kw["max_seq_length"] = cfg.max_seq_length
+    if "eval_accumulation_steps" in inspect.signature(SFTConfig.__init__).parameters:
+        sft_kw["eval_accumulation_steps"] = max(1, int(cfg.eval_accumulation_steps))
     return SFTConfig(**sft_kw)
 
 
@@ -141,6 +154,7 @@ def _persist_fol_experiment_log(
     *,
     fol_preflight_baseline: dict | None = None,
     fol_test_benchmark: dict | None = None,
+    fol_inference_latency_benchmark: dict | None = None,
 ) -> None:
     if cfg.out_dir is None:
         return
@@ -161,6 +175,7 @@ def _persist_fol_experiment_log(
         fol_inference_samples=fol_inference_samples,
         fol_preflight_baseline=fol_preflight_baseline,
         fol_test_benchmark=fol_test_benchmark,
+        fol_inference_latency_benchmark=fol_inference_latency_benchmark,
     )
     write_experiment_log_json(cfg.out_dir / "experiment_log.json", doc)
 
@@ -197,6 +212,7 @@ def run_training(cfg: FolSFTConfig):
     if not cfg.run_train:
         return None
 
+    _fol_cuda_bootstrap()
     print("[FOL train] Bắt đầu: tokenizer + dataset + model (bước này có thể vài phút, chưa có thanh epoch).", flush=True)
 
     if cfg.use_unsloth:
@@ -266,14 +282,17 @@ def run_training(cfg: FolSFTConfig):
     trainer.save_model(str(cfg.checkpoint_dir))
     tokenizer.save_pretrained(str(cfg.checkpoint_dir))
 
+    _fol_cuda_bootstrap()
     print("[FOL train] trainer.evaluate() trên dev (loss) …", flush=True)
     metrics = trainer.evaluate()
     with open(cfg.out_dir / "train_metrics.json", "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
 
+    _fol_cuda_bootstrap()
     print("[FOL train] trainer.evaluate() trên test (loss) …", flush=True)
     test_trainer_metrics = trainer.evaluate(eval_dataset=dataset_dict["test"])
 
+    _fol_cuda_bootstrap()
     print("[FOL train] Greedy exact-match JSON trên train/dev/test (lâu nếu full split + null max_samples) …", flush=True)
     fol_eval = run_fol_eval_all_splits(cfg, trainer, dataset_dict)
     tok = getattr(trainer, "processing_class", None) or getattr(
@@ -295,6 +314,47 @@ def run_training(cfg: FolSFTConfig):
     print("[Sau FT] test full mean NLL (completion):", post_test_nll)
     print("[Sau FT] trainer.evaluate(test):", test_trainer_metrics)
 
+    fol_inference_latency: dict[str, Any] | None = None
+    if cfg.inference_latency_benchmark_n > 0:
+        split_lat = (cfg.inference_latency_benchmark_split or "test").strip().lower()
+        if split_lat not in dataset_dict:
+            for fb in ("test", "dev", "train"):
+                if fb in dataset_dict:
+                    print(
+                        f"[FOL latency] Split '{cfg.inference_latency_benchmark_split}' không có trong dataset_dict, dùng '{fb}'.",
+                        flush=True,
+                    )
+                    split_lat = fb
+                    break
+        if split_lat in dataset_dict:
+            print(
+                "[FOL train] Benchmark latency greedy (trung bình trên nhiều mẫu ngẫu nhiên) …",
+                flush=True,
+            )
+            _fol_cuda_bootstrap()
+            bseed = (
+                cfg.inference_latency_benchmark_seed
+                if cfg.inference_latency_benchmark_seed is not None
+                else cfg.train_seed
+            )
+            fol_inference_latency = benchmark_fol_greedy_latency_per_sample(
+                cfg,
+                trainer.model,
+                tok,
+                dataset_dict[split_lat],
+                n=cfg.inference_latency_benchmark_n,
+                seed=int(bseed),
+                warmup=cfg.inference_latency_warmup,
+                split_name=split_lat,
+            )
+            with open(cfg.out_dir / "fol_inference_latency.json", "w", encoding="utf-8") as f:
+                json.dump(fol_inference_latency, f, indent=2, ensure_ascii=False)
+        else:
+            print(
+                "[FOL latency] Bỏ qua: không tìm thấy split train/dev/test trong dataset_dict.",
+                flush=True,
+            )
+
     preflight = load_preflight_baseline(cfg.out_dir)
     bench: dict[str, Any] = {
         "before_finetune_summary": {
@@ -308,6 +368,7 @@ def run_training(cfg: FolSFTConfig):
             "test_mean_nll_completion_full": post_test_nll,
             "trainer_evaluate_test_metrics": test_trainer_metrics,
             "fol_eval_greedy_splits_respecting_FOL_EVAL_FOL_MAX_SAMPLES": fol_eval,
+            "inference_latency_greedy": fol_inference_latency,
         },
     }
     with open(cfg.out_dir / "fol_test_benchmark.json", "w", encoding="utf-8") as f:
@@ -332,6 +393,7 @@ def run_training(cfg: FolSFTConfig):
         fol_inference_samples=fol_samples,
         fol_preflight_baseline=preflight,
         fol_test_benchmark=bench,
+        fol_inference_latency_benchmark=fol_inference_latency,
     )
     return train_result, trainer, tokenizer, dataset_dict
 

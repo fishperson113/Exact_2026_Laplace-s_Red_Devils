@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import json
+import random
 import re
+import statistics
+import time
 from typing import Any, Mapping
 
 import torch
@@ -133,6 +136,96 @@ def fol_exact_match_on_splits(
             split_label=sp,
         )
     return out
+
+
+def _fol_one_greedy_generate(
+    cfg: FolSFTConfig,
+    model,
+    tokenizer,
+    device: torch.device,
+    prompt: str,
+) -> None:
+    enc = tokenizer(
+        prompt,
+        return_tensors="pt",
+        truncation=True,
+        max_length=cfg.max_seq_length,
+    )
+    enc = {k: v.to(device) for k, v in enc.items()}
+    pad_id = tokenizer.pad_token_id or tokenizer.eos_token_id
+    model.generate(
+        **enc,
+        max_new_tokens=cfg.gen_max_new_tokens,
+        do_sample=False,
+        pad_token_id=pad_id,
+        eos_token_id=tokenizer.eos_token_id,
+    )
+
+
+@torch.no_grad()
+def benchmark_fol_greedy_latency_per_sample(
+    cfg: FolSFTConfig,
+    model,
+    tokenizer,
+    ds,
+    *,
+    n: int = 30,
+    seed: int = 42,
+    warmup: int = 2,
+    split_name: str = "test",
+) -> dict[str, Any]:
+    """Đo thời gian greedy **một prompt / một lần generate**; trả về trung bình trên ``n`` mẫu ngẫu nhiên."""
+    model.eval()
+    device = next(model.parameters()).device
+    n_total = len(ds)
+    if n_total == 0:
+        return {"error": "empty_dataset", "split": split_name}
+    k = min(max(0, n), n_total)
+    rng = random.Random(seed)
+    pool = list(range(n_total))
+    idxs = rng.sample(pool, k=k) if k < len(pool) else pool[:k]
+
+    w = max(0, min(int(warmup), n_total))
+    w_idx = idxs[0] if idxs else 0
+    for _ in range(w):
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+        _fol_one_greedy_generate(cfg, model, tokenizer, device, str(ds[w_idx]["eval_prompt"]))
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
+
+    times: list[float] = []
+    for i in idxs:
+        prompt = str(ds[i]["eval_prompt"])
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+        t0 = time.perf_counter()
+        _fol_one_greedy_generate(cfg, model, tokenizer, device, prompt)
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+        t1 = time.perf_counter()
+        times.append(t1 - t0)
+
+    mean_s = float(sum(times) / len(times)) if times else 0.0
+    std_s = float(statistics.pstdev(times)) if len(times) > 1 else 0.0
+    result: dict[str, Any] = {
+        "split": split_name,
+        "n_samples": len(times),
+        "seed": seed,
+        "warmup_runs": w,
+        "mean_seconds_per_sample": mean_s,
+        "std_seconds_per_sample": std_s,
+        "min_seconds": float(min(times)) if times else None,
+        "max_seconds": float(max(times)) if times else None,
+        "gen_max_new_tokens": cfg.gen_max_new_tokens,
+        "max_seq_length_cap": cfg.max_seq_length,
+        "note": "Mỗi mẫu: một lần greedy generate từ eval_prompt; đồng bộ CUDA quanh đo để gần với thời gian GPU.",
+    }
+    print(
+        f"[FOL latency] {split_name}: trung bình {mean_s:.3f}s/mẫu (n={len(times)}, σ={std_s:.3f}s)",
+        flush=True,
+    )
+    return result
 
 
 @torch.no_grad()

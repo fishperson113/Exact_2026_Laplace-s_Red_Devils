@@ -24,6 +24,7 @@ def _upload_experiment_bundle(api: HfApi, repo: str, out_dir: Path) -> list[str]
         "fol_eval_metrics.json",
         "fol_preflight_baseline.json",
         "fol_test_benchmark.json",
+        "fol_inference_latency.json",
     ):
         p = out_dir / name
         if not p.is_file():
@@ -161,9 +162,10 @@ LoRA SFT — dịch **premises NL → premises FOL** (JSON `premises_fol` trong 
 
 Trong `{_HUB_ARTIFACT_SUBDIR}/`:
 
-- **experiment_log.json** — siêu tham số (gần `configs/fol_model.yaml`), `fol_eval_*` sau eval greedy.
+- **experiment_log.json** — siêu tham số (gần `configs/fol_model.yaml`), `fol_eval_*` sau eval greedy, `fol_inference_latency_benchmark` nếu bật benchmark.
 - **train_metrics.json** — metrics cuối từ `Trainer`.
 - **fol_eval_metrics.json** — exact match FOL (nếu có).
+- **fol_inference_latency.json** — trung bình thời gian greedy một mẫu (sau FT, nếu có).
 
 Biến môi trường: prefix `FOL_*` (xem `FolSFTConfig` trong `services/config_fol.py`).
 """,

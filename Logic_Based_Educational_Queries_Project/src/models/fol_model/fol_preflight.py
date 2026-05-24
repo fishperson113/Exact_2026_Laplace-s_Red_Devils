@@ -1,6 +1,7 @@
 """Baseline FOL: base model (chưa LoRA), NLL trên completion, exact-match, inference ngẫu nhiên."""
 from __future__ import annotations
 
+import gc
 import json
 import random
 from pathlib import Path
@@ -286,6 +287,7 @@ def run_preflight_baseline_and_save(
         return doc
     finally:
         del model
+        gc.collect()
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 

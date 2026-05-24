@@ -67,6 +67,8 @@ def hyperparameters_fol_shape(cfg: FolSFTConfig) -> dict[str, Any]:
             "use_unsloth": cfg.use_unsloth,
             "unsloth_train_on_responses_only": cfg.unsloth_train_on_responses_only,
             "use_adamw_8bit": cfg.use_adamw_8bit,
+            "unsloth_load_in_4bit": cfg.unsloth_load_in_4bit,
+            "eval_accumulation_steps": cfg.eval_accumulation_steps,
         },
         "paths": {
             "sft_processed_dir": str(cfg.sft_processed_dir) if cfg.sft_processed_dir else None,
@@ -88,6 +90,10 @@ def hyperparameters_fol_shape(cfg: FolSFTConfig) -> dict[str, Any]:
             "eval_gen_batch_size": cfg.eval_gen_batch_size,
             "eval_fol_max_samples": cfg.eval_fol_max_samples,
             "experiment_inference_sample_n": cfg.experiment_inference_sample_n,
+            "inference_latency_benchmark_n": cfg.inference_latency_benchmark_n,
+            "inference_latency_warmup": cfg.inference_latency_warmup,
+            "inference_latency_benchmark_split": cfg.inference_latency_benchmark_split,
+            "inference_latency_benchmark_seed": cfg.inference_latency_benchmark_seed,
         },
     }
 
@@ -123,6 +129,7 @@ def build_fol_experiment_log_document(
     fol_inference_samples: list[dict[str, Any]] | None = None,
     fol_preflight_baseline: dict[str, Any] | None = None,
     fol_test_benchmark: dict[str, Any] | None = None,
+    fol_inference_latency_benchmark: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     yaml_dict, yaml_raw = try_read_fol_model_yaml(cfg)
     doc: dict[str, Any] = {
@@ -147,6 +154,8 @@ def build_fol_experiment_log_document(
         doc["fol_preflight_baseline"] = _json_safe(fol_preflight_baseline)
     if fol_test_benchmark is not None:
         doc["fol_test_benchmark"] = _json_safe(fol_test_benchmark)
+    if fol_inference_latency_benchmark is not None:
+        doc["fol_inference_latency_benchmark"] = _json_safe(fol_inference_latency_benchmark)
     if fol_eval:
         doc["fol_eval_dev_exact_match"] = fol_eval.get("dev", {}).get("exact_match_rate")
         doc["fol_eval_test_exact_match"] = fol_eval.get("test", {}).get("exact_match_rate")

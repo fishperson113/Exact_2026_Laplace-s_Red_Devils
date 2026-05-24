@@ -47,3 +47,7 @@ eval:
   eval_gen_batch_size: 2
   eval_fol_max_samples: null
   experiment_inference_sample_n: 3
+  # Sau FT: trung bình thời gian greedy 1 prompt/mẫu trên N index ngẫu nhiên (0 = tắt). Env: FOL_INFER_BENCH_*
+  inference_latency_benchmark_n: 30
+  inference_latency_warmup: 2
+  inference_latency_benchmark_split: test
