@@ -10,6 +10,7 @@ import pandas as pd
 from datasets import Dataset, DatasetDict
 
 from data.dataset import read_split_csv
+from data.ingestion import discover_processed_splits_dir, project_root
 from data.prompts import (
     SYSTEM_PROMPT_FOL_SFT,
     USER_TEMPLATE_FOL_SFT,
@@ -21,22 +22,8 @@ _LOG = logging.getLogger(__name__)
 
 
 def _discover_fol_or_logic_processed_dir() -> Path | None:
-    seen: set[str] = set()
-    for start in [Path.cwd().resolve(), *Path.cwd().resolve().parents]:
-        key = str(start)
-        if key in seen:
-            continue
-        seen.add(key)
-        for rel in (
-            ("app", "data", "processed", "fol_sft"),
-            ("data", "processed", "fol_sft"),
-            ("app", "data", "processed", "logic_sft"),
-            ("data", "processed", "logic_sft"),
-        ):
-            d = start.joinpath(*rel)
-            if (d / "train.csv").is_file():
-                return d.resolve()
-    return None
+    """Giống logic SFT: ưu tiên `data/processed/`, rồi legacy `fol_sft` / `logic_sft`."""
+    return discover_processed_splits_dir()
 
 
 def resolve_fol_processed_dir(cfg: FolSFTConfig) -> Path:
@@ -51,15 +38,15 @@ def resolve_fol_processed_dir(cfg: FolSFTConfig) -> Path:
     found = _discover_fol_or_logic_processed_dir()
     if found is None:
         raise FileNotFoundError(
-            "Không thấy train.csv trong fol_sft/logic_sft. "
-            "Đặt FOL_SFT_PROCESSED_DIR / LOGIC_SFT_PROCESSED_DIR."
+            "Không thấy train.csv trong data/processed (hoặc legacy fol_sft/logic_sft). "
+            "Đặt FOL_SFT_PROCESSED_DIR / LOGIC_SFT_PROCESSED_DIR hoặc xuất CSV vào data/processed/."
         )
     return found
 
 
 def prepare_fol_training_paths(cfg: FolSFTConfig, processed_dir: Path) -> None:
     cfg.processed_dir = processed_dir.resolve()
-    cfg.app_dir = processed_dir.parent.parent.parent
+    cfg.app_dir = project_root()
     nb_legacy = cfg.app_dir / "notebooks" / "Logic_Based_Educational_Queries"
     nb_project = cfg.app_dir / "notebooks"
     if nb_legacy.is_dir():
@@ -179,7 +166,7 @@ def export_filtered_fol_csvs(
     *,
     splits: tuple[str, ...] = ("train", "dev", "test"),
 ) -> dict[str, int]:
-    """Lọc logic_sft → ghi fol_sft; trả về số dòng loại mỗi split."""
+    """Lọc CSV nguồn → ghi thư mục đích; trả về số dòng loại mỗi split."""
     src = Path(src_processed_dir).resolve()
     dst = Path(dst_processed_dir).resolve()
     dst.mkdir(parents=True, exist_ok=True)

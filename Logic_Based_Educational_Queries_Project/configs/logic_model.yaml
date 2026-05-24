@@ -32,9 +32,8 @@ data:
   include_fol_in_user: true
 
 paths:
-  # Đặt trong .env (khuyến nghị):
-  # LOGIC_SFT_PROCESSED_DIR=/absolute/path/to/Logic_Based_Educational_Queries_Project/data/processed/logic_sft
-  processed_subdir: data/processed/logic_sft
+  # Đặt trong .env nếu cần: LOGIC_SFT_PROCESSED_DIR=/.../data/processed (mặc định: thư mục có train.csv)
+  processed_subdir: data/processed
   raw_filename: Logic_Based_Educational_Queries.json
 
 hub:

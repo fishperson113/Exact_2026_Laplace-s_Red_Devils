@@ -27,8 +27,8 @@ training:
   gpu_profile: auto
 
 paths:
-  # FOL_SFT_PROCESSED_DIR hoặc (mặc định) cùng thư mục logic_sft sau export/lọc
-  processed_subdir: data/processed/fol_sft
+  # FOL_SFT_PROCESSED_DIR hoặc mặc định data/processed (chung với logic SFT)
+  processed_subdir: data/processed
 
 hub:
   org: Laplaces-Red-Devils

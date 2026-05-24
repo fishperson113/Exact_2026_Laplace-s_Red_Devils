@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 from datasets import Dataset, DatasetDict
 
+from data.ingestion import discover_processed_splits_dir, project_root
 from data.nl_to_fol import fol_block_from_lists, premises_fol_for_training
 from data.prompts import (
     ASSISTANT_TEMPLATE_SFT,
@@ -19,25 +20,12 @@ from services.config import LogicSFTConfig
 
 
 def _discover_sft_processed_dir() -> Path | None:
-    """Tìm thư mục chứa train.csv (logic_sft) từ cwd và parent."""
-    seen: set[str] = set()
-    for start in [Path.cwd().resolve(), *Path.cwd().resolve().parents]:
-        key = str(start)
-        if key in seen:
-            continue
-        seen.add(key)
-        for rel in (
-            ("app", "data", "processed", "logic_sft"),
-            ("data", "processed", "logic_sft"),
-        ):
-            d = start.joinpath(*rel)
-            if (d / "train.csv").is_file():
-                return d.resolve()
-    return None
+    """Mặc định: `data/processed/train.csv` (chung hai model); fallback `logic_sft`/`fol_sft`."""
+    return discover_processed_splits_dir()
 
 
 def resolve_sft_processed_dir(cfg: LogicSFTConfig) -> Path:
-    """Thư mục logic_sft đã export (train/dev/test.csv)."""
+    """Thư mục chứa train/dev/test.csv (mặc định `data/processed/`)."""
     if cfg.sft_processed_dir is not None:
         return Path(cfg.sft_processed_dir).resolve()
     env = os.environ.get("LOGIC_SFT_PROCESSED_DIR", "").strip()
@@ -46,15 +34,15 @@ def resolve_sft_processed_dir(cfg: LogicSFTConfig) -> Path:
     found = _discover_sft_processed_dir()
     if found is None:
         raise FileNotFoundError(
-            "Không thấy data/processed/logic_sft/train.csv. "
-            "Chạy notebooks/eda_and_preprocessing.ipynb (xuất logic_sft), `make data`, hoặc LOGIC_SFT_PROCESSED_DIR."
+            "Không thấy data/processed/train.csv (hoặc legacy logic_sft/fol_sft). "
+            "Chạy notebooks/eda_and_preprocessing.ipynb (xuất CSV), `make data`, hoặc đặt LOGIC_SFT_PROCESSED_DIR."
         )
     return found
 
 
 def prepare_training_paths(cfg: LogicSFTConfig, processed_dir: Path) -> None:
     cfg.processed_dir = processed_dir.resolve()
-    cfg.app_dir = processed_dir.parent.parent.parent
+    cfg.app_dir = project_root()
     nb_legacy = cfg.app_dir / "notebooks" / "Logic_Based_Educational_Queries"
     nb_project = cfg.app_dir / "notebooks"
     if nb_legacy.is_dir():
@@ -83,7 +71,7 @@ def _maybe_list(val) -> list:
 def read_split_csv(processed_dir: Path, split: str) -> pd.DataFrame:
     p = processed_dir / f"{split}.csv"
     if not p.is_file():
-        raise FileNotFoundError(f"Thiếu {p}. Xuất từ notebooks/eda_and_preprocessing.ipynb hoặc `make data`.")
+        raise FileNotFoundError(f"Thiếu {p}. Xuất từ notebooks/eda_and_preprocessing.ipynb hoặc `make data` → data/processed/.")
     df = pd.read_csv(p)
     for col in ("premises_nl", "premises_fol"):
         if col in df.columns:

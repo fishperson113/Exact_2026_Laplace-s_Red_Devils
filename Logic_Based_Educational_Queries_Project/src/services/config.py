@@ -133,7 +133,7 @@ class LogicSFTConfig:
     app_dir: Path | None = None
     notebook_root: Path | None = None
     data_path: Path | None = None
-    sft_processed_dir: Path | None = None  # thư mục logic_sft; None = auto / LOGIC_SFT_PROCESSED_DIR
+    sft_processed_dir: Path | None = None  # thư mục có train.csv (mặc định data/processed); None = auto
     out_dir: Path | None = None
     processed_dir: Path | None = None
     checkpoint_dir: Path | None = None

@@ -32,6 +32,55 @@ def stage_raw_copy(src: Path, dst: Path | None = None) -> Path:
     return dst
 
 
+def _discovery_anchor_dirs() -> list[Path]:
+    """Thư mục neo để tìm `data/processed/...`: gốc repo trước (ổn định trên Kaggle khi CWD ≠ repo), rồi CWD."""
+    anchors: list[Path] = []
+    seen: set[str] = set()
+
+    def _add(p: Path) -> None:
+        try:
+            r = p.resolve()
+        except OSError:
+            return
+        k = str(r)
+        if k in seen:
+            return
+        seen.add(k)
+        anchors.append(r)
+
+    _add(project_root())
+    _add(Path.cwd().resolve())
+    for p in Path.cwd().resolve().parents:
+        _add(p)
+    return anchors
+
+
+def discover_processed_splits_dir() -> Path | None:
+    """Tìm thư mục có `train.csv` (chung logic + FOL): ưu tiên `data/processed/`, rồi legacy `fol_sft`/`logic_sft`."""
+    rels = (
+        ("data", "processed"),
+        ("app", "data", "processed"),
+        ("data", "processed", "fol_sft"),
+        ("app", "data", "processed", "fol_sft"),
+        ("data", "processed", "logic_sft"),
+        ("app", "data", "processed", "logic_sft"),
+    )
+    seen_dirs: set[str] = set()
+    for start in _discovery_anchor_dirs():
+        for rel in rels:
+            d = start.joinpath(*rel)
+            try:
+                key = str(d.resolve())
+            except OSError:
+                continue
+            if key in seen_dirs:
+                continue
+            seen_dirs.add(key)
+            if (d / "train.csv").is_file():
+                return d.resolve()
+    return None
+
+
 def export_from_records(
     records: list[dict],
     out_dir: Path,
@@ -40,7 +89,7 @@ def export_from_records(
     split_seed: int = 42,
     expected_questions: int = 808,
 ) -> None:
-    """Flatten list record → chuẩn 7 nhãn → split theo record_id → `logic_sft/*.csv` + metadata JSON.
+    """Flatten list record → chuẩn 7 nhãn → split theo record_id → `out_dir/*.csv` + metadata JSON.
 
     Dùng list đã tiền xử lý trong memory (vd. notebook đã ghi `premises-FOL` chuẩn hóa vào `records_norm`).
     """
@@ -135,5 +184,5 @@ def export_from_json_path(
 
 
 def export_default_logic_sft() -> None:
-    """CLI / Makefile: raw mặc định → `data/processed/logic_sft/`."""
-    export_from_json_path(raw_json_path(), project_root() / "data" / "processed" / "logic_sft")
+    """CLI / Makefile: raw mặc định → `data/processed/` (chung cho logic + FOL)."""
+    export_from_json_path(raw_json_path(), project_root() / "data" / "processed")

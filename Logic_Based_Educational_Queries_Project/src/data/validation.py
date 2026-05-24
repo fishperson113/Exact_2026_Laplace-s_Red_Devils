@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .ingestion import load_raw_records, project_root
+from .ingestion import discover_processed_splits_dir, load_raw_records
 
 
 def validate_raw_question_count(expected: int = 808) -> None:
@@ -14,7 +14,11 @@ def validate_raw_question_count(expected: int = 808) -> None:
 
 
 def validate_processed_splits() -> Path:
-    d = project_root() / "data" / "processed" / "logic_sft"
+    d = discover_processed_splits_dir()
+    if d is None:
+        raise FileNotFoundError(
+            "Thiếu train.csv: đặt CSV vào data/processed/ hoặc LOGIC_SFT_PROCESSED_DIR."
+        )
     for name in ("train.csv", "dev.csv", "test.csv", "split_record_ids.json", "split_summary.json"):
         p = d / name
         if not p.is_file():

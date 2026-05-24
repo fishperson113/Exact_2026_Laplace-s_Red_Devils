@@ -11,7 +11,7 @@ install:
 	python -m pip install -r requirements.txt
 
 data:
-	@echo "→ data/processed/logic_sft/ (raw JSON mặc định; hoặc dùng notebooks/eda_and_preprocessing.ipynb)"
+	@echo "→ data/processed/ (train/dev/test.csv — chung logic + FOL; raw JSON mặc định hoặc notebook EDA)"
 	cd "$(ROOT)" && PYTHONPATH=src python -c "from data.ingestion import export_default_logic_sft; export_default_logic_sft()"
 
 validate:
