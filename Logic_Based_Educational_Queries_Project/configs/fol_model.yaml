@@ -1,5 +1,5 @@
-# Tham khảo siêu tham số (FOL SFT — NL → premises-FOL).
-# Giá trị thực tế: ưu tiên `.env` + `FolSFTConfig.from_env()` trong code.
+# Tham khảo + mặc định khi gọi FolSFTConfig.from_env(): đọc file này trước, rồi biến FOL_* / .env ghi đè.
+# Không đặt bí mật trong YAML — dùng .env cho token / path riêng máy.
 
 model:
   name: Qwen/Qwen2.5-3B-Instruct

@@ -5,31 +5,50 @@ import inspect
 import logging
 from typing import TYPE_CHECKING, Any
 
+import torch
+
 if TYPE_CHECKING:
     from services.config_fol import FolSFTConfig
 
 _LOG = logging.getLogger(__name__)
 
+# Lần thử ``import unsloth`` gần nhất thất bại (để thông báo RuntimeError rõ ràng hơn).
+_last_unsloth_import_error: str | None = None
+
+
+def unsloth_import_error_detail() -> str | None:
+    """Thông điệp lỗi từ lần import ``unsloth`` thất bại gần nhất, hoặc None nếu chưa thử / đã OK."""
+    return _last_unsloth_import_error
+
 
 def is_unsloth_available() -> bool:
+    global _last_unsloth_import_error
     try:
         import unsloth  # noqa: F401
 
+        _last_unsloth_import_error = None
         return True
-    except ImportError:
+    except Exception as e:
+        _last_unsloth_import_error = f"{type(e).__name__}: {e}"
+        _LOG.warning("import unsloth thất bại: %s", _last_unsloth_import_error)
         return False
 
 
 def load_unsloth_model_and_tokenizer(cfg: "FolSFTConfig") -> tuple[Any, Any, bool, bool]:
     """Nạp Qwen qua ``FastLanguageModel`` + LoRA Unsloth; trả về ``(model, tokenizer, bf16, fp16)`` cho ``SFTConfig``."""
     if not is_unsloth_available():
+        detail = unsloth_import_error_detail() or "không rõ"
         raise ImportError(
-            "Thiếu gói `unsloth`. Cài: pip install unsloth  "
-            "(Kaggle: thường cần torch đúng phiên bản; xem https://github.com/unslothai/unsloth)."
+            "Không import được gói `unsloth`. Chi tiết: "
+            + detail
+            + " — xem https://github.com/unslothai/unsloth (torch/CUDA đúng bản; Jupyter: cài bằng `%pip install` "
+            "hoặc `python -m pip` trùng `sys.executable`)."
         )
     from unsloth import FastLanguageModel  # type: ignore[import-untyped]
 
     from services.config_fol import fol_should_load_in_8bit
+
+    from .tokenizer_fix import sync_eos_token_string_with_id
 
     print(
         "[FOL train][Unsloth] Nạp model + tokenizer (gradient checkpointing kiểu unsloth nếu bật).",
@@ -44,6 +63,7 @@ def load_unsloth_model_and_tokenizer(cfg: "FolSFTConfig") -> tuple[Any, Any, boo
     if cfg.unsloth_load_in_4bit:
         load_kw["load_in_4bit"] = True
         load_kw["load_in_8bit"] = False
+        # NF4 và FP16 full weights loại trừ nhau — muốn 16-bit: tắt cfg.unsloth_load_in_4bit / FOL_UNSLOTH_NF4.
         load_kw["load_in_16bit"] = False
         print(
             "[FOL train][Unsloth] NF4 4-bit (VRAM thấp; cfg.unsloth_load_in_4bit / FOL_UNSLOTH_NF4).",
@@ -70,7 +90,11 @@ def load_unsloth_model_and_tokenizer(cfg: "FolSFTConfig") -> tuple[Any, Any, boo
         else:
             raise
 
-    if tokenizer.pad_token is None:
+    sync_eos_token_string_with_id(tokenizer)
+    if tokenizer.pad_token is None or tokenizer.pad_token in (
+        "<EOS_TOKEN>",
+        "<PAD_TOKEN>",
+    ):
         tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "left"
 
@@ -88,8 +112,19 @@ def load_unsloth_model_and_tokenizer(cfg: "FolSFTConfig") -> tuple[Any, Any, boo
     )
     model.print_trainable_parameters()
 
-    # T4: fp16 train ổn định; bf16 trên sm75 không có tensor core bf16
-    train_bf16, train_fp16 = False, True
+    # Khớp SFTConfig với dtype thật của weights sau Unsloth (tránh: model bf16 + fp16=True → TypeError).
+    p0 = next(model.parameters())
+    if p0.dtype == torch.bfloat16:
+        train_bf16, train_fp16 = True, False
+    elif p0.dtype == torch.float16:
+        train_bf16, train_fp16 = False, True
+    else:
+        train_bf16, train_fp16 = bool(cfg.bf16), not bool(cfg.bf16)
+    print(
+        f"[FOL train][Unsloth] Trainer mixed precision: bf16={train_bf16}, fp16={train_fp16} "
+        f"(dtype tham số: {p0.dtype}).",
+        flush=True,
+    )
     return model, tokenizer, train_bf16, train_fp16
 
 

@@ -10,6 +10,16 @@ from typing import Any
 import torch
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+
+# Unsloth patch TRL/SFT (vd. SFTConfig.eos_token placeholder): cộng đồng + tài liệu Unsloth khuyên import *trước* `trl`.
+try:
+    from unsloth import FastLanguageModel as _UnslothFastLanguageModel  # noqa: F401
+except ImportError:
+    try:
+        import unsloth  # noqa: F401
+    except ImportError:
+        pass
+
 from trl import SFTConfig, SFTTrainer
 
 from data.fol_dataset import build_fol_dataset_dict
@@ -19,6 +29,7 @@ from .experiment_log import (
     build_fol_experiment_log_document,
     write_experiment_log_json,
 )
+from .tokenizer_fix import scrub_sft_config_eos_pad_args, sync_eos_token_string_with_id
 from .fol_preflight import load_preflight_baseline, mean_nll_completion_on_split
 from .generation_fol_eval import (
     benchmark_fol_greedy_latency_per_sample,
@@ -40,7 +51,8 @@ def load_tokenizer(cfg: FolSFTConfig):
     tok = AutoTokenizer.from_pretrained(
         cfg.model_name, trust_remote_code=cfg.trust_remote_code
     )
-    if tok.pad_token is None:
+    sync_eos_token_string_with_id(tok)
+    if tok.pad_token is None or tok.pad_token in ("<EOS_TOKEN>", "<PAD_TOKEN>"):
         tok.pad_token = tok.eos_token
     # Decoder-only + batched generate: pad bên trái để token cuối cùng của prompt nằm sát phải.
     tok.padding_side = "left"
@@ -88,7 +100,12 @@ def build_model(cfg: FolSFTConfig):
     return model, train_bf16, train_fp16
 
 
-def _build_fol_sft_config(cfg: FolSFTConfig, train_bf16: bool, train_fp16: bool) -> SFTConfig:
+def _build_fol_sft_config(
+    cfg: FolSFTConfig,
+    train_bf16: bool,
+    train_fp16: bool,
+    tokenizer: Any | None = None,
+) -> SFTConfig:
     optim = "adamw_8bit" if cfg.use_adamw_8bit else "adamw_torch"
     sft_kw: dict[str, Any] = dict(
         output_dir=str(cfg.out_dir),
@@ -125,7 +142,10 @@ def _build_fol_sft_config(cfg: FolSFTConfig, train_bf16: bool, train_fp16: bool)
         sft_kw["max_seq_length"] = cfg.max_seq_length
     if "eval_accumulation_steps" in inspect.signature(SFTConfig.__init__).parameters:
         sft_kw["eval_accumulation_steps"] = max(1, int(cfg.eval_accumulation_steps))
-    return SFTConfig(**sft_kw)
+    cfg_out = SFTConfig(**sft_kw)
+    if tokenizer is not None:
+        scrub_sft_config_eos_pad_args(cfg_out, tokenizer)
+    return cfg_out
 
 
 def _epoch_metrics_from_history(trainer: SFTTrainer) -> list[dict]:
@@ -220,12 +240,20 @@ def run_training(cfg: FolSFTConfig):
             apply_train_on_responses_only,
             is_unsloth_available,
             load_unsloth_model_and_tokenizer,
+            unsloth_import_error_detail,
         )
 
         if not is_unsloth_available():
+            import sys
+
+            detail = unsloth_import_error_detail() or "import unsloth trả về lỗi (không có chi tiết)."
             raise RuntimeError(
-                "cfg.use_unsloth=True nhưng chưa cài `unsloth`. Chạy: pip install unsloth  "
-                "hoặc đặt FOL_USE_UNSLOTH=false / FolSFTConfig.from_env(use_unsloth=False)."
+                "cfg.use_unsloth=True nhưng không import được `unsloth` (pip có thể đã cài vào Python khác kernel đang chạy).\n"
+                f"  → Chi tiết: {detail}\n"
+                f"  → Python đang chạy: {sys.executable}\n"
+                "  → Thử: trong notebook `%pip install unsloth` rồi **restart kernel**, hoặc `python -m pip install unsloth` "
+                "trùng interpreter trên.\n"
+                "  → Hoặc tắt Unsloth: FOL_USE_UNSLOTH=false / FolSFTConfig.from_env(use_unsloth=False)."
             )
         model, tokenizer, train_bf16, train_fp16 = load_unsloth_model_and_tokenizer(cfg)
         print("[FOL train] Đã nạp tokenizer (Unsloth).", flush=True)
@@ -257,7 +285,11 @@ def run_training(cfg: FolSFTConfig):
 
     assert cfg.out_dir is not None and cfg.checkpoint_dir is not None
 
-    sft_config = _build_fol_sft_config(cfg, train_bf16, train_fp16)
+    sft_config = _build_fol_sft_config(cfg, train_bf16, train_fp16, tokenizer)
+    scrub_sft_config_eos_pad_args(sft_config, tokenizer)
+    # TRL: chỉ khi None mới lấy theo tokenizer; gán rõ None tránh chuỗi lỗi từ metadata/CLI lọt vào SFTConfig.
+    sft_config.eos_token = None
+    sft_config.pad_token = None
 
     trainer_kwargs = dict(
         model=model,

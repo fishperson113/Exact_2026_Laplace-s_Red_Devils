@@ -16,6 +16,136 @@ from services.config import (
 from services.hf_repo_naming import build_fol_hf_repo_id
 
 
+def _fol_env_key_set(key: str) -> bool:
+    """True nếu biến môi trường tồn tại và không chỉ khoảng trắng (để ghi đè giá trị YAML)."""
+    v = os.environ.get(key)
+    return v is not None and str(v).strip() != ""
+
+
+def _fol_find_project_root_for_yaml() -> Path | None:
+    """Thư mục gốc repo có ``configs/fol_model.yaml`` (ưu tiên ``LOGIC_PROJECT_ROOT``, rồi cwd, rồi vị trí package)."""
+    if v := os.environ.get("LOGIC_PROJECT_ROOT", "").strip():
+        p = Path(v).expanduser().resolve()
+        if (p / "configs" / "fol_model.yaml").is_file():
+            return p
+    here = Path.cwd().resolve()
+    for base in (here, *here.parents):
+        if (base / "configs" / "fol_model.yaml").is_file():
+            return base
+    pkg_root = Path(__file__).resolve().parent.parent.parent  # .../src/services -> repo root
+    if (pkg_root / "configs" / "fol_model.yaml").is_file():
+        return pkg_root
+    return None
+
+
+def _fol_config_dict_from_yaml(project_root: Path) -> dict[str, Any]:
+    """Đọc ``configs/fol_model.yaml`` → dict trùng tên field ``FolSFTConfig`` (không ghi đè .env)."""
+    p = project_root / "configs" / "fol_model.yaml"
+    if not p.is_file():
+        return {}
+    try:
+        import yaml as _yaml
+    except ImportError:
+        return {}
+    try:
+        data = _yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    out: dict[str, Any] = {}
+
+    if m := data.get("model"):
+        if isinstance(m, dict):
+            if "name" in m:
+                out["model_name"] = str(m["name"])
+            if "trust_remote_code" in m:
+                out["trust_remote_code"] = bool(m["trust_remote_code"])
+            if "max_seq_length" in m:
+                out["max_seq_length"] = int(m["max_seq_length"])
+            if "gen_max_new_tokens" in m:
+                out["gen_max_new_tokens"] = int(m["gen_max_new_tokens"])
+
+    if lo := data.get("lora"):
+        if isinstance(lo, dict):
+            if "r" in lo:
+                out["lora_r"] = int(lo["r"])
+            if "alpha" in lo:
+                out["lora_alpha"] = int(lo["alpha"])
+            if "dropout" in lo:
+                out["lora_dropout"] = float(lo["dropout"])
+
+    if t := data.get("training"):
+        if isinstance(t, dict):
+            int_keys = (
+                "num_train_epochs",
+                "per_device_train_batch_size",
+                "per_device_eval_batch_size",
+                "gradient_accumulation_steps",
+                "logging_steps",
+                "train_seed",
+            )
+            float_keys = ("learning_rate", "warmup_ratio", "weight_decay")
+            bool_keys = (
+                "bf16",
+                "gradient_checkpointing",
+                "load_in_8bit",
+                "use_unsloth",
+                "unsloth_train_on_responses_only",
+                "use_adamw_8bit",
+            )
+            for k in int_keys:
+                if k in t and t[k] is not None:
+                    out[k] = int(t[k])
+            for k in float_keys:
+                if k in t and t[k] is not None:
+                    out[k] = float(t[k])
+            for k in bool_keys:
+                if k in t and t[k] is not None:
+                    out[k] = bool(t[k])
+            if "gpu_profile" in t and t["gpu_profile"] is not None:
+                out["gpu_profile"] = str(t["gpu_profile"]).strip().lower()
+
+    if paths := data.get("paths"):
+        if isinstance(paths, dict) and (sub := paths.get("processed_subdir")):
+            subp = Path(str(sub).strip())
+            out["sft_processed_dir"] = (
+                subp if subp.is_absolute() else (project_root / subp).resolve()
+            )
+
+    if hub := data.get("hub"):
+        if isinstance(hub, dict):
+            if "org" in hub and hub["org"] is not None:
+                out["hf_org"] = str(hub["org"])
+            if "repo_version" in hub and hub["repo_version"] is not None:
+                out["fol_repo_version"] = str(hub["repo_version"])
+            if "data_variant" in hub and hub["data_variant"] is not None:
+                out["fol_data_variant"] = str(hub["data_variant"]).strip().lower()
+            if "push_to_hub" in hub and hub["push_to_hub"] is not None:
+                out["push_to_hub"] = bool(hub["push_to_hub"])
+            if "hf_private" in hub and hub["hf_private"] is not None:
+                out["hf_private"] = bool(hub["hf_private"])
+
+    if ev := data.get("eval"):
+        if isinstance(ev, dict):
+            if "eval_gen_batch_size" in ev and ev["eval_gen_batch_size"] is not None:
+                out["eval_gen_batch_size"] = int(ev["eval_gen_batch_size"])
+            if "eval_fol_max_samples" in ev:
+                out["eval_fol_max_samples"] = ev["eval_fol_max_samples"]
+            if "experiment_inference_sample_n" in ev and ev["experiment_inference_sample_n"] is not None:
+                out["experiment_inference_sample_n"] = int(ev["experiment_inference_sample_n"])
+            if "inference_latency_benchmark_n" in ev and ev["inference_latency_benchmark_n"] is not None:
+                out["inference_latency_benchmark_n"] = int(ev["inference_latency_benchmark_n"])
+            if "inference_latency_warmup" in ev and ev["inference_latency_warmup"] is not None:
+                out["inference_latency_warmup"] = int(ev["inference_latency_warmup"])
+            if "inference_latency_benchmark_split" in ev and ev["inference_latency_benchmark_split"] is not None:
+                out["inference_latency_benchmark_split"] = str(
+                    ev["inference_latency_benchmark_split"]
+                ).strip().lower()
+
+    return out
+
+
 def fol_should_load_in_8bit(cfg: "FolSFTConfig") -> bool:
     """True → nạp base weights **INT8** (BitsAndBytes ``load_in_8bit``), tiết kiệm VRAM, chính xác hơn NF4.
 
@@ -132,8 +262,12 @@ class FolSFTConfig:
 
     @classmethod
     def from_env(cls, load_dotenv_file: bool = True, **overrides: Any) -> FolSFTConfig:
+        """Nạp ``configs/fol_model.yaml`` (nếu tìm thấy repo), rồi ghi đè bằng biến ``FOL_*`` / ``**overrides``."""
         if load_dotenv_file:
             load_dotenv_for_logic()
+
+        _root = _fol_find_project_root_for_yaml()
+        yaml_defaults = _fol_config_dict_from_yaml(_root) if _root is not None else {}
 
         kwargs: dict[str, Any] = {}
 
@@ -152,9 +286,10 @@ class FolSFTConfig:
         if v := _env_opt_str("FOL_GPU_PROFILE"):
             kwargs["gpu_profile"] = v.strip().lower()
 
-        kwargs["load_in_8bit"] = _env_bool("FOL_LOAD_IN_8BIT", default=False)
         if _env_bool("FOL_LOAD_IN_4BIT", default=False):
             kwargs["load_in_8bit"] = True
+        elif _fol_env_key_set("FOL_LOAD_IN_8BIT"):
+            kwargs["load_in_8bit"] = _env_bool("FOL_LOAD_IN_8BIT", default=False)
 
         if v := _env_int("FOL_NUM_TRAIN_EPOCHS"):
             kwargs["num_train_epochs"] = v
@@ -191,9 +326,12 @@ class FolSFTConfig:
             else:
                 kwargs["inference_latency_benchmark_seed"] = int(es.strip())
 
-        kwargs["run_train"] = _env_bool("FOL_RUN_TRAIN", default=True)
-        kwargs["push_to_hub"] = _env_bool("FOL_PUSH_TO_HUB", default=False)
-        kwargs["hf_private"] = _env_bool("FOL_HF_PRIVATE", default=False)
+        if _fol_env_key_set("FOL_RUN_TRAIN"):
+            kwargs["run_train"] = _env_bool("FOL_RUN_TRAIN", default=True)
+        if _fol_env_key_set("FOL_PUSH_TO_HUB"):
+            kwargs["push_to_hub"] = _env_bool("FOL_PUSH_TO_HUB", default=False)
+        if _fol_env_key_set("FOL_HF_PRIVATE"):
+            kwargs["hf_private"] = _env_bool("FOL_HF_PRIVATE", default=False)
 
         if v := _env_opt_str("FOL_HF_ORG"):
             kwargs["hf_org"] = v
@@ -216,23 +354,27 @@ class FolSFTConfig:
         if v := _env_int("FOL_EVAL_GEN_BATCH_SIZE"):
             kwargs["eval_gen_batch_size"] = v
 
-        kwargs["use_unsloth"] = _env_bool("FOL_USE_UNSLOTH", default=False)
-        kwargs["unsloth_train_on_responses_only"] = _env_bool(
-            "FOL_UNSLOTH_RESPONSES_ONLY", default=True
-        )
-        kwargs["use_adamw_8bit"] = _env_bool("FOL_USE_ADAMW_8BIT", default=True)
+        if _fol_env_key_set("FOL_USE_UNSLOTH"):
+            kwargs["use_unsloth"] = _env_bool("FOL_USE_UNSLOTH", default=False)
+        if _fol_env_key_set("FOL_UNSLOTH_RESPONSES_ONLY"):
+            kwargs["unsloth_train_on_responses_only"] = _env_bool(
+                "FOL_UNSLOTH_RESPONSES_ONLY", default=True
+            )
+        if _fol_env_key_set("FOL_USE_ADAMW_8BIT"):
+            kwargs["use_adamw_8bit"] = _env_bool("FOL_USE_ADAMW_8BIT", default=True)
         if (v := _env_opt_str("FOL_UNSLOTH_INSTRUCTION_MARKER")) is not None:
             kwargs["unsloth_instruction_marker"] = v
         if (v := _env_opt_str("FOL_UNSLOTH_RESPONSE_MARKER")) is not None:
             kwargs["unsloth_response_marker"] = v
 
-        kwargs["unsloth_load_in_4bit"] = _env_bool("FOL_UNSLOTH_NF4", default=False)
+        if _fol_env_key_set("FOL_UNSLOTH_NF4"):
+            kwargs["unsloth_load_in_4bit"] = _env_bool("FOL_UNSLOTH_NF4", default=False)
         if v := _env_int("FOL_EVAL_ACCUMULATION_STEPS"):
             kwargs["eval_accumulation_steps"] = v
 
         valid = {f.name for f in fields(cls)}
         filtered = {k: v for k, v in kwargs.items() if k in valid}
-        merged = {**filtered, **overrides}
+        merged = {**yaml_defaults, **filtered, **overrides}
         if merged.pop("load_in_4bit", None):
             merged["load_in_8bit"] = True
         merged = {k: v for k, v in merged.items() if k in valid}
