@@ -26,7 +26,7 @@ training:
   train_seed: 3407
   gpu_profile: auto
   # true hoặc FOL_LOAD_IN_8BIT=1 / FOL_GPU_PROFILE=8bit — INT8 bitsandbytes (chính xác hơn NF4; FOL_LOAD_IN_4BIT=1 vẫn bật INT8)
-  load_in_8bit: false
+  load_in_8bit: true
 
 paths:
   # FOL_SFT_PROCESSED_DIR hoặc mặc định data/processed (chung với logic SFT)
