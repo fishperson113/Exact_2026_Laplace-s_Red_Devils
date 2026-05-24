@@ -1,0 +1,23 @@
+# Logic SFT — fine-tune Qwen + LoRA (transformers / trl / peft)
+transformers>=4.52.0
+datasets
+peft
+trl>=0.16.0
+accelerate
+bitsandbytes
+scikit-learn
+huggingface_hub
+gdown
+python-dotenv
+torch
+pandas
+pyyaml
+
+# EDA / exploration notebook
+matplotlib
+seaborn
+numpy
+jupyter
+
+# Tuỳ chọn (solver FOL)
+# z3-solver

@@ -1,0 +1,45 @@
+# Tham khảo siêu tham số (Logic SFT — logic_model / MCQ).
+# Giá trị thực tế: ưu tiên `.env` + `LogicSFTConfig.from_env()` trong code.
+
+model:
+  name: Qwen/Qwen3.5-4B
+  trust_remote_code: true
+  max_seq_length: 2048
+  gen_max_new_tokens: 160
+
+lora:
+  r: 10
+  alpha: 16
+  dropout: 0.05
+
+training:
+  num_train_epochs: 10
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 2.0e-4
+  warmup_ratio: 0.05
+  weight_decay: 0.01
+  logging_steps: 10
+  bf16: true
+  gradient_checkpointing: true
+  train_seed: 3407
+  gpu_profile: auto  # auto | kaggle_p100 | default
+
+data:
+  split_ratios: [0.8, 0.1, 0.1]
+  split_seed: 42
+  include_fol_in_user: true
+
+paths:
+  # Đặt trong .env (khuyến nghị):
+  # LOGIC_SFT_PROCESSED_DIR=/absolute/path/to/Logic_Based_Educational_Queries_Project/data/processed/logic_sft
+  processed_subdir: data/processed/logic_sft
+  raw_filename: Logic_Based_Educational_Queries.json
+
+hub:
+  org: Laplaces-Red-Devils
+  repo_version: v01
+  repo_method: sft
+  push_to_hub: false
+  hf_private: false

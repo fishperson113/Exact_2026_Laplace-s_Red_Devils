@@ -1,0 +1,17 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.log
+
+# Dữ liệu lớn (tùy chọn — bỏ comment nếu không commit raw)
+# data/raw/*.json
+
+# Checkpoint / adapter cục bộ
+models/checkpoints/
+notebooks/output/

@@ -1,0 +1,43 @@
+# Tham khảo siêu tham số (FOL SFT — NL → premises-FOL).
+# Giá trị thực tế: ưu tiên `.env` + `FolSFTConfig.from_env()` trong code.
+
+model:
+  name: Qwen/Qwen2.5-3B-Instruct
+  trust_remote_code: true
+  max_seq_length: 4096
+  gen_max_new_tokens: 512
+
+lora:
+  r: 10
+  alpha: 16
+  dropout: 0.05
+
+training:
+  num_train_epochs: 10
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 2.0e-4
+  warmup_ratio: 0.05
+  weight_decay: 0.01
+  logging_steps: 10
+  bf16: true
+  gradient_checkpointing: true
+  train_seed: 3407
+  gpu_profile: auto
+
+paths:
+  # FOL_SFT_PROCESSED_DIR hoặc (mặc định) cùng thư mục logic_sft sau export/lọc
+  processed_subdir: data/processed/fol_sft
+
+hub:
+  org: Laplaces-Red-Devils
+  repo_version: v01
+  data_variant: origin   # origin | augmented
+  push_to_hub: false
+  hf_private: false
+
+eval:
+  eval_gen_batch_size: 2
+  eval_fol_max_samples: null
+  experiment_inference_sample_n: 3
