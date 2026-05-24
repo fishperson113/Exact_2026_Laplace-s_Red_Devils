@@ -37,9 +37,16 @@ def resolve_fol_processed_dir(cfg: FolSFTConfig) -> Path:
         return Path(env2).expanduser().resolve()
     found = _discover_fol_or_logic_processed_dir()
     if found is None:
+        pr = project_root()
+        cw = Path.cwd().resolve()
         raise FileNotFoundError(
-            "Không thấy train.csv trong data/processed (hoặc legacy fol_sft/logic_sft). "
-            "Đặt FOL_SFT_PROCESSED_DIR / LOGIC_SFT_PROCESSED_DIR hoặc xuất CSV vào data/processed/."
+            "Không thấy train.csv. Đã thử các đường dẫn tương đối "
+            f"data/processed, …/logic_sft, …/fol_sft dưới gốc repo ({pr}) rồi dưới CWD ({cw}); "
+            "xem discover_processed_splits_dir trong src/data/ingestion.py. "
+            "Cách xử lý: đặt FOL_SFT_PROCESSED_DIR hoặc LOGIC_SFT_PROCESSED_DIR trỏ tuyệt đối tới thư mục chứa train.csv; "
+            "hoặc chép train/dev/test.csv vào <gốc_repo>/data/processed/ (hoặc …/data/processed/logic_sft/). "
+            "Nếu thông báo lỗi của bạn chỉ có câu «trong fol_sft/logic_sft» mà không có gốc repo/CWD như trên, "
+            "kernel đang dùng bản fol_dataset.py cũ — đồng bộ lại cả thư mục src/ và khởi động lại kernel (Kaggle)."
         )
     return found
 
