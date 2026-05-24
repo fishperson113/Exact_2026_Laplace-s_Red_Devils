@@ -81,6 +81,16 @@ class FolSFTConfig:
     eval_fol_max_samples: int | None = None
     experiment_inference_sample_n: int = 3
 
+    # --- Unsloth / VRAM (T4): FastLanguageModel + loss chỉ assistant + adamw_8bit ---
+    use_unsloth: bool = False
+    """Bật khi đã ``pip install unsloth``; xem ``models/fol_model/unsloth_sft.py``."""
+    unsloth_train_on_responses_only: bool = True
+    """Bọc ``SFTTrainer`` bằng ``unsloth.chat_templates.train_on_responses_only``."""
+    unsloth_instruction_marker: str = "<|im_start|>user\n"
+    unsloth_response_marker: str = "<|im_start|>assistant\n"
+    use_adamw_8bit: bool = True
+    """``SFTConfig.optim=adamw_8bit`` (bitsandbytes), áp dụng cả pipeline HF/PEFT không Unsloth."""
+
     hf_org: str = "Laplaces-Red-Devils"
     fol_repo_version: str = "v01"
     fol_data_variant: str = "origin"  # origin | augmented
@@ -176,6 +186,16 @@ class FolSFTConfig:
 
         if v := _env_int("FOL_EVAL_GEN_BATCH_SIZE"):
             kwargs["eval_gen_batch_size"] = v
+
+        kwargs["use_unsloth"] = _env_bool("FOL_USE_UNSLOTH", default=False)
+        kwargs["unsloth_train_on_responses_only"] = _env_bool(
+            "FOL_UNSLOTH_RESPONSES_ONLY", default=True
+        )
+        kwargs["use_adamw_8bit"] = _env_bool("FOL_USE_ADAMW_8BIT", default=True)
+        if (v := _env_opt_str("FOL_UNSLOTH_INSTRUCTION_MARKER")) is not None:
+            kwargs["unsloth_instruction_marker"] = v
+        if (v := _env_opt_str("FOL_UNSLOTH_RESPONSE_MARKER")) is not None:
+            kwargs["unsloth_response_marker"] = v
 
         valid = {f.name for f in fields(cls)}
         filtered = {k: v for k, v in kwargs.items() if k in valid}

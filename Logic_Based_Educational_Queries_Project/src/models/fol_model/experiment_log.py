@@ -64,6 +64,9 @@ def hyperparameters_fol_shape(cfg: FolSFTConfig) -> dict[str, Any]:
             "gpu_profile": cfg.gpu_profile,
             "load_in_8bit": cfg.load_in_8bit,
             "load_in_8bit_effective": fol_should_load_in_8bit(cfg),
+            "use_unsloth": cfg.use_unsloth,
+            "unsloth_train_on_responses_only": cfg.unsloth_train_on_responses_only,
+            "use_adamw_8bit": cfg.use_adamw_8bit,
         },
         "paths": {
             "sft_processed_dir": str(cfg.sft_processed_dir) if cfg.sft_processed_dir else None,

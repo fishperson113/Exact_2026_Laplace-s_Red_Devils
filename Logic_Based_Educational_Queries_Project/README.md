@@ -190,7 +190,7 @@ label = predict_label(cfg, "YOUR_CHAT_PROMPT_HERE")  # parse Answer: → 1 trong
 | `make data` | Export `data/processed/` |
 | `make validate` | Kiểm tra raw + processed |
 | `make train` | `python -m models.logic_model.train` (cần `.env` + dữ liệu đã export) |
-| `make train-fol` | `python -m models.fol_model.train` (FOL SFT; xem `configs/fol_model.yaml` + `FOL_*`) |
+| `make train-fol` | `python -m models.fol_model.train` (FOL SFT; xem `configs/fol_model.yaml` + `FOL_*`). **T4 / VRAM:** `pip install unsloth`, đặt `FOL_USE_UNSLOTH=true` (notebook mặc định) — FastLanguageModel + `train_on_responses_only` + `adamw_8bit`. |
 
 ---
 

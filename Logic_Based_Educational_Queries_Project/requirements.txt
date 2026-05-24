@@ -5,6 +5,8 @@ peft
 trl>=0.16.0
 accelerate
 bitsandbytes
+# FOL T4 / VRAM: Unsloth (FastLanguageModel + checkpointing); cài cùng torch phù hợp — xem https://github.com/unslothai/unsloth
+unsloth
 scikit-learn
 huggingface_hub
 gdown

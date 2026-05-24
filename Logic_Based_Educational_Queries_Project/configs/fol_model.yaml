@@ -27,6 +27,10 @@ training:
   gpu_profile: auto
   # true hoặc FOL_LOAD_IN_8BIT=1 / FOL_GPU_PROFILE=8bit — INT8 bitsandbytes (chính xác hơn NF4; FOL_LOAD_IN_4BIT=1 vẫn bật INT8)
   load_in_8bit: true
+  # T4 / OOM: Unsloth + loss chỉ assistant + adamw_8bit (cần pip install unsloth); notebook: FolSFTConfig.from_env(use_unsloth=True)
+  use_unsloth: true
+  unsloth_train_on_responses_only: true
+  use_adamw_8bit: true
 
 paths:
   # FOL_SFT_PROCESSED_DIR hoặc mặc định data/processed (chung với logic SFT)

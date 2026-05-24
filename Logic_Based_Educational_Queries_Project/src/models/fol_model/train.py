@@ -77,6 +77,44 @@ def build_model(cfg: FolSFTConfig):
     return model, train_bf16, train_fp16
 
 
+def _build_fol_sft_config(cfg: FolSFTConfig, train_bf16: bool, train_fp16: bool) -> SFTConfig:
+    optim = "adamw_8bit" if cfg.use_adamw_8bit else "adamw_torch"
+    sft_kw: dict[str, Any] = dict(
+        output_dir=str(cfg.out_dir),
+        num_train_epochs=cfg.num_train_epochs,
+        per_device_train_batch_size=cfg.per_device_train_batch_size,
+        per_device_eval_batch_size=cfg.per_device_eval_batch_size,
+        gradient_accumulation_steps=cfg.gradient_accumulation_steps,
+        learning_rate=cfg.learning_rate,
+        warmup_ratio=cfg.warmup_ratio,
+        lr_scheduler_type="cosine",
+        weight_decay=cfg.weight_decay,
+        logging_steps=cfg.logging_steps,
+        logging_strategy="steps",
+        logging_first_step=True,
+        disable_tqdm=False,
+        eval_strategy="epoch",
+        save_strategy="epoch",
+        save_total_limit=2,
+        load_best_model_at_end=True,
+        metric_for_best_model="eval_loss",
+        greater_is_better=False,
+        bf16=train_bf16,
+        fp16=train_fp16,
+        optim=optim,
+        gradient_checkpointing=False,
+        seed=cfg.train_seed,
+        report_to="none",
+        max_length=cfg.max_seq_length,
+        dataset_text_field="text",
+        packing=False,
+        remove_unused_columns=False,
+    )
+    if "max_seq_length" in inspect.signature(SFTConfig.__init__).parameters:
+        sft_kw["max_seq_length"] = cfg.max_seq_length
+    return SFTConfig(**sft_kw)
+
+
 def _epoch_metrics_from_history(trainer: SFTTrainer) -> list[dict]:
     rows: list[dict] = []
     for h in trainer.state.log_history:
@@ -160,9 +198,28 @@ def run_training(cfg: FolSFTConfig):
         return None
 
     print("[FOL train] Bắt đầu: tokenizer + dataset + model (bước này có thể vài phút, chưa có thanh epoch).", flush=True)
-    tokenizer = load_tokenizer(cfg)
-    print("[FOL train] Đã nạp tokenizer.", flush=True)
-    dataset_dict, filter_stats = build_fol_dataset_dict(cfg, tokenizer)
+
+    if cfg.use_unsloth:
+        from .unsloth_sft import (
+            apply_train_on_responses_only,
+            is_unsloth_available,
+            load_unsloth_model_and_tokenizer,
+        )
+
+        if not is_unsloth_available():
+            raise RuntimeError(
+                "cfg.use_unsloth=True nhưng chưa cài `unsloth`. Chạy: pip install unsloth  "
+                "hoặc đặt FOL_USE_UNSLOTH=false / FolSFTConfig.from_env(use_unsloth=False)."
+            )
+        model, tokenizer, train_bf16, train_fp16 = load_unsloth_model_and_tokenizer(cfg)
+        print("[FOL train] Đã nạp tokenizer (Unsloth).", flush=True)
+        dataset_dict, filter_stats = build_fol_dataset_dict(cfg, tokenizer)
+    else:
+        tokenizer = load_tokenizer(cfg)
+        print("[FOL train] Đã nạp tokenizer.", flush=True)
+        dataset_dict, filter_stats = build_fol_dataset_dict(cfg, tokenizer)
+        model, train_bf16, train_fp16 = build_model(cfg)
+
     print(
         "[FOL train] Dataset:",
         {k: len(dataset_dict[k]) for k in dataset_dict},
@@ -170,41 +227,21 @@ def run_training(cfg: FolSFTConfig):
         filter_stats,
         flush=True,
     )
-    model, train_bf16, train_fp16 = build_model(cfg)
-    print("[FOL train] Đã nạp model + LoRA. Chuẩn bị SFTTrainer.train() (tqdm từng epoch/step sẽ hiện bên dưới).", flush=True)
+    if not cfg.use_unsloth:
+        print("[FOL train] Đã nạp model + LoRA. Chuẩn bị SFTTrainer.train() (tqdm từng epoch/step sẽ hiện bên dưới).", flush=True)
+    else:
+        print(
+            "[FOL train][Unsloth] Dataset xong. optim="
+            + ("adamw_8bit" if cfg.use_adamw_8bit else "adamw_torch")
+            + "; train_on_responses_only="
+            + str(cfg.unsloth_train_on_responses_only)
+            + ".",
+            flush=True,
+        )
 
     assert cfg.out_dir is not None and cfg.checkpoint_dir is not None
 
-    sft_config = SFTConfig(
-        output_dir=str(cfg.out_dir),
-        num_train_epochs=cfg.num_train_epochs,
-        per_device_train_batch_size=cfg.per_device_train_batch_size,
-        per_device_eval_batch_size=cfg.per_device_eval_batch_size,
-        gradient_accumulation_steps=cfg.gradient_accumulation_steps,
-        learning_rate=cfg.learning_rate,
-        warmup_ratio=cfg.warmup_ratio,
-        lr_scheduler_type="cosine",
-        weight_decay=cfg.weight_decay,
-        logging_steps=cfg.logging_steps,
-        logging_strategy="steps",
-        logging_first_step=True,
-        disable_tqdm=False,
-        eval_strategy="epoch",
-        save_strategy="epoch",
-        save_total_limit=2,
-        load_best_model_at_end=True,
-        metric_for_best_model="eval_loss",
-        greater_is_better=False,
-        bf16=train_bf16,
-        fp16=train_fp16,
-        gradient_checkpointing=False,
-        seed=cfg.train_seed,
-        report_to="none",
-        max_length=cfg.max_seq_length,
-        dataset_text_field="text",
-        packing=False,
-        remove_unused_columns=False,
-    )
+    sft_config = _build_fol_sft_config(cfg, train_bf16, train_fp16)
 
     trainer_kwargs = dict(
         model=model,
@@ -217,6 +254,11 @@ def run_training(cfg: FolSFTConfig):
     else:
         trainer_kwargs["tokenizer"] = tokenizer
     trainer = SFTTrainer(**trainer_kwargs)
+
+    if cfg.use_unsloth and cfg.unsloth_train_on_responses_only:
+        print("[FOL train][Unsloth] Áp train_on_responses_only (loss chỉ trên assistant) …", flush=True)
+        trainer = apply_train_on_responses_only(trainer, cfg)
+
     print("[FOL train] Bắt đầu trainer.train() …", flush=True)
     train_result = trainer.train()
     print("[FOL train] trainer.train() xong.", flush=True)
