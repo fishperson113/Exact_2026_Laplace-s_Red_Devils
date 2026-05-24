@@ -16,6 +16,27 @@ from services.config import (
 from services.hf_repo_naming import build_fol_hf_repo_id
 
 
+def fol_should_load_in_8bit(cfg: "FolSFTConfig") -> bool:
+    """True → nạp base weights **INT8** (BitsAndBytes ``load_in_8bit``), tiết kiệm VRAM, chính xác hơn NF4.
+
+    Bật khi: ``load_in_8bit``; hoặc ``gpu_profile`` ∈ {8bit, bnb_8bit, 4bit, bnb_4bit, kaggle_p100}
+    (``4bit``/``FOL_LOAD_IN_4BIT`` giữ tên cũ nhưng thực tế dùng **8-bit**);
+    hoặc ``gpu_profile=auto`` trên GPU compute capability < 7.
+    """
+    import torch
+
+    if cfg.load_in_8bit:
+        return True
+    p = (cfg.gpu_profile or "auto").strip().lower()
+    if p in ("8bit", "bnb_8bit", "4bit", "bnb_4bit", "kaggle_p100"):
+        return True
+    if p == "auto" and torch.cuda.is_available():
+        major, _minor = torch.cuda.get_device_capability(0)
+        if major < 7:
+            return True
+    return False
+
+
 @dataclass
 class FolSFTConfig:
     """Fine-tune sinh `premises_fol` từ `premises_nl` (đồng bộ độ dài)."""
@@ -38,7 +59,11 @@ class FolSFTConfig:
         "down_proj",
     )
 
+    # gpu_profile: auto | default | kaggle_p100 | 8bit | bnb_8bit | 4bit | bnb_4bit — xem fol_should_load_in_8bit
     gpu_profile: str = "auto"
+    # True = luôn INT8 8-bit (mọi GPU); hoặc FOL_LOAD_IN_8BIT=1 (FOL_LOAD_IN_4BIT=1 vẫn bật 8-bit, tên legacy)
+    load_in_8bit: bool = False
+
     num_train_epochs: int = 10
     per_device_train_batch_size: int = 1
     per_device_eval_batch_size: int = 1
@@ -105,6 +130,10 @@ class FolSFTConfig:
         if v := _env_opt_str("FOL_GPU_PROFILE"):
             kwargs["gpu_profile"] = v.strip().lower()
 
+        kwargs["load_in_8bit"] = _env_bool("FOL_LOAD_IN_8BIT", default=False)
+        if _env_bool("FOL_LOAD_IN_4BIT", default=False):
+            kwargs["load_in_8bit"] = True
+
         if v := _env_int("FOL_NUM_TRAIN_EPOCHS"):
             kwargs["num_train_epochs"] = v
         if v := _env_int("FOL_TRAIN_SEED"):
@@ -151,4 +180,7 @@ class FolSFTConfig:
         valid = {f.name for f in fields(cls)}
         filtered = {k: v for k, v in kwargs.items() if k in valid}
         merged = {**filtered, **overrides}
+        if merged.pop("load_in_4bit", None):
+            merged["load_in_8bit"] = True
+        merged = {k: v for k, v in merged.items() if k in valid}
         return cls(**merged)

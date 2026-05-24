@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from services.config_fol import FolSFTConfig
+from services.config_fol import FolSFTConfig, fol_should_load_in_8bit
 
 
 def _project_root_from_cfg(cfg: FolSFTConfig) -> Path | None:
@@ -62,6 +62,8 @@ def hyperparameters_fol_shape(cfg: FolSFTConfig) -> dict[str, Any]:
             "gradient_checkpointing": cfg.gradient_checkpointing,
             "train_seed": cfg.train_seed,
             "gpu_profile": cfg.gpu_profile,
+            "load_in_8bit": cfg.load_in_8bit,
+            "load_in_8bit_effective": fol_should_load_in_8bit(cfg),
         },
         "paths": {
             "sft_processed_dir": str(cfg.sft_processed_dir) if cfg.sft_processed_dir else None,

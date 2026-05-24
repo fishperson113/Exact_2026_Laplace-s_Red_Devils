@@ -146,7 +146,7 @@ make validate    # kiểm tra raw + processed
 ## Tutorial: Fine-tune FOL (NL → premises-FOL)
 
 1. Có `train.csv` / `dev.csv` / `test.csv` trong `data/processed/` (cùng bộ cho logic + FOL).
-2. Mở `notebooks/fol_model_pipeline_official.ipynb` và chạy **theo thứ tự phase**: bootstrap → cấu hình (`FOL_EVAL_FOL_MAX_SAMPLES=all` nếu muốn eval đủ 3 split sau train) → build dataset + xem prompt → **baseline base model** (`fol_preflight`: 10 infer ngẫu nhiên + full test accuracy/NLL, lưu `fol_preflight_baseline.json`) → **SFT** → **push** (kèm `fol_test_benchmark.json` so sánh trước/sau trên test) → **Hub reload** + 20 mẫu test ngẫu nhiên.
+2. Mở `notebooks/fol_model_pipeline_official.ipynb` và chạy **theo thứ tự phase**: bootstrap → cấu hình (`FOL_EVAL_FOL_MAX_SAMPLES=all` nếu muốn eval đủ 3 split sau train; **`FOL_LOAD_IN_8BIT=true`** hoặc `FOL_GPU_PROFILE=8bit` / `kaggle_p100` nếu tràn VRAM — **INT8** bitsandbytes, chính xác hơn NF4) → build dataset + xem prompt → **baseline base model** (`fol_preflight`: 10 infer ngẫu nhiên + full test accuracy/NLL, lưu `fol_preflight_baseline.json`) → **SFT** → **push** (kèm `fol_test_benchmark.json` so sánh trước/sau trên test) → **Hub reload** + 20 mẫu test ngẫu nhiên.
 3. CLI tương đương train (không gồm bước Hub reload): `make train-fol` hoặc từ gốc project `PYTHONPATH=src python src/models/fol_model/train.py`.
 
 ---

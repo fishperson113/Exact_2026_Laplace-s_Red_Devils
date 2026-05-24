@@ -11,7 +11,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from trl import SFTConfig, SFTTrainer
 
 from data.fol_dataset import build_fol_dataset_dict
-from services.config_fol import FolSFTConfig
+from services.config_fol import FolSFTConfig, fol_should_load_in_8bit
 
 from .experiment_log import (
     build_fol_experiment_log_document,
@@ -36,22 +36,10 @@ def load_tokenizer(cfg: FolSFTConfig):
     return tok
 
 
-def _gpu_train_profile(cfg: FolSFTConfig) -> str:
-    profile = cfg.gpu_profile
-    if profile == "auto" and torch.cuda.is_available():
-        profile = "kaggle_p100" if torch.cuda.get_device_capability(0)[0] < 7 else "default"
-    return profile
-
-
 def build_model(cfg: FolSFTConfig):
-    profile = _gpu_train_profile(cfg)
-    if profile == "kaggle_p100":
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.float16,
-            bnb_4bit_use_double_quant=True,
-        )
+    if fol_should_load_in_8bit(cfg):
+        print("[FOL train] Nạp base weights: INT8 8-bit (BitsAndBytes), tiết kiệm VRAM hơn full fp16/bf16.", flush=True)
+        bnb_config = BitsAndBytesConfig(load_in_8bit=True)
         model = AutoModelForCausalLM.from_pretrained(
             cfg.model_name,
             quantization_config=bnb_config,

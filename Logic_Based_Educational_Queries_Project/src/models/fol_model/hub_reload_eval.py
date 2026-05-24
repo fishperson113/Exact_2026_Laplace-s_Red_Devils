@@ -7,10 +7,10 @@ from pprint import pprint
 from typing import Any
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 from data.fol_dataset import build_fol_dataset_dict
-from services.config_fol import FolSFTConfig
+from services.config_fol import FolSFTConfig, fol_should_load_in_8bit
 
 from .generation_fol_eval import (
     collect_fol_inference_at_indices,
@@ -47,13 +47,22 @@ def load_fol_merged_from_hub(
     kwargs: dict[str, Any] = {"trust_remote_code": cfg.trust_remote_code}
     if token:
         kwargs["token"] = token
-    dtype = _infer_dtype()
-    model = AutoModelForCausalLM.from_pretrained(
-        repo_id,
-        torch_dtype=dtype,
-        device_map="auto",
-        **kwargs,
-    )
+    if fol_should_load_in_8bit(cfg):
+        bnb_config = BitsAndBytesConfig(load_in_8bit=True)
+        model = AutoModelForCausalLM.from_pretrained(
+            repo_id,
+            quantization_config=bnb_config,
+            device_map="auto",
+            **kwargs,
+        )
+    else:
+        dtype = _infer_dtype()
+        model = AutoModelForCausalLM.from_pretrained(
+            repo_id,
+            torch_dtype=dtype,
+            device_map="auto",
+            **kwargs,
+        )
     tokenizer = AutoTokenizer.from_pretrained(repo_id, **kwargs)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token

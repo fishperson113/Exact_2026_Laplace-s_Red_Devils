@@ -9,7 +9,7 @@ from typing import Any
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-from services.config_fol import FolSFTConfig
+from services.config_fol import FolSFTConfig, fol_should_load_in_8bit
 
 from .generation_fol_eval import (
     _normalize_ws,
@@ -19,23 +19,10 @@ from .generation_fol_eval import (
 )
 
 
-def _gpu_train_profile(cfg: FolSFTConfig) -> str:
-    profile = cfg.gpu_profile
-    if profile == "auto" and torch.cuda.is_available():
-        profile = "kaggle_p100" if torch.cuda.get_device_capability(0)[0] < 7 else "default"
-    return profile
-
-
 def load_base_causal_lm_for_fol_eval(cfg: FolSFTConfig):
     """Base weights (không LoRA) để đo baseline trước SFT."""
-    profile = _gpu_train_profile(cfg)
-    if profile == "kaggle_p100":
-        bnb_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.float16,
-            bnb_4bit_use_double_quant=True,
-        )
+    if fol_should_load_in_8bit(cfg):
+        bnb_config = BitsAndBytesConfig(load_in_8bit=True)
         model = AutoModelForCausalLM.from_pretrained(
             cfg.model_name,
             quantization_config=bnb_config,
