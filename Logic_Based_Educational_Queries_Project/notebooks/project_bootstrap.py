@@ -1,4 +1,10 @@
-"""Chạy từ `notebooks/*.ipynb`: `%run -i project_bootstrap.py` — thêm `src/` vào PYTHONPATH + nạp `.env`."""
+"""Bootstrap: thêm `src/` vào PYTHONPATH + nạp `.env`.
+
+Trong notebook pipeline, ô đầu tiên đã gọi script này bằng **đường dẫn tuyệt đối** (tìm từ
+`Path.cwd()` lên các thư mục cha), nên không phụ thuộc cwd.
+
+Nếu bạn tự chạy tay và cwd đã là `notebooks/`, có thể dùng: ``%run -i project_bootstrap.py``
+"""
 from __future__ import annotations
 
 import sys

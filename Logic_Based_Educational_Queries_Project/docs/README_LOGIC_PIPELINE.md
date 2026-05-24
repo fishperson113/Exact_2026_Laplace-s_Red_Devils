@@ -23,7 +23,7 @@
 ## Chạy trong notebook
 
 1. Cài dependency (`trl`, `transformers`, `peft`, `python-dotenv`, …).
-2. `%run -i project_bootstrap.py` (nạp `.env` nếu có).
+2. Chạy ô bootstrap trong `*_pipeline_official.ipynb` (tự tìm repo: Colab `/content` + Drive, Kaggle Input, `LOGIC_PROJECT_ROOT`, … rồi nạp `.env`).
 3. `from services.config import LogicSFTConfig` rồi `cfg = LogicSFTConfig.from_env()` — có thể thêm tham số Python để ghi đè (vd. `LogicSFTConfig.from_env(data_source="local")`).
 4. Nếu `cfg.data_source == "drive"`: chạy cell tải Drive (`logic_model_stage_drive.py`).
 5. Fine-tune: `%run -i logic_model_stage_train.py`

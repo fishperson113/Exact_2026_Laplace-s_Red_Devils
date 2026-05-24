@@ -9,6 +9,9 @@ __pycache__/
 .ipynb_checkpoints/
 *.log
 
+# Dữ liệu external tải tay (MALLS-v0, …)
+data/external/MALLS-v0/
+
 # Dữ liệu lớn (tùy chọn — bỏ comment nếu không commit raw)
 # data/raw/*.json
 

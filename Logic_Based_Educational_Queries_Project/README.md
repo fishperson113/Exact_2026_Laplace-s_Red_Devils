@@ -119,7 +119,7 @@ make validate    # kiểm tra raw + processed
 
    - **Dependency** (cài `requirements.txt` nếu chưa).
    - **HF token** (Kaggle secrets hoặc biến môi trường).
-   - `%run -i project_bootstrap.py` — thêm `src/` vào `PYTHONPATH`, nạp `.env`.
+   - Ô bootstrap: tìm gốc repo (`src/services`), gồm `LOGIC_PROJECT_ROOT`, đường `.ipynb`, `cwd`, `/kaggle/input`, `/content`, **Drive Colab** (`/content/drive/MyDrive`); rồi `%run` `project_bootstrap.py` hoặc nạp inline.
    - `cfg = LogicSFTConfig.from_env()` — chỉnh thêm trong cell nếu cần.
    - **Drive** chỉ khi `LOGIC_DATA_SOURCE=drive`.
    - `%run -i logic_model_stage_train.py` — huấn luyện + eval test.
