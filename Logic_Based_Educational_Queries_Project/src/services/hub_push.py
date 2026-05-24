@@ -22,6 +22,8 @@ def _upload_experiment_bundle(api: HfApi, repo: str, out_dir: Path) -> list[str]
         "train_metrics.json",
         "test_accuracy.json",
         "fol_eval_metrics.json",
+        "fol_preflight_baseline.json",
+        "fol_test_benchmark.json",
     ):
         p = out_dir / name
         if not p.is_file():

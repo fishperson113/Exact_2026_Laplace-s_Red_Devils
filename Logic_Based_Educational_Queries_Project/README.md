@@ -29,15 +29,9 @@ Logic_Based_Educational_Queries_Project/
 ├── docs/
 ├── models/                   # Checkpoint / adapter export (tuỳ bạn lưu thêm)
 ├── notebooks/
-│   ├── project_bootstrap.py  # %run từ notebook — PYTHONPATH + dotenv
+│   ├── project_bootstrap.py  # (tuỳ chọn) PYTHONPATH + dotenv
 │   ├── logic_model_pipeline_official.ipynb
-│   ├── fol_model_pipeline_official.ipynb
-│   ├── logic_model_stage_train.py
-│   ├── fol_model_stage_train.py
-│   ├── logic_model_stage_drive.py
-│   ├── fol_model_stage_drive.py
-│   ├── logic_model_stage_push.py
-│   └── fol_model_stage_push.py
+│   └── fol_model_pipeline_official.ipynb
 ├── references/
 ├── reports/
 │   └── figures/              # Hình EDA từ exploration.ipynb
@@ -62,7 +56,10 @@ Logic_Based_Educational_Queries_Project/
     │   │   ├── hyperparameters_tuning.py
     │   │   └── predict.py
     │   └── fol_model/          # NL → premises-FOL SFT
-    │       └── train.py
+    │       ├── train.py
+    │       ├── fol_preflight.py  # baseline base model + NLL + infer ngẫu nhiên
+    │       ├── hub_reload_eval.py
+    │       └── generation_fol_eval.py
     └── visualization/
         └── exploration.ipynb # EDA + export logic_sft (thay exploration.py)
 ```
@@ -117,18 +114,27 @@ make validate    # kiểm tra raw + processed
 2. Mở `notebooks/logic_model_pipeline_official.ipynb` (hoặc chạy trên Kaggle sau khi copy project / clone).
 3. Thứ tự cell:
 
-   - **Dependency** (cài `requirements.txt` nếu chưa).
+   - **Dependency** (`%pip` trong notebook hoặc `requirements.txt`).
    - **HF token** (Kaggle secrets hoặc biến môi trường).
-   - Ô bootstrap: tìm gốc repo (`src/services`), gồm `LOGIC_PROJECT_ROOT`, đường `.ipynb`, `cwd`, `/kaggle/input`, `/content`, **Drive Colab** (`/content/drive/MyDrive`); rồi `%run` `project_bootstrap.py` hoặc nạp inline.
+   - Ô bootstrap: tìm gốc repo (`src/services`), `sys.path`, `%cd` vào `notebooks/`.
    - `cfg = LogicSFTConfig.from_env()` — chỉnh thêm trong cell nếu cần.
-   - **Drive** chỉ khi `LOGIC_DATA_SOURCE=drive`.
-   - `%run -i logic_model_stage_train.py` — huấn luyện + eval test.
+   - **Drive** chỉ khi `LOGIC_DATA_SOURCE=drive` (gọi `download_and_extract_from_drive` trong cell).
+   - **Train:** `run_training(cfg)` rồi `run_test_eval(...)` (xem cell trong `logic_model_pipeline_official.ipynb`).
+   - **Push Hub:** `push_merged_lora(cfg, token)` khi `LOGIC_PUSH_TO_HUB=true`.
 
 4. Checkpoint tốt nhất theo **`eval_accuracy`** (không dùng `eval_loss`). Output mặc định: `notebooks/output/pipeline_sft/` (khi `notebook_root` trỏ tới `notebooks/` của project).
 
 5. Siêu tham số: chỉnh `.env` hoặc đối chiếu `configs/logic_model.yaml`. Module `models/logic_model/hyperparameters_tuning.py` có thể đọc YAML (cần `pyyaml`).
 
 6. **Log phiên bản / Hub:** sau train, `notebooks/output/.../experiment_log.json` gom siêu tham số (cấu trúc gần `configs/logic_model.yaml`), toàn bộ `trainer_log_history`, và bảng **theo từng epoch**: loss train (log gần nhất), `eval_loss` / `eval_accuracy` trên **dev**, `test_accuracy` trên **test** (có thể tắt bằng `LOGIC_LOG_TEST_EACH_EPOCH=false`). Sau `run_test_eval`, file được bổ sung `test_accuracy` + mẫu inference (`LOGIC_EXPERIMENT_INFERENCE_SAMPLES`). Khi `push_merged_lora`, các file này được đẩy lên Hub trong `experiment_artifacts/`.
+
+---
+
+## Tutorial: Fine-tune FOL (NL → premises-FOL)
+
+1. Có CSV trong `data/processed/logic_sft/` (hoặc `fol_sft/` nếu đã export lọc FOL).
+2. Mở `notebooks/fol_model_pipeline_official.ipynb` và chạy **theo thứ tự phase**: bootstrap → cấu hình (`FOL_EVAL_FOL_MAX_SAMPLES=all` nếu muốn eval đủ 3 split sau train) → build dataset + xem prompt → **baseline base model** (`fol_preflight`: 10 infer ngẫu nhiên + full test accuracy/NLL, lưu `fol_preflight_baseline.json`) → **SFT** → **push** (kèm `fol_test_benchmark.json` so sánh trước/sau trên test) → **Hub reload** + 20 mẫu test ngẫu nhiên.
+3. CLI tương đương train (không gồm bước Hub reload): `make train-fol` hoặc từ gốc project `PYTHONPATH=src python src/models/fol_model/train.py`.
 
 ---
 

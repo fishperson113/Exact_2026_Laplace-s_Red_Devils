@@ -10,7 +10,11 @@ import pandas as pd
 from datasets import Dataset, DatasetDict
 
 from data.dataset import read_split_csv
-from data.prompts import SYSTEM_PROMPT_FOL_SFT, format_nl_block_numbered
+from data.prompts import (
+    SYSTEM_PROMPT_FOL_SFT,
+    USER_TEMPLATE_FOL_SFT,
+    format_nl_block_numbered,
+)
 from services.config_fol import FolSFTConfig
 
 _LOG = logging.getLogger(__name__)
@@ -97,11 +101,7 @@ def build_fol_assistant_content(row: dict) -> str:
 def build_fol_user_content(row: dict) -> str:
     nl = row["premises_nl"]
     block = format_nl_block_numbered(list(nl))
-    return (
-        "Natural language premises (numbered):\n"
-        f"{block}\n\n"
-        "Task: output JSON only: {\"premises_fol\": [ ... ]} with one FOL string per line above, same order."
-    )
+    return USER_TEMPLATE_FOL_SFT.format(premises_nl=block).strip()
 
 
 def build_fol_messages(row: dict) -> list[dict[str, str]]:

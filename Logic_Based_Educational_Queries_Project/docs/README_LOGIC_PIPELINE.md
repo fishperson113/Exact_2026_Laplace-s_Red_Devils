@@ -9,7 +9,7 @@
 3. **Explanation** (`services/explanation.py`): prompt kết hợp output solver + NL để sinh giải thích (tách khỏi nhãn SFT).
 4. **Data** (`data/splitting.py`, `data/dataset.py`, `services/drive.py`): flatten 808 câu, split 8:1:1 theo `record_id`, CSV + `DatasetDict` có `text`, `eval_prompt`, `gold_answer`.
 5. **Metrics** (`evaluation/metrics.py`): nhãn **chỉ** được `A`/`B`/`C`/`D`/`Yes`/`No`/`Unknown` (đúng JSON). Lúc load data gọi `require_answer_label` — sai nhãn → `ValueError`. Output model phải trích ra đúng một trong 7 chuỗi đó (sau `Answer:` hoặc dòng đầu), không thì raise.
-6. **Train** (`models/logic_model/train.py`, `trainer_accuracy.py`): LoRA + TRL `SFTTrainer`; **`metric_for_best_model=eval_accuracy`**, `greater_is_better=True` — checkpoint tốt nhất theo đúng/sai trắc nghiệm trên **dev** (explanation vẫn trong target SFT nhưng không dùng để chọn model). `test_accuracy.json` sau khi chạy stage train.
+6. **Train** (`models/logic_model/train.py`, `trainer_accuracy.py`): LoRA + TRL `SFTTrainer`; **`metric_for_best_model=eval_accuracy`**, `greater_is_better=True` — checkpoint tốt nhất theo đúng/sai trắc nghiệm trên **dev** (explanation vẫn trong target SFT nhưng không dùng để chọn model). `test_accuracy.json` sau khi gọi `run_training` / `run_test_eval` trong notebook.
 
 ## Cấu hình
 
@@ -25,9 +25,9 @@
 1. Cài dependency (`trl`, `transformers`, `peft`, `python-dotenv`, …).
 2. Chạy ô bootstrap trong `*_pipeline_official.ipynb` (tự tìm repo: Colab `/content` + Drive, Kaggle Input, `LOGIC_PROJECT_ROOT`, … rồi nạp `.env`).
 3. `from services.config import LogicSFTConfig` rồi `cfg = LogicSFTConfig.from_env()` — có thể thêm tham số Python để ghi đè (vd. `LogicSFTConfig.from_env(data_source="local")`).
-4. Nếu `cfg.data_source == "drive"`: chạy cell tải Drive (`logic_model_stage_drive.py`).
-5. Fine-tune: `%run -i logic_model_stage_train.py`
-6. (Tuỳ chọn) Push HF: `%run -i logic_model_stage_push.py` — `LOGIC_PUSH_TO_HUB=true` trong `.env` và token `HF_TOKEN` (hoặc `HF_Token` từ notebook Kaggle).
+4. Nếu `cfg.data_source == "drive"`: chạy cell tải Drive (`download_and_extract_from_drive(cfg)` trong `logic_model_pipeline_official.ipynb`).
+5. Fine-tune: trong notebook gọi `run_training(cfg)` rồi `run_test_eval(cfg, trainer, dataset_dict)` (xem cell tương ứng).
+6. (Tuỳ chọn) Push HF: `push_merged_lora(cfg, token)` khi `LOGIC_PUSH_TO_HUB=true` và có `HF_TOKEN` / `HF_Token` (Kaggle secrets).
 
 ## Fine-tune / tối ưu accuracy
 

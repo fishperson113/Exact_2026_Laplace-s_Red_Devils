@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Any
+from typing import Any, Mapping
 
 import torch
 
@@ -99,6 +99,26 @@ def fol_exact_match_rate(
     return {"exact_match_count": ok, "total": total, "exact_match_rate": rate}
 
 
+def fol_exact_match_on_splits(
+    cfg: FolSFTConfig,
+    model,
+    tokenizer,
+    dataset_dict: Mapping[str, Any],
+    *,
+    splits: tuple[str, ...] = ("train", "dev", "test"),
+    max_samples: int | None = None,
+) -> dict[str, Any]:
+    """Exact-match JSON `premises_fol` trên nhiều split (mặc định train/dev/test)."""
+    out: dict[str, Any] = {}
+    for sp in splits:
+        if sp not in dataset_dict:
+            continue
+        out[sp] = fol_exact_match_rate(
+            cfg, model, tokenizer, dataset_dict[sp], max_samples=max_samples
+        )
+    return out
+
+
 @torch.no_grad()
 def collect_fol_inference_samples(
     cfg: FolSFTConfig,
@@ -118,6 +138,54 @@ def collect_fol_inference_samples(
     if max_samples_cap is not None:
         limit = min(limit, max_samples_cap)
     for i in range(limit):
+        prompt = ds[i]["eval_prompt"]
+        gold = ds[i]["gold_assistant"]
+        enc = tokenizer(
+            prompt,
+            return_tensors="pt",
+            truncation=True,
+            max_length=cfg.max_seq_length,
+        )
+        enc = {k: v.to(device) for k, v in enc.items()}
+        pad_id = tokenizer.pad_token_id or tokenizer.eos_token_id
+        gen_out = model.generate(
+            **enc,
+            max_new_tokens=cfg.gen_max_new_tokens,
+            do_sample=False,
+            pad_token_id=pad_id,
+            eos_token_id=tokenizer.eos_token_id,
+        )
+        gen_ids = gen_out[0, enc["input_ids"].shape[1] :]
+        pred_txt = tokenizer.decode(gen_ids, skip_special_tokens=True)
+        row: dict[str, Any] = {
+            "split_index": i,
+            "gold_assistant": gold[:4000],
+            "predicted_raw": pred_txt[:4000],
+        }
+        for key in ("record_id", "q_idx"):
+            if key in ds.column_names:
+                row[key] = ds[i][key]
+        out.append(row)
+    return out
+
+
+@torch.no_grad()
+def collect_fol_inference_at_indices(
+    cfg: FolSFTConfig,
+    model,
+    tokenizer,
+    ds,
+    indices: list[int],
+) -> list[dict[str, Any]]:
+    """Greedy generate cho từng chỉ số trong `indices` (subset của split)."""
+    if not indices:
+        return []
+    model.eval()
+    device = next(model.parameters()).device
+    out: list[dict[str, Any]] = []
+    for i in indices:
+        if i < 0 or i >= len(ds):
+            continue
         prompt = ds[i]["eval_prompt"]
         gold = ds[i]["gold_assistant"]
         enc = tokenizer(

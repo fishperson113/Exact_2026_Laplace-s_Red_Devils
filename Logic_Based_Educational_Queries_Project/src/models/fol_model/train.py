@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import inspect
 import json
+from typing import Any
 
 import torch
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
@@ -16,7 +17,12 @@ from .experiment_log import (
     build_fol_experiment_log_document,
     write_experiment_log_json,
 )
-from .generation_fol_eval import collect_fol_inference_samples, fol_exact_match_rate
+from .fol_preflight import load_preflight_baseline, mean_nll_completion_on_split
+from .generation_fol_eval import (
+    collect_fol_inference_samples,
+    fol_exact_match_on_splits,
+    fol_exact_match_rate,
+)
 
 
 def load_tokenizer(cfg: FolSFTConfig):
@@ -104,6 +110,9 @@ def _persist_fol_experiment_log(
     fol_eval: dict | None,
     filter_stats: dict | None,
     fol_inference_samples: list | None,
+    *,
+    fol_preflight_baseline: dict | None = None,
+    fol_test_benchmark: dict | None = None,
 ) -> None:
     if cfg.out_dir is None:
         return
@@ -122,7 +131,10 @@ def _persist_fol_experiment_log(
         fol_eval=fol_eval,
         filter_stats=filter_stats,
         fol_inference_samples=fol_inference_samples,
+        fol_preflight_baseline=fol_preflight_baseline,
+        fol_test_benchmark=fol_test_benchmark,
     )
+    write_experiment_log_json(cfg.out_dir / "experiment_log.json", doc)
 
 
 def run_fol_eval_all_splits(
@@ -134,11 +146,19 @@ def run_fol_eval_all_splits(
         trainer, "tokenizer", None
     )
     lim = cfg.eval_fol_max_samples
-    out: dict[str, Any] = {}
-    for split in ("dev", "test"):
-        ds = dataset_dict[split]
-        metrics = fol_exact_match_rate(cfg, trainer.model, tok, ds, max_samples=lim)
-        out[split] = metrics
+    out = fol_exact_match_on_splits(
+        cfg,
+        trainer.model,
+        tok,
+        dataset_dict,
+        splits=("train", "dev", "test"),
+        max_samples=lim,
+    )
+    for split, m in out.items():
+        print(
+            f"[FOL eval] {split}: accuracy={m['exact_match_rate']:.4f} "
+            f"({m['exact_match_count']}/{m['total']})"
+        )
     if cfg.out_dir:
         with open(cfg.out_dir / "fol_eval_metrics.json", "w", encoding="utf-8") as f:
             json.dump(out, f, indent=2)
@@ -206,10 +226,40 @@ def run_training(cfg: FolSFTConfig):
     with open(cfg.out_dir / "train_metrics.json", "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
 
+    test_trainer_metrics = trainer.evaluate(eval_dataset=dataset_dict["test"])
+
     fol_eval = run_fol_eval_all_splits(cfg, trainer, dataset_dict)
     tok = getattr(trainer, "processing_class", None) or getattr(
         trainer, "tokenizer", None
     )
+    post_test_exact = fol_exact_match_rate(
+        cfg, trainer.model, tok, dataset_dict["test"], max_samples=None
+    )
+    post_test_nll = mean_nll_completion_on_split(
+        cfg, trainer.model, tok, dataset_dict["test"], max_samples=None
+    )
+    print("[Sau FT] test full exact_match:", post_test_exact)
+    print("[Sau FT] test full mean NLL (completion):", post_test_nll)
+    print("[Sau FT] trainer.evaluate(test):", test_trainer_metrics)
+
+    preflight = load_preflight_baseline(cfg.out_dir)
+    bench: dict[str, Any] = {
+        "before_finetune_summary": {
+            "test_exact_match_full": (preflight or {}).get("test_exact_match_full"),
+            "test_mean_nll_completion_full": (preflight or {}).get(
+                "test_mean_nll_completion_full"
+            ),
+        },
+        "after_finetune": {
+            "test_exact_match_full": post_test_exact,
+            "test_mean_nll_completion_full": post_test_nll,
+            "trainer_evaluate_test_metrics": test_trainer_metrics,
+            "fol_eval_greedy_splits_respecting_FOL_EVAL_FOL_MAX_SAMPLES": fol_eval,
+        },
+    }
+    with open(cfg.out_dir / "fol_test_benchmark.json", "w", encoding="utf-8") as f:
+        json.dump(bench, f, indent=2, ensure_ascii=False)
+
     fol_samples = collect_fol_inference_samples(
         cfg,
         trainer.model,
@@ -227,6 +277,8 @@ def run_training(cfg: FolSFTConfig):
         fol_eval=fol_eval,
         filter_stats=filter_stats,
         fol_inference_samples=fol_samples,
+        fol_preflight_baseline=preflight,
+        fol_test_benchmark=bench,
     )
     return train_result, trainer, tokenizer, dataset_dict
 

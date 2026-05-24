@@ -116,6 +116,8 @@ def build_fol_experiment_log_document(
     fol_eval: dict[str, Any] | None,
     filter_stats: dict[str, int] | None,
     fol_inference_samples: list[dict[str, Any]] | None = None,
+    fol_preflight_baseline: dict[str, Any] | None = None,
+    fol_test_benchmark: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     yaml_dict, yaml_raw = try_read_fol_model_yaml(cfg)
     doc: dict[str, Any] = {
@@ -136,6 +138,10 @@ def build_fol_experiment_log_document(
         "fol_eval_greedy": fol_eval or {},
         "fol_inference_samples": fol_inference_samples or [],
     }
+    if fol_preflight_baseline is not None:
+        doc["fol_preflight_baseline"] = _json_safe(fol_preflight_baseline)
+    if fol_test_benchmark is not None:
+        doc["fol_test_benchmark"] = _json_safe(fol_test_benchmark)
     if fol_eval:
         doc["fol_eval_dev_exact_match"] = fol_eval.get("dev", {}).get("exact_match_rate")
         doc["fol_eval_test_exact_match"] = fol_eval.get("test", {}).get("exact_match_rate")
