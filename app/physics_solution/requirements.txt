@@ -13,6 +13,7 @@ numpy>=1.26
 tqdm>=4.66
 langsmith>=0.1.100      # tracing — no-op if LANGSMITH_API_KEY is missing
 langchain-core>=0.3.0   # ChatPromptTemplate, RunnableLambda, LCEL composition
+pyyaml>=6.0             # v05 formula knowledge base (formulas.yaml)
 
 # Future versions will add:
 # sympy>=1.13           # v05+ symbolic verifier

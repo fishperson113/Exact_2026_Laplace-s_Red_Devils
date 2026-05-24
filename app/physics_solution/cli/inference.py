@@ -25,6 +25,7 @@ VERSIONS = {
     "v02_fewshot":            "app.physics_solution.versions.v02_fewshot.run",
     "v03_routed_fewshot":     "app.physics_solution.versions.v03_routed_fewshot.run",
     "v04_optimized_routing":  "app.physics_solution.versions.v04_optimized_routing.run",
+    "v05_code_execution":     "app.physics_solution.versions.v05_code_execution.run",
 }
 
 
