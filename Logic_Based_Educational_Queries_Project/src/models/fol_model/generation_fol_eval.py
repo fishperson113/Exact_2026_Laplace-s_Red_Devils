@@ -162,7 +162,7 @@ def collect_fol_inference_samples(
             "gold_assistant": gold[:4000],
             "predicted_raw": pred_txt[:4000],
         }
-        for key in ("record_id", "q_idx"):
+        for key in ("record_id", "q_idx", "premises_nl", "premises_fol"):
             if key in ds.column_names:
                 row[key] = ds[i][key]
         out.append(row)
@@ -210,7 +210,7 @@ def collect_fol_inference_at_indices(
             "gold_assistant": gold[:4000],
             "predicted_raw": pred_txt[:4000],
         }
-        for key in ("record_id", "q_idx"):
+        for key in ("record_id", "q_idx", "premises_nl", "premises_fol"):
             if key in ds.column_names:
                 row[key] = ds[i][key]
         out.append(row)

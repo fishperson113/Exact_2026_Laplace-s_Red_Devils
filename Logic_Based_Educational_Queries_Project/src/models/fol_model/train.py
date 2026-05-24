@@ -31,6 +31,8 @@ def load_tokenizer(cfg: FolSFTConfig):
     )
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
+    # Decoder-only + batched generate: pad bên trái để token cuối cùng của prompt nằm sát phải.
+    tok.padding_side = "left"
     return tok
 
 

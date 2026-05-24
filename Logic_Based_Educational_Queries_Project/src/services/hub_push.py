@@ -60,6 +60,9 @@ def push_merged_lora(cfg: LogicSFTConfig, hf_token: str) -> str:
     tok = AutoTokenizer.from_pretrained(
         str(cfg.checkpoint_dir), trust_remote_code=cfg.trust_remote_code
     )
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+    tok.padding_side = "left"
     tok.save_pretrained(merged_dir)
 
     repo = cfg.resolved_hf_repo()
@@ -132,6 +135,9 @@ def push_merged_fol_lora(cfg: FolSFTConfig, hf_token: str) -> str:
     tok = AutoTokenizer.from_pretrained(
         str(cfg.checkpoint_dir), trust_remote_code=cfg.trust_remote_code
     )
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+    tok.padding_side = "left"
     tok.save_pretrained(merged_dir)
 
     repo = cfg.resolved_hf_repo()

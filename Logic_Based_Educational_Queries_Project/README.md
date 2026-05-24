@@ -2,7 +2,7 @@
 
 Dự án EXACT 2026 — **Logic Based Educational Queries**: EDA / tiền xử lý, fine-tune LoRA (SFT), đánh giá theo **accuracy** trên dev, inference.
 
-Cấu trúc bám **Cookiecutter Data Science**: mã Python trong `src/` với `data` (CSV, split, prompts, HF dataset), `evaluation` (nhãn / accuracy / đọc JSON sau train), `models/logic_model` (SFT trắc nghiệm + trainer), `models/fol_model` (SFT NL→premises-FOL), `visualization`, và `services` (cấu hình chung, Hub, Drive, solver, giải thích sau train).
+Cấu trúc bám **Cookiecutter Data Science**: mã Python trong `src/` với `data` (CSV, split, prompts, HF dataset), `evaluation` (nhãn / accuracy / đọc JSON sau train), `models/logic_model` (SFT trắc nghiệm + trainer), `models/fol_model` (SFT NL→premises-FOL), `visualization`, và `services` (cấu hình chung, Hub, Drive).
 
 ---
 
@@ -29,7 +29,6 @@ Logic_Based_Educational_Queries_Project/
 ├── docs/
 ├── models/                   # Checkpoint / adapter export (tuỳ bạn lưu thêm)
 ├── notebooks/
-│   ├── project_bootstrap.py  # (tuỳ chọn) PYTHONPATH + dotenv
 │   ├── logic_model_pipeline_official.ipynb
 │   └── fol_model_pipeline_official.ipynb
 ├── references/
@@ -47,7 +46,7 @@ Logic_Based_Educational_Queries_Project/
     ├── evaluation/           # Nhãn / accuracy + đọc train_metrics.json, test_accuracy.json
     │   ├── metrics.py
     │   └── json_logs.py
-    ├── services/             # Config, Hub, Drive, solvers, explanation (hậu train)
+    ├── services/             # Config, Hub, Drive
     ├── models/
     │   ├── logic_model/        # MCQ SFT + eval_accuracy
     │   │   ├── model.py
@@ -187,6 +186,6 @@ label = predict_label(cfg, "YOUR_CHAT_PROMPT_HERE")  # parse Answer: → 1 trong
 - **`src/evaluation/`**: `metrics.py` (7 nhãn, parse completion, accuracy), `json_logs.py` (đọc artifact sau train).
 - **`src/models/logic_model/`**: huấn luyện MCQ end-to-end (`train.py`, `trainer_accuracy.py`, `build_model`, inference `predict.py`).
 - **`src/models/fol_model/`**: SFT sinh `premises_fol` từ `premises_nl` (nhãn JSON; xem `src/data/fol_dataset.py`).
-- **`src/services/`**: `LogicSFTConfig`, đặt tên repo HF, push Hub, tải Drive, solver stub, prompt giải thích từ solver — dùng chung sau khi train xong hoặc cho bước neuro-symbolic.
+- **`src/services/`**: `LogicSFTConfig`, đặt tên repo HF, push Hub, tải Drive — dùng chung khi train / đẩy artifact.
 
 Chi tiết cấu hình và mở rộng: `docs/README_LOGIC_PIPELINE.md` (tài liệu pipeline; tên file giữ nguyên để không gãy link nội bộ).

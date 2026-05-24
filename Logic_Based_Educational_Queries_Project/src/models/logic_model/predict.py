@@ -14,10 +14,15 @@ from .train import load_tokenizer as load_base_tokenizer
 def _load_tokenizer(cfg: LogicSFTConfig) -> AutoTokenizer:
     ck = cfg.checkpoint_dir
     if ck is not None and (ck / "tokenizer_config.json").is_file():
-        return AutoTokenizer.from_pretrained(
+        tok = AutoTokenizer.from_pretrained(
             str(ck), trust_remote_code=cfg.trust_remote_code
         )
-    return load_base_tokenizer(cfg)
+    else:
+        tok = load_base_tokenizer(cfg)
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+    tok.padding_side = "left"
+    return tok
 
 
 def load_model_for_inference(cfg: LogicSFTConfig):

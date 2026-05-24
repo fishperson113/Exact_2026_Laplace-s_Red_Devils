@@ -12,6 +12,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from services.config_fol import FolSFTConfig
 
 from .generation_fol_eval import (
+    _normalize_ws,
+    _parse_premises_fol_list,
     collect_fol_inference_at_indices,
     fol_exact_match_rate,
 )
@@ -173,6 +175,54 @@ def print_fol_prompt_previews(
         print()
 
 
+def print_fol_baseline_infer_row(row: dict[str, Any], *, sample_tag: str | None = None) -> None:
+    """In NL + FOL gold/pred từng dòng (Phase 6 baseline)."""
+    parts: list[str] = []
+    if sample_tag is not None:
+        parts.append(sample_tag)
+    parts.append(f"idx={row['split_index']}")
+    if "record_id" in row:
+        parts.append(f"record_id={row['record_id']}")
+    if "q_idx" in row:
+        parts.append(f"q_idx={row['q_idx']}")
+    print("--- " + " | ".join(parts) + " ---\n")
+
+    nl = row.get("premises_nl")
+    if isinstance(nl, list) and nl:
+        print("### Premises (NL)")
+        wn = len(str(len(nl)))
+        for k, line in enumerate(nl, 1):
+            print(f"{k:{wn}d}. {line}")
+        print()
+    else:
+        print("### Premises (NL)\n(không có trong row — rebuild dataset sau khi pull code mới)\n")
+
+    gold_txt = str(row.get("gold_assistant") or "")
+    pred_txt = str(row.get("predicted_raw") or "")
+
+    gold_list = _parse_premises_fol_list(gold_txt)
+    if gold_list is None:
+        pf = row.get("premises_fol")
+        if isinstance(pf, list) and pf:
+            gold_list = [_normalize_ws(str(x)) for x in pf]
+
+    pred_list = _parse_premises_fol_list(pred_txt)
+
+    def _block(title: str, lst: list[str] | None, raw: str) -> None:
+        print(f"### {title}")
+        if lst:
+            wg = len(str(len(lst)))
+            for k, f in enumerate(lst, 1):
+                print(f"{k:{wg}d}. {f}")
+        else:
+            print("(parse JSON thất bại — raw, tối đa 2500 ký tự)")
+            print(raw[:2500].strip() or "(rỗng)")
+        print()
+
+    _block("Ground truth (FOL)", gold_list, gold_txt)
+    _block("Prediction (FOL)", pred_list, pred_txt)
+
+
 def run_random_base_inference(
     cfg: FolSFTConfig,
     model,
@@ -216,9 +266,7 @@ def run_preflight_baseline_and_save(
         )
         print(f"\n=== Base model — {len(rnd_rows)} mẫu ngẫu nhiên (train), greedy ===\n")
         for j, row in enumerate(rnd_rows):
-            print(f"--- [{j}] idx={row['split_index']} ---")
-            print("gold:", row["gold_assistant"][:800])
-            print("pred:", row["predicted_raw"][:800])
+            print_fol_baseline_infer_row(row, sample_tag=f"[{j}]")
             print()
 
         test_ds = dataset_dict["test"]

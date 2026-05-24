@@ -5,11 +5,9 @@
 ## Kiến trúc (ý tưởng)
 
 1. **NL → FOL** (`data/nl_to_fol.py`, `data/prompts.py`): prompt chat để LLM dịch premise NL sang FOL; khi SFT mặc định dùng FOL gold trong dataset.
-2. **Solver** (`services/solvers/`): interface `SymbolicSolver` — `NoOpSolver` (mặc định), `Z3SolverIfAvailable` (stub mở rộng Z3/Prover9).
-3. **Explanation** (`services/explanation.py`): prompt kết hợp output solver + NL để sinh giải thích (tách khỏi nhãn SFT).
-4. **Data** (`data/splitting.py`, `data/dataset.py`, `services/drive.py`): flatten 808 câu, split 8:1:1 theo `record_id`, CSV + `DatasetDict` có `text`, `eval_prompt`, `gold_answer`.
-5. **Metrics** (`evaluation/metrics.py`): nhãn **chỉ** được `A`/`B`/`C`/`D`/`Yes`/`No`/`Unknown` (đúng JSON). Lúc load data gọi `require_answer_label` — sai nhãn → `ValueError`. Output model phải trích ra đúng một trong 7 chuỗi đó (sau `Answer:` hoặc dòng đầu), không thì raise.
-6. **Train** (`models/logic_model/train.py`, `trainer_accuracy.py`): LoRA + TRL `SFTTrainer`; **`metric_for_best_model=eval_accuracy`**, `greater_is_better=True` — checkpoint tốt nhất theo đúng/sai trắc nghiệm trên **dev** (explanation vẫn trong target SFT nhưng không dùng để chọn model). `test_accuracy.json` sau khi gọi `run_training` / `run_test_eval` trong notebook.
+2. **Data** (`data/splitting.py`, `data/dataset.py`, `services/drive.py`): flatten 808 câu, split 8:1:1 theo `record_id`, CSV + `DatasetDict` có `text`, `eval_prompt`, `gold_answer`.
+3. **Metrics** (`evaluation/metrics.py`): nhãn **chỉ** được `A`/`B`/`C`/`D`/`Yes`/`No`/`Unknown` (đúng JSON). Lúc load data gọi `require_answer_label` — sai nhãn → `ValueError`. Output model phải trích ra đúng một trong 7 chuỗi đó (sau `Answer:` hoặc dòng đầu), không thì raise.
+4. **Train** (`models/logic_model/train.py`, `trainer_accuracy.py`): LoRA + TRL `SFTTrainer`; **`metric_for_best_model=eval_accuracy`**, `greater_is_better=True` — checkpoint tốt nhất theo đúng/sai trắc nghiệm trên **dev** (explanation vẫn trong target SFT nhưng không dùng để chọn model). `test_accuracy.json` sau khi gọi `run_training` / `run_test_eval` trong notebook.
 
 ## Cấu hình
 
@@ -36,7 +34,7 @@
 - Giảm thời gian eval: `cfg.eval_accuracy_max_samples = 50` (ví dụ); full dev bỏ `None`.
 - Sau train, `output/pipeline_sft/test_accuracy.json` báo accuracy trên **test** (cùng parser nhãn).
 
-## Mở rộng neuro-symbolic
+## Mở rộng neuro-symbolic (tuỳ chọn)
 
-- Cài engine (vd. `z3-solver`), triển khai `prove_or_model` trong `services/solvers/z3_solver.py`.
-- Ở inference: gọi `build_nl_to_fol_messages` → LLM → `solver.prove_or_model` → `build_explain_from_solver_messages` → LLM.
+- Cài engine (vd. `z3-solver`), thêm module riêng (vd. `services/symbolic_solver.py`) và prompt LLM nếu cần giải thích từ output engine.
+- Luồng gợi ý: `build_nl_to_fol_messages` → LLM → solver → LLM giải thích.

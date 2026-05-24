@@ -127,6 +127,8 @@ def attach_fol_chat_text_and_eval_prompt(example: dict, tokenizer) -> dict:
         "text": text,
         "eval_prompt": prompt,
         "gold_assistant": example["gold_assistant"],
+        "premises_nl": list(example["premises_nl"]),
+        "premises_fol": list(example["premises_fol"]),
     }
 
 
@@ -139,6 +141,8 @@ def _to_hf_dataset(split_df: pd.DataFrame) -> Dataset:
                 "q_idx": int(row["q_idx"]) if row.get("q_idx") is not None else -1,
                 "gold_assistant": build_fol_assistant_content(row),
                 "messages": build_fol_messages(row),
+                "premises_nl": list(row["premises_nl"]),
+                "premises_fol": list(row["premises_fol"]),
             }
         )
     return Dataset.from_list(rows)

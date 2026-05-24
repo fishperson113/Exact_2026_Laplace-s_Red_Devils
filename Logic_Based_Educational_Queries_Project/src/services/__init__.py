@@ -1,4 +1,4 @@
-"""Dịch vụ hậu training / tích hợp: cấu hình, Hub, Drive, solver, giải thích."""
+"""Dịch vụ: cấu hình, Hub, Drive, helper giải thích (tuỳ chọn)."""
 
 from .config import LogicSFTConfig, load_dotenv_for_logic
 

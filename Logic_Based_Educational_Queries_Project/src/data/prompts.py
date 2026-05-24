@@ -36,26 +36,6 @@ Task: write the equivalent FOL premises (numbered list).
 """
 
 
-# --- Solver → giải thích (gợi ý prompt khi có engine bên ngoài) ---
-SYSTEM_PROMPT_EXPLAIN_FROM_SOLVER = """\
-You explain a logic question for students. You are given solver metadata (status, model) and optional proof sketch.
-Write a concise educational explanation; cite premises by number when relevant.
-"""
-
-USER_TEMPLATE_EXPLAIN_FROM_SOLVER = """\
-Premises (NL):
-{nl_block}
-
-Question:
-{question}
-
-Solver output:
-{solver_summary}
-
-Gold answer (for teacher alignment, optional): {gold_answer}
-"""
-
-
 def format_nl_block_numbered(premises_nl: list[str]) -> str:
     if not premises_nl:
         return "(none)"

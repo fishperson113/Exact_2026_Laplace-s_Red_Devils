@@ -57,6 +57,7 @@ def load_fol_merged_from_hub(
     tokenizer = AutoTokenizer.from_pretrained(repo_id, **kwargs)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = "left"
     return model, tokenizer
 
 

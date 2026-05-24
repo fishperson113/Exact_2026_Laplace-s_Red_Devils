@@ -28,6 +28,7 @@ def load_tokenizer(cfg: LogicSFTConfig):
     )
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
+    tok.padding_side = "left"
     return tok
 
 
