@@ -101,15 +101,74 @@ def mean_nll_completion_on_split(
     }
 
 
-def print_fol_prompt_previews(dataset_dict, tokenizer, n: int = 3) -> None:
-    """In vài `eval_prompt` (đầy đủ template) từ tập train."""
+def print_fol_prompt_previews(
+    dataset_dict,
+    tokenizer,
+    n: int = 3,
+    *,
+    unique_eval_prompt: bool = True,
+    seed: int = 42,
+) -> None:
+    """In vài `eval_prompt` (đầy đủ template) từ tập train.
+
+    Nhiều dòng train khác ``record_id``/``q_idx`` (MCQ vs Yes–No) nhưng **cùng premises_nl**;
+    bước dịch FOL chỉ đưa premises vào user → ``eval_prompt`` có thể **giống hệt** nhau.
+    Mặc định ``unique_eval_prompt=True``: chọn ``n`` dòng có prompt khác nhau (duyệt theo thứ tự).
+    """
+    _ = tokenizer  # giữ chữ ký API; tokenizer đã dùng khi build dataset
     if n <= 0:
         return
     ds = dataset_dict["train"]
     k = min(n, len(ds))
-    print(f"\n=== Xem trước {k} eval_prompt (train) ===\n")
-    for i in range(k):
-        print("--- mẫu", i, "---")
+
+    def _row_meta(i: int) -> str:
+        parts: list[str] = []
+        if "record_id" in ds.column_names:
+            parts.append(f"record_id={ds[i]['record_id']}")
+        if "q_idx" in ds.column_names:
+            parts.append(f"q_idx={ds[i]['q_idx']}")
+        return " | ".join(parts)
+
+    if unique_eval_prompt:
+        seen: set[str] = set()
+        idxs: list[int] = []
+        for i in range(len(ds)):
+            ep = ds[i]["eval_prompt"]
+            if ep in seen:
+                continue
+            seen.add(ep)
+            idxs.append(i)
+            if len(idxs) >= k:
+                break
+        if len(idxs) < k:
+            rest = [i for i in range(len(ds)) if i not in idxs]
+            rng = random.Random(seed)
+            rng.shuffle(rest)
+            for i in rest:
+                idxs.append(i)
+                if len(idxs) >= k:
+                    break
+    else:
+        idxs = list(range(k))
+
+    print(f"\n=== Xem trước {len(idxs)} eval_prompt (train) ===\n")
+    if (
+        unique_eval_prompt
+        and len(ds) >= 2
+        and ds[0]["eval_prompt"] == ds[1]["eval_prompt"]
+    ):
+        print(
+            "Ghi chú: các dòng đầu train thường trùng eval_prompt (cùng premises NL, khác câu hỏi). "
+            "Đang hiển thị các prompt **khác nhau**; đặt unique_eval_prompt=False để xem đúng n dòng đầu.\n"
+        )
+
+    for j, i in enumerate(idxs):
+        meta = _row_meta(i)
+        if meta:
+            head = f"--- mẫu {j} (index train={i}, {meta}) ---"
+        else:
+            head = f"--- mẫu {j} (index train={i}) ---"
+        print(head)
         print(ds[i]["eval_prompt"][:6000])
         print()
 
