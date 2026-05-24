@@ -55,6 +55,8 @@ def fol_exact_match_rate(
     tokenizer,
     ds,
     max_samples: int | None = None,
+    *,
+    split_label: str | None = None,
 ) -> dict[str, Any]:
     model.eval()
     device = next(model.parameters()).device
@@ -65,7 +67,12 @@ def fol_exact_match_rate(
     ok = 0
     total = len(idxs)
     bs = max(1, cfg.eval_gen_batch_size)
+    tag = split_label or "eval"
+    print(f"[FOL greedy eval] {tag}: {total} mẫu, batch_size={bs}", flush=True)
+    log_every_batches = 10 if total >= 40 else 0
+    batch_num = 0
     for start in range(0, len(idxs), bs):
+        batch_num += 1
         batch_i = idxs[start : start + bs]
         prompts = [ds[i]["eval_prompt"] for i in batch_i]
         golds = [ds[i]["gold_assistant"] for i in batch_i]
@@ -95,7 +102,11 @@ def fol_exact_match_rate(
                 gold_list, pred_list
             ):
                 ok += 1
+        if log_every_batches and batch_num % log_every_batches == 0:
+            done = min(start + bs, total)
+            print(f"[FOL greedy eval] {tag}: tiến độ {done}/{total}", flush=True)
     rate = float(ok) / float(total) if total else 0.0
+    print(f"[FOL greedy eval] {tag}: xong — đúng {ok}/{total}", flush=True)
     return {"exact_match_count": ok, "total": total, "exact_match_rate": rate}
 
 
@@ -114,7 +125,12 @@ def fol_exact_match_on_splits(
         if sp not in dataset_dict:
             continue
         out[sp] = fol_exact_match_rate(
-            cfg, model, tokenizer, dataset_dict[sp], max_samples=max_samples
+            cfg,
+            model,
+            tokenizer,
+            dataset_dict[sp],
+            max_samples=max_samples,
+            split_label=sp,
         )
     return out
 

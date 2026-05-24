@@ -171,9 +171,19 @@ def run_training(cfg: FolSFTConfig):
     if not cfg.run_train:
         return None
 
+    print("[FOL train] Bắt đầu: tokenizer + dataset + model (bước này có thể vài phút, chưa có thanh epoch).", flush=True)
     tokenizer = load_tokenizer(cfg)
+    print("[FOL train] Đã nạp tokenizer.", flush=True)
     dataset_dict, filter_stats = build_fol_dataset_dict(cfg, tokenizer)
+    print(
+        "[FOL train] Dataset:",
+        {k: len(dataset_dict[k]) for k in dataset_dict},
+        "| filter_stats:",
+        filter_stats,
+        flush=True,
+    )
     model, train_bf16, train_fp16 = build_model(cfg)
+    print("[FOL train] Đã nạp model + LoRA. Chuẩn bị SFTTrainer.train() (tqdm từng epoch/step sẽ hiện bên dưới).", flush=True)
 
     assert cfg.out_dir is not None and cfg.checkpoint_dir is not None
 
@@ -219,24 +229,35 @@ def run_training(cfg: FolSFTConfig):
     else:
         trainer_kwargs["tokenizer"] = tokenizer
     trainer = SFTTrainer(**trainer_kwargs)
+    print("[FOL train] Bắt đầu trainer.train() …", flush=True)
     train_result = trainer.train()
+    print("[FOL train] trainer.train() xong.", flush=True)
     cfg.checkpoint_dir.mkdir(parents=True, exist_ok=True)
     trainer.save_model(str(cfg.checkpoint_dir))
     tokenizer.save_pretrained(str(cfg.checkpoint_dir))
 
+    print("[FOL train] trainer.evaluate() trên dev (loss) …", flush=True)
     metrics = trainer.evaluate()
     with open(cfg.out_dir / "train_metrics.json", "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
 
+    print("[FOL train] trainer.evaluate() trên test (loss) …", flush=True)
     test_trainer_metrics = trainer.evaluate(eval_dataset=dataset_dict["test"])
 
+    print("[FOL train] Greedy exact-match JSON trên train/dev/test (lâu nếu full split + null max_samples) …", flush=True)
     fol_eval = run_fol_eval_all_splits(cfg, trainer, dataset_dict)
     tok = getattr(trainer, "processing_class", None) or getattr(
         trainer, "tokenizer", None
     )
     post_test_exact = fol_exact_match_rate(
-        cfg, trainer.model, tok, dataset_dict["test"], max_samples=None
+        cfg,
+        trainer.model,
+        tok,
+        dataset_dict["test"],
+        max_samples=None,
+        split_label="test_post_ft_exact",
     )
+    print("[FOL train] mean NLL completion trên test (full) …", flush=True)
     post_test_nll = mean_nll_completion_on_split(
         cfg, trainer.model, tok, dataset_dict["test"], max_samples=None
     )

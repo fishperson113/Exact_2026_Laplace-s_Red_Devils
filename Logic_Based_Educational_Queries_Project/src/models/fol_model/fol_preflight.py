@@ -71,8 +71,10 @@ def mean_nll_completion_on_split(
     idxs = list(range(n))
     if max_samples is not None:
         idxs = idxs[: min(max_samples, n)]
+    total_i = len(idxs)
+    print(f"[FOL NLL] {total_i} mẫu (completion CE) …", flush=True)
     losses: list[float] = []
-    for i in idxs:
+    for j, i in enumerate(idxs, start=1):
         prompt = ds[i]["eval_prompt"]
         completion = ds[i]["gold_assistant"]
         full = tokenizer(
@@ -95,7 +97,10 @@ def mean_nll_completion_on_split(
         labels[:, :plen] = -100
         out = model(input_ids=input_ids, labels=labels)
         losses.append(float(out.loss.item()))
+        if total_i >= 80 and j % max(1, total_i // 10) == 0:
+            print(f"[FOL NLL] tiến độ {j}/{total_i}", flush=True)
     mean_loss = sum(losses) / len(losses) if losses else 0.0
+    print(f"[FOL NLL] xong — n_examples={len(losses)}", flush=True)
     return {
         "mean_nll_completion": mean_loss,
         "n_examples": len(losses),
@@ -270,7 +275,9 @@ def run_preflight_baseline_and_save(
             print()
 
         test_ds = dataset_dict["test"]
-        acc = fol_exact_match_rate(cfg, model, tokenizer, test_ds, max_samples=None)
+        acc = fol_exact_match_rate(
+            cfg, model, tokenizer, test_ds, max_samples=None, split_label="test_preflight"
+        )
         nll = mean_nll_completion_on_split(cfg, model, tokenizer, test_ds, max_samples=None)
         print("=== Base model — FULL test (trước fine-tune) ===")
         print("exact_match:", acc)
