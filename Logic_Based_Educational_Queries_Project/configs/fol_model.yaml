@@ -16,10 +16,10 @@ training:
   num_train_epochs: 10
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 1
-  gradient_accumulation_steps: 16
+  gradient_accumulation_steps: 8
   learning_rate: 2.0e-4
   warmup_ratio: 0.05
-  weight_decay: 0.01
+  weight_decay: 0.00001
   logging_steps: 10
   bf16: true
   gradient_checkpointing: true

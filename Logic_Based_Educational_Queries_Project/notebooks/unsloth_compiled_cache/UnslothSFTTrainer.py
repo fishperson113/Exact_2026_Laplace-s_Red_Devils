@@ -909,7 +909,7 @@ class _UnslothSFTTrainer(BaseTrainer):
         if not self._is_vlm and self._is_vision_dataset:
             _m = model
             if hasattr(_m, "model"): _m = _m.model
-            if hasattr(getattr(_m, "config", None), "vision_config") or\
+            if hasattr(getattr(_m, "config", None), "vision_config") or \
                _m.__class__.__name__.endswith("ForConditionalGeneration"):
                 self._is_vlm = True
         if self._is_vision_dataset and not self._is_vlm:
