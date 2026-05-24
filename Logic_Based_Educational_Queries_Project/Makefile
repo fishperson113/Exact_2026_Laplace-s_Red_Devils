@@ -11,8 +11,8 @@ install:
 	python -m pip install -r requirements.txt
 
 data:
-	@echo "Export train/dev/test + metadata vào data/processed/logic_sft/"
-	cd "$(ROOT)" && PYTHONPATH=src python -m data.splitting
+	@echo "→ data/processed/logic_sft/ (raw JSON mặc định; hoặc dùng notebooks/eda_and_preprocessing.ipynb)"
+	cd "$(ROOT)" && PYTHONPATH=src python -c "from data.ingestion import export_default_logic_sft; export_default_logic_sft()"
 
 validate:
 	cd "$(ROOT)" && PYTHONPATH=src python -c "from data.validation import validate_raw_question_count, validate_processed_splits; validate_raw_question_count(); print(validate_processed_splits())"

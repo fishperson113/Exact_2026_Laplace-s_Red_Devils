@@ -47,7 +47,7 @@ def resolve_sft_processed_dir(cfg: LogicSFTConfig) -> Path:
     if found is None:
         raise FileNotFoundError(
             "Không thấy data/processed/logic_sft/train.csv. "
-            "Chạy src/visualization/exploration.ipynb (cell xuất logic_sft) hoặc `make data` / LOGIC_SFT_PROCESSED_DIR."
+            "Chạy notebooks/eda_and_preprocessing.ipynb (xuất logic_sft), `make data`, hoặc LOGIC_SFT_PROCESSED_DIR."
         )
     return found
 
@@ -83,7 +83,7 @@ def _maybe_list(val) -> list:
 def read_split_csv(processed_dir: Path, split: str) -> pd.DataFrame:
     p = processed_dir / f"{split}.csv"
     if not p.is_file():
-        raise FileNotFoundError(f"Thiếu {p}. Chạy exploration.ipynb hoặc `make data`.")
+        raise FileNotFoundError(f"Thiếu {p}. Xuất từ notebooks/eda_and_preprocessing.ipynb hoặc `make data`.")
     df = pd.read_csv(p)
     for col in ("premises_nl", "premises_fol"):
         if col in df.columns:

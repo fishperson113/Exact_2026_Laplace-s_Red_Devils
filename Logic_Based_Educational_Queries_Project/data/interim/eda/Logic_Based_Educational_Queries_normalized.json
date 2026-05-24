@@ -5646,8 +5646,8 @@
       "Every student is required to complete a qualifying exam."
     ],
     "questions": [
-      "Based on the above premises, which statement can be inferred?\nA. ((ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x)))) ∧ ¬(ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x))))\nB. ((ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x)))) → (ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x))))\nC. ¬(ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x))))\nD. (ForAll(x, ResearchProject(x)) → (ForAll(x, Extracurricular(x)) → (Enrolled(x) → Resources(x))))",
-      "Based on the above premises, is the statement true?\nStatement: ForAll(x, ResearchProject(x))"
+      "Based on the above premises, which statement can be inferred?\nA. ((∀x (ResearchProject(x)) → (∀x (Extracurricular(x)) → (Enrolled(x) → Resources(x)))) ∧ ¬(∀x (ResearchProject(x)) → (∀x (Extracurricular(x)) → (Enrolled(x) → Resources(x))))\nB. ((∀x (ResearchProject(x)) → (∀x (Extracurricular(x)) → (Enrolled(x) → Resources(x)))) → (∀x (ResearchProject(x)) → (∀x (Extracurricular(x)) → (Enrolled(x) → Resources(x))))\nC. ¬(∀x (ResearchProject(x)) → (∀x (Extracurricular(x)) → (Enrolled(x) → Resources(x))))\nD. (∀x (ResearchProject(x)) → (∀x (Extracurricular(x)) → (Enrolled(x) → Resources(x))))",
+      "Based on the above premises, is the statement true?\nStatement: ∀x (ResearchProject(x))"
     ],
     "answers": [
       "D",
@@ -5655,7 +5655,7 @@
     ],
     "explanation": [
       "Option D is correct because by combining Premise 2 (every student completes a research project) and Premise 3 (every student participates in extracurricular activities), the antecedents of the implication in Option D are met. This allows us to deduce (Enrolled(x) → Resources(x)), which is exactly Premise 1. The other options either create a contradiction or negate a true implication.",
-      "The statement ForAll(x, ResearchProject(x)) is inferred from the university’s academic requirements. While it is directly given by Premise 2, we further support it by noting that every student must complete a qualifying exam (Premise 7), thereby reinforcing the comprehensive academic policy. Thus, the statement is true."
+      "The statement ∀x (ResearchProject(x)) is inferred from the university’s academic requirements. While it is directly given by Premise 2, we further support it by noting that every student must complete a qualifying exam (Premise 7), thereby reinforcing the comprehensive academic policy. Thus, the statement is true."
     ]
   },
   {
@@ -5688,16 +5688,16 @@
       "Every student has received a scholarship."
     ],
     "questions": [
-      "Based on the above premises, which statement can be inferred?\nA. (Exists(x, Enrolled(x)) → ForAll(x, Enrolled(x)))\nB. ((Exists(x, Enrolled(x)) → ForAll(x, Enrolled(x))) ∧ ¬(Exists(x, Enrolled(x)) → ForAll(x, Enrolled(x))))\nC. ¬(Exists(x, Enrolled(x)) → ForAll(x, Enrolled(x)))\nD. ((Exists(x, Enrolled(x)) → ForAll(x, Enrolled(x))) → (Exists(x, Enrolled(x)) → ForAll(x, Enrolled(x))))",
-      "Based on the above premises, is the statement true?\nStatement: (Exists(x, Enrolled(x)) → ForAll(x, Enrolled(x)))"
+      "Based on the above premises, which statement can be inferred?\nA. (∃x (Enrolled(x)) → ∀x (Enrolled(x)))\nB. ((∃x (Enrolled(x)) → ∀x (Enrolled(x))) ∧ ¬(∃x (Enrolled(x)) → ∀x (Enrolled(x))))\nC. ¬(∃x (Enrolled(x)) → ∀x (Enrolled(x)))\nD. ((∃x (Enrolled(x)) → ∀x (Enrolled(x))) → (∃x (Enrolled(x)) → ∀x (Enrolled(x))))",
+      "Based on the above premises, is the statement true?\nStatement: (∃x (Enrolled(x)) → ∀x (Enrolled(x)))"
     ],
     "answers": [
       "A",
       "Yes"
     ],
     "explanation": [
-      "Answer A is correct because combining Premise 1 (there exists at least one student enrolled in the course) with Premise 3 (every student is enrolled in the course) yields the implication (Exists(x, Enrolled(x)) → ForAll(x, Enrolled(x))). This inference requires at least two steps and is not directly provided by any single premise.",
-      "The statement (Exists(x, Enrolled(x)) → ForAll(x, Enrolled(x))) is true since Premise 1 guarantees the existence of an enrolled student and Premise 3 asserts that all students are enrolled, thereby making the implication hold."
+      "Answer A is correct because combining Premise 1 (there exists at least one student enrolled in the course) with Premise 3 (every student is enrolled in the course) yields the implication (∃x (Enrolled(x)) → ∀x (Enrolled(x))). This inference requires at least two steps and is not directly provided by any single premise.",
+      "The statement (∃x (Enrolled(x)) → ∀x (Enrolled(x))) is true since Premise 1 guarantees the existence of an enrolled student and Premise 3 asserts that all students are enrolled, thereby making the implication hold."
     ]
   },
   {
@@ -13158,7 +13158,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not study regularly.\nB. There exists a student who does not qualify for a scholarship.\nC. All students attend training.\nD. No student understands the material.",
-      "Based on the above premises, is the statement true?\nStatement: ((QualifiesForScholarship(x) → AttendsTraining(x)) → ForAll(x, StudiesRegularly(x)))"
+      "Based on the above premises, is the statement true?\nStatement: ((QualifiesForScholarship(x) → AttendsTraining(x)) → ∀x (StudiesRegularly(x)))"
     ],
     "answers": [
       "C",
@@ -13226,7 +13226,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not receive a recommendation letter.\nB. There exists a student who does not pass the exam.\nC. All students attend tutoring sessions.\nD. All students do not study regularly.",
-      "Based on the above premises, is the statement true?\nStatement: ((QualifiesForScholarship(x) → AttendsTutoring(x)) → ForAll(x, StudiesRegularly(x)))"
+      "Based on the above premises, is the statement true?\nStatement: ((QualifiesForScholarship(x) → AttendsTutoring(x)) → ∀x (StudiesRegularly(x)))"
     ],
     "answers": [
       "Unknown",
@@ -13417,7 +13417,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not qualify for a scholarship.\nB. There exists a student who does not receive an award.\nC. All students pass the exam.\nD. There exists a student who does not study regularly.",
-      "Based on the above premises, is the statement true?\nStatement: ForAll(x, QualifiesScholarship(x))"
+      "Based on the above premises, is the statement true?\nStatement: ∀x (QualifiesScholarship(x))"
     ],
     "answers": [
       "Unknown",
@@ -13480,7 +13480,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not understand the material.\nB. There exists a student who does not study regularly.\nC. All students complete assignments.\nD. There exists a student who does not pass the exam.",
-      "Based on the above premises, is the statement true?\nStatement: ForAll(x, StudiesRegularly(x))"
+      "Based on the above premises, is the statement true?\nStatement: ∀x (StudiesRegularly(x))"
     ],
     "answers": [
       "Unknown",
@@ -13737,7 +13737,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not study regularly.\nB. There exists a student who does not pass the exam.\nC. All students qualify for a scholarship.\nD. There exists a student who does not receive a recommendation letter.",
-      "Based on the above premises, is the statement true?\nStatement: Exists(x, AttendsTutoring(x))"
+      "Based on the above premises, is the statement true?\nStatement: ∃x (AttendsTutoring(x))"
     ],
     "answers": [
       "C",
@@ -15124,7 +15124,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. All students install the software.\nB. All students update the software.\nC. There exists a student with access to the latest features.\nD. All students’ software is secure.",
-      "Based on the above premises, is the statement true?\nStatement: (Exists(x, InstallsSoftware(x)) → (¬UpdatesSoftware(x) → ¬SecureSoftware(x)))"
+      "Based on the above premises, is the statement true?\nStatement: (∃x (InstallsSoftware(x)) → (¬UpdatesSoftware(x) → ¬SecureSoftware(x)))"
     ],
     "answers": [
       "Unknown",
@@ -15218,7 +15218,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. All books are available.\nB. There exists a book that is not cataloged.\nC. There exists a book that is returned.\nD. All books are borrowable.",
-      "Based on the above premises, is the statement true?\nStatement: ForAll(x, Cataloged(x))"
+      "Based on the above premises, is the statement true?\nStatement: ∀x (Cataloged(x))"
     ],
     "answers": [
       "Unknown",
@@ -15323,7 +15323,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not pass the test.\nB. There exists a student who does not submit assignments.\nC. There exists a student who attends lectures.\nD. Every student completes the project.",
-      "Based on the above premises, is the statement true?\nStatement: ((Exists(x, SubmitsAssignments(x)) → ForAll(x, PassesTest(x))) → ForAll(x, SubmitsAssignments(x)))"
+      "Based on the above premises, is the statement true?\nStatement: ((∃x (SubmitsAssignments(x)) → ∀x (PassesTest(x))) → ∀x (SubmitsAssignments(x)))"
     ],
     "answers": [
       "Unknown",
@@ -15368,7 +15368,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. Every student attends office hours.\nB. There exists a student with no good chance to pass the exam.\nC. There exists a student likely to pass the exam.\nD. Every student participates in a study group.",
-      "Based on the above premises, is the statement true?\nStatement: Exists(x, ParticipatesInStudyGroup(x))"
+      "Based on the above premises, is the statement true?\nStatement: ∃x (ParticipatesInStudyGroup(x))"
     ],
     "answers": [
       "Unknown",
@@ -15433,7 +15433,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. There exists a script without error handling.\nB. There exists a program that does not produce reliable outputs.\nC. All Python programs are optimized.\nD. There exists a program that does not follow best practices.",
-      "Based on the above premises, is the statement true?\nStatement: ForAll(x, (PythonScript(x) → HasErrorHandling(x)))"
+      "Based on the above premises, is the statement true?\nStatement: ∀x ((PythonScript(x) → HasErrorHandling(x)))"
     ],
     "answers": [
       "Unknown",
@@ -15489,7 +15489,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. There exists a function that is not differentiable.\nB. There exists a function that satisfies the Intermediate Value Theorem.\nC. All functions are integrable.\nD. There exists a function that is not continuous.",
-      "Based on the above premises, is the statement true?\nStatement: Exists(x, Differentiable(x))"
+      "Based on the above premises, is the statement true?\nStatement: ∃x (Differentiable(x))"
     ],
     "answers": [
       "Unknown",
@@ -15528,7 +15528,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. There exists a student not attending the course.\nB. There exists a student who passes the course.\nC. All students attend lectures regularly.\nD. There exists a student not completing assignments.",
-      "Based on the above premises, is the statement true?\nStatement: Exists(x, CompletingAssignments(x))"
+      "Based on the above premises, is the statement true?\nStatement: ∃x (CompletingAssignments(x))"
     ],
     "answers": [
       "Unknown",
@@ -16390,7 +16390,7 @@
     ],
     "questions": [
       "Based on the above premises, which statement can be inferred?\nA. If a student cannot apply concepts, they cannot engage in the learning process.\nB. If a student does not engage, they do not understand the core concepts.\nC. All students apply concepts.\nD. There exists a student who does not apply concepts but engages in the learning process.",
-      "Based on the above premises, is the following statement true?\nStatement: ForAll(x, (¬EngagesInLearningProcess(x) → ¬SucceedsInAssessments(x)))"
+      "Based on the above premises, is the following statement true?\nStatement: ∀x ((¬EngagesInLearningProcess(x) → ¬SucceedsInAssessments(x)))"
     ],
     "answers": [
       "Unknown",

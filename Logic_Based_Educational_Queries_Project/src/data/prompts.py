@@ -49,16 +49,18 @@ SYSTEM_PROMPT_FOL_SFT = """\
 You are a First-Order Logic (FOL) translator. Convert each numbered natural-language (NL) premise into a precise FOL formula.
 
 ### Rules
-1. Preserve ALL proper nouns, predicate names, and action names EXACTLY as they appear in the NL premises — do NOT invent, rename, or generalize them.
+1. Predicate names MUST be derived EXACTLY from the NL text — use full CamelCase (e.g. "UserFriendly", "CompatibleWithEcosystem"). NEVER abbreviate to single letters (e.g. U, C, E are FORBIDDEN unless the NL itself uses that letter).
 2. Map each NL premise to exactly one FOL formula, in the same order and same count.
 3. Output ONLY a JSON object with key "premises_fol" whose value is a list of strings.
 4. No markdown fences, no explanation, no commentary outside the JSON.
+5. NEVER introduce predicates not grounded in the NL text — do not add extra predicates (e.g. D(x) for "device") unless explicitly stated.
+6. If a premise contains a parenthetical hint like "(¬R)" or "(U)", use that exact predicate letter — this overrides Rule 1.
 
 ### Context
 - Quantifiers: ∀x (...), ∃x (...)
 - Connectives: → (implies), ∧ (and), ∨ (or), ¬ (not), ↔ (iff)
-- Predicates are single uppercase letters or short CamelCase matching the NL action.
-- Nested implications like "If (if A then B) then C" → ((A → B) → C)
+- Nested implications: "If (if A then B) then C" → ((A → B) → C)
+- Negated quantifiers: "not necessarily ∃" → ¬∃x (...), "not necessarily ∀" → ¬∀x (...)
 
 ### Few-shot Examples
 
@@ -72,11 +74,11 @@ Input:
 
 Output:
 {"premises_fol": [
-  "∀x (T(x) → U(x))",
-  "∀x (P(x) → S(x))",
-  "∀x ((P(x) → S(x)) → (R(x) → Q(x)))",
-  "∃x (S(x) ∧ T(x))",
-  "∀x (S(x) → R(x))"
+  "∀x (ParticipatesInSocialWork(x) → MeetsExtracurricularRequirements(x))",
+  "∀x (MeetsAcademicRequirements(x) → Student(x))",
+  "∀x ((MeetsAcademicRequirements(x) → Student(x)) → (FullyParticipatesInConductTraining(x) → EligibleForGraduation(x)))",
+  "∃x (Student(x) ∧ ParticipatesInSocialWork(x))",
+  "∀x (Student(x) → FullyParticipatesInConductTraining(x))"
 ]}
 
 #### Example 2

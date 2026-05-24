@@ -2,65 +2,82 @@
 
 Dự án EXACT 2026 — **Logic Based Educational Queries**: EDA / tiền xử lý, fine-tune LoRA (SFT), đánh giá theo **accuracy** trên dev, inference.
 
-Cấu trúc bám **Cookiecutter Data Science**: mã Python trong `src/` với `data` (CSV, split, prompts, HF dataset), `evaluation` (nhãn / accuracy / đọc JSON sau train), `models/logic_model` (SFT trắc nghiệm + trainer), `models/fol_model` (SFT NL→premises-FOL), `visualization`, và `services` (cấu hình chung, Hub, Drive).
+Cấu trúc bám **Cookiecutter Data Science**: mã Python trong `src/` với `data` (ingestion, CSV/processed, prompts, HF dataset), `evaluation` (nhãn / accuracy / JSON sau train), `models/logic_model` và `models/fol_model` (SFT), `services` (cấu hình, Hub, Drive). EDA và xuất `logic_sft` nằm trong `notebooks/`.
 
 ---
 
 ## Cây thư mục
 
 ```text
-Logic_Based_Educational_Queries_Project/
+Logic_Based_Educational_Queries_Project/          # Gốc repo: cấu hình, dữ liệu, notebook, mã nguồn train/eval
 ├── LICENSE
-├── README.md                 # Tài liệu này
-├── Makefile                  # make data | validate | train | ...
-├── requirements.txt
-├── setup.py                  # pip install -e .
-├── .env                      # Secrets (KHÔNG commit) — cùng cấp với configs/
-├── .env.example              # Mẫu biến môi trường
-├── configs/
-│   ├── logic_model.yaml      # Tham khảo siêu tham số MCQ / logic SFT (ưu tiên .env)
-│   └── fol_model.yaml        # Tham khảo FOL SFT (biến FOL_*)
-├── data/
-│   ├── external/
-│   ├── interim/              # EDA tạm (vd. logic_flat.csv từ notebook)
-│   ├── processed/
-│   │   └── logic_sft/       # train.csv, dev.csv, test.csv, split_*.json
-│   └── raw/                  # Logic_Based_Educational_Queries.json (immutable)
-├── docs/
-├── models/                   # Checkpoint / adapter export (tuỳ bạn lưu thêm)
-├── notebooks/
-│   ├── logic_model_pipeline_official.ipynb
-│   └── fol_model_pipeline_official.ipynb
-├── references/
-├── reports/
-│   └── figures/              # Hình EDA từ exploration.ipynb
-└── src/
-    ├── data/                 # Kỹ thuật dữ liệu: split, prompts, dataset SFT
-    │   ├── ingestion.py
-    │   ├── cleaning.py
-    │   ├── splitting.py      # flatten + export logic_sft (CSV + metadata)
-    │   ├── prompts.py
-    │   ├── nl_to_fol.py
-    │   ├── dataset.py
-    │   └── validation.py
-    ├── evaluation/           # Nhãn / accuracy + đọc train_metrics.json, test_accuracy.json
-    │   ├── metrics.py
-    │   └── json_logs.py
-    ├── services/             # Config, Hub, Drive
-    ├── models/
-    │   ├── logic_model/        # MCQ SFT + eval_accuracy
-    │   │   ├── model.py
-    │   │   ├── train.py
-    │   │   ├── trainer_accuracy.py
-    │   │   ├── hyperparameters_tuning.py
-    │   │   └── predict.py
-    │   └── fol_model/          # NL → premises-FOL SFT
-    │       ├── train.py
-    │       ├── fol_preflight.py  # baseline base model + NLL + infer ngẫu nhiên
-    │       ├── hub_reload_eval.py
-    │       └── generation_fol_eval.py
-    └── visualization/
-        └── exploration.ipynb # EDA + export logic_sft (thay exploration.py)
+├── README.md                 # Tài liệu dự án
+├── Makefile                  # make data | validate | train | train-fol | …
+├── requirements.txt          # Dependency Python
+├── setup.py                  # pip install -e . (gói import từ src/)
+├── .env                      # Secrets (không commit) — cùng cấp configs/
+├── .env.example              # Mẫu biến môi trường (Logic / FOL / Hub)
+├── configs/                  # Cấu hình tĩnh (YAML): tham chiếu siêu tham số; runtime ưu tiên .env
+│   ├── logic_model.yaml
+│   └── fol_model.yaml
+├── data/                     # Dữ liệu theo Cookiecutter: raw → interim → processed (+ external)
+│   ├── external/             # Bộ dữ liệu ngoài (vd. MALLS), script/README tải/merge tuỳ dự án
+│   ├── interim/              # Kết quả trung gian (EDA, bảng tạm) — có thể tái tạo từ notebook
+│   ├── processed/            # Đầu vào chính cho train: CSV đã split + metadata JSON
+│   │   ├── logic_sft/        # train/dev/test + split_record_ids + split_summary (logic MCQ + FOL gold)
+│   │   └── fol_sft/          # (tuỳ chọn) CSV đã lọc riêng cho nhánh FOL
+│   └── raw/                  # JSON gốc immutable (Logic_Based_Educational_Queries.json)
+├── docs/                     # Tài liệu bổ sung (kiến trúc pipeline, hướng dẫn chi tiết)
+├── models/                   # Checkpoint / adapter / artifact huấn luyện (tuỳ bạn lưu; thường gitignore)
+├── notebooks/                # EDA, tiền xử lý, pipeline train/eval tương tác (Jupyter)
+│   ├── eda_and_preprocessing.ipynb   # EDA + chuẩn hóa + xuất logic_sft
+│   ├── logic_model_pipeline_official.ipynb   # SFT trắc nghiệm + eval + Hub
+│   ├── fol_model_pipeline_official.ipynb     # SFT NL→FOL + baseline + Hub
+│   ├── fol_quiz_solver.ipynb
+│   ├── pipeline_baseline.ipynb
+│   └── test.ipynb
+├── references/               # Tài liệu tham chiếu (paper, đặc tả bài toán) — không chứa mã train
+├── reports/                  # Báo cáo / hình phân tích (ngoài notebook output)
+│   └── figures/              # Hình EDA export (đường dẫn mặc định trong eda_and_preprocessing.ipynb)
+└── src/                      # Mã Python gói dự án: PYTHONPATH=src khi chạy CLI / notebook
+    ├── __init__.py
+    ├── data/                 # Đọc/ghi dữ liệu, prompt, build HF Dataset (logic + FOL)
+    │   ├── __init__.py
+    │   ├── ingestion.py      # project_root, load_raw, export_from_records / export_from_json_path → logic_sft
+    │   ├── dataset.py        # CSV logic_sft → DatasetDict chat (MCQ)
+    │   ├── fol_dataset.py    # CSV → DatasetDict chat (premises NL → premises FOL)
+    │   ├── merge_malls_augmentation.py   # Gộp/augment từ nguồn ngoài (vd. MALLS) → processed
+    │   ├── nl_to_fol.py      # Khối FOL trong prompt logic (tuỳ cấu hình)
+    │   ├── prompts.py        # System / user template cho SFT
+    │   └── validation.py     # Kiểm tra số câu raw + đủ file split processed
+    ├── evaluation/           # Nhãn chuẩn, metric accuracy, đọc log JSON sau train
+    │   ├── __init__.py
+    │   ├── metrics.py        # require_answer_label, trích đáp án từ text model
+    │   └── json_logs.py      # Đọc/ghi train_metrics, test_accuracy, …
+    ├── services/             # Cấu hình ứng dụng (.env/YAML), Hugging Face Hub, Drive
+    │   ├── __init__.py
+    │   ├── config.py         # LogicSFTConfig + from_env
+    │   ├── config_fol.py     # FolSFTConfig + biến FOL_*
+    │   ├── drive.py          # Tải dữ liệu từ Drive khi bật nguồn Drive
+    │   ├── hf_repo_naming.py # Quy ước tên repo HF
+    │   └── hub_push.py       # Đẩy adapter / artifact lên Hub
+    └── models/               # Huấn luyện và đánh giá theo từng bài toán (logic vs FOL)
+        ├── logic_model/      # SFT câu hỏi trắc nghiệm / Yes–No: LoRA, eval_accuracy, predict
+        │   ├── dataloader.py
+        │   ├── experiment_log.py
+        │   ├── generation_eval.py
+        │   ├── hyperparameters_tuning.py
+        │   ├── model.py
+        │   ├── predict.py
+        │   ├── preprocessing.py
+        │   ├── train.py
+        │   └── trainer_accuracy.py
+        └── fol_model/        # SFT sinh JSON premises_fol; baseline, greedy exact-match, Hub
+            ├── experiment_log.py
+            ├── fol_preflight.py
+            ├── generation_fol_eval.py
+            ├── hub_reload_eval.py
+            └── train.py
 ```
 
 ---
@@ -91,12 +108,11 @@ Logic_Based_Educational_Queries_Project/
 | Bước | Thành phần | Mô tả |
 |------|------------|--------|
 | Thu thập | `src/data/ingestion.py` | Định vị / đọc `data/raw/*.json`. |
-| Làm sạch | `src/data/cleaning.py` | Giữ chỗ mở rộng (outlier, missing). |
-| Nhãn + split | `src/data/splitting.py` | Flatten JSON, `require_answer_label` (qua `evaluation.metrics`), ghi `data/processed/logic_sft/`. |
+| Nhãn + split CSV | `src/data/ingestion.py` (`export_from_records` / `export_from_json_path`) | Flatten, `require_answer_label`, ghi `logic_sft/`; notebook sau bước chuẩn hóa FOL dùng `export_from_records(records_norm, …)`; `make data` đọc raw JSON qua `export_from_json_path`. |
 | Kiểm tra | `src/data/validation.py` | 808 câu + đủ file CSV/metadata. |
 | Features / HF | `src/data/dataset.py` | `build_dataset_dict` (chat template HF). |
 
-**EDA / hình ảnh:** mở `src/visualization/exploration.ipynb` (notebook cũ `eda.ipynb` đã chỉnh path theo project). Cell cuối export `logic_sft`.
+**EDA / export:** `notebooks/eda_and_preprocessing.ipynb` — sau ô chuẩn hóa FOL, ô xuất gọi `export_from_records(records_norm, …)`; `make data` dùng `export_from_json_path` (raw chưa qua notebook).
 
 **CLI nhanh:**
 
@@ -109,7 +125,7 @@ make validate    # kiểm tra raw + processed
 
 ## Tutorial: Fine-tune (LoRA SFT)
 
-1. Hoàn tất bước **export** (`make data` hoặc chạy cell export trong `exploration.ipynb`).
+1. Hoàn tất **export** (`make data` hoặc cell export trong `notebooks/eda_and_preprocessing.ipynb`).
 2. Mở `notebooks/logic_model_pipeline_official.ipynb` (hoặc chạy trên Kaggle sau khi copy project / clone).
 3. Thứ tự cell:
 

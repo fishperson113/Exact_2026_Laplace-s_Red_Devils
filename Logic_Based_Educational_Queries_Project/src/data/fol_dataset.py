@@ -1,4 +1,4 @@
-"""Dataset SFT: premises NL → premises FOL (JSON), lọc mẫu lệch độ dài."""
+"""SFT NL→FOL: lọc len(premises_nl)==len(premises_fol), build HF messages."""
 from __future__ import annotations
 
 import json
@@ -51,8 +51,8 @@ def resolve_fol_processed_dir(cfg: FolSFTConfig) -> Path:
     found = _discover_fol_or_logic_processed_dir()
     if found is None:
         raise FileNotFoundError(
-            "Không thấy train.csv trong fol_sft hoặc logic_sft. "
-            "Đặt FOL_SFT_PROCESSED_DIR / LOGIC_SFT_PROCESSED_DIR hoặc chạy export fol_sft."
+            "Không thấy train.csv trong fol_sft/logic_sft. "
+            "Đặt FOL_SFT_PROCESSED_DIR / LOGIC_SFT_PROCESSED_DIR."
         )
     return found
 
@@ -75,7 +75,6 @@ def prepare_fol_training_paths(cfg: FolSFTConfig, processed_dir: Path) -> None:
 
 
 def filter_rows_parallel_premises(df: pd.DataFrame) -> tuple[pd.DataFrame, int]:
-    """Giữ hàng có len(premises_nl) == len(premises_fol) > 0."""
     if "premises_nl" not in df.columns or "premises_fol" not in df.columns:
         raise ValueError("Thiếu cột premises_nl / premises_fol")
 
@@ -135,14 +134,16 @@ def attach_fol_chat_text_and_eval_prompt(example: dict, tokenizer) -> dict:
 def _to_hf_dataset(split_df: pd.DataFrame) -> Dataset:
     rows = []
     for row in split_df.to_dict(orient="records"):
+        fol = list(row["premises_fol"])
+        row_n = {**row, "premises_fol": fol}
         rows.append(
             {
-                "record_id": int(row["record_id"]) if row.get("record_id") is not None else -1,
-                "q_idx": int(row["q_idx"]) if row.get("q_idx") is not None else -1,
-                "gold_assistant": build_fol_assistant_content(row),
-                "messages": build_fol_messages(row),
-                "premises_nl": list(row["premises_nl"]),
-                "premises_fol": list(row["premises_fol"]),
+                "record_id": int(row_n["record_id"]) if row_n.get("record_id") is not None else -1,
+                "q_idx": int(row_n["q_idx"]) if row_n.get("q_idx") is not None else -1,
+                "gold_assistant": build_fol_assistant_content(row_n),
+                "messages": build_fol_messages(row_n),
+                "premises_nl": list(row_n["premises_nl"]),
+                "premises_fol": fol,
             }
         )
     return Dataset.from_list(rows)
@@ -158,12 +159,7 @@ def build_fol_dataset_dict(cfg: FolSFTConfig, tokenizer) -> tuple[DatasetDict, d
         filt, n_drop = filter_rows_parallel_premises(raw_df)
         dropped[name] = n_drop
         splits[name] = filt
-        _LOG.info(
-            "FOL split %s: kept %d rows, dropped %d (len NL != len FOL or empty)",
-            name,
-            len(filt),
-            n_drop,
-        )
+        _LOG.info("FOL %s: kept %d dropped %d", name, len(filt), n_drop)
 
     raw_splits = {name: _to_hf_dataset(splits[name]) for name in ("train", "dev", "test")}
 
@@ -183,10 +179,7 @@ def export_filtered_fol_csvs(
     *,
     splits: tuple[str, ...] = ("train", "dev", "test"),
 ) -> dict[str, int]:
-    """
-    Đọc logic_sft (hoặc bất kỳ thư mục có cùng schema CSV), lọc độ dài, ghi ra fol_sft.
-    Trả về số dòng bị loại theo từng split.
-    """
+    """Lọc logic_sft → ghi fol_sft; trả về số dòng loại mỗi split."""
     src = Path(src_processed_dir).resolve()
     dst = Path(dst_processed_dir).resolve()
     dst.mkdir(parents=True, exist_ok=True)
