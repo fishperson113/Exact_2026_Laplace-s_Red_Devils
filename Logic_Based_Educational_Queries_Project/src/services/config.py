@@ -62,9 +62,147 @@ def _path_from_env(key: str, default: Path) -> Path:
     return default
 
 
+def _logic_env_key_set(key: str) -> bool:
+    v = os.environ.get(key)
+    return v is not None and str(v).strip() != ""
+
+
+def _logic_find_project_root_for_yaml() -> Path | None:
+    """Thư mục gốc repo có ``configs/logic_model.yaml`` (cwd rồi cha ông; rồi gói ``src/services`` → repo)."""
+    if v := os.environ.get("LOGIC_PROJECT_ROOT", "").strip():
+        p = Path(v).expanduser().resolve()
+        if (p / "configs" / "logic_model.yaml").is_file():
+            return p
+    here = Path.cwd().resolve()
+    for base in (here, *here.parents):
+        if (base / "configs" / "logic_model.yaml").is_file():
+            return base
+    pkg_root = Path(__file__).resolve().parent.parent.parent  # .../src/services -> repo root
+    if (pkg_root / "configs" / "logic_model.yaml").is_file():
+        return pkg_root
+    return None
+
+
+def _logic_config_dict_from_yaml(project_root: Path) -> dict[str, Any]:
+    """Đọc ``configs/logic_model.yaml`` → dict trùng tên field ``LogicSFTConfig``."""
+    p = project_root / "configs" / "logic_model.yaml"
+    if not p.is_file():
+        return {}
+    try:
+        import yaml as _yaml
+    except ImportError:
+        return {}
+    try:
+        data = _yaml.safe_load(p.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    out: dict[str, Any] = {}
+
+    if m := data.get("model"):
+        if isinstance(m, dict):
+            if "name" in m and m["name"] is not None:
+                out["model_name"] = str(m["name"])
+            if "trust_remote_code" in m and m["trust_remote_code"] is not None:
+                out["trust_remote_code"] = bool(m["trust_remote_code"])
+            if "max_seq_length" in m and m["max_seq_length"] is not None:
+                out["max_seq_length"] = int(m["max_seq_length"])
+            if "gen_max_new_tokens" in m and m["gen_max_new_tokens"] is not None:
+                out["gen_max_new_tokens"] = int(m["gen_max_new_tokens"])
+
+    if lo := data.get("lora"):
+        if isinstance(lo, dict):
+            if "r" in lo and lo["r"] is not None:
+                out["lora_r"] = int(lo["r"])
+            if "alpha" in lo and lo["alpha"] is not None:
+                out["lora_alpha"] = int(lo["alpha"])
+            if "dropout" in lo and lo["dropout"] is not None:
+                out["lora_dropout"] = float(lo["dropout"])
+
+    if t := data.get("training"):
+        if isinstance(t, dict):
+            for k in (
+                "num_train_epochs",
+                "per_device_train_batch_size",
+                "per_device_eval_batch_size",
+                "gradient_accumulation_steps",
+                "logging_steps",
+                "train_seed",
+            ):
+                if k in t and t[k] is not None:
+                    out[k] = int(t[k])
+            for k in ("learning_rate", "warmup_ratio", "weight_decay"):
+                if k in t and t[k] is not None:
+                    out[k] = float(t[k])
+            for k in ("bf16", "gradient_checkpointing"):
+                if k in t and t[k] is not None:
+                    out[k] = bool(t[k])
+            if "gpu_profile" in t and t["gpu_profile"] is not None:
+                out["gpu_profile"] = str(t["gpu_profile"]).strip().lower()
+
+    if d := data.get("data"):
+        if isinstance(d, dict):
+            if "split_ratios" in d and d["split_ratios"] is not None and isinstance(
+                d["split_ratios"], (list, tuple)
+            ):
+                out["split_ratios"] = tuple(float(x) for x in d["split_ratios"])
+            if "split_seed" in d and d["split_seed"] is not None:
+                out["split_seed"] = int(d["split_seed"])
+            if "include_fol_in_user" in d and d["include_fol_in_user"] is not None:
+                out["include_fol_in_user"] = bool(d["include_fol_in_user"])
+            if "data_source" in d and d["data_source"] is not None:
+                out["data_source"] = str(d["data_source"]).strip().lower()
+
+    if paths := data.get("paths"):
+        if isinstance(paths, dict):
+            if sub := paths.get("processed_subdir"):
+                subp = Path(str(sub).strip())
+                out["sft_processed_dir"] = (
+                    subp if subp.is_absolute() else (project_root / subp).resolve()
+                )
+            if raw := paths.get("raw_filename"):
+                out["data_filename"] = str(raw).strip()
+
+    if hub := data.get("hub"):
+        if isinstance(hub, dict):
+            if "org" in hub and hub["org"] is not None:
+                out["hf_org"] = str(hub["org"])
+            if "repo_version" in hub and hub["repo_version"] is not None:
+                out["logic_repo_version"] = str(hub["repo_version"])
+            if "repo_method" in hub and hub["repo_method"] is not None:
+                out["logic_repo_method"] = str(hub["repo_method"]).strip().lower()
+            if "push_to_hub" in hub and hub["push_to_hub"] is not None:
+                out["push_to_hub"] = bool(hub["push_to_hub"])
+            if "hf_private" in hub and hub["hf_private"] is not None:
+                out["hf_private"] = bool(hub["hf_private"])
+
+    if ev := data.get("eval"):
+        if isinstance(ev, dict):
+            if "log_test_each_epoch" in ev and ev["log_test_each_epoch"] is not None:
+                out["log_test_each_epoch"] = bool(ev["log_test_each_epoch"])
+            if (
+                "experiment_inference_sample_n" in ev
+                and ev["experiment_inference_sample_n"] is not None
+            ):
+                out["experiment_inference_sample_n"] = int(ev["experiment_inference_sample_n"])
+            if "eval_gen_batch_size" in ev and ev["eval_gen_batch_size"] is not None:
+                out["eval_gen_batch_size"] = int(ev["eval_gen_batch_size"])
+            if "eval_accuracy_max_samples" in ev:
+                evs = ev["eval_accuracy_max_samples"]
+                if evs is None or (
+                    isinstance(evs, str) and evs.strip().lower() in ("none", "all", "")
+                ):
+                    out["eval_accuracy_max_samples"] = None
+                elif evs is not None:
+                    out["eval_accuracy_max_samples"] = int(evs)
+
+    return out
+
+
 @dataclass
 class LogicSFTConfig:
-    """Cấu hình tập trung — nạp từ `.env` qua `from_env()` hoặc chỉnh thủ công."""
+    """Cấu hình tập trung — đọc ``configs/logic_model.yaml`` (theo repo), tùy chọn ghi đè biến ``LOGIC_*`` trên shell/CI, rồi ``**overrides``."""
 
     # Model (LLM được fine-tune)
     model_name: str = "Qwen/Qwen3.5-4B"
@@ -152,11 +290,14 @@ class LogicSFTConfig:
     @classmethod
     def from_env(cls, load_dotenv_file: bool = True, **overrides: Any) -> LogicSFTConfig:
         """
-        Đọc `.env` (nếu có `python-dotenv`) rồi map biến môi trường → config.
-        `overrides` ghi đè cuối cùng (tiện cho notebook).
+        Nạp ``configs/logic_model.yaml`` (nếu tìm thấy repo), rồi ghi đè bởi biến ``LOGIC_*`` chỉ khi biến đó được set,
+        cuối cùng ``**overrides`` (tiện notebook). File ``.env`` chỉ cần token — xem ``.env.example``.
         """
         if load_dotenv_file:
             load_dotenv_for_logic()
+
+        _root = _logic_find_project_root_for_yaml()
+        yaml_defaults = _logic_config_dict_from_yaml(_root) if _root is not None else {}
 
         kwargs: dict[str, Any] = {}
 
@@ -166,7 +307,8 @@ class LogicSFTConfig:
             kwargs["data_source"] = v.strip().lower()
         if v := _env_opt_str("LOGIC_DATA_FILENAME"):
             kwargs["data_filename"] = v
-        kwargs["data_root"] = _path_from_env("LOGIC_DATA_ROOT", Path.cwd() / "exact_data")
+        if _logic_env_key_set("LOGIC_DATA_ROOT"):
+            kwargs["data_root"] = _path_from_env("LOGIC_DATA_ROOT", Path.cwd() / "exact_data")
 
         if v := _env_int("LOGIC_MAX_SEQ_LENGTH"):
             kwargs["max_seq_length"] = v
@@ -192,7 +334,8 @@ class LogicSFTConfig:
         elif v := _env_int("LOGIC_EVAL_ACCURACY_MAX_SAMPLES"):
             kwargs["eval_accuracy_max_samples"] = v
 
-        kwargs["log_test_each_epoch"] = _env_bool("LOGIC_LOG_TEST_EACH_EPOCH", default=True)
+        if _logic_env_key_set("LOGIC_LOG_TEST_EACH_EPOCH"):
+            kwargs["log_test_each_epoch"] = _env_bool("LOGIC_LOG_TEST_EACH_EPOCH", default=True)
         if (es := _env_opt_str("LOGIC_EXPERIMENT_INFERENCE_SAMPLES")) is not None:
             low = es.lower()
             if low in ("0", "none", "off", ""):
@@ -200,9 +343,12 @@ class LogicSFTConfig:
             else:
                 kwargs["experiment_inference_sample_n"] = int(es.strip())
 
-        kwargs["run_train"] = _env_bool("LOGIC_RUN_TRAIN", default=True)
-        kwargs["push_to_hub"] = _env_bool("LOGIC_PUSH_TO_HUB", default=False)
-        kwargs["hf_private"] = _env_bool("LOGIC_HF_PRIVATE", default=False)
+        if _logic_env_key_set("LOGIC_RUN_TRAIN"):
+            kwargs["run_train"] = _env_bool("LOGIC_RUN_TRAIN", default=True)
+        if _logic_env_key_set("LOGIC_PUSH_TO_HUB"):
+            kwargs["push_to_hub"] = _env_bool("LOGIC_PUSH_TO_HUB", default=False)
+        if _logic_env_key_set("LOGIC_HF_PRIVATE"):
+            kwargs["hf_private"] = _env_bool("LOGIC_HF_PRIVATE", default=False)
 
         if v := _env_opt_str("LOGIC_HF_ORG"):
             kwargs["hf_org"] = v
@@ -222,5 +368,6 @@ class LogicSFTConfig:
         # Chỉ truyền field hợp lệ của dataclass
         valid = {f.name for f in fields(cls)}
         filtered = {k: v for k, v in kwargs.items() if k in valid}
-        merged = {**filtered, **overrides}
+        merged = {**yaml_defaults, **filtered, **overrides}
+        merged = {k: v for k, v in merged.items() if k in valid}
         return cls(**merged)

@@ -1,6 +1,7 @@
-"""Tải merged FOL từ Hugging Face Hub và đánh giá exact-match trên train/dev/test."""
+"""Tải merged FOL từ Hugging Face Hub — mặc định chỉ greedy + exact-match trên N mẫu test ngẫu nhiên."""
 from __future__ import annotations
 
+import gc
 import os
 import random
 from pprint import pprint
@@ -16,6 +17,7 @@ from .generation_fol_eval import (
     collect_fol_inference_at_indices,
     collect_fol_inference_samples,
     fol_exact_match_on_splits,
+    fol_summarize_exact_match_rows,
 )
 
 
@@ -80,30 +82,24 @@ def evaluate_fol_hub_model(
     random_test_infer_n: int = 0,
     random_test_seed: int = 42,
 ) -> dict[str, Any]:
-    """Tải merged weights từ Hub, build dataset, exact-match + vài mẫu generate."""
+    """Tải merged từ Hub rồi đánh giá.
+
+    - ``random_test_infer_n > 0`` (mặc định sau train): **chỉ** greedy trên **N mẫu test ngẫu nhiên**,
+      ``metrics_by_split["test"]`` là exact-match **trên đúng N mẫu đó** (không quét train/dev).
+    - ``random_test_infer_n == 0``: quét greedy exact-match trên ``splits`` như cũ (``cfg.eval_fol_max_samples``).
+    """
     model, tokenizer = load_fol_merged_from_hub(repo_id, cfg, hf_token=hf_token)
     dataset_dict, filter_stats = build_fol_dataset_dict(cfg, tokenizer)
-    lim = cfg.eval_fol_max_samples
-    metrics = fol_exact_match_on_splits(
-        cfg,
-        model,
-        tokenizer,
-        dataset_dict,
-        splits=splits,
-        max_samples=lim,
-    )
     if inference_split not in dataset_dict:
         inference_split = "test"
-    samples = collect_fol_inference_samples(
-        cfg,
-        model,
-        tokenizer,
-        dataset_dict[inference_split],
-        cfg.experiment_inference_sample_n,
-        max_samples_cap=lim,
-    )
+
     random_test_samples: list[dict[str, Any]] = []
+    metrics: dict[str, Any]
+    samples: list[dict[str, Any]]
+    eval_mode: str
+
     if random_test_infer_n > 0 and "test" in dataset_dict:
+        eval_mode = "random_test_only"
         tds = dataset_dict["test"]
         rng = random.Random(random_test_seed)
         pool = list(range(len(tds)))
@@ -112,18 +108,71 @@ def evaluate_fol_hub_model(
         random_test_samples = collect_fol_inference_at_indices(
             cfg, model, tokenizer, tds, idxs
         )
-    return {
+        test_metrics = fol_summarize_exact_match_rows(random_test_samples, attach_per_row=True)
+        metrics = {"test": test_metrics}
+        samples = []
+        print(
+            f"[FOL hub reload] Greedy + exact-match trên {len(random_test_samples)} mẫu **test** ngẫu nhiên "
+            f"(seed={random_test_seed}).",
+            flush=True,
+        )
+    elif random_test_infer_n > 0:
+        eval_mode = "random_test_only"
+        metrics = {}
+        samples = []
+    else:
+        eval_mode = "all_splits"
+        lim = cfg.eval_fol_max_samples
+        metrics = fol_exact_match_on_splits(
+            cfg,
+            model,
+            tokenizer,
+            dataset_dict,
+            splits=splits,
+            max_samples=lim,
+        )
+        samples = collect_fol_inference_samples(
+            cfg,
+            model,
+            tokenizer,
+            dataset_dict[inference_split],
+            cfg.experiment_inference_sample_n,
+            max_samples_cap=lim,
+        )
+
+    out: dict[str, Any] = {
         "repo_id": repo_id,
+        "eval_mode": eval_mode,
         "metrics_by_split": metrics,
         "filter_stats": filter_stats,
         "samples": samples,
         "inference_split": inference_split,
         "random_test_samples": random_test_samples,
     }
+    try:
+        del model
+        del tokenizer
+    except Exception:
+        pass
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    return out
 
 
-def print_fol_hub_eval_summary(result: dict[str, Any], *, max_sample_print: int = 8) -> None:
-    print("\n=== FOL — sau khi tải lại từ Hub (exact-match JSON premises_fol) ===")
+def print_fol_hub_eval_summary(
+    result: dict[str, Any],
+    *,
+    max_ordered_sample_print: int | None = 8,
+    random_sample_print_limit: int | None = None,
+) -> None:
+    """In log terminal: nếu ``random_sample_print_limit`` là None → in hết mẫu ngẫu nhiên."""
+    if result.get("eval_mode") == "random_test_only":
+        print(
+            "\n=== FOL — Hub reload: chỉ N mẫu **test** ngẫu nhiên (greedy + exact-match trên đúng N mẫu) ==="
+        )
+    else:
+        print("\n=== FOL — sau khi tải lại từ Hub (exact-match JSON premises_fol, đủ split) ===")
     for sp in sorted(result["metrics_by_split"].keys()):
         m = result["metrics_by_split"][sp]
         r = m.get("exact_match_rate", 0.0)
@@ -134,10 +183,23 @@ def print_fol_hub_eval_summary(result: dict[str, Any], *, max_sample_print: int 
     if fs:
         print("  filter_stats:", fs)
     rows = result.get("samples") or []
-    n = min(max_sample_print, len(rows))
-    print(f"\n=== Mẫu inference ({result.get('inference_split', 'test')}, tối đa {n} mẫu đầu) ===")
-    pprint(rows[:n])
+    if rows:
+        n_ord = (
+            len(rows)
+            if max_ordered_sample_print is None
+            else min(max_ordered_sample_print, len(rows))
+        )
+        print(
+            f"\n=== Mẫu inference ({result.get('inference_split', 'test')}, {n_ord}/{len(rows)} mẫu) ==="
+        )
+        pprint(rows[:n_ord])
     rts = result.get("random_test_samples") or []
     if rts:
-        print(f"\n=== Mẫu ngẫu nhiên trên test (sau fine-tune), {len(rts)} dòng ===")
-        pprint(rts)
+        lim = len(rts) if random_sample_print_limit is None else min(random_sample_print_limit, len(rts))
+        if random_sample_print_limit is None or lim >= len(rts):
+            print(f"\n=== Mẫu ngẫu nhiên trên test (Hub) — đủ {len(rts)} dòng (terminal + JSON) ===")
+        else:
+            print(
+                f"\n=== Mẫu ngẫu nhiên trên test (Hub) — xem trước {lim}/{len(rts)} dòng trên terminal (JSON đủ toàn bộ) ==="
+            )
+        pprint(rts[:lim])

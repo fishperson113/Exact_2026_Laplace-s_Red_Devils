@@ -1,7 +1,7 @@
 """Tinh chỉnh siêu tham số / sweep — mở rộng (Optuna, W&B sweep, v.v.).
 
-Hiện tại siêu tham số chính nằm trong `configs/logic_model.yaml` (tham khảo) và biến môi trường
-`LOGIC_*` trong `.env` (được `LogicSFTConfig.from_env()` đọc).
+Siêu tham số chạy thật nằm trong ``configs/logic_model.yaml`` (được ``LogicSFTConfig.from_env()`` đọc).
+Tùy chọn ghi đè trên shell/CI bằng biến ``LOGIC_*``.
 """
 from __future__ import annotations
 

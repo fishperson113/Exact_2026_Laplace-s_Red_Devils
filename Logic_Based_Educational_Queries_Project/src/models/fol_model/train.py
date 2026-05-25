@@ -427,7 +427,104 @@ def run_training(cfg: FolSFTConfig):
         fol_test_benchmark=bench,
         fol_inference_latency_benchmark=fol_inference_latency,
     )
-    return train_result, trainer, tokenizer, dataset_dict
+
+    skip_hub = (os.environ.get("FOL_SKIP_HUB_PUSH") or "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+    )
+    trainer_return = trainer
+    if cfg.push_to_hub and not skip_hub:
+        hf_tok = (
+            os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACE_HUB_TOKEN") or ""
+        ).strip()
+        if not hf_tok:
+            print(
+                "[FOL train][Hub] push_to_hub=True nhưng thiếu HF_TOKEN / HUGGINGFACE_HUB_TOKEN "
+                "(hoặc .env chưa nạp) — bỏ qua merge+push. Đặt FOL_SKIP_HUB_PUSH=1 để tắt rõ ràng.",
+                flush=True,
+            )
+        else:
+            print(
+                "[FOL train][Hub] Merge LoRA + đẩy Hub (CPU, có thể vài phút; cần RAM đủ cho base ~FP16) …",
+                flush=True,
+            )
+            from services.hub_push import (
+                push_merged_fol_lora,
+                upload_fol_experiment_artifacts_refresh,
+                upload_fol_hub_readme_hub_reload_addon,
+            )
+
+            try:
+                hub_url = push_merged_fol_lora(cfg, hf_tok)
+                print("[FOL train][Hub] Xong:", hub_url, flush=True)
+            except Exception as e:
+                print(f"[FOL train][Hub] Push thất bại: {type(e).__name__}: {e}", flush=True)
+            else:
+                if cfg.hub_reload_after_push:
+                    print(
+                        "[FOL train][Hub reload] Giải phóng Trainer trên GPU/VRAM, tải merged từ Hub, "
+                        "chỉ greedy trên mẫu test ngẫu nhiên (theo cấu hình) …",
+                        flush=True,
+                    )
+                    from models.fol_model.hub_reload_eval import (
+                        evaluate_fol_hub_model,
+                        print_fol_hub_eval_summary,
+                    )
+
+                    trainer_return = None
+                    try:
+                        del trainer
+                    except Exception:
+                        pass
+                    gc.collect()
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    try:
+                        hub_eval = evaluate_fol_hub_model(
+                            cfg,
+                            cfg.resolved_hf_repo(),
+                            hf_token=hf_tok,
+                            random_test_infer_n=cfg.hub_reload_random_test_n,
+                            random_test_seed=cfg.hub_reload_random_seed,
+                        )
+                        hub_path = cfg.out_dir / "fol_hub_reload_eval.json"
+                        with open(hub_path, "w", encoding="utf-8") as f:
+                            json.dump(hub_eval, f, indent=2, ensure_ascii=False)
+                        print(
+                            f"[FOL train][Hub reload] Đã ghi metrics + toàn bộ mẫu inference → {hub_path}",
+                            flush=True,
+                        )
+                        print_fol_hub_eval_summary(
+                            hub_eval,
+                            max_ordered_sample_print=cfg.experiment_inference_sample_n,
+                            random_sample_print_limit=None,
+                        )
+                        up = upload_fol_experiment_artifacts_refresh(cfg, hf_tok)
+                        if up:
+                            print(
+                                f"[FOL train][Hub reload] Đã upload/refresh {len(up)} file trong "
+                                f"`experiment_artifacts/` (gồm fol_hub_reload_eval.json).",
+                                flush=True,
+                            )
+                        upload_fol_hub_readme_hub_reload_addon(
+                            cfg, hf_tok, hub_eval, random_preview_n=2
+                        )
+                        print(
+                            "[FOL train][Hub reload] README trên Hub: thêm mục xác minh (~2 mẫu rút gọn); "
+                            "log terminal + JSON local có đủ các mẫu ngẫu nhiên.",
+                            flush=True,
+                        )
+                    except Exception as e:
+                        print(
+                            f"[FOL train][Hub reload] Thất bại: {type(e).__name__}: {e}",
+                            flush=True,
+                        )
+    elif cfg.push_to_hub and skip_hub:
+        print("[FOL train][Hub] Bỏ qua push (FOL_SKIP_HUB_PUSH).", flush=True)
+
+    return train_result, trainer_return, tokenizer, dataset_dict
 
 
 def run_train_and_eval(cfg: FolSFTConfig | None = None):

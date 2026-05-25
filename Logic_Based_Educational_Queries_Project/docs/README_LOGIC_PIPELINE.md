@@ -11,12 +11,12 @@
 
 ## Cấu hình
 
-- `services/config.py` — `LogicSFTConfig` + **`LogicSFTConfig.from_env()`** đọc biến từ `.env`.
-- **`.env.example`** — mẫu đầy đủ: `LOGIC_MODEL_NAME`, `LOGIC_REPO_*`, `HF_TOKEN`, … Sao chép thành **`.env`** (file này đã nằm trong `.gitignore` của repo). Cài **`python-dotenv`** để bootstrap tự nạp `.env`.
-- **Tên repo Hugging Face** (khi không set `LOGIC_HF_REPO_ID`):
-  `{LOGIC_HF_ORG}/logic-{LOGIC_REPO_VERSION}-{LOGIC_REPO_METHOD}-{slug}`
-  - Ví dụ: `Laplaces-Red-Devils/logic-v01-fewshot-qwen3.5-4` với model `Qwen/Qwen3.5-4B`, method `fewshot`, version `v01`.
-  - `slug` mặc định suy từ `LOGIC_MODEL_NAME`, hoặc ghi đè bằng `LOGIC_REPO_MODEL_SLUG`.
+- `services/config.py` — `LogicSFTConfig` + **`LogicSFTConfig.from_env()`** đọc **`configs/logic_model.yaml`** (theo repo Git), rồi tùy chọn ghi đè bằng biến `LOGIC_*` trên shell/CI.
+- **`.env.example`** — chỉ **bí mật** (`HF_TOKEN`, `GIT_TOKEN`). Sao chép thành **`.env`** (đã `.gitignore`). Cài **`python-dotenv`** để bootstrap tự nạp `.env`.
+- **Tên repo Hugging Face** (khi không set `hf_repo_id` trong YAML):
+  `{hf_org}/logic-{logic_repo_version}-{logic_repo_method}-{slug}`
+  - Ví dụ: `Laplaces-Red-Devils/logic-v01-sft-qwen3.5-4` với `hub` trong `configs/logic_model.yaml`.
+  - `slug` mặc định suy từ `model.name`, hoặc ghi đè trong YAML / `LOGIC_REPO_MODEL_SLUG` trên CI.
 
 ## Chạy trong notebook
 
@@ -25,7 +25,7 @@
 3. `from services.config import LogicSFTConfig` rồi `cfg = LogicSFTConfig.from_env()` — có thể thêm tham số Python để ghi đè (vd. `LogicSFTConfig.from_env(data_source="local")`).
 4. Nếu `cfg.data_source == "drive"`: chạy cell tải Drive (`download_and_extract_from_drive(cfg)` trong `logic_model_pipeline_official.ipynb`).
 5. Fine-tune: trong notebook gọi `run_training(cfg)` rồi `run_test_eval(cfg, trainer, dataset_dict)` (xem cell tương ứng).
-6. (Tuỳ chọn) Push HF: `push_merged_lora(cfg, token)` khi `LOGIC_PUSH_TO_HUB=true` và có `HF_TOKEN` / `HF_Token` (Kaggle secrets).
+6. (Tuỳ chọn) Push HF: `push_merged_lora(cfg, token)` khi `hub.push_to_hub: true` trong `configs/logic_model.yaml` và có `HF_TOKEN` (hoặc `HUGGINGFACE_HUB_TOKEN`).
 
 ## Fine-tune / tối ưu accuracy
 

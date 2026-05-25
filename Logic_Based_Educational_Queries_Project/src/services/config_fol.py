@@ -1,4 +1,4 @@
-"""Cấu hình SFT NL → premises-FOL — biến môi trường prefix `FOL_`."""
+"""Cấu hình SFT NL → premises-FOL — đọc ``configs/fol_model.yaml`` (Git); ``.env`` chỉ cho token (HF/GIT). Tùy chọn ghi đè bằng biến ``FOL_*`` trên shell/CI."""
 from __future__ import annotations
 
 import os
@@ -142,6 +142,12 @@ def _fol_config_dict_from_yaml(project_root: Path) -> dict[str, Any]:
                 out["inference_latency_benchmark_split"] = str(
                     ev["inference_latency_benchmark_split"]
                 ).strip().lower()
+            if "hub_reload_after_push" in ev and ev["hub_reload_after_push"] is not None:
+                out["hub_reload_after_push"] = bool(ev["hub_reload_after_push"])
+            if "hub_reload_random_test_n" in ev and ev["hub_reload_random_test_n"] is not None:
+                out["hub_reload_random_test_n"] = int(ev["hub_reload_random_test_n"])
+            if "hub_reload_random_seed" in ev and ev["hub_reload_random_seed"] is not None:
+                out["hub_reload_random_seed"] = int(ev["hub_reload_random_seed"])
 
     return out
 
@@ -217,6 +223,13 @@ class FolSFTConfig:
     """train | dev | test — split dùng cho benchmark latency."""
     inference_latency_benchmark_seed: int | None = None
     """None = dùng ``train_seed``."""
+    # Sau khi merge+push Hub: tải lại merged từ Hub, exact-match + mẫu test ngẫu nhiên (CLI / tmux).
+    hub_reload_after_push: bool = True
+    """Tắt: ``hub_reload_after_push: false`` hoặc ``FOL_HUB_RELOAD_AFTER_PUSH=false``."""
+    hub_reload_random_test_n: int = 20
+    """Số mẫu **test** greedy ngẫu nhiên sau khi tải model từ Hub (0 = tắt). Env: ``FOL_HUB_RELOAD_RANDOM_N``."""
+    hub_reload_random_seed: int = 42
+    """Env: ``FOL_HUB_RELOAD_SEED``."""
 
     # --- Unsloth / VRAM (T4): FastLanguageModel + loss chỉ assistant + adamw_8bit ---
     use_unsloth: bool = False
@@ -262,7 +275,7 @@ class FolSFTConfig:
 
     @classmethod
     def from_env(cls, load_dotenv_file: bool = True, **overrides: Any) -> FolSFTConfig:
-        """Nạp ``configs/fol_model.yaml`` (nếu tìm thấy repo), rồi ghi đè bằng biến ``FOL_*`` / ``**overrides``."""
+        """Nạp ``configs/fol_model.yaml`` (nếu tìm thấy repo), rồi ghi đè bởi biến ``FOL_*`` / ``LOGIC_SFT_PROCESSED_DIR`` chỉ khi được set, cuối cùng ``**overrides``."""
         if load_dotenv_file:
             load_dotenv_for_logic()
 
@@ -371,6 +384,13 @@ class FolSFTConfig:
             kwargs["unsloth_load_in_4bit"] = _env_bool("FOL_UNSLOTH_NF4", default=False)
         if v := _env_int("FOL_EVAL_ACCUMULATION_STEPS"):
             kwargs["eval_accumulation_steps"] = v
+
+        if _fol_env_key_set("FOL_HUB_RELOAD_AFTER_PUSH"):
+            kwargs["hub_reload_after_push"] = _env_bool("FOL_HUB_RELOAD_AFTER_PUSH", default=True)
+        if v := _env_int("FOL_HUB_RELOAD_RANDOM_N"):
+            kwargs["hub_reload_random_test_n"] = v
+        if v := _env_int("FOL_HUB_RELOAD_SEED"):
+            kwargs["hub_reload_random_seed"] = v
 
         valid = {f.name for f in fields(cls)}
         filtered = {k: v for k, v in kwargs.items() if k in valid}

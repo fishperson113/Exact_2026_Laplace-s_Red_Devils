@@ -1,5 +1,6 @@
-# Tham khảo siêu tham số (Logic SFT — logic_model / MCQ).
-# Giá trị thực tế: ưu tiên `.env` + `LogicSFTConfig.from_env()` trong code.
+# Siêu tham số Logic / MCQ SFT — file này được `LogicSFTConfig.from_env()` đọc trước (cùng repo Git).
+# Bí mật không đặt trong YAML: chỉ `HF_TOKEN` / `GIT_TOKEN` trong `.env` (xem `.env.example`).
+# Tùy chọn ghi đè khi chạy CI: export biến `LOGIC_*` tương ứng.
 
 model:
   name: Qwen/Qwen3.5-4B
@@ -27,14 +28,22 @@ training:
   gpu_profile: auto  # auto | kaggle_p100 | default
 
 data:
+  data_source: local   # local | drive — Drive: vẫn cần cell notebook tải file (xem `services/drive.py`)
   split_ratios: [0.8, 0.1, 0.1]
   split_seed: 42
   include_fol_in_user: true
 
 paths:
-  # Đặt trong .env nếu cần: LOGIC_SFT_PROCESSED_DIR=/.../data/processed (mặc định: thư mục có train.csv)
+  # Đường dẫn tương đối gốc repo; cần tuyệt đối thì ghi path đầy đủ tại đây (fork riêng) — không dùng .env cho path.
   processed_subdir: data/processed
   raw_filename: Logic_Based_Educational_Queries.json
+
+eval:
+  # Mỗi epoch: đo thêm test (tốn GPU); mẫu inference ghi vào experiment_log.json
+  log_test_each_epoch: true
+  experiment_inference_sample_n: 5
+  eval_gen_batch_size: 2
+  eval_accuracy_max_samples: null
 
 hub:
   org: Laplaces-Red-Devils

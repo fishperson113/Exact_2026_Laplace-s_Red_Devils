@@ -43,6 +43,9 @@ def format_nl_block_numbered(premises_nl: list[str]) -> str:
 
 
 # --- SFT: NL premises → JSON premises_fol (chat: system + user) ---
+# `max_seq_length` huấn luyện áp lên cả chuỗi sau chat template (system + user + assistant).
+# Thống kê độ dài token đúng các biến dưới: `notebooks/eda_and_preprocessing.ipynb` (mục markdown «FOL SFT») gọi
+# `fol_dataset.build_fol_messages` + `apply_chat_template` — không nhân đôi prompt trong notebook.
 # Phần system: Instruction, Rules, Context, Few-shot (tới hết Example 2).
 SYSTEM_PROMPT_FOL_SFT = """\
 ### Instruction

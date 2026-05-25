@@ -138,6 +138,29 @@ def fol_exact_match_on_splits(
     return out
 
 
+def fol_summarize_exact_match_rows(
+    rows: list[dict[str, Any]],
+    *,
+    attach_per_row: bool = True,
+) -> dict[str, Any]:
+    """Đếm exact-match ``premises_fol`` trên các hàng có ``gold_assistant`` / ``predicted_raw``."""
+    ok = 0
+    total = 0
+    for row in rows:
+        g = str(row.get("gold_assistant", ""))
+        p = str(row.get("predicted_raw", ""))
+        gl = _parse_premises_fol_list(g)
+        pl = _parse_premises_fol_list(p)
+        match = gl is not None and pl is not None and _lists_exact_match(gl, pl)
+        if attach_per_row:
+            row["premises_fol_exact_match"] = match
+        total += 1
+        if match:
+            ok += 1
+    rate = float(ok) / float(total) if total else 0.0
+    return {"exact_match_count": ok, "total": total, "exact_match_rate": rate}
+
+
 def _fol_one_greedy_generate(
     cfg: FolSFTConfig,
     model,
