@@ -40,6 +40,23 @@ from .generation_fol_eval import (
 )
 
 
+def _strip_notebook_progress_callback(trainer: Any) -> None:
+    """Trong Jupyter/Colab, ``NotebookProgressCallback.on_train_end`` đặt ``training_tracker = None``;
+    gọi ``trainer.evaluate()`` **sau** ``train()`` sẽ lỗi ``on_train_begin must be called before on_evaluate``.
+    Gỡ callback này trước các lần evaluate hậu huấn luyện.
+    """
+    try:
+        from transformers.utils.notebook import NotebookProgressCallback
+    except ImportError:
+        return
+    removed = trainer.pop_callback(NotebookProgressCallback)
+    if removed is not None:
+        print(
+            "[FOL train] Đã gỡ NotebookProgressCallback (notebook) để evaluate sau train không crash.",
+            flush=True,
+        )
+
+
 def _fol_cuda_bootstrap() -> None:
     """Giảm phân mảnh VRAM + dọn cache trước train (đặc biệt T4 ~15GB)."""
     os.environ.setdefault("PYTORCH_ALLOC_CONF", "expandable_segments:True")
@@ -323,6 +340,7 @@ def run_training(cfg: FolSFTConfig):
     print("[FOL train] Bắt đầu trainer.train() …", flush=True)
     train_result = trainer.train()
     print("[FOL train] trainer.train() xong.", flush=True)
+    _strip_notebook_progress_callback(trainer)
     cfg.checkpoint_dir.mkdir(parents=True, exist_ok=True)
     trainer.save_model(str(cfg.checkpoint_dir))
     tokenizer.save_pretrained(str(cfg.checkpoint_dir))
