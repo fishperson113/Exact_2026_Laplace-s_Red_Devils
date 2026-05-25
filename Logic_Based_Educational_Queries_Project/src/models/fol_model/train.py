@@ -23,6 +23,7 @@ except ImportError:
         pass
 
 from transformers import EarlyStoppingCallback
+from transformers.trainer_callback import TrainerCallback
 from trl import SFTConfig, SFTTrainer
 
 from data.fol_dataset import build_fol_dataset_dict
@@ -40,6 +41,62 @@ from .generation_fol_eval import (
     fol_exact_match_on_splits,
     fol_exact_match_rate,
 )
+
+
+def _fol_metric_key_for_best(metric_for_best_model: str | None) -> str:
+    """Khớp logic HF ``_determine_best_metric``: thiếu tiền tố ``eval_`` thì thêm."""
+    if not metric_for_best_model:
+        return "eval_loss"
+    m = str(metric_for_best_model).strip()
+    return m if m.startswith("eval_") else f"eval_{m}"
+
+
+def _fol_best_metric_uses_dev_exact_match(metric_for_best_model: str | None) -> bool:
+    m = (metric_for_best_model or "").strip().lower()
+    if m.startswith("eval_"):
+        m = m[5:]
+    return "exact_match" in m
+
+
+class FolDevExactMatchForBestModelCallback(TrainerCallback):
+    """Trước EarlyStopping: greedy exact-match trên **dev**, ghi ``eval_exact_match_rate`` vào ``metrics``."""
+
+    def __init__(self, cfg: FolSFTConfig, dev_dataset: Any):
+        self.cfg = cfg
+        self.dev_dataset = dev_dataset
+        self.suppress_exact_match_metric = False
+        self.trainer_ref: Any | None = None
+
+    def on_evaluate(
+        self,
+        args: Any,
+        state: Any,
+        control: Any,
+        metrics: dict[str, Any] | None,
+        model: Any = None,
+        processing_class: Any = None,
+        **kwargs: Any,
+    ) -> None:
+        if metrics is None or self.suppress_exact_match_metric:
+            return
+        if not _fol_best_metric_uses_dev_exact_match(getattr(args, "metric_for_best_model", None)):
+            return
+        tok = processing_class or kwargs.get("tokenizer")
+        if model is None or tok is None:
+            return
+        r = fol_exact_match_rate(
+            self.cfg,
+            model,
+            tok,
+            self.dev_dataset,
+            max_samples=self.cfg.best_model_exact_match_max_samples,
+            split_label="dev_best_model_metric",
+        )
+        rate = float(r["exact_match_rate"])
+        metrics["eval_exact_match_rate"] = rate
+        tr = self.trainer_ref
+        if tr is not None and getattr(tr, "is_world_process_zero", lambda: True)():
+            tr.log({"eval_exact_match_rate": rate, "epoch": state.epoch})
 
 
 def _fol_prune_trainer_checkpoint_dirs(out_dir: Path) -> int:
@@ -183,15 +240,16 @@ def _build_fol_sft_config(
 def _epoch_metrics_from_history(trainer: SFTTrainer) -> list[dict]:
     rows: list[dict] = []
     for h in trainer.state.log_history:
-        if "eval_loss" not in h:
+        if "eval_loss" not in h and "eval_exact_match_rate" not in h:
             continue
-        rows.append(
-            {
-                "epoch": h.get("epoch"),
-                "step": h.get("step"),
-                "eval_loss": h.get("eval_loss"),
-            }
-        )
+        row: dict[str, Any] = {
+            "epoch": h.get("epoch"),
+            "step": h.get("step"),
+            "eval_loss": h.get("eval_loss"),
+        }
+        if "eval_exact_match_rate" in h:
+            row["eval_exact_match_rate"] = h.get("eval_exact_match_rate")
+        rows.append(row)
     return rows
 
 
@@ -333,7 +391,22 @@ def run_training(cfg: FolSFTConfig):
         trainer_kwargs["processing_class"] = tokenizer
     else:
         trainer_kwargs["tokenizer"] = tokenizer
+    fol_em_cb: FolDevExactMatchForBestModelCallback | None = None
     _callbacks: list[Any] = []
+    if _fol_best_metric_uses_dev_exact_match(cfg.metric_for_best_model):
+        fol_em_cb = FolDevExactMatchForBestModelCallback(cfg, dataset_dict["dev"])
+        _callbacks.append(fol_em_cb)
+        print(
+            f"[FOL train] Chọn checkpoint theo {_fol_metric_key_for_best(cfg.metric_for_best_model)!r} "
+            f"(greedy exact-match trên dev; best_model_exact_match_max_samples="
+            f"{cfg.best_model_exact_match_max_samples!r}).",
+            flush=True,
+        )
+    if _fol_best_metric_uses_dev_exact_match(cfg.metric_for_best_model) and not cfg.greater_is_better:
+        print(
+            "[FOL train] Cảnh báo: metric exact-match nên đặt greater_is_better=true (tỉ lệ cao hơn = tốt hơn).",
+            flush=True,
+        )
     if int(getattr(cfg, "early_stopping_patience", 0) or 0) > 0:
         _callbacks.append(
             EarlyStoppingCallback(early_stopping_patience=int(cfg.early_stopping_patience))
@@ -346,10 +419,14 @@ def run_training(cfg: FolSFTConfig):
     if _callbacks:
         trainer_kwargs["callbacks"] = _callbacks
     trainer = SFTTrainer(**trainer_kwargs)
+    if fol_em_cb is not None:
+        fol_em_cb.trainer_ref = trainer
 
     if cfg.use_unsloth and cfg.unsloth_train_on_responses_only:
         print("[FOL train][Unsloth] Áp train_on_responses_only (loss chỉ trên assistant) …", flush=True)
         trainer = apply_train_on_responses_only(trainer, cfg)
+        if fol_em_cb is not None:
+            fol_em_cb.trainer_ref = trainer
 
     print("[FOL train] Bắt đầu trainer.train() …", flush=True)
     train_result = trainer.train()
@@ -375,7 +452,13 @@ def run_training(cfg: FolSFTConfig):
 
     _fol_cuda_bootstrap()
     print("[FOL train] trainer.evaluate() trên test (loss) …", flush=True)
-    test_trainer_metrics = trainer.evaluate(eval_dataset=dataset_dict["test"])
+    if fol_em_cb is not None:
+        fol_em_cb.suppress_exact_match_metric = True
+    try:
+        test_trainer_metrics = trainer.evaluate(eval_dataset=dataset_dict["test"])
+    finally:
+        if fol_em_cb is not None:
+            fol_em_cb.suppress_exact_match_metric = False
 
     _fol_cuda_bootstrap()
     print("[FOL train] Greedy exact-match JSON trên train/dev/test (lâu nếu full split + null max_samples) …", flush=True)

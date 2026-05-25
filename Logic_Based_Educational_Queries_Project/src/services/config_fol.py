@@ -113,6 +113,14 @@ def _fol_config_dict_from_yaml(project_root: Path) -> dict[str, Any]:
                 out["metric_for_best_model"] = str(t["metric_for_best_model"]).strip()
             if "greater_is_better" in t and t["greater_is_better"] is not None:
                 out["greater_is_better"] = bool(t["greater_is_better"])
+            if "best_model_exact_match_max_samples" in t:
+                v = t["best_model_exact_match_max_samples"]
+                if v is None or (
+                    isinstance(v, str) and v.strip().lower() in ("null", "none", "", "all")
+                ):
+                    out["best_model_exact_match_max_samples"] = None
+                else:
+                    out["best_model_exact_match_max_samples"] = int(v)
             if "save_total_limit" in t and t["save_total_limit"] is not None:
                 out["save_total_limit"] = int(t["save_total_limit"])
             if "delete_output_checkpoints_after_save" in t and t["delete_output_checkpoints_after_save"] is not None:
@@ -231,7 +239,9 @@ class FolSFTConfig:
     """0 = tắt. Ví dụ 3 → ``EarlyStoppingCallback(patience=3)`` (đếm theo lần **eval**, khớp ``eval_strategy``)."""
     load_best_model_at_end: bool = True
     metric_for_best_model: str = "eval_loss"
-    greater_is_better: bool = False
+    greater_is_better: bool = False  # với exact_match trên dev → thường True
+    best_model_exact_match_max_samples: int | None = None
+
     save_total_limit: int = 1
     """Số checkpoint tối đa trong ``out_dir`` lúc train (HF xoay + giữ best khi ``load_best_model_at_end``)."""
     delete_output_checkpoints_after_save: bool = True
@@ -336,6 +346,17 @@ class FolSFTConfig:
             kwargs["early_stopping_patience"] = v
         if v := _env_int("FOL_SAVE_TOTAL_LIMIT"):
             kwargs["save_total_limit"] = v
+        if (v := _env_opt_str("FOL_METRIC_FOR_BEST_MODEL")) is not None:
+            kwargs["metric_for_best_model"] = v.strip()
+        if _fol_env_key_set("FOL_GREATER_IS_BETTER"):
+            kwargs["greater_is_better"] = _env_bool("FOL_GREATER_IS_BETTER", default=True)
+        if (es := _env_opt_str("FOL_BEST_MODEL_EM_MAX_SAMPLES")) is not None:
+            low = es.lower()
+            if low in ("", "none", "null", "all"):
+                kwargs["best_model_exact_match_max_samples"] = None
+            else:
+                kwargs["best_model_exact_match_max_samples"] = int(es.strip())
+
         if _fol_env_key_set("FOL_PRUNE_TRAINER_CHECKPOINTS"):
             kwargs["delete_output_checkpoints_after_save"] = _env_bool(
                 "FOL_PRUNE_TRAINER_CHECKPOINTS", default=True
