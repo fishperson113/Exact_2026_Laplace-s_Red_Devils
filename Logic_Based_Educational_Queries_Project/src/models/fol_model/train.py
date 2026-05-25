@@ -5,6 +5,8 @@ import gc
 import inspect
 import json
 import os
+import shutil
+from pathlib import Path
 from typing import Any
 
 import torch
@@ -38,6 +40,18 @@ from .generation_fol_eval import (
     fol_exact_match_on_splits,
     fol_exact_match_rate,
 )
+
+
+def _fol_prune_trainer_checkpoint_dirs(out_dir: Path) -> int:
+    """Xóa các thư mục ``checkpoint-*`` do Trainer tạo trong ``out_dir`` (sau khi đã lưu bản chính vào ``final_lora``)."""
+    if not out_dir.is_dir():
+        return 0
+    n = 0
+    for p in sorted(out_dir.iterdir()):
+        if p.is_dir() and p.name.startswith("checkpoint-"):
+            shutil.rmtree(p, ignore_errors=True)
+            n += 1
+    return n
 
 
 def _strip_notebook_progress_callback(trainer: Any) -> None:
@@ -141,7 +155,7 @@ def _build_fol_sft_config(
         disable_tqdm=False,
         eval_strategy="epoch",
         save_strategy="epoch",
-        save_total_limit=2,
+        save_total_limit=max(1, int(cfg.save_total_limit)),
         load_best_model_at_end=cfg.load_best_model_at_end,
         metric_for_best_model=cfg.metric_for_best_model,
         greater_is_better=cfg.greater_is_better,
@@ -344,6 +358,14 @@ def run_training(cfg: FolSFTConfig):
     cfg.checkpoint_dir.mkdir(parents=True, exist_ok=True)
     trainer.save_model(str(cfg.checkpoint_dir))
     tokenizer.save_pretrained(str(cfg.checkpoint_dir))
+    if cfg.delete_output_checkpoints_after_save and cfg.out_dir is not None:
+        pruned = _fol_prune_trainer_checkpoint_dirs(cfg.out_dir)
+        if pruned:
+            print(
+                f"[FOL train] Đã xóa {pruned} thư mục checkpoint-* trong {cfg.out_dir} "
+                "(bản dùng tiếp theo: checkpoint_dir / final_lora).",
+                flush=True,
+            )
 
     _fol_cuda_bootstrap()
     print("[FOL train] trainer.evaluate() trên dev (loss) …", flush=True)

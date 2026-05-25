@@ -37,6 +37,10 @@ training:
   load_best_model_at_end: true
   metric_for_best_model: eval_loss
   greater_is_better: false
+  # Chỉ giữ tối đa N checkpoint trong out_dir lúc train; 1 + load_best_model_at_end ≈ tiết kiệm đĩa nhất. Env: FOL_SAVE_TOTAL_LIMIT
+  save_total_limit: 1
+  # Sau khi lưu LoRA vào checkpoint_dir (final_lora), xóa checkpoint-* trong out_dir (tránh trùng trên đĩa). Tắt nếu cần resume: false / FOL_PRUNE_TRAINER_CHECKPOINTS=0
+  delete_output_checkpoints_after_save: true
 
 paths:
   # FOL_SFT_PROCESSED_DIR hoặc mặc định data/processed (chung với logic SFT)

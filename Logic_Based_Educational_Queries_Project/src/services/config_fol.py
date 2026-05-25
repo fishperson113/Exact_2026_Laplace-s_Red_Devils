@@ -113,6 +113,12 @@ def _fol_config_dict_from_yaml(project_root: Path) -> dict[str, Any]:
                 out["metric_for_best_model"] = str(t["metric_for_best_model"]).strip()
             if "greater_is_better" in t and t["greater_is_better"] is not None:
                 out["greater_is_better"] = bool(t["greater_is_better"])
+            if "save_total_limit" in t and t["save_total_limit"] is not None:
+                out["save_total_limit"] = int(t["save_total_limit"])
+            if "delete_output_checkpoints_after_save" in t and t["delete_output_checkpoints_after_save"] is not None:
+                out["delete_output_checkpoints_after_save"] = bool(
+                    t["delete_output_checkpoints_after_save"]
+                )
 
     if paths := data.get("paths"):
         if isinstance(paths, dict) and (sub := paths.get("processed_subdir")):
@@ -226,6 +232,10 @@ class FolSFTConfig:
     load_best_model_at_end: bool = True
     metric_for_best_model: str = "eval_loss"
     greater_is_better: bool = False
+    save_total_limit: int = 1
+    """Số checkpoint tối đa trong ``out_dir`` lúc train (HF xoay + giữ best khi ``load_best_model_at_end``)."""
+    delete_output_checkpoints_after_save: bool = True
+    """Sau ``trainer.save_model`` → ``checkpoint_dir`` (vd. ``final_lora``), xóa ``checkpoint-*`` trong ``out_dir`` để tiết kiệm đĩa."""
 
     eval_gen_batch_size: int = 2
     eval_fol_max_samples: int | None = None
@@ -324,6 +334,12 @@ class FolSFTConfig:
             kwargs["train_seed"] = v
         if v := _env_int("FOL_EARLY_STOPPING_PATIENCE"):
             kwargs["early_stopping_patience"] = v
+        if v := _env_int("FOL_SAVE_TOTAL_LIMIT"):
+            kwargs["save_total_limit"] = v
+        if _fol_env_key_set("FOL_PRUNE_TRAINER_CHECKPOINTS"):
+            kwargs["delete_output_checkpoints_after_save"] = _env_bool(
+                "FOL_PRUNE_TRAINER_CHECKPOINTS", default=True
+            )
 
         es = _env_opt_str("FOL_EVAL_FOL_MAX_SAMPLES")
         if es is not None and es.lower() in ("none", "", "all"):
