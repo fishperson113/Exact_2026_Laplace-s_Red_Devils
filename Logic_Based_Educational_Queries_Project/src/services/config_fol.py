@@ -105,6 +105,14 @@ def _fol_config_dict_from_yaml(project_root: Path) -> dict[str, Any]:
                     out[k] = bool(t[k])
             if "gpu_profile" in t and t["gpu_profile"] is not None:
                 out["gpu_profile"] = str(t["gpu_profile"]).strip().lower()
+            if "early_stopping_patience" in t and t["early_stopping_patience"] is not None:
+                out["early_stopping_patience"] = int(t["early_stopping_patience"])
+            if "load_best_model_at_end" in t and t["load_best_model_at_end"] is not None:
+                out["load_best_model_at_end"] = bool(t["load_best_model_at_end"])
+            if "metric_for_best_model" in t and t["metric_for_best_model"] is not None:
+                out["metric_for_best_model"] = str(t["metric_for_best_model"]).strip()
+            if "greater_is_better" in t and t["greater_is_better"] is not None:
+                out["greater_is_better"] = bool(t["greater_is_better"])
 
     if paths := data.get("paths"):
         if isinstance(paths, dict) and (sub := paths.get("processed_subdir")):
@@ -212,6 +220,12 @@ class FolSFTConfig:
     gradient_checkpointing: bool = True
     train_seed: int = 3407
     run_train: bool = True
+    # Trainer: checkpoint tốt nhất + early stop (theo metric trên dev mỗi epoch)
+    early_stopping_patience: int = 0
+    """0 = tắt. Ví dụ 3 → ``EarlyStoppingCallback(patience=3)`` (đếm theo lần **eval**, khớp ``eval_strategy``)."""
+    load_best_model_at_end: bool = True
+    metric_for_best_model: str = "eval_loss"
+    greater_is_better: bool = False
 
     eval_gen_batch_size: int = 2
     eval_fol_max_samples: int | None = None
@@ -308,6 +322,8 @@ class FolSFTConfig:
             kwargs["num_train_epochs"] = v
         if v := _env_int("FOL_TRAIN_SEED"):
             kwargs["train_seed"] = v
+        if v := _env_int("FOL_EARLY_STOPPING_PATIENCE"):
+            kwargs["early_stopping_patience"] = v
 
         es = _env_opt_str("FOL_EVAL_FOL_MAX_SAMPLES")
         if es is not None and es.lower() in ("none", "", "all"):

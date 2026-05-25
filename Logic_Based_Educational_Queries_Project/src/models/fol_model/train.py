@@ -20,6 +20,7 @@ except ImportError:
     except ImportError:
         pass
 
+from transformers import EarlyStoppingCallback
 from trl import SFTConfig, SFTTrainer
 
 from data.fol_dataset import build_fol_dataset_dict
@@ -124,9 +125,9 @@ def _build_fol_sft_config(
         eval_strategy="epoch",
         save_strategy="epoch",
         save_total_limit=2,
-        load_best_model_at_end=True,
-        metric_for_best_model="eval_loss",
-        greater_is_better=False,
+        load_best_model_at_end=cfg.load_best_model_at_end,
+        metric_for_best_model=cfg.metric_for_best_model,
+        greater_is_better=cfg.greater_is_better,
         bf16=train_bf16,
         fp16=train_fp16,
         optim=optim,
@@ -301,6 +302,18 @@ def run_training(cfg: FolSFTConfig):
         trainer_kwargs["processing_class"] = tokenizer
     else:
         trainer_kwargs["tokenizer"] = tokenizer
+    _callbacks: list[Any] = []
+    if int(getattr(cfg, "early_stopping_patience", 0) or 0) > 0:
+        _callbacks.append(
+            EarlyStoppingCallback(early_stopping_patience=int(cfg.early_stopping_patience))
+        )
+        print(
+            f"[FOL train] EarlyStoppingCallback(patience={cfg.early_stopping_patience}), "
+            f"metric={cfg.metric_for_best_model!r}, greater_is_better={cfg.greater_is_better}",
+            flush=True,
+        )
+    if _callbacks:
+        trainer_kwargs["callbacks"] = _callbacks
     trainer = SFTTrainer(**trainer_kwargs)
 
     if cfg.use_unsloth and cfg.unsloth_train_on_responses_only:

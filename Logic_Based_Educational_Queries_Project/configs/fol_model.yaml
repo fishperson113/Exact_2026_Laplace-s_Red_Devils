@@ -11,16 +11,16 @@ model:
 lora:
   r: 8
   alpha: 16
-  dropout: 0.05
+  dropout: 0.1
 
 training:
-  num_train_epochs: 30
+  num_train_epochs: 10
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 1
   gradient_accumulation_steps: 8
-  learning_rate: 2.0e-4
+  learning_rate: 2e-4
   warmup_ratio: 0.05
-  weight_decay: 0.00001
+  weight_decay: 0.01
   logging_steps: 10
   bf16: true
   gradient_checkpointing: true
@@ -32,6 +32,11 @@ training:
   use_unsloth: true
   unsloth_train_on_responses_only: true
   use_adamw_8bit: true
+  # Early stop theo metric trên dev (mỗi epoch eval); 0 = tắt. Env: FOL_EARLY_STOPPING_PATIENCE
+  early_stopping_patience: 3
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
 
 paths:
   # FOL_SFT_PROCESSED_DIR hoặc mặc định data/processed (chung với logic SFT)
