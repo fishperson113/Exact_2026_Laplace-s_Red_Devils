@@ -7,3 +7,4 @@
 # Local model dirs (LoRA outputs, merged weights, etc.)
 runs/
 checkpoints/
+ssh_to_gpu.txt

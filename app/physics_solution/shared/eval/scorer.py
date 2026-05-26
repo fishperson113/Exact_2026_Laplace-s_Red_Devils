@@ -121,14 +121,17 @@ def extract(completion: str) -> Extraction:
     out = Extraction()
     if ans_match:
         out.raw_answer = _strip_latex_answer(ans_match.group(1).strip())
-        num_match = _NUM_RE.search(out.raw_answer)
-        if num_match:
-            try:
-                out.numeric = float(num_match.group(0))
-            except ValueError:
-                out.numeric = None
+        sci_val = _parse_sci_notation(out.raw_answer)
+        if sci_val is not None and _SCI_RE.search(out.raw_answer):
+            out.numeric = sci_val
+        else:
+            num_match = _NUM_RE.search(out.raw_answer)
+            if num_match:
+                try:
+                    out.numeric = float(num_match.group(0))
+                except ValueError:
+                    out.numeric = None
     else:
-        # Fallback: last number in the completion.
         nums = _NUM_RE.findall(completion)
         if nums:
             try:
@@ -241,9 +244,15 @@ def _score_pure_numeric(pred_completion: str, gold_answer: str) -> ScoringResult
             pred_unit=extracted.raw_unit, detected_answer_type=AnswerType.PURE_NUMERIC,
             notes="gold not parseable as float",
         )
-    correct = numeric_close(extracted.numeric, gold_f)
+    pred_f = extracted.numeric
+    if extracted.raw_answer:
+        sci_val = _parse_sci_notation(extracted.raw_answer)
+        if sci_val is not None:
+            if pred_f is None or not numeric_close(pred_f, gold_f):
+                pred_f = sci_val
+    correct = numeric_close(pred_f, gold_f)
     return ScoringResult(
-        is_correct=correct, pred_value=extracted.numeric,
+        is_correct=correct, pred_value=pred_f,
         pred_unit=extracted.raw_unit, detected_answer_type=AnswerType.PURE_NUMERIC,
     )
 
@@ -479,6 +488,16 @@ if __name__ == "__main__":
               score("FINAL ANSWER: 20.0\nUNIT: Ω", "Rtd = 20.0", "Ω"), True)
         check("wrong numeric",
               score("FINAL ANSWER: 99.0\nUNIT: Ω", "Rtd = 20.0", "Ω"), False)
+
+        print("\n=== Sci-notation pred with pure_numeric gold ===")
+        check("sci pred, plain gold",
+              score("FINAL ANSWER: 7.5 * 10^{3}\nUNIT: V/m", "7500", "V/m"), True)
+        check("sci pred, large gold",
+              score("FINAL ANSWER: 1.00 * 10^{6}\nUNIT: V/m", "1000000", "V/m"), True)
+        check("sci pred, small gold",
+              score("FINAL ANSWER: 4.0 * 10^{-4}\nUNIT: H", "0.0004", "H"), True)
+        check("sci pred, wrong value",
+              score("FINAL ANSWER: 7.5 * 10^{3}\nUNIT: V/m", "500", "V/m"), False)
 
         print(f"\n{'='*40}\n{ok}/{total} tests passed")
 
