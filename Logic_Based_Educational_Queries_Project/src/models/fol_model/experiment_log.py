@@ -30,7 +30,7 @@ def try_read_fol_model_yaml(cfg: FolSFTConfig) -> tuple[dict[str, Any] | None, s
         data = _yaml.safe_load(raw) or {}
     except ImportError:
         return None, raw
-    except Exception:
+    except _yaml.YAMLError:
         data = {}
     return data if isinstance(data, dict) else {}, raw
 

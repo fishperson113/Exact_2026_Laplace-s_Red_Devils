@@ -33,7 +33,7 @@ def try_read_logic_model_yaml(cfg: LogicSFTConfig) -> tuple[dict[str, Any] | Non
         data = _yaml.safe_load(raw) or {}
     except ImportError:
         return None, raw
-    except Exception:
+    except _yaml.YAMLError:
         data = {}
     return data if isinstance(data, dict) else {}, raw
 
@@ -112,8 +112,7 @@ def _json_safe(obj: Any) -> Any:
 
 
 def logic_config_flat_dict(cfg: LogicSFTConfig) -> dict[str, Any]:
-    d = asdict(cfg)
-    return _json_safe(d)
+    return _json_safe(asdict(cfg))
 
 
 def build_experiment_log_document(

@@ -1,4 +1,5 @@
 .env
+VAST_AI_SETUP.txt
 .venv/
 venv/
 __pycache__/

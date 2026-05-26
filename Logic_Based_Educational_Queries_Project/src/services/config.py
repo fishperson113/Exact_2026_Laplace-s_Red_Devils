@@ -62,7 +62,7 @@ def _path_from_env(key: str, default: Path) -> Path:
     return default
 
 
-def _logic_env_key_set(key: str) -> bool:
+def _env_key_set(key: str) -> bool:
     v = os.environ.get(key)
     return v is not None and str(v).strip() != ""
 
@@ -94,7 +94,7 @@ def _logic_config_dict_from_yaml(project_root: Path) -> dict[str, Any]:
         return {}
     try:
         data = _yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-    except Exception:
+    except _yaml.YAMLError:
         return {}
     if not isinstance(data, dict):
         return {}
@@ -307,7 +307,7 @@ class LogicSFTConfig:
             kwargs["data_source"] = v.strip().lower()
         if v := _env_opt_str("LOGIC_DATA_FILENAME"):
             kwargs["data_filename"] = v
-        if _logic_env_key_set("LOGIC_DATA_ROOT"):
+        if _env_key_set("LOGIC_DATA_ROOT"):
             kwargs["data_root"] = _path_from_env("LOGIC_DATA_ROOT", Path.cwd() / "exact_data")
 
         if v := _env_int("LOGIC_MAX_SEQ_LENGTH"):
@@ -334,7 +334,7 @@ class LogicSFTConfig:
         elif v := _env_int("LOGIC_EVAL_ACCURACY_MAX_SAMPLES"):
             kwargs["eval_accuracy_max_samples"] = v
 
-        if _logic_env_key_set("LOGIC_LOG_TEST_EACH_EPOCH"):
+        if _env_key_set("LOGIC_LOG_TEST_EACH_EPOCH"):
             kwargs["log_test_each_epoch"] = _env_bool("LOGIC_LOG_TEST_EACH_EPOCH", default=True)
         if (es := _env_opt_str("LOGIC_EXPERIMENT_INFERENCE_SAMPLES")) is not None:
             low = es.lower()
@@ -343,11 +343,11 @@ class LogicSFTConfig:
             else:
                 kwargs["experiment_inference_sample_n"] = int(es.strip())
 
-        if _logic_env_key_set("LOGIC_RUN_TRAIN"):
+        if _env_key_set("LOGIC_RUN_TRAIN"):
             kwargs["run_train"] = _env_bool("LOGIC_RUN_TRAIN", default=True)
-        if _logic_env_key_set("LOGIC_PUSH_TO_HUB"):
+        if _env_key_set("LOGIC_PUSH_TO_HUB"):
             kwargs["push_to_hub"] = _env_bool("LOGIC_PUSH_TO_HUB", default=False)
-        if _logic_env_key_set("LOGIC_HF_PRIVATE"):
+        if _env_key_set("LOGIC_HF_PRIVATE"):
             kwargs["hf_private"] = _env_bool("LOGIC_HF_PRIVATE", default=False)
 
         if v := _env_opt_str("LOGIC_HF_ORG"):

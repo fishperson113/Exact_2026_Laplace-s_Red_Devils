@@ -9,17 +9,12 @@ from typing import Any
 from services.config import (
     _env_bool,
     _env_int,
+    _env_key_set,
     _env_opt_str,
     _path_from_env,
     load_dotenv_for_logic,
 )
 from services.hf_repo_naming import build_fol_hf_repo_id
-
-
-def _fol_env_key_set(key: str) -> bool:
-    """True nếu biến môi trường tồn tại và không chỉ khoảng trắng (để ghi đè giá trị YAML)."""
-    v = os.environ.get(key)
-    return v is not None and str(v).strip() != ""
 
 
 def _fol_find_project_root_for_yaml() -> Path | None:
@@ -49,7 +44,7 @@ def _fol_config_dict_from_yaml(project_root: Path) -> dict[str, Any]:
         return {}
     try:
         data = _yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-    except Exception:
+    except _yaml.YAMLError:
         return {}
     if not isinstance(data, dict):
         return {}
@@ -335,7 +330,7 @@ class FolSFTConfig:
 
         if _env_bool("FOL_LOAD_IN_4BIT", default=False):
             kwargs["load_in_8bit"] = True
-        elif _fol_env_key_set("FOL_LOAD_IN_8BIT"):
+        elif _env_key_set("FOL_LOAD_IN_8BIT"):
             kwargs["load_in_8bit"] = _env_bool("FOL_LOAD_IN_8BIT", default=False)
 
         if v := _env_int("FOL_NUM_TRAIN_EPOCHS"):
@@ -348,7 +343,7 @@ class FolSFTConfig:
             kwargs["save_total_limit"] = v
         if (v := _env_opt_str("FOL_METRIC_FOR_BEST_MODEL")) is not None:
             kwargs["metric_for_best_model"] = v.strip()
-        if _fol_env_key_set("FOL_GREATER_IS_BETTER"):
+        if _env_key_set("FOL_GREATER_IS_BETTER"):
             kwargs["greater_is_better"] = _env_bool("FOL_GREATER_IS_BETTER", default=True)
         if (es := _env_opt_str("FOL_BEST_MODEL_EM_MAX_SAMPLES")) is not None:
             low = es.lower()
@@ -357,7 +352,7 @@ class FolSFTConfig:
             else:
                 kwargs["best_model_exact_match_max_samples"] = int(es.strip())
 
-        if _fol_env_key_set("FOL_PRUNE_TRAINER_CHECKPOINTS"):
+        if _env_key_set("FOL_PRUNE_TRAINER_CHECKPOINTS"):
             kwargs["delete_output_checkpoints_after_save"] = _env_bool(
                 "FOL_PRUNE_TRAINER_CHECKPOINTS", default=True
             )
@@ -392,11 +387,11 @@ class FolSFTConfig:
             else:
                 kwargs["inference_latency_benchmark_seed"] = int(es.strip())
 
-        if _fol_env_key_set("FOL_RUN_TRAIN"):
+        if _env_key_set("FOL_RUN_TRAIN"):
             kwargs["run_train"] = _env_bool("FOL_RUN_TRAIN", default=True)
-        if _fol_env_key_set("FOL_PUSH_TO_HUB"):
+        if _env_key_set("FOL_PUSH_TO_HUB"):
             kwargs["push_to_hub"] = _env_bool("FOL_PUSH_TO_HUB", default=False)
-        if _fol_env_key_set("FOL_HF_PRIVATE"):
+        if _env_key_set("FOL_HF_PRIVATE"):
             kwargs["hf_private"] = _env_bool("FOL_HF_PRIVATE", default=False)
 
         if v := _env_opt_str("FOL_HF_ORG"):
@@ -420,25 +415,25 @@ class FolSFTConfig:
         if v := _env_int("FOL_EVAL_GEN_BATCH_SIZE"):
             kwargs["eval_gen_batch_size"] = v
 
-        if _fol_env_key_set("FOL_USE_UNSLOTH"):
+        if _env_key_set("FOL_USE_UNSLOTH"):
             kwargs["use_unsloth"] = _env_bool("FOL_USE_UNSLOTH", default=False)
-        if _fol_env_key_set("FOL_UNSLOTH_RESPONSES_ONLY"):
+        if _env_key_set("FOL_UNSLOTH_RESPONSES_ONLY"):
             kwargs["unsloth_train_on_responses_only"] = _env_bool(
                 "FOL_UNSLOTH_RESPONSES_ONLY", default=True
             )
-        if _fol_env_key_set("FOL_USE_ADAMW_8BIT"):
+        if _env_key_set("FOL_USE_ADAMW_8BIT"):
             kwargs["use_adamw_8bit"] = _env_bool("FOL_USE_ADAMW_8BIT", default=True)
         if (v := _env_opt_str("FOL_UNSLOTH_INSTRUCTION_MARKER")) is not None:
             kwargs["unsloth_instruction_marker"] = v
         if (v := _env_opt_str("FOL_UNSLOTH_RESPONSE_MARKER")) is not None:
             kwargs["unsloth_response_marker"] = v
 
-        if _fol_env_key_set("FOL_UNSLOTH_NF4"):
+        if _env_key_set("FOL_UNSLOTH_NF4"):
             kwargs["unsloth_load_in_4bit"] = _env_bool("FOL_UNSLOTH_NF4", default=False)
         if v := _env_int("FOL_EVAL_ACCUMULATION_STEPS"):
             kwargs["eval_accumulation_steps"] = v
 
-        if _fol_env_key_set("FOL_HUB_RELOAD_AFTER_PUSH"):
+        if _env_key_set("FOL_HUB_RELOAD_AFTER_PUSH"):
             kwargs["hub_reload_after_push"] = _env_bool("FOL_HUB_RELOAD_AFTER_PUSH", default=True)
         if v := _env_int("FOL_HUB_RELOAD_RANDOM_N"):
             kwargs["hub_reload_random_test_n"] = v
