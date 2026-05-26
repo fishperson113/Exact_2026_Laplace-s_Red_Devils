@@ -5,8 +5,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    ollama_model: str = "qwen2.5:7b"
-    ollama_base_url: str = "http://localhost:11434"
+    vllm_model: str = "Qwen/Qwen2.5-Math-7B-Instruct"
+    vllm_base_url: str = "http://localhost:8000/v1"
 
     redis_url: str = "redis://localhost:6379"
     session_ttl: int = 3600

@@ -1,38 +1,42 @@
-import httpx
+from openai import AsyncOpenAI
+
 from app.core.config import settings
 
 
-class OllamaClient:
+class VLLMClient:
     def __init__(self):
-        self._base_url = settings.ollama_base_url
-        self._model = settings.ollama_model
+        self._client: AsyncOpenAI | None = None
+        self._model = settings.vllm_model
 
-    async def generate(self, prompt: str, temperature: float = 0.1, num_predict: int = 1024) -> str:
-        # TODO: wrap with asyncio.wait_for + friendly timeout error instead of raw httpx.TimeoutException
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            resp = await client.post(
-                f"{self._base_url}/api/generate",
-                json={
-                    "model": self._model,
-                    "prompt": prompt,
-                    "stream": False,
-                    "format": "json",
-                    "options": {
-                        "temperature": temperature,
-                        "num_predict": num_predict,
-                    },
-                },
+    def _get_client(self) -> AsyncOpenAI:
+        if self._client is None:
+            self._client = AsyncOpenAI(
+                base_url=settings.vllm_base_url,
+                api_key="dummy",  # vLLM does not require a real API key
             )
-            resp.raise_for_status()
-            return resp.json()["response"]
+        return self._client
+
+    async def generate(
+        self,
+        prompt: str,
+        temperature: float = 0.1,
+        max_tokens: int = 1024,
+    ) -> str:
+        response = await self._get_client().chat.completions.create(
+            model=self._model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens,
+            extra_body={"guided_json": True},  # vLLM structured output hint
+        )
+        return response.choices[0].message.content
 
     async def is_alive(self) -> bool:
         try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                resp = await client.get(f"{self._base_url}/api/tags")
-                return resp.status_code == 200
+            await self._get_client().models.list()
+            return True
         except Exception:
             return False
 
 
-llm = OllamaClient()
+llm = VLLMClient()
