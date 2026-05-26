@@ -16,6 +16,7 @@ from dataclasses import dataclass
 
 from app.physics_solution.shared.model.loader import LoadedModel, generate_batch
 from app.physics_solution.shared.model.batched_llm import _apply_chat_template_no_think
+from app.physics_solution.shared.runtime.tracing import traceable
 
 
 VALID_DOMAINS = {"LD", "CH", "NL", "TD", "DDT", "THCB", "DT", "CHLT"}
@@ -73,6 +74,7 @@ def _build_classify_prompt(
     return _apply_chat_template_no_think(tokenizer, msgs)
 
 
+@traceable(name="classify_question", run_type="chain")
 def classify_question(
     question: str,
     model: LoadedModel,

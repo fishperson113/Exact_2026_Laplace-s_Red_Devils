@@ -7,7 +7,7 @@ Inside a Colab notebook you can run with zero flags:
 
 To override one knob ad-hoc:
 
-    !python -m app.physics_solution.cli.inference --version v02_fewshot --batch-size 4
+    !python -m app.physics_solution.cli.inference --version v02_fewshot --limit 10
 
 Permanent changes belong in `config.py`, not in notebook cells.
 """
@@ -48,7 +48,6 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--device", default=config.DEVICE)
     p.add_argument("--max-new-tokens", type=int, default=config.MAX_NEW_TOKENS)
     p.add_argument("--temperature", type=float, default=config.TEMPERATURE)
-    p.add_argument("--batch-size", type=int, default=config.BATCH_SIZE)
     p.add_argument("--limit", type=int, default=config.LIMIT)
     p.add_argument(
         "--n-examples",

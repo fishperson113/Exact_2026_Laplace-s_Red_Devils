@@ -16,6 +16,7 @@ dependencies = [
     "pyyaml==6.0.3",
     "safetensors>=0.7.0",
     "sentencepiece==0.2.1",
+    "scipy>=1.15.0",
     "sympy>=1.14.0",
     "tokenizers==0.22.1",
     "torch==2.8.0",

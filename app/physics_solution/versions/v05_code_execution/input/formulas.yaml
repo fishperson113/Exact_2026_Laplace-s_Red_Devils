@@ -1,14 +1,11 @@
 # ──────────────────────────────────────────────────────────────
 # v05 Formula Knowledge Base
-# Each domain: constants, unit_conversions, formulas
+# Each domain: unit_conversions, formulas
+# Physical constants are read from scipy.constants at runtime.
 # Formulas are written as Python-executable expressions.
 # ──────────────────────────────────────────────────────────────
 
 LD:
-  constants:
-    k: {value: 9e9, unit: "N*m^2/C^2", desc: "Coulomb constant"}
-    epsilon_0: {value: 8.854e-12, unit: "F/m", desc: "Vacuum permittivity"}
-    e: {value: 1.6e-19, unit: "C", desc: "Elementary charge"}
   unit_conversions:
     - "uC = 1e-6 C (microcoulomb)"
     - "nC = 1e-9 C (nanocoulomb)"
@@ -47,8 +44,6 @@ LD:
       notes: "Work done moving charge q through distance d along field E"
 
 CH:
-  constants:
-    pi: {value: "math.pi", unit: "-", desc: "Pi constant"}
   unit_conversions:
     - "mH = 1e-3 H (millihenry)"
     - "uF = 1e-6 F (microfarad)"
@@ -101,8 +96,6 @@ CH:
       notes: "RMS voltages in AC circuit"
 
 NL:
-  constants:
-    pi: {value: "math.pi", unit: "-", desc: "Pi constant"}
   unit_conversions:
     - "uF = 1e-6 F (microfarad)"
     - "nF = 1e-9 F (nanofarad)"
@@ -152,9 +145,6 @@ NL:
       notes: "At any instant, total energy = capacitor + inductor energy"
 
 TD:
-  constants:
-    epsilon_0: {value: 8.854e-12, unit: "F/m", desc: "Vacuum permittivity"}
-    k: {value: 9e9, unit: "N*m^2/C^2", desc: "Coulomb constant"}
   unit_conversions:
     - "uF = 1e-6 F (microfarad)"
     - "nF = 1e-9 F (nanofarad)"
@@ -203,9 +193,6 @@ TD:
       notes: "If capacitor is disconnected, total charge is conserved"
 
 DDT:
-  constants:
-    mu_0: {value: "4 * math.pi * 1e-7", unit: "T*m/A", desc: "Vacuum permeability"}
-    pi: {value: "math.pi", unit: "-", desc: "Pi constant"}
   unit_conversions:
     - "mH = 1e-3 H (millihenry)"
     - "uH = 1e-6 H (microhenry)"
@@ -252,8 +239,6 @@ DDT:
       notes: "Energy stored in inductor/solenoid"
 
 THCB:
-  constants:
-    k: {value: 9e9, unit: "N*m^2/C^2", desc: "Coulomb constant"}
   unit_conversions:
     - "kOhm = 1e3 Ohm"
     - "mA = 1e-3 A"
@@ -300,10 +285,6 @@ THCB:
       notes: "Difference between measured and true value"
 
 DT:
-  constants:
-    k: {value: 9e9, unit: "N*m^2/C^2", desc: "Coulomb constant"}
-    epsilon_0: {value: 8.854e-12, unit: "F/m", desc: "Vacuum permittivity"}
-    e: {value: 1.6e-19, unit: "C", desc: "Elementary charge"}
   unit_conversions:
     - "uC = 1e-6 C (microcoulomb)"
     - "nC = 1e-9 C (nanocoulomb)"
@@ -347,8 +328,6 @@ DT:
       notes: "Scalar sum; no vector addition needed"
 
 CHLT:
-  constants:
-    pi: {value: "math.pi", unit: "-", desc: "Pi constant"}
   unit_conversions:
     - "uF = 1e-6 F (microfarad)"
     - "mH = 1e-3 H (millihenry)"
