@@ -59,6 +59,7 @@ def load_unsloth_model_and_tokenizer(cfg: "FolSFTConfig") -> tuple[Any, Any, boo
         model_name=cfg.model_name,
         max_seq_length=cfg.max_seq_length,
         trust_remote_code=cfg.trust_remote_code,
+        attn_implementation="sdpa",
     )
     if cfg.unsloth_load_in_4bit:
         load_kw["load_in_4bit"] = True
@@ -81,7 +82,22 @@ def load_unsloth_model_and_tokenizer(cfg: "FolSFTConfig") -> tuple[Any, Any, boo
     try:
         model, tokenizer = FastLanguageModel.from_pretrained(**load_kw)
     except TypeError as e:
-        if "load_in_8bit" in str(e) or "unexpected keyword" in str(e).lower():
+        err_msg = str(e).lower()
+        if "attn_implementation" in err_msg or "unexpected keyword" in err_msg:
+            _LOG.warning("Unsloth không nhận attn_implementation — thử lại không có nó.")
+            load_kw.pop("attn_implementation", None)
+            try:
+                model, tokenizer = FastLanguageModel.from_pretrained(**load_kw)
+            except TypeError as e2:
+                if "load_in_8bit" in str(e2) or "unexpected keyword" in str(e2).lower():
+                    _LOG.warning("Unsloth không nhận load_in_8bit — thử lại với load_in_16bit.")
+                    load_kw.pop("load_in_8bit", None)
+                    load_kw["load_in_16bit"] = True
+                    load_kw["load_in_4bit"] = False
+                    model, tokenizer = FastLanguageModel.from_pretrained(**load_kw)
+                else:
+                    raise
+        elif "load_in_8bit" in str(e) or "unexpected keyword" in err_msg:
             _LOG.warning("Unsloth không nhận load_in_8bit — thử lại với load_in_16bit.")
             load_kw.pop("load_in_8bit", None)
             load_kw["load_in_16bit"] = True
@@ -89,6 +105,9 @@ def load_unsloth_model_and_tokenizer(cfg: "FolSFTConfig") -> tuple[Any, Any, boo
             model, tokenizer = FastLanguageModel.from_pretrained(**load_kw)
         else:
             raise
+
+    if hasattr(model, "config"):
+        model.config._attn_implementation = "sdpa"
 
     sync_eos_token_string_with_id(tokenizer)
     if tokenizer.pad_token is None or tokenizer.pad_token in (
