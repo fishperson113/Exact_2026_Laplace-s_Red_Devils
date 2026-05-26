@@ -122,6 +122,12 @@ def _fol_config_dict_from_yaml(project_root: Path) -> dict[str, Any]:
                 out["delete_output_checkpoints_after_save"] = bool(
                     t["delete_output_checkpoints_after_save"]
                 )
+            if "debug_max_train_samples" in t:
+                v = t["debug_max_train_samples"]
+                if v is None or (isinstance(v, str) and v.strip().lower() in ("null", "none", "", "all")):
+                    out["debug_max_train_samples"] = None
+                else:
+                    out["debug_max_train_samples"] = int(v)
 
     if paths := data.get("paths"):
         if isinstance(paths, dict) and (sub := paths.get("processed_subdir")):
