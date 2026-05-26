@@ -35,6 +35,9 @@ scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution/shared root@<H
 scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution/data root@<HOST>:/root/project/app/physics_solution/
 scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution/cli root@<HOST>:/root/project/app/physics_solution/
 scp -P <PORT> -o StrictHostKeyChecking=no app/physics_solution/__init__.py app/physics_solution/config.py root@<HOST>:/root/project/app/physics_solution/
+
+# Truyền file .env
+scp -P <PORT> -o StrictHostKeyChecking=no app/physics_solution/.env root@<HOST>:/root/project/
 ```
 
 ### Tren server (tiep tuc)

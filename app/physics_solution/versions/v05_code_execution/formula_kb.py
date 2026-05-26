@@ -18,14 +18,32 @@ def _load() -> dict:
     return _cache
 
 
+_FORMULA_DOMAIN_MAP = {
+    "LDDT": ["LD", "DT"],
+    "CH": ["CH", "CHLT"],
+}
+
+
 def get_formula_hints(domain: str) -> str:
     """Return a formatted string of formula hints for the given domain.
 
     This string will be injected into the code-generation prompt.
-    If domain is unknown, return hints for the most common domain (LD).
+    Merged domains (LDDT, CH) combine hints from their constituent YAML keys.
+    If domain is unknown, return hints for LD.
     """
     data = _load()
-    domain_data = data.get(domain, data.get("LD", {}))
+
+    yaml_keys = _FORMULA_DOMAIN_MAP.get(domain, [domain])
+    merged: dict = {}
+    for key in yaml_keys:
+        section = data.get(key, {})
+        for field in ("unit_conversions", "formulas"):
+            merged.setdefault(field, [])
+            merged[field].extend(section.get(field, []))
+    if not merged.get("formulas"):
+        merged = data.get("LD", {})
+
+    domain_data = merged
 
     parts: list[str] = []
 

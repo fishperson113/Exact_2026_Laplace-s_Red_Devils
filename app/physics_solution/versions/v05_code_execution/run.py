@@ -351,11 +351,15 @@ def run(args) -> dict:
     print(f"Mean latency (per question): {summary['mean_latency_s']:.2f} s")
     print(f"Solve methods: {method_counts}")
 
-    correct_routes = sum(
-        1 for row, route in zip(rows, routes_for_summary)
-        if PREFIX_RE.match(str(row.get("id", "")))
-        and PREFIX_RE.match(str(row.get("id", ""))).group(1) == route.domain
-    )
+    from app.physics_solution.shared.router import _DOMAIN_ALIASES
+    correct_routes = 0
+    for row, route in zip(rows, routes_for_summary):
+        m = PREFIX_RE.match(str(row.get("id", "")))
+        if m:
+            prefix = m.group(1)
+            expected = _DOMAIN_ALIASES.get(prefix, prefix)
+            if expected == route.domain:
+                correct_routes += 1
     print(f"Routing accuracy (domain vs ID prefix): {correct_routes}/{len(rows)} = {correct_routes/len(rows):.3f}")
 
     return summary
