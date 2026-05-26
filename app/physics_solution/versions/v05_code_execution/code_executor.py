@@ -35,12 +35,15 @@ def extract_code(llm_output: str) -> str | None:
     return blocks[-1].strip()
 
 
+_ALLOWED_IMPORTS = {"math", "sympy", "scipy", "numpy"}
+
+
 def execute_code(code: str, timeout: int = 10) -> ExecutionResult:
     """Run code in a subprocess, parse FINAL ANSWER / UNIT from stdout."""
     imports = _IMPORT_RE.findall(code)
-    non_math = [m for m in imports if m != "math"]
-    if non_math:
-        warning = f"# WARNING: non-math imports detected: {non_math}\n"
+    disallowed = [m for m in imports if m not in _ALLOWED_IMPORTS]
+    if disallowed:
+        warning = f"# WARNING: disallowed imports detected: {disallowed}\n"
         code = warning + code
 
     fd, path = tempfile.mkstemp(suffix=".py", prefix="exec_")

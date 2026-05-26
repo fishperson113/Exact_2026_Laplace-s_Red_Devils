@@ -1,12 +1,8 @@
-"""v05 prompts: code-generation pipeline prompts + re-exported router/solver prompts.
+"""v05 prompts: classification + code-generation pipeline prompts.
 
-Three prompt stages:
+Two prompt stages:
   1. Classification (re-exported from v04)
   2. Code generation — LLM writes a Python script to solve the problem
-  3. Chain-of-thought — LLM explains a pre-computed answer step-by-step
-
-Falls back to direct solving (v03/v04 style) for answer types unsuitable for
-code generation (text_only, mixed) or when code execution fails.
 """
 
 from __future__ import annotations
@@ -39,7 +35,16 @@ CODEGEN_SYSTEM = """\
 You are a physics solver. First, briefly state the key physics principle and formula. Then write a self-contained Python script to compute the answer.
 
 RULES:
-- Only `import math` is allowed.
+- Allowed imports: math, sympy (for symbolic/equation solving), scipy.constants (for physical constants), numpy (for matrix/vector computation).
+- Read ALL physical constants from scipy.constants. NEVER hardcode constant values. Key constants:
+    scipy.constants.e            # elementary charge (1.602e-19 C)
+    scipy.constants.epsilon_0    # vacuum permittivity (8.854e-12 F/m)
+    scipy.constants.mu_0         # vacuum permeability (1.257e-6 T*m/A)
+    scipy.constants.c            # speed of light (3e8 m/s)
+    scipy.constants.g            # standard gravity (9.807 m/s^2)
+    scipy.constants.pi           # pi
+    scipy.constants.k            # Boltzmann constant (1.381e-23 J/K) — NOT Coulomb!
+    Coulomb constant: k_e = 1 / (4 * scipy.constants.pi * scipy.constants.epsilon_0)
 - Define all given values at the top with SI unit conversions.
 - Write the key formula as a comment before each computation.
 - The script MUST print exactly two lines at the end:
@@ -50,19 +55,20 @@ RULES:
 - Round numeric answers to 2-4 significant figures unless the problem specifies otherwise.
 
 Example:
-Coulomb force: F = k|q1||q2|/r². Convert units to SI, plug in, compute.
+Coulomb force: F = k_e|q1||q2|/r². Convert units to SI, plug in, compute.
 
 ```python
-import math
+import scipy.constants as const
+
+k_e = 1 / (4 * const.pi * const.epsilon_0)  # Coulomb constant
 
 # Given
 q1 = 5e-6  # 5 uC -> C
 q2 = 3e-6  # 3 uC -> C
 r = 0.08   # 8 cm -> m
-k = 9e9    # Coulomb constant
 
-# Coulomb's law: F = k * |q1| * |q2| / r^2
-F = k * abs(q1) * abs(q2) / r**2
+# Coulomb's law: F = k_e * |q1| * |q2| / r^2
+F = k_e * abs(q1) * abs(q2) / r**2
 
 print(f"FINAL ANSWER: {F:.4g}")
 print("UNIT: N")
@@ -86,7 +92,7 @@ def build_codegen_prompt(
         f"DOMAIN: {domain}\n"
         f"ANSWER TYPE: {answer_type}\n"
         f"\n"
-        f"RELEVANT FORMULAS:\n"
+        f"REFERENCE (unit conversions & formulas):\n"
         f"{formula_hints}\n"
         f"\n"
         f"PROBLEM:\n"

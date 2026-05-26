@@ -23,12 +23,18 @@ cd /root/project
 git clone https://github.com/<org>/Exact_2026_Laplace-s_Red_Devils.git .
 ```
 
-**Cach B — SCP**
+**Cach B — SCP (chi truyen folder can thiet)**
 
 ```bash
 cd D:\Git\Exact_2026_Laplace-s_Red_Devils
 scp -P <PORT> -o StrictHostKeyChecking=no pyproject.toml uv.lock root@<HOST>:/root/project/
-scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution root@<HOST>:/root/project/app/
+
+# Chi truyen v05, shared, data, cli (bo v01-v04 va __pycache__)
+scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution/versions/v05_code_execution root@<HOST>:/root/project/app/physics_solution/versions/
+scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution/shared root@<HOST>:/root/project/app/physics_solution/
+scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution/data root@<HOST>:/root/project/app/physics_solution/
+scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution/cli root@<HOST>:/root/project/app/physics_solution/
+scp -P <PORT> -o StrictHostKeyChecking=no app/physics_solution/__init__.py app/physics_solution/config.py root@<HOST>:/root/project/app/physics_solution/
 ```
 
 ### Tren server (tiep tuc)
@@ -48,7 +54,7 @@ source /root/project/.venv/bin/activate
 python -m app.physics_solution.cli.inference \
     --version v05_code_execution \
     --test-file app/physics_solution/data/golden/deepseek-v4-pro_golden_data.csv \
-    --limit 10 --batch-size 80
+    --limit 10
 ```
 
 ### Sync output ve local
@@ -98,12 +104,12 @@ Lan sau chi can pull:
 cd /root/project && git pull
 ```
 
-#### Cach B — SCP (khi code chua push len git)
+#### Cach B — SCP (chi truyen folder can thiet, bo v01-v04)
 
 Tren server:
 
 ```bash
-mkdir -p /root/project/app
+mkdir -p /root/project/app/physics_solution/versions
 ```
 
 Tren local:
@@ -111,8 +117,16 @@ Tren local:
 ```bash
 cd D:\Git\Exact_2026_Laplace-s_Red_Devils
 scp -P <PORT> -o StrictHostKeyChecking=no pyproject.toml uv.lock root@<HOST>:/root/project/
-scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution root@<HOST>:/root/project/app/
+scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution/versions/v05_code_execution root@<HOST>:/root/project/app/physics_solution/versions/
+scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution/shared root@<HOST>:/root/project/app/physics_solution/
+scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution/data root@<HOST>:/root/project/app/physics_solution/
+scp -P <PORT> -o StrictHostKeyChecking=no -r app/physics_solution/cli root@<HOST>:/root/project/app/physics_solution/
+scp -P <PORT> -o StrictHostKeyChecking=no app/physics_solution/__init__.py app/physics_solution/config.py root@<HOST>:/root/project/app/physics_solution/
 ```
+
+> **Luu y:** Moi khi thay doi code tren local, can chay lai cac lenh SCP
+> o tren de dong bo len server. Chi can chay lenh tuong ung voi folder
+> da thay doi (vd: chi sua v05 thi chi can SCP dong v05).
 
 ### 4. Cai dependencies
 
@@ -152,14 +166,13 @@ source /root/project/.venv/bin/activate
 python -m app.physics_solution.cli.inference \
     --version v05_code_execution \
     --test-file app/physics_solution/data/golden/deepseek-v4-pro_golden_data.csv \
-    --limit 5 --batch-size 80
+    --limit 5
 
-# Full run 1352 cau
+# Full run
 python -m app.physics_solution.cli.inference \
     --version v05_code_execution \
     --test-file app/physics_solution/data/golden/deepseek-v4-pro_golden_data.csv \
-    --out app/physics_solution/versions/v05_code_execution/output/results_golden.json \
-    --batch-size 80
+    --out app/physics_solution/versions/v05_code_execution/output/results_golden.json
 ```
 
 ### 7. Sync output ve local
@@ -167,6 +180,24 @@ python -m app.physics_solution.cli.inference \
 ```bash
 scp -P <PORT> -o StrictHostKeyChecking=no "root@<HOST>:/root/project/app/physics_solution/versions/v05_code_execution/output/results*" app/physics_solution/versions/v05_code_execution/output/
 ```
+
+### 8. Script tu dong: chay inference + pull results
+
+Thay vi chay tung buoc, dung script tu dong:
+
+**PowerShell:**
+```powershell
+.\scripts\run_and_pull.ps1 -HostAddr <HOST> -Port <PORT> -Limit 10   # smoke test
+.\scripts\run_and_pull.ps1 -HostAddr <HOST> -Port <PORT>              # full run
+```
+
+**Bash (Git Bash / WSL):**
+```bash
+bash scripts/run_and_pull.sh <HOST> <PORT> 10   # smoke test
+bash scripts/run_and_pull.sh <HOST> <PORT>       # full run
+```
+
+Script se SSH vao server chay inference, sau do tu dong SCP ket qua ve local.
 
 ---
 
@@ -219,7 +250,7 @@ uv add <package-name>
 |--------|------------|-----------|
 | `causal-conv1d` import loi `undefined symbol` | CUDA ABI mismatch | `uv pip install --no-build-isolation causal-conv1d` |
 | Model download cham | Khong co HF_TOKEN | `export HF_TOKEN=hf_xxx` truoc khi chay |
-| OOM tren RTX 3090 | batch_size qua lon | `--batch-size 32` hoac `--dtype int8` |
+| OOM tren RTX 3090 | Model qua lon | `--dtype int8` |
 | `(main)` chong voi `(exact-2026)` | Template tu activate venv main | Khong sao, `exact-2026` override `main` |
 | Port SSH doi sau reboot | vast.ai cap port moi | Check dashboard vast.ai, cap nhat `<PORT>` |
 | SCP `Connection closed` | Port cu / server chua san sang | Check lai port, thu `ssh -p <PORT> root@<HOST> "echo OK"` |

@@ -29,13 +29,6 @@ def get_formula_hints(domain: str) -> str:
 
     parts: list[str] = []
 
-    # Constants
-    constants = domain_data.get("constants", {})
-    if constants:
-        parts.append("Constants:")
-        for name, info in constants.items():
-            parts.append(f"  {name} = {info['value']} {info['unit']} ({info['desc']})")
-
     # Unit conversions
     conversions = domain_data.get("unit_conversions", [])
     if conversions:

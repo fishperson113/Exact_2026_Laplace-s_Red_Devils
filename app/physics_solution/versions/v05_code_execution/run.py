@@ -1,10 +1,9 @@
-"""v05 runner — 3-stage code execution pipeline with fallback to direct solve.
+"""v05 runner — per-sample classify-then-solve pipeline with code execution.
 
-Pipeline per question:
-  1. Route: classify_batch() → (domain, answer_type)
-  2. For code-friendly answer types: generate code → execute → format
-     With one retry on execution failure, then fallback to direct solve.
-  3. For text answer types: direct solve using v03/v04-style routed few-shot.
+Pipeline per question (60s hard timeout):
+  1. Classify: classify_question() -> (domain, answer_type)
+  2. Generate Python code -> execute -> format answer
+     One retry on execution failure; no fallback to LLM direct solve.
 """
 
 from __future__ import annotations
@@ -19,14 +18,12 @@ from tqdm import tqdm
 
 from app.physics_solution.shared.eval import scorer as evaluator
 from app.physics_solution.shared.model.batched_llm import (
-    RenderPrompt,
     HFBatchedLLM,
     _apply_chat_template_no_think,
 )
 from app.physics_solution.shared.model.loader import LoadedModel, load_model
-from app.physics_solution.shared.prompts.helpers import fewshot_messages_from
 from app.physics_solution.shared.prompts.system import ASSISTANT_PREFIX
-from app.physics_solution.shared.router import RouteResult, classify_batch
+from app.physics_solution.shared.router import RouteResult, classify_question
 from app.physics_solution.shared.runtime.tracing import setup_tracing, traceable
 from app.physics_solution.versions.v05_code_execution import (
     DEFAULT_BASE_MODEL_ID,
@@ -45,50 +42,12 @@ from app.physics_solution.versions.v05_code_execution.prompts import (
     CLASSIFY_SYSTEM,
     CLASSIFY_EXAMPLES,
     build_codegen_prompt,
-    build_routed_template,
     should_use_code_execution,
 )
 
 
-HERE = Path(__file__).resolve().parent
-_V03_EXAMPLES = Path(__file__).resolve().parent.parent / "v03_routed_fewshot" / "input" / "examples.json"
-EXAMPLES_PATH = HERE / "input" / "examples.json"
+QUESTION_TIMEOUT_S = 60.0
 PREFIX_RE = re.compile(r"^([A-Z]+)")
-N_EXAMPLES_DEFAULT = 2
-
-
-def _load_examples() -> list[dict]:
-    for path in [EXAMPLES_PATH, _V03_EXAMPLES]:
-        if path.exists():
-            return json.loads(path.read_text(encoding="utf-8"))
-    raise FileNotFoundError(
-        "No examples.json found. Copy examples.json into v05_code_execution/input/ "
-        "or ensure v03_routed_fewshot/input/examples.json exists."
-    )
-
-
-def _select_examples(
-    pool: list[dict],
-    route: RouteResult,
-    qid: str,
-    n: int,
-) -> list[dict]:
-    safe = [ex for ex in pool if str(ex.get("id", "")) != qid]
-
-    exact = [ex for ex in safe if ex.get("prefix") == route.domain and ex.get("answer_type") == route.answer_type]
-    if len(exact) >= n:
-        return exact[:n]
-
-    domain_match = [ex for ex in safe if ex.get("prefix") == route.domain]
-    if len(domain_match) >= n:
-        return (exact + [e for e in domain_match if e not in exact])[:n]
-
-    type_match = [ex for ex in safe if ex.get("answer_type") == route.answer_type]
-    combined = exact + [e for e in domain_match if e not in exact] + [e for e in type_match if e not in exact and e not in domain_match]
-    if len(combined) >= n:
-        return combined[:n]
-
-    return (combined + [e for e in safe if e not in combined])[:n]
 
 
 def _score(completion: str, gold_answer: str, gold_unit: str) -> dict:
@@ -114,9 +73,9 @@ def _solve_with_code(
     answer_type: str,
     loaded: LoadedModel,
     llm: HFBatchedLLM,
-    render: RenderPrompt,
+    deadline: float,
 ) -> dict:
-    """Attempt code-generation solve. Returns metadata dict with solve outcome."""
+    """Generate code, execute, retry once if failed. Respects deadline."""
     formula_hints = get_formula_hints(domain)
     msgs = build_codegen_prompt(question, domain, answer_type, formula_hints)
     rendered = _apply_chat_template_no_think(loaded.tokenizer, msgs)
@@ -125,12 +84,15 @@ def _solve_with_code(
     completion = llm.invoke(rendered)
     gen_elapsed = time.time() - t0
 
+    raw_completion = completion
+
     code = extract_code(completion)
     if code is None:
         return {
             "success": False,
             "rendered_prompt": rendered,
             "completion": completion,
+            "raw_completion": raw_completion,
             "generated_code": None,
             "execution_stdout": "",
             "execution_stderr": "no code block found",
@@ -141,7 +103,7 @@ def _solve_with_code(
     exec_result = execute_code(code)
     retry_count = 0
 
-    if not exec_result.success:
+    if not exec_result.success and time.time() < deadline:
         retry_count = 1
         error_feedback = (
             f"The previous code produced an error:\n"
@@ -157,6 +119,7 @@ def _solve_with_code(
 
         t0 = time.time()
         completion = llm.invoke(rendered_retry)
+        raw_completion += "\n\n--- RETRY ---\n\n" + completion
         gen_elapsed += time.time() - t0
 
         code = extract_code(completion)
@@ -175,6 +138,7 @@ def _solve_with_code(
             "success": True,
             "rendered_prompt": rendered,
             "completion": formatted,
+            "raw_completion": raw_completion,
             "generated_code": code,
             "execution_stdout": exec_result.stdout,
             "execution_stderr": exec_result.stderr,
@@ -186,6 +150,7 @@ def _solve_with_code(
         "success": False,
         "rendered_prompt": rendered,
         "completion": completion,
+        "raw_completion": raw_completion,
         "generated_code": code,
         "execution_stdout": exec_result.stdout,
         "execution_stderr": exec_result.stderr,
@@ -194,57 +159,15 @@ def _solve_with_code(
     }
 
 
-@traceable(name="solve_direct", run_type="chain")
-def _solve_direct(
-    question: str,
-    route: RouteResult,
-    qid: str,
-    pool: list[dict],
-    n_examples: int,
-    loaded: LoadedModel,
-    llm: HFBatchedLLM,
-    render: RenderPrompt,
-    prefix: str,
-) -> dict:
-    """Direct solve using v03/v04-style routed few-shot."""
-    examples = _select_examples(pool, route, qid, n_examples)
-    template = build_routed_template(route.domain, route.answer_type)
-
-    template_input = {
-        "question": question,
-        "few_shot_messages": fewshot_messages_from(examples),
-    }
-    prompt_value = template.invoke(template_input)
-    rendered = render.invoke(prompt_value)
-
-    t0 = time.time()
-    completion = llm.invoke(rendered)
-    elapsed = time.time() - t0
-
-    return {
-        "rendered_prompt": rendered,
-        "completion": completion,
-        "elapsed_s": elapsed,
-    }
-
-
 def run(args) -> dict:
     version_id = f"v{VERSION_NUM:02d}_{STRATEGY_TAG}"
     setup_tracing(version=version_id)
 
     model_id = args.model_id or DEFAULT_BASE_MODEL_ID
-    batch_size = max(1, int(getattr(args, "batch_size", 1) or 1))
-    n_examples = getattr(args, "n_examples", None) or N_EXAMPLES_DEFAULT
     prefix = ASSISTANT_PREFIX
 
-    print(
-        f"[{version_id}] loading {model_id} dtype={args.dtype} "
-        f"device={args.device} batch_size={batch_size}"
-    )
+    print(f"[{version_id}] loading {model_id} dtype={args.dtype} device={args.device}")
     loaded: LoadedModel = load_model(model_id, dtype=args.dtype, device=args.device)
-
-    pool = _load_examples()
-    print(f"[{version_id}] loaded {len(pool)} few-shot examples")
 
     df = pd.read_csv(args.test_file)
     if args.limit:
@@ -252,36 +175,6 @@ def run(args) -> dict:
     rows = df.to_dict("records")
     print(f"[{version_id}] running on {len(rows)} questions")
 
-    # ---- Pass 1: classify all questions (batched)
-    print(f"\n--- Pass 1: classifying {len(rows)} questions ---")
-    questions = [str(r["question"]) for r in rows]
-    t0 = time.time()
-
-    @traceable(name="classify_batch", run_type="chain")
-    def _traced_classify(qs):
-        return classify_batch(
-            qs, loaded, batch_size=batch_size,
-            system_prompt=CLASSIFY_SYSTEM, examples=CLASSIFY_EXAMPLES,
-        )
-
-    routes = _traced_classify(questions)
-    classify_elapsed = time.time() - t0
-    print(f"Classification done in {classify_elapsed:.1f}s")
-
-    domain_counts: dict[str, int] = {}
-    type_counts: dict[str, int] = {}
-    for route in routes:
-        domain_counts[route.domain] = domain_counts.get(route.domain, 0) + 1
-        type_counts[route.answer_type] = type_counts.get(route.answer_type, 0) + 1
-    print(f"Domain distribution: {domain_counts}")
-    print(f"Answer type distribution: {type_counts}")
-
-    code_eligible = sum(1 for r in routes if should_use_code_execution(r.answer_type))
-    print(f"Code execution eligible: {code_eligible}/{len(rows)}")
-
-    # ---- Pass 2+3: solve each question
-    print(f"\n--- Pass 2+3: solving {len(rows)} questions ---")
-    render = RenderPrompt(loaded, assistant_prefix=prefix)
     llm = HFBatchedLLM(
         loaded,
         max_new_tokens=args.max_new_tokens,
@@ -289,84 +182,106 @@ def run(args) -> dict:
         assistant_prefix=prefix,
     )
 
-    extra_meta = {"n_examples": n_examples, "classify_elapsed_s": classify_elapsed}
     results: list[evaluator.RowResult] = []
-    method_counts = {"code_execution": 0, "direct_solve": 0, "fallback": 0}
+    method_counts = {"code_execution": 0, "failed": 0, "timeout": 0}
+    domain_counts: dict[str, int] = {}
+    type_counts: dict[str, int] = {}
+    routes_for_summary: list[RouteResult] = []
 
-    @traceable(name="solve_question", run_type="chain")
-    def _solve_one(qid: str, question: str, route: RouteResult) -> dict:
-        """Solve a single question. Returns (solve_method, completion, elapsed_s, extra)."""
-        if should_use_code_execution(route.answer_type):
-            code_result = _solve_with_code(
-                question, route.domain, route.answer_type,
-                loaded, llm, render,
-            )
+    @traceable(name="process_question", run_type="chain")
+    def _process_question(qid: str, question: str, reference: dict) -> dict:
+        """Classify + solve + score within 60s budget. Single LangSmith chain."""
+        gold_answer = reference["answer"]
+        gold_unit = reference["unit"]
 
-            if code_result["success"]:
-                return {
-                    "solve_method": "code_execution",
-                    "completion": code_result["completion"],
-                    "elapsed_s": code_result["elapsed_s"],
-                    "extra": {
-                        "rendered_prompt": code_result["rendered_prompt"],
-                        "generated_code": code_result["generated_code"],
-                        "execution_stdout": code_result["execution_stdout"],
-                        "execution_stderr": code_result["execution_stderr"],
-                        "retry_count": code_result["retry_count"],
-                    },
-                }
-            else:
-                direct = _solve_direct(
-                    question, route, qid, pool, n_examples,
-                    loaded, llm, render, prefix,
-                )
-                return {
-                    "solve_method": "fallback",
-                    "completion": direct["completion"],
-                    "elapsed_s": code_result["elapsed_s"] + direct["elapsed_s"],
-                    "extra": {
-                        "rendered_prompt": direct["rendered_prompt"],
-                        "generated_code": code_result.get("generated_code"),
-                        "execution_stdout": code_result["execution_stdout"],
-                        "execution_stderr": code_result["execution_stderr"],
-                        "retry_count": code_result["retry_count"],
-                        "code_prompt": code_result["rendered_prompt"],
-                    },
-                }
-        else:
-            direct = _solve_direct(
-                question, route, qid, pool, n_examples,
-                loaded, llm, render, prefix,
-            )
+        t_start = time.time()
+        deadline = t_start + QUESTION_TIMEOUT_S
+
+        route = classify_question(
+            question, loaded,
+            system_prompt=CLASSIFY_SYSTEM, examples=CLASSIFY_EXAMPLES,
+        )
+        classify_elapsed = time.time() - t_start
+
+        if time.time() >= deadline:
+            scored = _score("", gold_answer, gold_unit)
             return {
-                "solve_method": "direct_solve",
-                "completion": direct["completion"],
-                "elapsed_s": direct["elapsed_s"],
+                "result": f"{'TRUE' if scored['is_correct'] else 'FALSE'} | timeout",
+                "route": route,
+                "classify_elapsed_s": classify_elapsed,
+                "solve_method": "timeout",
+                "completion": "",
+                "is_correct": scored["is_correct"],
+                "scored": scored,
+                "elapsed_s": time.time() - t_start,
                 "extra": {
-                    "rendered_prompt": direct["rendered_prompt"],
+                    "rendered_prompt": "",
+                    "raw_completion": "",
                     "generated_code": None,
                     "execution_stdout": "",
-                    "execution_stderr": "",
+                    "execution_stderr": "timeout after classification",
                     "retry_count": 0,
                 },
             }
 
+        code_result = _solve_with_code(
+            question, route.domain, route.answer_type,
+            loaded, llm, deadline,
+        )
+
+        total_elapsed = time.time() - t_start
+
+        if total_elapsed > QUESTION_TIMEOUT_S:
+            solve_method = "timeout"
+            completion = ""
+        elif code_result["success"]:
+            solve_method = "code_execution"
+            completion = code_result["completion"]
+        else:
+            solve_method = "failed"
+            completion = ""
+
+        scored = _score(completion, gold_answer, gold_unit)
+
+        return {
+            "result": f"{'TRUE' if scored['is_correct'] else 'FALSE'} | {solve_method}",
+            "route": route,
+            "classify_elapsed_s": classify_elapsed,
+            "solve_method": solve_method,
+            "completion": completion,
+            "is_correct": scored["is_correct"],
+            "scored": scored,
+            "elapsed_s": total_elapsed,
+            "extra": {
+                "rendered_prompt": code_result["rendered_prompt"],
+                "raw_completion": code_result["raw_completion"],
+                "generated_code": code_result["generated_code"],
+                "execution_stdout": code_result["execution_stdout"],
+                "execution_stderr": code_result["execution_stderr"],
+                "retry_count": code_result["retry_count"],
+            },
+        }
+
     pbar = tqdm(total=len(rows))
-    for row, route in zip(rows, routes):
+    for row in rows:
         qid = str(row.get("id", ""))
         question = str(row["question"])
         gold_answer = str(row.get("answer", ""))
         gold_unit = str(row.get("unit", ""))
 
-        result_dict = _solve_one(qid, question, route)
+        result_dict = _process_question(qid, question, {"answer": gold_answer, "unit": gold_unit})
+        route = result_dict["route"]
         solve_method = result_dict["solve_method"]
         completion = result_dict["completion"]
         elapsed_s = result_dict["elapsed_s"]
         extra = result_dict["extra"]
+        scored = result_dict["scored"]
 
+        domain_counts[route.domain] = domain_counts.get(route.domain, 0) + 1
+        type_counts[route.answer_type] = type_counts.get(route.answer_type, 0) + 1
+        routes_for_summary.append(route)
         method_counts[solve_method] += 1
 
-        scored = _score(completion, gold_answer, gold_unit)
         extra.update({
             "solve_method": solve_method,
             "raw_answer": scored["raw_answer"],
@@ -376,7 +291,7 @@ def run(args) -> dict:
             "routed_domain": route.domain,
             "routed_answer_type": route.answer_type,
             "route_confidence": route.confidence,
-            **extra_meta,
+            "classify_elapsed_s": result_dict["classify_elapsed_s"],
         })
 
         results.append(
@@ -397,18 +312,19 @@ def run(args) -> dict:
 
     pbar.close()
 
-    # ---- Summary
+    print(f"\nDomain distribution: {domain_counts}")
+    print(f"Answer type distribution: {type_counts}")
+    code_eligible = sum(1 for r in routes_for_summary if should_use_code_execution(r.answer_type))
+    print(f"Code execution eligible: {code_eligible}/{len(rows)}")
+
     summary = evaluator.summarise(results)
     summary.update(
         version=version_id,
         model_id=model_id,
         dtype=args.dtype,
         effective_dtype=loaded.effective_dtype,
-        batch_size=batch_size,
         assistant_prefix=prefix,
         description=DESCRIPTION,
-        classify_elapsed_s=classify_elapsed,
-        n_examples=n_examples,
         method_counts=method_counts,
     )
 
@@ -436,7 +352,7 @@ def run(args) -> dict:
     print(f"Solve methods: {method_counts}")
 
     correct_routes = sum(
-        1 for row, route in zip(rows, routes)
+        1 for row, route in zip(rows, routes_for_summary)
         if PREFIX_RE.match(str(row.get("id", "")))
         and PREFIX_RE.match(str(row.get("id", ""))).group(1) == route.domain
     )
