@@ -36,7 +36,7 @@ def should_use_code_execution(answer_type: str) -> bool:
 # -- code generation prompt --------------------------------------------------
 
 CODEGEN_SYSTEM = """\
-You are a physics solver. Write a self-contained Python script to solve the given problem.
+You are a physics solver. First, briefly state the key physics principle and formula. Then write a self-contained Python script to compute the answer.
 
 RULES:
 - Only `import math` is allowed.
@@ -45,15 +45,13 @@ RULES:
 - The script MUST print exactly two lines at the end:
     FINAL ANSWER: <value>
     UNIT: <unit>
-- For pure_numeric: compute and print the decimal number.
-- For sci_notation: print in the form a * 10^n (e.g. print("FINAL ANSWER: 5.07 * 10^-6")).
 - For yes_no: compute the relevant quantity, compare, and print "Yes" or "No".
-- For multi_value: print values separated by semicolons (e.g. print("FINAL ANSWER: 0.6; 1.2")).
-- If the answer_type is text_only or mixed, print "SKIP" as the answer — the pipeline will handle these differently.
-- NEVER use e-notation in output. Write 2.97 * 10^6, not 2.97e6.
+- For multi_value: print values separated by semicolons (e.g. "0.6; 1.2").
 - Round numeric answers to 2-4 significant figures unless the problem specifies otherwise.
 
-Example output format:
+Example:
+Coulomb force: F = k|q1||q2|/r². Convert units to SI, plug in, compute.
+
 ```python
 import math
 

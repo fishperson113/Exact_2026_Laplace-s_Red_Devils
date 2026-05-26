@@ -27,7 +27,7 @@ from app.physics_solution.shared.model.loader import LoadedModel, load_model
 from app.physics_solution.shared.prompts.helpers import fewshot_messages_from
 from app.physics_solution.shared.prompts.system import ASSISTANT_PREFIX
 from app.physics_solution.shared.router import RouteResult, classify_batch
-from app.physics_solution.shared.runtime.tracing import setup_tracing
+from app.physics_solution.shared.runtime.tracing import setup_tracing, traceable
 from app.physics_solution.versions.v05_code_execution import (
     DEFAULT_BASE_MODEL_ID,
     DESCRIPTION,
@@ -107,6 +107,7 @@ def _score(completion: str, gold_answer: str, gold_unit: str) -> dict:
     }
 
 
+@traceable(name="solve_with_code", run_type="chain")
 def _solve_with_code(
     question: str,
     domain: str,
@@ -193,6 +194,7 @@ def _solve_with_code(
     }
 
 
+@traceable(name="solve_direct", run_type="chain")
 def _solve_direct(
     question: str,
     route: RouteResult,
@@ -254,10 +256,15 @@ def run(args) -> dict:
     print(f"\n--- Pass 1: classifying {len(rows)} questions ---")
     questions = [str(r["question"]) for r in rows]
     t0 = time.time()
-    routes = classify_batch(
-        questions, loaded, batch_size=batch_size,
-        system_prompt=CLASSIFY_SYSTEM, examples=CLASSIFY_EXAMPLES,
-    )
+
+    @traceable(name="classify_batch", run_type="chain")
+    def _traced_classify(qs):
+        return classify_batch(
+            qs, loaded, batch_size=batch_size,
+            system_prompt=CLASSIFY_SYSTEM, examples=CLASSIFY_EXAMPLES,
+        )
+
+    routes = _traced_classify(questions)
     classify_elapsed = time.time() - t0
     print(f"Classification done in {classify_elapsed:.1f}s")
 
@@ -286,16 +293,9 @@ def run(args) -> dict:
     results: list[evaluator.RowResult] = []
     method_counts = {"code_execution": 0, "direct_solve": 0, "fallback": 0}
 
-    pbar = tqdm(total=len(rows))
-    for row, route in zip(rows, routes):
-        qid = str(row.get("id", ""))
-        question = str(row["question"])
-        gold_answer = str(row.get("answer", ""))
-        gold_unit = str(row.get("unit", ""))
-
-        solve_method: str
-        extra: dict = {}
-
+    @traceable(name="solve_question", run_type="chain")
+    def _solve_one(qid: str, question: str, route: RouteResult) -> dict:
+        """Solve a single question. Returns (solve_method, completion, elapsed_s, extra)."""
         if should_use_code_execution(route.answer_type):
             code_result = _solve_with_code(
                 question, route.domain, route.answer_type,
@@ -303,47 +303,66 @@ def run(args) -> dict:
             )
 
             if code_result["success"]:
-                solve_method = "code_execution"
-                completion = code_result["completion"]
-                elapsed_s = code_result["elapsed_s"]
-                extra = {
-                    "rendered_prompt": code_result["rendered_prompt"],
-                    "generated_code": code_result["generated_code"],
-                    "execution_stdout": code_result["execution_stdout"],
-                    "execution_stderr": code_result["execution_stderr"],
-                    "retry_count": code_result["retry_count"],
+                return {
+                    "solve_method": "code_execution",
+                    "completion": code_result["completion"],
+                    "elapsed_s": code_result["elapsed_s"],
+                    "extra": {
+                        "rendered_prompt": code_result["rendered_prompt"],
+                        "generated_code": code_result["generated_code"],
+                        "execution_stdout": code_result["execution_stdout"],
+                        "execution_stderr": code_result["execution_stderr"],
+                        "retry_count": code_result["retry_count"],
+                    },
                 }
             else:
-                solve_method = "fallback"
                 direct = _solve_direct(
                     question, route, qid, pool, n_examples,
                     loaded, llm, render, prefix,
                 )
-                completion = direct["completion"]
-                elapsed_s = code_result["elapsed_s"] + direct["elapsed_s"]
-                extra = {
-                    "rendered_prompt": direct["rendered_prompt"],
-                    "generated_code": code_result.get("generated_code"),
-                    "execution_stdout": code_result["execution_stdout"],
-                    "execution_stderr": code_result["execution_stderr"],
-                    "retry_count": code_result["retry_count"],
-                    "code_prompt": code_result["rendered_prompt"],
+                return {
+                    "solve_method": "fallback",
+                    "completion": direct["completion"],
+                    "elapsed_s": code_result["elapsed_s"] + direct["elapsed_s"],
+                    "extra": {
+                        "rendered_prompt": direct["rendered_prompt"],
+                        "generated_code": code_result.get("generated_code"),
+                        "execution_stdout": code_result["execution_stdout"],
+                        "execution_stderr": code_result["execution_stderr"],
+                        "retry_count": code_result["retry_count"],
+                        "code_prompt": code_result["rendered_prompt"],
+                    },
                 }
         else:
-            solve_method = "direct_solve"
             direct = _solve_direct(
                 question, route, qid, pool, n_examples,
                 loaded, llm, render, prefix,
             )
-            completion = direct["completion"]
-            elapsed_s = direct["elapsed_s"]
-            extra = {
-                "rendered_prompt": direct["rendered_prompt"],
-                "generated_code": None,
-                "execution_stdout": "",
-                "execution_stderr": "",
-                "retry_count": 0,
+            return {
+                "solve_method": "direct_solve",
+                "completion": direct["completion"],
+                "elapsed_s": direct["elapsed_s"],
+                "extra": {
+                    "rendered_prompt": direct["rendered_prompt"],
+                    "generated_code": None,
+                    "execution_stdout": "",
+                    "execution_stderr": "",
+                    "retry_count": 0,
+                },
             }
+
+    pbar = tqdm(total=len(rows))
+    for row, route in zip(rows, routes):
+        qid = str(row.get("id", ""))
+        question = str(row["question"])
+        gold_answer = str(row.get("answer", ""))
+        gold_unit = str(row.get("unit", ""))
+
+        result_dict = _solve_one(qid, question, route)
+        solve_method = result_dict["solve_method"]
+        completion = result_dict["completion"]
+        elapsed_s = result_dict["elapsed_s"]
+        extra = result_dict["extra"]
 
         method_counts[solve_method] += 1
 

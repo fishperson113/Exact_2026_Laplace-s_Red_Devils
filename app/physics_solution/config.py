@@ -37,7 +37,7 @@ BATCH_SIZE = 100       # Full-eval batch. Fits A100 40GB comfortably; on L4
 # With Qwen3.5 thinking mode OFF (we pass enable_thinking=False to the chat
 # template), a typical answer fits in 256-512 tokens. Default 640 leaves
 # headroom for harder problems without paying the speed cost of 1024+.
-MAX_NEW_TOKENS = 640
+MAX_NEW_TOKENS = 2000
 TEMPERATURE = 0.0      # math QA → greedy. Raise only if you want diversity.
 
 # -------------------------------------------------------------------- eval

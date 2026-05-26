@@ -465,6 +465,21 @@ def analyse(
     df["answer_type"] = df["gold_answer"].map(
         lambda g: detect_answer_type(str(g)).value
     )
+
+    from app.physics_solution.shared.eval.scorer import score as rescore, extract
+    def _rescore(row):
+        completion = str(row.get("completion", ""))
+        gold_answer = str(row.get("gold_answer", ""))
+        gold_unit = str(row.get("gold_unit", ""))
+        result = rescore(completion, gold_answer, gold_unit)
+        return result.is_correct
+    df["is_correct"] = df.apply(_rescore, axis=1)
+
+    def _reextract_numeric(row):
+        ext = extract(str(row.get("completion", "")))
+        return ext.numeric
+    df["pred_numeric"] = df.apply(_reextract_numeric, axis=1)
+
     df["fail_mode"] = df.apply(
         lambda r: "correct" if r.get("is_correct") else classify_row(r),
         axis=1,

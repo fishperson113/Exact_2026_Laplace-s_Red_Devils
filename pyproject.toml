@@ -1,0 +1,25 @@
+[project]
+name = "exact-2026"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "accelerate==1.10.1",
+    "flash-linear-attention>=0.5.0",
+    "huggingface-hub==1.16.1",
+    "langchain-core==0.3.78",
+    "langsmith==0.4.33",
+    "numpy==2.0.2",
+    "pandas==2.2.2",
+    "python-dotenv==1.1.1",
+    "pyyaml==6.0.3",
+    "safetensors>=0.7.0",
+    "sentencepiece==0.2.1",
+    "sympy>=1.14.0",
+    "tokenizers==0.22.1",
+    "torch==2.8.0",
+    "tqdm==4.67.1",
+    "transformers==5.9.0",
+    "causal-conv1d>=1.6.0; sys_platform == 'linux'",
+]
