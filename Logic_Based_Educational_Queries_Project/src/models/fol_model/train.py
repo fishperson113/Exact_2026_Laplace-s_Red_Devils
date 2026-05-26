@@ -157,6 +157,7 @@ def build_model(cfg: FolSFTConfig):
             quantization_config=bnb_config,
             device_map={"": 0},
             trust_remote_code=cfg.trust_remote_code,
+            attn_implementation="sdpa",
         )
         model = prepare_model_for_kbit_training(model)
         train_bf16, train_fp16 = False, True
@@ -167,6 +168,7 @@ def build_model(cfg: FolSFTConfig):
             torch_dtype=dtype,
             trust_remote_code=cfg.trust_remote_code,
             device_map={"": 0},
+            attn_implementation="sdpa",
         )
         train_bf16, train_fp16 = cfg.bf16, not cfg.bf16
 
