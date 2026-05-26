@@ -44,6 +44,17 @@ def load_unsloth_model_and_tokenizer(cfg: "FolSFTConfig") -> tuple[Any, Any, boo
             + " — xem https://github.com/unslothai/unsloth (torch/CUDA đúng bản; Jupyter: cài bằng `%pip install` "
             "hoặc `python -m pip` trùng `sys.executable`)."
         )
+    # Tắt flex_attention detection trong transformers — tránh ValueError "too many values to unpack"
+    # khi transformers 5.x + PyTorch 2.x auto-chọn FlexFlashAttention thay vì SDPA.
+    for _mod_name in ("transformers.modeling_utils", "transformers.utils", "transformers"):
+        try:
+            import importlib
+            _mod = importlib.import_module(_mod_name)
+            if hasattr(_mod, "is_torch_flex_attn_available"):
+                setattr(_mod, "is_torch_flex_attn_available", lambda: False)
+        except Exception:
+            pass
+
     from unsloth import FastLanguageModel  # type: ignore[import-untyped]
 
     from services.config_fol import fol_should_load_in_8bit

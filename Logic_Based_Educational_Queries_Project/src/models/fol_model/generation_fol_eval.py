@@ -8,6 +8,16 @@ import statistics
 import time
 from typing import Any, Mapping
 
+# Tắt flex_attention — tránh ValueError trong model.generate()
+for _mod_name in ("transformers.modeling_utils", "transformers.utils", "transformers"):
+    try:
+        import importlib as _importlib
+        _mod = _importlib.import_module(_mod_name)
+        if hasattr(_mod, "is_torch_flex_attn_available"):
+            setattr(_mod, "is_torch_flex_attn_available", lambda: False)
+    except Exception:
+        pass
+
 import torch
 
 from services.config_fol import FolSFTConfig

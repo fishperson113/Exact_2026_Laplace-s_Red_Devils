@@ -1,6 +1,16 @@
 """Huấn luyện LoRA SFT: premises NL → premises FOL (JSON)."""
 from __future__ import annotations
 
+# Tắt flex_attention trước mọi import transformers — tránh ValueError "too many values to unpack"
+for _mod_name in ("transformers.modeling_utils", "transformers.utils", "transformers"):
+    try:
+        import importlib as _importlib
+        _mod = _importlib.import_module(_mod_name)
+        if hasattr(_mod, "is_torch_flex_attn_available"):
+            setattr(_mod, "is_torch_flex_attn_available", lambda: False)
+    except Exception:
+        pass
+
 import gc
 import inspect
 import json
