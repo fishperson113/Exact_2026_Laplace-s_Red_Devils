@@ -157,6 +157,13 @@ def build_fol_dataset_dict(cfg: FolSFTConfig, tokenizer) -> tuple[DatasetDict, d
 
     raw_splits = {name: _to_hf_dataset(splits[name]) for name in ("train", "dev", "test")}
 
+    n_cap = getattr(cfg, "debug_max_train_samples", None)
+    if n_cap is not None and n_cap > 0:
+        for k in list(raw_splits):
+            if len(raw_splits[k]) > n_cap:
+                raw_splits[k] = raw_splits[k].select(range(n_cap))
+        _LOG.info("debug_max_train_samples=%d: truncated all splits", n_cap)
+
     def _map_split(ds: Dataset) -> Dataset:
         return ds.map(
             lambda ex: attach_fol_chat_text_and_eval_prompt(ex, tokenizer),

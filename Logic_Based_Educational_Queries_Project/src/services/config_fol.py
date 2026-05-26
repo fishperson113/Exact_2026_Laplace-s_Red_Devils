@@ -229,6 +229,8 @@ class FolSFTConfig:
     gradient_checkpointing: bool = True
     train_seed: int = 3407
     run_train: bool = True
+    debug_max_train_samples: int | None = None
+    """Giới hạn số mẫu mỗi split (train/dev/test) để test nhanh luồng. None hoặc 0 = dùng hết."""
     # Trainer: checkpoint tốt nhất + early stop (theo metric trên dev mỗi epoch)
     early_stopping_patience: int = 0
     """0 = tắt. Ví dụ 3 → ``EarlyStoppingCallback(patience=3)`` (đếm theo lần **eval**, khớp ``eval_strategy``)."""
@@ -386,6 +388,13 @@ class FolSFTConfig:
                 kwargs["inference_latency_benchmark_seed"] = None
             else:
                 kwargs["inference_latency_benchmark_seed"] = int(es.strip())
+
+        if (es := _env_opt_str("FOL_DEBUG_MAX_TRAIN_SAMPLES")) is not None:
+            low = es.lower()
+            if low in ("", "none", "null", "all", "0"):
+                kwargs["debug_max_train_samples"] = None
+            else:
+                kwargs["debug_max_train_samples"] = int(es.strip())
 
         if _env_key_set("FOL_RUN_TRAIN"):
             kwargs["run_train"] = _env_bool("FOL_RUN_TRAIN", default=True)
