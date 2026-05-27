@@ -73,6 +73,9 @@ def fol_exact_match_rate(
 ) -> dict[str, Any]:
     model.eval()
     device = next(model.parameters()).device
+    # model.generate() cần left-padding; SFTTrainer có thể đã đổi sang right.
+    orig_padding_side = tokenizer.padding_side
+    tokenizer.padding_side = "left"
     n = len(ds)
     idxs = list(range(n))
     if max_samples is not None:
@@ -120,6 +123,7 @@ def fol_exact_match_rate(
             print(f"[FOL greedy eval] {tag}: tiến độ {done}/{total}", flush=True)
     rate = float(ok) / float(total) if total else 0.0
     print(f"[FOL greedy eval] {tag}: xong — đúng {ok}/{total}", flush=True)
+    tokenizer.padding_side = orig_padding_side
     return {"exact_match_count": ok, "total": total, "exact_match_rate": rate}
 
 
