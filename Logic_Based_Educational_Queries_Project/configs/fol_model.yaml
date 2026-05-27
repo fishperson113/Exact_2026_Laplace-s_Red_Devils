@@ -27,7 +27,7 @@ training:
   train_seed: 3407
   gpu_profile: auto
   # Giới hạn số mẫu mỗi split để test nhanh luồng (null = dùng hết). Env: FOL_DEBUG_MAX_TRAIN_SAMPLES
-  debug_max_train_samples: 10
+  debug_max_train_samples: null
   # true hoặc FOL_LOAD_IN_8BIT=1 / FOL_GPU_PROFILE=8bit — INT8 bitsandbytes (chính xác hơn NF4; FOL_LOAD_IN_4BIT=1 vẫn bật INT8)
   load_in_8bit: true
   # T4 / OOM: Unsloth + loss chỉ assistant + adamw_8bit (cần pip install unsloth); notebook: FolSFTConfig.from_env(use_unsloth=True)
