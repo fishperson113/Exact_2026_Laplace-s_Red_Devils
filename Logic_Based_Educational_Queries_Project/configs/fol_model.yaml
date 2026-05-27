@@ -9,9 +9,9 @@ model:
   gen_max_new_tokens: 512
 
 lora:
-  r: 8
-  alpha: 16
-  dropout: 0.3
+  r: 5
+  alpha: 10
+  dropout: 0.2
 
 training:
   num_train_epochs: 30
