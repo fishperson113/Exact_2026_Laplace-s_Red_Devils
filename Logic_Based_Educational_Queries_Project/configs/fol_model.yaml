@@ -14,7 +14,7 @@ lora:
   dropout: 0.05
 
 training:
-  num_train_epochs: 15
+  num_train_epochs: 25
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 1
   gradient_accumulation_steps: 8
@@ -44,9 +44,9 @@ training:
   best_model_exact_match_max_samples: 30
   # Số mẫu dev tối đa khi tính RM (LE+BLEU) cho metric chọn best model (null = cả dev). Env: FOL_BEST_MODEL_RM_MAX_SAMPLES
   best_model_rm_max_samples: 30
-  # Trọng số RM = le_weight * LE + bleu_weight * BLEU (LogicLLaMA: 0.7 / 0.3)
-  rm_le_weight: 0.7
-  rm_bleu_weight: 0.3
+  # Trọng số RM = le_weight * LE + bleu_weight * BLEU (LogicLLaMA: 0.6 / 0.4)
+  rm_le_weight: 0.6
+  rm_bleu_weight: 0.4
   # Chỉ giữ tối đa N checkpoint trong out_dir lúc train; 1 + load_best_model_at_end ≈ tiết kiệm đĩa nhất. Env: FOL_SAVE_TOTAL_LIMIT
   save_total_limit: 1
   # Sau khi lưu LoRA vào checkpoint_dir (final_lora), xóa checkpoint-* trong out_dir (tránh trùng trên đĩa). Tắt nếu cần resume: false / FOL_PRUNE_TRAINER_CHECKPOINTS=0
@@ -58,7 +58,7 @@ paths:
 
 hub:
   org: Laplaces-Red-Devils
-  repo_version: v01
+  repo_version: v02
   data_variant: origin   # origin | augmented
   push_to_hub: true
   hf_private: false
