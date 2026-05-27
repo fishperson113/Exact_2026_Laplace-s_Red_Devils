@@ -14,7 +14,7 @@ lora:
   dropout: 0.3
 
 training:
-  num_train_epochs: 15
+  num_train_epochs: 30
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 1
   gradient_accumulation_steps: 8
@@ -41,7 +41,7 @@ training:
   metric_for_best_model: eval_exact_match_rate
   greater_is_better: true
   # Số mẫu dev tối đa khi tính exact-match cho metric trên (null = cả dev, chậm). Env: FOL_BEST_MODEL_EM_MAX_SAMPLES
-  best_model_exact_match_max_samples: null
+  best_model_exact_match_max_samples: 30
   # Chỉ giữ tối đa N checkpoint trong out_dir lúc train; 1 + load_best_model_at_end ≈ tiết kiệm đĩa nhất. Env: FOL_SAVE_TOTAL_LIMIT
   save_total_limit: 1
   # Sau khi lưu LoRA vào checkpoint_dir (final_lora), xóa checkpoint-* trong out_dir (tránh trùng trên đĩa). Tắt nếu cần resume: false / FOL_PRUNE_TRAINER_CHECKPOINTS=0
