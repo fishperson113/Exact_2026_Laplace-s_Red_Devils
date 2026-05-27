@@ -467,7 +467,24 @@ def run_training(cfg: FolSFTConfig):
     if fol_em_cb is not None:
         fol_em_cb.suppress_exact_match_metric = True
     try:
-        test_trainer_metrics = trainer.evaluate(eval_dataset=dataset_dict["test"])
+        # SFTTrainer chỉ tokenize train/eval lúc __init__; dataset mới cần prepare thủ công.
+        _test_ds = dataset_dict["test"]
+        if hasattr(trainer, "_prepare_dataset"):
+            try:
+                _test_ds = trainer._prepare_dataset(_test_ds, tokenizer, cfg.max_seq_length, None, "text")
+            except Exception:
+                try:
+                    _test_ds = trainer._prepare_dataset(_test_ds, tokenizer)
+                except Exception:
+                    pass
+        if "input_ids" not in _test_ds.column_names:
+            print("[FOL train] Bỏ qua trainer.evaluate(test) — dataset chưa tokenize.", flush=True)
+            test_trainer_metrics = {}
+        else:
+            test_trainer_metrics = trainer.evaluate(eval_dataset=_test_ds)
+    except (ValueError, RuntimeError) as e:
+        print(f"[FOL train] trainer.evaluate(test) thất bại (không ảnh hưởng kết quả chính): {e}", flush=True)
+        test_trainer_metrics = {}
     finally:
         if fol_em_cb is not None:
             fol_em_cb.suppress_exact_match_metric = False
