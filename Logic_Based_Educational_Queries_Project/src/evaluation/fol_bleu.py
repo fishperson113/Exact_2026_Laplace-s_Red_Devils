@@ -53,7 +53,8 @@ def _manual_bleu4(ref: list[str], hyp: list[str]) -> float:
         p = _ngram_precision(ref, hyp, n)
         # Add-1 smoothing cho n > 1 khi precision = 0
         if p == 0 and n > 1:
-            p = 1.0 / (len(hyp) - n + 2)  # smoothing
+            denom = max(len(hyp) - n + 2, 1)
+            p = 1.0 / denom
         if p > 0:
             log_avg += w * math.log(p)
         else:
