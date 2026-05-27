@@ -201,6 +201,7 @@ def generate_text(
         max_new_tokens=max_new_tokens,
         do_sample=do_sample,
         pad_token_id=tokenizer.eos_token_id,
+        repetition_penalty=1.15,
     )
     if do_sample:
         gen_kwargs["temperature"] = temperature
@@ -211,6 +212,10 @@ def generate_text(
     elapsed = time.time() - t0
 
     completion_ids = output_ids[0, input_len:]
+    # Guard against out-of-vocab token IDs (model degeneration / NaN logits)
+    # that would cause OverflowError in the Rust tokenizer.
+    vocab_size = len(tokenizer)
+    completion_ids = completion_ids.clamp(0, vocab_size - 1)
     completion = tokenizer.decode(completion_ids, skip_special_tokens=True)
     return completion, elapsed
 
@@ -248,6 +253,7 @@ def generate_batch(
         max_new_tokens=max_new_tokens,
         do_sample=do_sample,
         pad_token_id=tokenizer.pad_token_id,
+        repetition_penalty=1.15,
     )
     if do_sample:
         gen_kwargs["temperature"] = temperature
@@ -259,5 +265,8 @@ def generate_batch(
 
     # Left-padding means every row's generated tokens start at `input_len`.
     completion_ids = output_ids[:, input_len:]
+    # Guard against out-of-vocab token IDs (model degeneration / NaN logits)
+    vocab_size = len(tokenizer)
+    completion_ids = completion_ids.clamp(0, vocab_size - 1)
     completions = tokenizer.batch_decode(completion_ids, skip_special_tokens=True)
     return completions, elapsed
