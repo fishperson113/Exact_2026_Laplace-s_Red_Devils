@@ -19,14 +19,19 @@ from app.physics_solution.shared.model.batched_llm import _apply_chat_template_n
 from app.physics_solution.shared.runtime.tracing import traceable
 
 
-VALID_DOMAINS = {"LD", "CH", "NL", "TD", "DDT", "THCB", "DT", "CHLT"}
-VALID_ANSWER_TYPES = {
-    "pure_numeric", "sci_notation", "yes_no",
-    "multi_value", "text_only", "mixed",
-}
+VALID_DOMAINS = {"LDDT", "CH", "NL", "TD", "DDT", "THCB"}
+VALID_ANSWER_TYPES = {"numeric", "yes_no", "multi_value", "text"}
 
-DEFAULT_DOMAIN = "LD"
-DEFAULT_ANSWER_TYPE = "pure_numeric"
+DEFAULT_DOMAIN = "LDDT"
+DEFAULT_ANSWER_TYPE = "numeric"
+
+_DOMAIN_ALIASES = {"LD": "LDDT", "DT": "LDDT", "CHLT": "CH"}
+_ANSWER_TYPE_ALIASES = {
+    "pure_numeric": "numeric",
+    "sci_notation": "numeric",
+    "text_only": "text",
+    "mixed": "text",
+}
 
 CLASSIFY_USER = """{question}"""
 
@@ -48,6 +53,8 @@ def _parse_route(text: str) -> RouteResult:
             obj = json.loads(json_match.group(0))
             domain = str(obj.get("domain", DEFAULT_DOMAIN)).strip().upper()
             answer_type = str(obj.get("answer_type", DEFAULT_ANSWER_TYPE)).strip().lower()
+            domain = _DOMAIN_ALIASES.get(domain, domain)
+            answer_type = _ANSWER_TYPE_ALIASES.get(answer_type, answer_type)
             if domain not in VALID_DOMAINS:
                 domain = DEFAULT_DOMAIN
             if answer_type not in VALID_ANSWER_TYPES:

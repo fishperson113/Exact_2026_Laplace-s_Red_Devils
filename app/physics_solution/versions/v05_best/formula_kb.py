@@ -1,4 +1,8 @@
-"""v05 Formula Knowledge Base — loads formulas.yaml and returns formatted hints per domain."""
+"""v05_best Formula Knowledge Base — loads formulas.yaml and returns formatted hints per domain.
+
+Constants are hardcoded (k = 9e9) instead of requiring scipy.constants,
+matching the "best" prompt style that the 4B model handles reliably.
+"""
 
 from __future__ import annotations
 
@@ -21,6 +25,30 @@ def _load() -> dict:
 _FORMULA_DOMAIN_MAP = {
     "LDDT": ["LD", "DT"],
     "CH": ["CH", "CHLT"],
+}
+
+# Hardcoded constants per domain group — injected at top of formula hints
+_DOMAIN_CONSTANTS = {
+    "LDDT": [
+        "k = 9e9 N*m^2/C^2 (Coulomb constant)",
+        "epsilon_0 = 8.854e-12 F/m (Vacuum permittivity)",
+        "e = 1.6e-19 C (Elementary charge)",
+    ],
+    "CH": [
+        "pi = math.pi",
+    ],
+    "NL": [
+        "pi = math.pi",
+    ],
+    "TD": [
+        "epsilon_0 = 8.854e-12 F/m (Vacuum permittivity)",
+        "pi = math.pi",
+    ],
+    "DDT": [
+        "mu_0 = 4e-7 * math.pi T*m/A (Vacuum permeability)",
+        "pi = math.pi",
+    ],
+    "THCB": [],
 }
 
 
@@ -47,6 +75,13 @@ def get_formula_hints(domain: str) -> str:
 
     parts: list[str] = []
 
+    # Constants (hardcoded, not from scipy)
+    constants = _DOMAIN_CONSTANTS.get(domain, [])
+    if constants:
+        parts.append("Constants:")
+        for c in constants:
+            parts.append(f"  {c}")
+
     # Unit conversions
     conversions = domain_data.get("unit_conversions", [])
     if conversions:
@@ -70,7 +105,7 @@ def get_formula_hints(domain: str) -> str:
 
 if __name__ == "__main__":
     data = _load()
-    for domain in data:
+    for domain in ["LDDT", "CH", "NL", "TD", "DDT", "THCB"]:
         print(f"\n{'='*60}")
         print(f"  Domain: {domain}")
         print(f"{'='*60}")

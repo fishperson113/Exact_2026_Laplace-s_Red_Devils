@@ -30,8 +30,10 @@ _SCI_RE = re.compile(
 )
 
 _SCI_DOT_RE = re.compile(
-    r"([-+]?\d+)\s*\.\s*10\s*\^?\s*\{?\s*([-+]?\d+)\s*\}?",
+    r"([-+]?\d+)\s*\.\s*10\s*\^\s*\{?\s*([-+]?\d+)\s*\}?",
 )
+# NOTE: ^ is now REQUIRED (was \^? optional), to prevent false matches
+# on plain decimals like "957.1068" being parsed as "957 . 10^68".
 
 _BARE_POWER_RE = re.compile(
     r"^[-+]?\s*10\s*\^\s*\{?\s*([-+]?\d+)\s*\}?\s*$"

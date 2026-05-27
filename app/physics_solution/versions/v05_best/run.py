@@ -1,9 +1,10 @@
-"""v05 runner — per-sample classify-then-solve pipeline with code execution.
+"""v05_best runner — per-sample classify-then-solve pipeline with code execution.
 
 Pipeline per question (60s hard timeout):
   1. Classify: classify_question() -> (domain, answer_type)
   2. Generate Python code -> execute -> format answer
-     One retry on execution failure; no fallback to LLM direct solve.
+     Retry once on execution failure (feeds error back to LLM for code regen).
+     NO fallback to direct LLM text solve — code execution only.
 """
 
 from __future__ import annotations
@@ -25,20 +26,20 @@ from app.physics_solution.shared.model.loader import LoadedModel, load_model
 from app.physics_solution.shared.prompts.system import ASSISTANT_PREFIX
 from app.physics_solution.shared.router import RouteResult, classify_question
 from app.physics_solution.shared.runtime.tracing import setup_tracing, traceable
-from app.physics_solution.versions.v05_code_execution import (
+from app.physics_solution.versions.v05_best import (
     DEFAULT_BASE_MODEL_ID,
     DESCRIPTION,
     STRATEGY_TAG,
     VERSION_NUM,
 )
-from app.physics_solution.versions.v05_code_execution.code_executor import (
+from app.physics_solution.versions.v05_best.code_executor import (
     ExecutionResult,
     extract_code,
     execute_code,
     format_answer,
 )
-from app.physics_solution.versions.v05_code_execution.formula_kb import get_formula_hints
-from app.physics_solution.versions.v05_code_execution.prompts import (
+from app.physics_solution.versions.v05_best.formula_kb import get_formula_hints
+from app.physics_solution.versions.v05_best.prompts import (
     CLASSIFY_SYSTEM,
     CLASSIFY_EXAMPLES,
     build_codegen_prompt,
@@ -75,7 +76,13 @@ def _solve_with_code(
     llm: HFBatchedLLM,
     deadline: float,
 ) -> dict:
-    """Generate code, execute, retry once if failed. Respects deadline."""
+    """Generate code, execute, retry once on execution error. Respects deadline.
+
+    Retry strategy:
+      - If code EXTRACTION fails (no ```python block) -> give up (no retry)
+      - If code EXECUTION fails (runtime/syntax/timeout error) -> retry once
+        by feeding the error context back to the LLM for code regeneration
+    """
     formula_hints = get_formula_hints(domain)
     msgs = build_codegen_prompt(question, domain, answer_type, formula_hints)
     rendered = _apply_chat_template_no_think(loaded.tokenizer, msgs)
@@ -88,6 +95,7 @@ def _solve_with_code(
 
     code = extract_code(completion)
     if code is None:
+        # No code block found — do NOT retry (model failed to generate code at all)
         return {
             "success": False,
             "rendered_prompt": rendered,
@@ -103,6 +111,7 @@ def _solve_with_code(
     exec_result = execute_code(code)
     retry_count = 0
 
+    # Retry on EXECUTION failure (not extraction failure)
     if not exec_result.success and time.time() < deadline:
         retry_count = 1
         error_feedback = (
