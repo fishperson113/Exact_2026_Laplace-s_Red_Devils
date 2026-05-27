@@ -50,6 +50,8 @@ from .generation_fol_eval import (
     collect_fol_inference_samples,
     fol_exact_match_on_splits,
     fol_exact_match_rate,
+    fol_rm_score,
+    fol_rm_on_splits,
 )
 
 
@@ -66,6 +68,14 @@ def _fol_best_metric_uses_dev_exact_match(metric_for_best_model: str | None) -> 
     if m.startswith("eval_"):
         m = m[5:]
     return "exact_match" in m
+
+
+def _fol_best_metric_uses_dev_rm(metric_for_best_model: str | None) -> bool:
+    """True nếu metric chọn best model là RM (rm_score)."""
+    m = (metric_for_best_model or "").strip().lower()
+    if m.startswith("eval_"):
+        m = m[5:]
+    return "rm" in m
 
 
 class FolDevExactMatchForBestModelCallback(TrainerCallback):
@@ -107,6 +117,60 @@ class FolDevExactMatchForBestModelCallback(TrainerCallback):
         tr = self.trainer_ref
         if tr is not None and getattr(tr, "is_world_process_zero", lambda: True)():
             tr.log({"eval_exact_match_rate": rate, "epoch": state.epoch})
+
+
+class FolDevRMForBestModelCallback(TrainerCallback):
+    """Trước EarlyStopping: tính RM (LE + FOL BLEU) trên **dev**, ghi ``eval_rm_score`` vào ``metrics``."""
+
+    def __init__(self, cfg: FolSFTConfig, dev_dataset: Any):
+        self.cfg = cfg
+        self.dev_dataset = dev_dataset
+        self.suppress_rm_metric = False
+        self.trainer_ref: Any | None = None
+
+    def on_evaluate(
+        self,
+        args: Any,
+        state: Any,
+        control: Any,
+        metrics: dict[str, Any] | None,
+        model: Any = None,
+        processing_class: Any = None,
+        **kwargs: Any,
+    ) -> None:
+        if metrics is None or self.suppress_rm_metric:
+            return
+        if not _fol_best_metric_uses_dev_rm(getattr(args, "metric_for_best_model", None)):
+            return
+        tok = processing_class or kwargs.get("tokenizer")
+        if model is None or tok is None:
+            return
+        max_samples = self.cfg.best_model_rm_max_samples
+        r = fol_rm_score(
+            self.cfg,
+            model,
+            tok,
+            self.dev_dataset,
+            max_samples=max_samples,
+            split_label="dev_rm_metric",
+        )
+        rm = float(r["rm_score"])
+        le = float(r["le_score"])
+        bleu = float(r["fol_bleu"])
+        em = float(r["exact_match_rate"])
+        metrics["eval_rm_score"] = rm
+        metrics["eval_le_score"] = le
+        metrics["eval_fol_bleu"] = bleu
+        metrics["eval_exact_match_rate"] = em
+        tr = self.trainer_ref
+        if tr is not None and getattr(tr, "is_world_process_zero", lambda: True)():
+            tr.log({
+                "eval_rm_score": rm,
+                "eval_le_score": le,
+                "eval_fol_bleu": bleu,
+                "eval_exact_match_rate": em,
+                "epoch": state.epoch,
+            })
 
 
 def _fol_prune_trainer_checkpoint_dirs(out_dir: Path) -> int:
@@ -251,16 +315,18 @@ def _build_fol_sft_config(
 
 def _epoch_metrics_from_history(trainer: SFTTrainer) -> list[dict]:
     rows: list[dict] = []
+    _RM_KEYS = ("eval_loss", "eval_exact_match_rate", "eval_rm_score", "eval_le_score", "eval_fol_bleu")
     for h in trainer.state.log_history:
-        if "eval_loss" not in h and "eval_exact_match_rate" not in h:
+        if not any(k in h for k in _RM_KEYS):
             continue
         row: dict[str, Any] = {
             "epoch": h.get("epoch"),
             "step": h.get("step"),
             "eval_loss": h.get("eval_loss"),
         }
-        if "eval_exact_match_rate" in h:
-            row["eval_exact_match_rate"] = h.get("eval_exact_match_rate")
+        for k in ("eval_exact_match_rate", "eval_rm_score", "eval_le_score", "eval_fol_bleu"):
+            if k in h:
+                row[k] = h.get(k)
         rows.append(row)
     return rows
 
@@ -321,7 +387,7 @@ def run_fol_eval_all_splits(
     )
     for split, m in out.items():
         print(
-            f"[FOL eval] {split}: accuracy={m['exact_match_rate']:.4f} "
+            f"[FOL eval] {split}: exact_match={m['exact_match_rate']:.4f} "
             f"({m['exact_match_count']}/{m['total']})"
         )
     if cfg.out_dir:
@@ -404,8 +470,18 @@ def run_training(cfg: FolSFTConfig):
     else:
         trainer_kwargs["tokenizer"] = tokenizer
     fol_em_cb: FolDevExactMatchForBestModelCallback | None = None
+    fol_rm_cb: FolDevRMForBestModelCallback | None = None
     _callbacks: list[Any] = []
-    if _fol_best_metric_uses_dev_exact_match(cfg.metric_for_best_model):
+    if _fol_best_metric_uses_dev_rm(cfg.metric_for_best_model):
+        fol_rm_cb = FolDevRMForBestModelCallback(cfg, dataset_dict["dev"])
+        _callbacks.append(fol_rm_cb)
+        print(
+            f"[FOL train] Chọn checkpoint theo {_fol_metric_key_for_best(cfg.metric_for_best_model)!r} "
+            f"(RM = {cfg.rm_le_weight}*LE + {cfg.rm_bleu_weight}*BLEU trên dev; "
+            f"best_model_rm_max_samples={cfg.best_model_rm_max_samples!r}).",
+            flush=True,
+        )
+    elif _fol_best_metric_uses_dev_exact_match(cfg.metric_for_best_model):
         fol_em_cb = FolDevExactMatchForBestModelCallback(cfg, dataset_dict["dev"])
         _callbacks.append(fol_em_cb)
         print(
@@ -414,9 +490,11 @@ def run_training(cfg: FolSFTConfig):
             f"{cfg.best_model_exact_match_max_samples!r}).",
             flush=True,
         )
-    if _fol_best_metric_uses_dev_exact_match(cfg.metric_for_best_model) and not cfg.greater_is_better:
+    if (_fol_best_metric_uses_dev_exact_match(cfg.metric_for_best_model)
+        or _fol_best_metric_uses_dev_rm(cfg.metric_for_best_model)
+    ) and not cfg.greater_is_better:
         print(
-            "[FOL train] Cảnh báo: metric exact-match nên đặt greater_is_better=true (tỉ lệ cao hơn = tốt hơn).",
+            "[FOL train] Cảnh báo: metric EM/RM nên đặt greater_is_better=true (tỉ lệ cao hơn = tốt hơn).",
             flush=True,
         )
     if int(getattr(cfg, "early_stopping_patience", 0) or 0) > 0:
@@ -433,12 +511,16 @@ def run_training(cfg: FolSFTConfig):
     trainer = SFTTrainer(**trainer_kwargs)
     if fol_em_cb is not None:
         fol_em_cb.trainer_ref = trainer
+    if fol_rm_cb is not None:
+        fol_rm_cb.trainer_ref = trainer
 
     if cfg.use_unsloth and cfg.unsloth_train_on_responses_only:
         print("[FOL train][Unsloth] Áp train_on_responses_only (loss chỉ trên assistant) …", flush=True)
         trainer = apply_train_on_responses_only(trainer, cfg)
         if fol_em_cb is not None:
             fol_em_cb.trainer_ref = trainer
+        if fol_rm_cb is not None:
+            fol_rm_cb.trainer_ref = trainer
 
     print("[FOL train] Bắt đầu trainer.train() …", flush=True)
     train_result = trainer.train()
@@ -466,6 +548,8 @@ def run_training(cfg: FolSFTConfig):
     print("[FOL train] trainer.evaluate() trên test (loss) …", flush=True)
     if fol_em_cb is not None:
         fol_em_cb.suppress_exact_match_metric = True
+    if fol_rm_cb is not None:
+        fol_rm_cb.suppress_rm_metric = True
     try:
         # SFTTrainer chỉ tokenize train/eval lúc __init__; dataset mới cần prepare thủ công.
         _test_ds = dataset_dict["test"]
@@ -488,10 +572,27 @@ def run_training(cfg: FolSFTConfig):
     finally:
         if fol_em_cb is not None:
             fol_em_cb.suppress_exact_match_metric = False
+        if fol_rm_cb is not None:
+            fol_rm_cb.suppress_rm_metric = False
 
     _fol_cuda_bootstrap()
-    print("[FOL train] Greedy exact-match JSON trên train/dev/test (lâu nếu full split + null max_samples) …", flush=True)
+    print("[FOL train] Greedy RM (LE+BLEU) + exact-match trên train/dev/test …", flush=True)
     fol_eval = run_fol_eval_all_splits(cfg, trainer, dataset_dict)
+    # Tính RM trên tất cả splits (bổ sung cho exact match)
+    tok_for_rm = getattr(trainer, "processing_class", None) or getattr(trainer, "tokenizer", None)
+    fol_rm_eval = fol_rm_on_splits(
+        cfg, trainer.model, tok_for_rm, dataset_dict,
+        splits=("train", "dev", "test"),
+        max_samples=cfg.eval_fol_max_samples,
+    )
+    for sp, rm_m in fol_rm_eval.items():
+        print(
+            f"[FOL RM eval] {sp}: RM={rm_m['rm_score']:.4f} LE={rm_m['le_score']:.4f} "
+            f"BLEU={rm_m['fol_bleu']:.4f} EM={rm_m['exact_match_rate']:.4f}"
+        )
+    if cfg.out_dir:
+        with open(cfg.out_dir / "fol_rm_eval_metrics.json", "w", encoding="utf-8") as f:
+            json.dump(fol_rm_eval, f, indent=2)
     tok = getattr(trainer, "processing_class", None) or getattr(
         trainer, "tokenizer", None
     )

@@ -1,12 +1,15 @@
-"""Đánh giá greedy: so khớp JSON premises_fol với nhãn assistant."""
+"""Đánh giá greedy: so khớp JSON premises_fol với nhãn assistant + RM (LE + FOL BLEU)."""
 from __future__ import annotations
 
 import json
+import logging
 import random
 import re
 import statistics
 import time
 from typing import Any, Mapping
+
+_LOG = logging.getLogger(__name__)
 
 # Tắt flex_attention — tránh ValueError trong model.generate()
 for _mod_name in ("transformers.modeling_utils", "transformers.utils", "transformers"):
@@ -173,6 +176,147 @@ def fol_summarize_exact_match_rows(
             ok += 1
     rate = float(ok) / float(total) if total else 0.0
     return {"exact_match_count": ok, "total": total, "exact_match_rate": rate}
+
+
+@torch.no_grad()
+def fol_rm_score(
+    cfg: FolSFTConfig,
+    model,
+    tokenizer,
+    ds,
+    max_samples: int | None = None,
+    *,
+    split_label: str | None = None,
+) -> dict[str, Any]:
+    """Tính RM = le_weight * LE + bleu_weight * FOL BLEU trên split.
+
+    Greedy generate → parse gold/pred → tính LE (Z3 nếu có) + FOL BLEU → RM.
+    Đồng thời trả exact_match_rate để so sánh.
+    """
+    from evaluation.fol_bleu import fol_bleu_record
+    from evaluation.fol_le import _z3_available, le_record, le_record_no_z3
+
+    le_weight = getattr(cfg, "rm_le_weight", 0.7)
+    bleu_weight = getattr(cfg, "rm_bleu_weight", 0.3)
+    use_z3 = _z3_available()
+    if not use_z3:
+        _LOG.warning(
+            "z3-solver chưa cài — LE fallback sang string match. pip install z3-solver"
+        )
+
+    model.eval()
+    device = next(model.parameters()).device
+    orig_padding_side = tokenizer.padding_side
+    tokenizer.padding_side = "left"
+
+    n = len(ds)
+    idxs = list(range(n))
+    if max_samples is not None:
+        idxs = idxs[: min(max_samples, n)]
+    total = len(idxs)
+    bs = max(1, cfg.eval_gen_batch_size)
+    tag = split_label or "eval"
+    print(f"[FOL RM eval] {tag}: {total} mẫu, batch_size={bs}", flush=True)
+
+    ok = 0  # exact match count
+    rm_scores: list[float] = []
+    le_scores: list[float] = []
+    bleu_scores: list[float] = []
+
+    for start in range(0, len(idxs), bs):
+        batch_i = idxs[start : start + bs]
+        prompts = [ds[i]["eval_prompt"] for i in batch_i]
+        golds = [ds[i]["gold_assistant"] for i in batch_i]
+        enc = tokenizer(
+            prompts,
+            return_tensors="pt",
+            padding=True,
+            truncation=True,
+            max_length=cfg.max_seq_length,
+        )
+        enc = {k: v.to(device) for k, v in enc.items()}
+        pad_id = tokenizer.pad_token_id or tokenizer.eos_token_id
+        out = model.generate(
+            **enc,
+            max_new_tokens=cfg.gen_max_new_tokens,
+            do_sample=False,
+            pad_token_id=pad_id,
+            eos_token_id=tokenizer.eos_token_id,
+        )
+        in_len = enc["input_ids"].shape[1]
+        for row, gold_txt in zip(out, golds):
+            gen_ids = row[in_len:]
+            pred_txt = tokenizer.decode(gen_ids, skip_special_tokens=True)
+            gold_list = _parse_premises_fol_list(gold_txt)
+            pred_list = _parse_premises_fol_list(pred_txt)
+
+            if gold_list is None:
+                gold_list = []
+            if pred_list is None:
+                pred_list = []
+
+            # Exact match
+            if gold_list and pred_list and _lists_exact_match(gold_list, pred_list):
+                ok += 1
+
+            # FOL BLEU
+            bleu = fol_bleu_record(gold_list, pred_list)
+            bleu_scores.append(bleu)
+
+            # LE
+            if use_z3:
+                le = le_record(gold_list, pred_list)
+            else:
+                le = le_record_no_z3(gold_list, pred_list)
+            le_scores.append(le)
+
+            # RM
+            rm = le_weight * le + bleu_weight * bleu
+            rm_scores.append(rm)
+
+    em_rate = float(ok) / float(total) if total else 0.0
+    rm_avg = sum(rm_scores) / len(rm_scores) if rm_scores else 0.0
+    le_avg = sum(le_scores) / len(le_scores) if le_scores else 0.0
+    bleu_avg = sum(bleu_scores) / len(bleu_scores) if bleu_scores else 0.0
+
+    print(
+        f"[FOL RM eval] {tag}: RM={rm_avg:.4f} (LE={le_avg:.4f}, BLEU={bleu_avg:.4f}) "
+        f"| exact_match={ok}/{total} ({em_rate:.4f})",
+        flush=True,
+    )
+    tokenizer.padding_side = orig_padding_side
+    return {
+        "rm_score": rm_avg,
+        "le_score": le_avg,
+        "fol_bleu": bleu_avg,
+        "exact_match_rate": em_rate,
+        "exact_match_count": ok,
+        "total": total,
+        "le_weight": le_weight,
+        "bleu_weight": bleu_weight,
+        "z3_available": use_z3,
+    }
+
+
+def fol_rm_on_splits(
+    cfg: FolSFTConfig,
+    model,
+    tokenizer,
+    dataset_dict: Mapping[str, Any],
+    *,
+    splits: tuple[str, ...] = ("train", "dev", "test"),
+    max_samples: int | None = None,
+) -> dict[str, Any]:
+    """RM (LE + FOL BLEU) trên nhiều split."""
+    out: dict[str, Any] = {}
+    for sp in splits:
+        if sp not in dataset_dict:
+            continue
+        out[sp] = fol_rm_score(
+            cfg, model, tokenizer, dataset_dict[sp],
+            max_samples=max_samples, split_label=sp,
+        )
+    return out
 
 
 def _fol_one_greedy_generate(

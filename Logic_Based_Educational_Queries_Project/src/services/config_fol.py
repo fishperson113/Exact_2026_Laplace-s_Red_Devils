@@ -128,6 +128,16 @@ def _fol_config_dict_from_yaml(project_root: Path) -> dict[str, Any]:
                     out["debug_max_train_samples"] = None
                 else:
                     out["debug_max_train_samples"] = int(v)
+            if "best_model_rm_max_samples" in t:
+                v = t["best_model_rm_max_samples"]
+                if v is None or (isinstance(v, str) and v.strip().lower() in ("null", "none", "", "all")):
+                    out["best_model_rm_max_samples"] = None
+                else:
+                    out["best_model_rm_max_samples"] = int(v)
+            if "rm_le_weight" in t and t["rm_le_weight"] is not None:
+                out["rm_le_weight"] = float(t["rm_le_weight"])
+            if "rm_bleu_weight" in t and t["rm_bleu_weight"] is not None:
+                out["rm_bleu_weight"] = float(t["rm_bleu_weight"])
 
     if paths := data.get("paths"):
         if isinstance(paths, dict) and (sub := paths.get("processed_subdir")):
@@ -244,6 +254,12 @@ class FolSFTConfig:
     metric_for_best_model: str = "eval_loss"
     greater_is_better: bool = False  # với exact_match trên dev → thường True
     best_model_exact_match_max_samples: int | None = None
+    best_model_rm_max_samples: int | None = None
+    """Số mẫu dev tối đa khi tính RM (LE+BLEU) cho metric chọn best model. None = cả dev."""
+    rm_le_weight: float = 0.7
+    """Trọng số LE trong RM = le_weight * LE + bleu_weight * BLEU (mặc định LogicLLaMA: 0.7)."""
+    rm_bleu_weight: float = 0.3
+    """Trọng số FOL BLEU trong RM (mặc định LogicLLaMA: 0.3)."""
 
     save_total_limit: int = 1
     """Số checkpoint tối đa trong ``out_dir`` lúc train (HF xoay + giữ best khi ``load_best_model_at_end``)."""
@@ -401,6 +417,17 @@ class FolSFTConfig:
                 kwargs["debug_max_train_samples"] = None
             else:
                 kwargs["debug_max_train_samples"] = int(es.strip())
+
+        if (es := _env_opt_str("FOL_BEST_MODEL_RM_MAX_SAMPLES")) is not None:
+            low = es.lower()
+            if low in ("", "none", "null", "all"):
+                kwargs["best_model_rm_max_samples"] = None
+            else:
+                kwargs["best_model_rm_max_samples"] = int(es.strip())
+        if (es := _env_opt_str("FOL_RM_LE_WEIGHT")) is not None:
+            kwargs["rm_le_weight"] = float(es.strip())
+        if (es := _env_opt_str("FOL_RM_BLEU_WEIGHT")) is not None:
+            kwargs["rm_bleu_weight"] = float(es.strip())
 
         if _env_key_set("FOL_RUN_TRAIN"):
             kwargs["run_train"] = _env_bool("FOL_RUN_TRAIN", default=True)
