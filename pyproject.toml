@@ -23,4 +23,10 @@ dependencies = [
     "tqdm==4.67.1",
     "transformers==5.9.0",
     "causal-conv1d>=1.6.0; sys_platform == 'linux'",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "pydantic-settings>=2.0.0",
+    "httpx>=0.28.0",
+    "openai>=1.0.0",
+    "vllm>=0.8.0 ; sys_platform == 'linux'",
 ]

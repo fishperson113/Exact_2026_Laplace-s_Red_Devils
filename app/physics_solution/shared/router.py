@@ -14,10 +14,6 @@ import json
 import re
 from dataclasses import dataclass
 
-from app.physics_solution.shared.model.loader import LoadedModel, generate_batch
-from app.physics_solution.shared.model.batched_llm import _apply_chat_template_no_think
-from app.physics_solution.shared.runtime.tracing import traceable
-
 
 VALID_DOMAINS = {"LDDT", "CH", "NL", "TD", "DDT", "THCB"}
 VALID_ANSWER_TYPES = {"numeric", "yes_no", "multi_value", "text"}
@@ -73,6 +69,8 @@ def _build_classify_prompt(
     system_prompt: str,
     examples: list[dict],
 ) -> str:
+    from app.physics_solution.shared.model.batched_llm import _apply_chat_template_no_think
+
     msgs = [{"role": "system", "content": system_prompt}]
     for ex in examples:
         msgs.append({"role": "user", "content": ex["q"]})
@@ -81,25 +79,29 @@ def _build_classify_prompt(
     return _apply_chat_template_no_think(tokenizer, msgs)
 
 
-@traceable(name="classify_question", run_type="chain")
 def classify_question(
     question: str,
-    model: LoadedModel,
+    model,
     *,
     system_prompt: str,
     examples: list[dict],
 ) -> RouteResult:
     """Classify a single question."""
-    results = classify_batch(
-        [question], model, batch_size=1,
-        system_prompt=system_prompt, examples=examples,
-    )
-    return results[0]
+    from app.physics_solution.shared.runtime.tracing import traceable
+
+    @traceable(name="classify_question", run_type="chain")
+    def _inner():
+        return classify_batch(
+            [question], model, batch_size=1,
+            system_prompt=system_prompt, examples=examples,
+        )[0]
+
+    return _inner()
 
 
 def classify_batch(
     questions: list[str],
-    model: LoadedModel,
+    model,
     batch_size: int = 32,
     *,
     system_prompt: str,
@@ -114,6 +116,8 @@ def classify_batch(
     examples : list[dict]
         Few-shot examples, each with keys "q" (question) and "a" (JSON answer).
     """
+    from app.physics_solution.shared.model.loader import generate_batch as _generate_batch
+
     prompts = [
         _build_classify_prompt(q, model.tokenizer, system_prompt, examples)
         for q in questions
@@ -122,7 +126,7 @@ def classify_batch(
 
     for i in range(0, len(prompts), batch_size):
         chunk = prompts[i : i + batch_size]
-        completions, _ = generate_batch(
+        completions, _ = _generate_batch(
             model, chunk,
             max_new_tokens=50,
             temperature=0.0,
