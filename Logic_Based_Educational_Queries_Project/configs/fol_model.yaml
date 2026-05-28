@@ -59,7 +59,8 @@ paths:
 hub:
   org: Laplaces-Red-Devils
   repo_version: v03
-  data_variant: origin   # origin | augmented
+  method: CoT              # Ghép sau version: fol-v03-cot-origin-{slug}. Env: FOL_METHOD
+  data_variant: origin     # origin | augmented
   push_to_hub: true
   hf_private: false
 

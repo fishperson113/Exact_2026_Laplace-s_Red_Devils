@@ -30,9 +30,10 @@ def build_fol_hf_repo_id(
     version: str,
     variant: str,
     model_id: str,
+    method: str | None = None,
     model_slug_override: str | None = None,
 ) -> str:
-    """Repo FOL: {org}/fol-{version}-{origin|augmented}-{slug}."""
+    """Repo FOL: {org}/fol-{version}[-{method}]-{origin|augmented}-{slug}."""
     o = org.strip().strip("/")
     ver = sanitize_repo_segment(version)
     var_raw = variant.strip().lower()
@@ -43,6 +44,9 @@ def build_fol_hf_repo_id(
     else:
         var = sanitize_repo_segment(var_raw) or "origin"
     slug = sanitize_repo_segment(model_slug_override or default_model_slug_from_hf_id(model_id))
+    if method:
+        meth = sanitize_repo_segment(method)
+        return f"{o}/fol-{ver}-{meth}-{var}-{slug}"
     return f"{o}/fol-{ver}-{var}-{slug}"
 
 

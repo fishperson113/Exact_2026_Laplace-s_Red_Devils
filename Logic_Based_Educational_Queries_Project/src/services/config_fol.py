@@ -152,6 +152,8 @@ def _fol_config_dict_from_yaml(project_root: Path) -> dict[str, Any]:
                 out["hf_org"] = str(hub["org"])
             if "repo_version" in hub and hub["repo_version"] is not None:
                 out["fol_repo_version"] = str(hub["repo_version"])
+            if "method" in hub and hub["method"] is not None:
+                out["fol_method"] = str(hub["method"])
             if "data_variant" in hub and hub["data_variant"] is not None:
                 out["fol_data_variant"] = str(hub["data_variant"]).strip().lower()
             if "push_to_hub" in hub and hub["push_to_hub"] is not None:
@@ -301,6 +303,7 @@ class FolSFTConfig:
 
     hf_org: str = "Laplaces-Red-Devils"
     fol_repo_version: str = "v01"
+    fol_method: str | None = None  # VD: CoT, SFT, RLHF — ghép sau version trong tên repo Hub
     fol_data_variant: str = "origin"  # origin | augmented
     fol_repo_model_slug: str | None = None
     hf_repo_id: str | None = None
@@ -323,6 +326,7 @@ class FolSFTConfig:
             version=self.fol_repo_version,
             variant=self.fol_data_variant,
             model_id=self.model_name,
+            method=self.fol_method,
             model_slug_override=self.fol_repo_model_slug,
         )
 
@@ -440,6 +444,8 @@ class FolSFTConfig:
             kwargs["hf_org"] = v
         if v := _env_opt_str("FOL_REPO_VERSION"):
             kwargs["fol_repo_version"] = v
+        if v := _env_opt_str("FOL_METHOD"):
+            kwargs["fol_method"] = v
         if v := _env_opt_str("FOL_DATA_VARIANT"):
             kwargs["fol_data_variant"] = v.strip().lower()
         if v := _env_opt_str("FOL_REPO_MODEL_SLUG"):
