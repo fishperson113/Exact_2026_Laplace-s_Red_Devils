@@ -10,6 +10,13 @@
 #
 # Hoặc chạy trong tmux:
 #   tmux new -s train
+#   cd Logic_Based_Educational_Queries_Project/
+# cd /home/
+# rm -rf /home/*
+# git clone https://{token}@github.com/fishperson113/Exact_2026_Laplace-s_Red_Devils.git .
+# git config --global user.email "thaisoncbq@gmail.com"
+# git config --global user.email "{name}"
+# git checkout Son/Logic_Based_Educational_Queries
 #   bash scripts/run_fol_train.sh
 # ==============================================================================
 
@@ -20,7 +27,7 @@ PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 VENV_NAME="logic_env"
 VENV_DIR="${PROJECT_DIR}/${VENV_NAME}"
 PYTHON_VERSION="3.12"
-REQUIREMENTS="${PROJECT_DIR}/scripts/requirements_fol.txt"
+REQUIREMENTS="${PROJECT_DIR}/requirements.txt"
 
 echo "=============================================="
 echo "  FOL Training Pipeline Setup"
@@ -63,7 +70,7 @@ echo "  Python: $(python --version) — $(which python)"
 # Step 3: Cài dependencies qua uv
 # ==============================================================================
 echo ""
-echo "[3/6] Cài dependencies từ requirements_fol.txt..."
+echo "[3/6] Cài dependencies từ requirements.txt (pinned versions)..."
 uv pip install -r "${REQUIREMENTS}"
 echo "  ✅ Dependencies đã cài xong."
 

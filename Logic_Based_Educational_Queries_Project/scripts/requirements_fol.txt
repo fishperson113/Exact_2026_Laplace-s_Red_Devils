@@ -32,7 +32,7 @@ tokenizers>=0.22.0
 
 # --- Hub ---
 huggingface_hub>=1.16.0
-safetensors>=0.8.0
+safetensors>=0.7.0
 
 # --- Logic Evaluation ---
 z3-solver>=4.16.0
