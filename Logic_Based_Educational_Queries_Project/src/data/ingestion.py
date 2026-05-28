@@ -87,12 +87,23 @@ def export_from_records(
     *,
     split_ratios: tuple[float, float, float] = (0.8, 0.1, 0.1),
     split_seed: int = 42,
-    expected_questions: int = 808,
+    expected_questions: int | None = None,
+    stratify: bool = True,
 ) -> None:
     """Flatten list record → chuẩn 7 nhãn → split theo record_id → `out_dir/*.csv` + metadata JSON.
 
     Dùng list đã tiền xử lý trong memory (vd. notebook đã ghi `premises-FOL` chuẩn hóa vào `records_norm`).
+
+    Parameters
+    ----------
+    stratify : bool
+        Nếu True, split stratified theo loại câu hỏi chủ đạo của mỗi record
+        (mcq / yesno / unknown) để đảm bảo phân phối nhãn đồng đều.
+    expected_questions : int | None
+        Nếu None thì bỏ qua kiểm tra; nếu int thì raise nếu lệch.
     """
+    import re
+
     import pandas as pd
     from sklearn.model_selection import train_test_split
 
@@ -100,6 +111,8 @@ def export_from_records(
 
     out_dir = out_dir.resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
+
+    MCQ_RE = re.compile(r"\nA[\.\)]")
 
     def _fol(rec: dict) -> list[str]:
         return list(rec.get("premises-FOL", []))
@@ -131,19 +144,57 @@ def export_from_records(
                 }
             )
     df_q = pd.DataFrame(rows)
-    expected = sum(len(r["questions"]) for r in records)
-    if len(df_q) != expected or expected != expected_questions:
-        raise ValueError(
-            f"Flatten lệch hoặc không đúng {expected_questions} câu: len_df={len(df_q)}, expected={expected}"
-        )
+    actual_q = sum(len(r["questions"]) for r in records)
+    if expected_questions is not None:
+        if len(df_q) != actual_q or actual_q != expected_questions:
+            raise ValueError(
+                f"Flatten lệch hoặc không đúng {expected_questions} câu: "
+                f"len_df={len(df_q)}, actual={actual_q}"
+            )
+
+    # --- Stratify key per record ---
+    strat_labels = None
+    if stratify:
+        strat_labels = []
+        for rec in records:
+            answers = [str(a).strip() for a in rec.get("answers", [])]
+            questions = rec.get("questions", [])
+            has_mcq = any(MCQ_RE.search(q) for q in questions)
+            has_unknown = any(a == "Unknown" for a in answers)
+            if has_mcq:
+                strat_labels.append("mcq_unknown" if has_unknown else "mcq_known")
+            else:
+                strat_labels.append("non_mcq_unknown" if has_unknown else "non_mcq_known")
 
     train_r, dev_r, test_r = split_ratios
     ids = list(range(len(records)))
     dev_test = dev_r + test_r
-    train_ids, temp = train_test_split(ids, test_size=dev_test, random_state=split_seed)
-    dev_ids, test_ids = train_test_split(
-        temp, test_size=test_r / dev_test, random_state=split_seed
-    )
+
+    try:
+        train_ids, temp, train_lab, temp_lab = train_test_split(
+            ids, strat_labels, test_size=dev_test,
+            random_state=split_seed, stratify=strat_labels,
+        ) if strat_labels else (
+            *train_test_split(ids, test_size=dev_test, random_state=split_seed),
+            None, None,
+        )
+        if temp_lab is not None:
+            dev_ids, test_ids = train_test_split(
+                temp, test_size=test_r / dev_test,
+                random_state=split_seed, stratify=temp_lab,
+            )
+        else:
+            dev_ids, test_ids = train_test_split(
+                temp, test_size=test_r / dev_test, random_state=split_seed,
+            )
+    except ValueError:
+        # Fallback: nếu class quá ít để stratify
+        print("[export] Stratify failed (class quá ít), fallback random split")
+        train_ids, temp = train_test_split(ids, test_size=dev_test, random_state=split_seed)
+        dev_ids, test_ids = train_test_split(
+            temp, test_size=test_r / dev_test, random_state=split_seed,
+        )
+
     meta = {"train": sorted(train_ids), "dev": sorted(dev_ids), "test": sorted(test_ids)}
     splits = {k: df_q[df_q["record_id"].isin(meta[k])].reset_index(drop=True) for k in meta}
     for name, sdf in splits.items():

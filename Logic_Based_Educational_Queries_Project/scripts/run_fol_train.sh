@@ -9,6 +9,7 @@
 #   bash scripts/run_fol_train.sh
 #
 # Hoặc chạy trong tmux:
+#   tmux set -g mouse on
 #   tmux new -s train
 #   cd Logic_Based_Educational_Queries_Project/
 # cd /home/
