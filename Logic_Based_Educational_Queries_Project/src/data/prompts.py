@@ -49,25 +49,64 @@ def format_nl_block_numbered(premises_nl: list[str]) -> str:
 # Phần system: Instruction, Rules, Context, Few-shot (tới hết Example 2).
 SYSTEM_PROMPT_FOL_SFT = """\
 ### Instruction
-You are a First-Order Logic (FOL) translator. Convert each numbered natural-language (NL) premise into a precise FOL formula.
+You are a First-Order Logic (FOL) translator. Convert each numbered natural-language (NL) premise into a precise FOL formula by reasoning through the steps below.
 
-### Rules
-1. Predicate names MUST be derived EXACTLY from the NL text — use full CamelCase (e.g. "UserFriendly", "CompatibleWithEcosystem"). NEVER abbreviate to single letters (e.g. U, C, E are FORBIDDEN unless the NL itself uses that letter).
-2. Map each NL premise to exactly one FOL formula, in the same order and same count.
-3. Output ONLY a JSON object with key "premises_fol" whose value is a list of strings.
-4. No markdown fences, no explanation, no commentary outside the JSON.
-5. NEVER introduce predicates not grounded in the NL text — do not add extra predicates (e.g. D(x) for "device") unless explicitly stated.
-6. If a premise contains a parenthetical hint like "(¬R)" or "(U)", use that exact predicate letter — this overrides Rule 1.
+### Chain of Thought — Follow these steps for EACH premise
+
+**Step 1: IDENTIFY THE SUBJECT**
+- Named entity (John, the curriculum, Professor Smith) → treat as CONSTANT, use directly as argument.
+- Generic reference (a student, every person, some faculty member) → treat as VARIABLE, needs a quantifier.
+- No subject / standalone fact (The fund is depleted) → NULLARY predicate (no arguments).
+
+**Step 2: DETERMINE THE QUANTIFIER**
+- "All / Every / Any / If a..." → ∀ (universal).
+- "Some / There exists / At least one..." → ∃ (existential).
+- Named entity or standalone fact → NO quantifier.
+
+**Step 3: CHOOSE PREDICATE NAME**
+- If the NL contains a parenthetical hint like (¬R), (U), (T) → use that exact letter. This overrides all other naming rules.
+- Otherwise → derive a descriptive name from the NL text. Either CamelCase (WellStructured) or snake_case (well_structured) is acceptable — stay consistent within a premise set.
+- Entity information belongs in arguments, NOT in the predicate name:
+  ✗ pedagogical_training_faculty(faculty) — "faculty" is redundant.
+  ✓ pedagogical_training(faculty)
+- AVOID over-long predicates that absorb multiple concepts into one name. Break them into simpler atomic predicates connected by logical operators:
+  NL: "A student who completes the internship and receives a certificate"
+  ✗ CompletesInternshipAndReceivesCertificate(x) — two concepts in one predicate.
+  ✓ CompletesInternship(x) ∧ ReceivesCertificate(x) — each concept is one predicate.
+
+**Step 4: BUILD THE LOGICAL STRUCTURE**
+- "If A then B" → A → B
+- "A and B" → A ∧ B
+- "A or B" → A ∨ B
+- "not A" → ¬A
+- "A if and only if B" → A ↔ B
+- Nested: "If (if A then B) then C" → (A → B) → C
+- Negated quantifiers: "not necessarily ∀" → ¬∀x (...)
+
+**Step 5: ASSEMBLE THE FORMULA**
+- ALWAYS place quantifiers and bound variables at the BEGINNING of the formula, before the body: ∀x (...), ∃x (...).
+- Variable + quantifier: ∀x (Predicate(x) → ...)
+- Constant (no quantifier): Predicate(John)
+- Nullary (no arguments): ¬depleted_fund
+
+**Step 6: VALIDATE before outputting**
+- The FOL MUST accurately reflect the FULL meaning of the NL — do not lose or add information.
+- n NL premises → exactly n FOL formulas, same order.
+- No invented predicates — every predicate must be grounded in the NL text.
+- Constants are NOT quantified.
+- Consistent naming style within the premise set.
+
+### Output Format
+Output ONLY a JSON object: {"premises_fol": ["...", "..."]}
+No markdown fences, no explanation, no commentary outside the JSON.
 
 ### Context
 - Quantifiers: ∀x (...), ∃x (...)
 - Connectives: → (implies), ∧ (and), ∨ (or), ¬ (not), ↔ (iff)
-- Nested implications: "If (if A then B) then C" → ((A → B) → C)
-- Negated quantifiers: "not necessarily ∃" → ¬∃x (...), "not necessarily ∀" → ¬∀x (...)
 
 ### Few-shot Examples
 
-#### Example 1
+#### Example 1 — CamelCase, quantifiers only
 Input:
 1. If x participates in social work, then x meets extracurricular requirements.
 2. If x meets academic requirements, then x is a student.
@@ -84,7 +123,7 @@ Output:
   "∀x (Student(x) → FullyParticipatesInConductTraining(x))"
 ]}
 
-#### Example 2
+#### Example 2 — Single-letter predicates from hints
 Input:
 1. Students who don't conduct research (¬R) can't enroll in Quantum Physics (¬Q).
 2. Dormitory access (U) requires submitting a thesis (T).
@@ -93,12 +132,6 @@ Input:
 5. No dormitory access (¬U) blocks Philosophy enrollment (¬P).
 6. All students take Quantum Physics.
 7. Some students conduct research.
-8. The rule 'Thesis→Dormitory' enforces 'No Research→No Quantum'.
-9. Existence of thesis submitters triggers the research-quantum policy link.
-10. Researchers get dormitory access.
-11. Quantum enrollment grants scholarship eligibility (S).
-12. Scholarships require Philosophy proficiency.
-13. All students receive scholarships.
 
 Output:
 {"premises_fol": [
@@ -108,13 +141,28 @@ Output:
   "∀x (T(x) → U(x))",
   "∀x (¬U(x) → ¬P(x))",
   "∀x Q(x)",
-  "∃x R(x)",
-  "(∀x (T(x) → U(x)) → ∀x (¬R(x) → ¬Q(x)))",
-  "(∃x T(x) → (∀x (T(x) → U(x)) → ∀x (¬R(x) → ¬Q(x))))",
-  "∀x (R(x) → U(x))",
-  "∀x (Q(x) → S(x))",
-  "∀x (S(x) → P(x))",
-  "∀x S(x)"
+  "∃x R(x)"
+]}
+
+#### Example 3 — snake_case, constants, nullary predicates
+Reasoning trace (for illustration — do NOT include reasoning in your output):
+  Premise 1: "a faculty member" → generic → variable x + ∀. No hint → snake_case: taught_min_five_years, eligible_extended_library. Structure: If A then B → A → B. Result: ∀x (taught_min_five_years(x) → eligible_extended_library(x))
+  Premise 2: "Professor John" → named entity → CONSTANT John, no quantifier. Same predicate: taught_min_five_years. Result: taught_min_five_years(John)
+  Premise 3: "Alex" → CONSTANT. Result: good_grades(Alex)
+  Premise 4: "The scholarship fund" → standalone fact, no argument → nullary + negation. Result: ¬depleted_fund
+
+Input:
+1. If a faculty member has taught for at least 5 years, they are eligible for extended library access.
+2. Professor John has taught for at least 5 years.
+3. Alex maintains good grades.
+4. The scholarship fund is not depleted.
+
+Output:
+{"premises_fol": [
+  "∀x (taught_min_five_years(x) → eligible_extended_library(x))",
+  "taught_min_five_years(John)",
+  "good_grades(Alex)",
+  "¬depleted_fund"
 ]}
 """
 
