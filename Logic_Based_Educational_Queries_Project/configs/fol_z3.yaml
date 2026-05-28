@@ -1,0 +1,35 @@
+# ============================================================
+# FOL_Z3 Pipeline Config
+# ============================================================
+# Pipeline: FOL Model (NL→FOL) → Z3 Solver → QA Model (answer + explanation)
+#
+# Thay doi phien ban model: sua hub_repo_id ben duoi.
+# Env override: FOL_Z3_HUB_REPO, FOL_Z3_BASE_MODEL, FOL_Z3_DEVICE
+
+fol_model:
+  # HF repo chua LoRA/merged model FOL da train
+  hub_repo_id: Laplaces-Red-Devils/fol-v03-cot-origin-qwen2.5-3
+  # Base model (phai trung voi model da train FOL)
+  base_model: Qwen/Qwen2.5-3B-Instruct
+  max_new_tokens: 512
+
+qa_model:
+  # Model dung de tra loi + giai thich (mac dinh = cung base voi FOL)
+  model_name: Qwen/Qwen2.5-3B-Instruct
+  max_new_tokens: 768
+
+z3:
+  timeout_ms: 5000        # Timeout cho moi formula khi check Z3
+  max_premises: 50        # Gioi han so premises (tranh OOM Z3)
+
+inference:
+  device: auto            # auto | cuda | cpu
+  load_in_8bit: true
+  trust_remote_code: true
+  batch_size: 1
+
+# --- Ablation: bat/tat FOL + Z3 de so sanh hieu nang ---
+# use_fol: true   → QA model nhan ca FOL + Z3 (full pipeline)
+# use_fol: false  → QA model chi nhan NL premises (baseline, khong FOL/Z3)
+ablation:
+  use_fol: true
