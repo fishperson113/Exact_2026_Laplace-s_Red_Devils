@@ -27,6 +27,9 @@ VERSIONS = {
     "v04_optimized_routing":  "app.physics_solution.versions.v04_optimized_routing.run",
     "v05_code_execution":     "app.physics_solution.versions.v05_code_execution.run",
     "v05_best":               "app.physics_solution.versions.v05_best.run",
+    # vLLM versions — evaluated via eval_api.py, not this CLI
+    # Use: python -m app.physics_solution.cli.eval_api --api-url <URL>
+    "v05_best_vLLM":          "app.physics_solution.versions.v05_best_vLLM.run",
 }
 
 
