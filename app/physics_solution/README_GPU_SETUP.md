@@ -14,9 +14,11 @@ Chon template **vLLM**, GPU **RTX 3090** tro len, cau hinh env vars:
 |---|---|
 | `VLLM_MODEL` | `Qwen/Qwen3.5-4B` |
 | `VLLM_ARGS` | `--max-model-len 4096 --gpu-memory-utilization 0.90 --dtype bfloat16` |
+| `PIP_PACKAGES` | *(optional)* `fastapi uvicorn pydantic-settings httpx python-dotenv scipy sympy pandas` |
 
 > **Luu y:** Template se tu download model va start vLLM. Mat ~2-3 phut.
 > vLLM chay tren internal port **18000** (external 8000).
+> Neu set `PIP_PACKAGES`, deps duoc cai tu dong khi boot — khoi can chay buoc 4.
 
 ### Buoc 2: SSH vao server
 
@@ -54,15 +56,17 @@ scp -P <PORT> -o StrictHostKeyChecking=no pyproject.toml uv.lock .env.example ro
 ### Buoc 4: Cai deps + tao .env (tren server)
 
 ```bash
-# Cai Python packages (vLLM template da co torch/transformers/vllm)
-pip install fastapi "uvicorn[standard]" pydantic-settings httpx openai \
-    python-dotenv scipy sympy numpy pandas pyyaml tqdm
+# vLLM template da co san: torch, transformers, vllm, numpy, openai, tqdm, pyyaml
+# Chi can cai them phan gateway + code execution:
+uv pip install --system fastapi "uvicorn[standard]" pydantic-settings \
+    httpx python-dotenv scipy sympy pandas
 
 # Tao .env tu example
 cp /root/project/.env.example /root/project/.env
 ```
 
 > **Khong can** `uv sync` hay tao virtualenv — dung system Python cua template.
+> Flag `--system` bat uv cai vao system Python thay vi tao venv.
 
 ### Buoc 5: Start FastAPI gateway
 
@@ -246,7 +250,7 @@ LANGSMITH_API_KEY=lsv2_xxx
 | `/ask` tra ve 500 "model does not exist" | Template set `VLLM_MODEL` khac voi model dang serve | Truyen dung model khi start: `VLLM_MODEL=Qwen/Qwen3.5-4B uvicorn ...` Hoac dung `start_server.sh` (tu detect). |
 | vLLM EXITED (Triton FP8 error) | Template mac dinh dung FP8 model, RTX 3090 khong ho tro FP8 | Doi `VLLM_MODEL` va `VLLM_ARGS` (bo FP8 args). Hoac chay vLLM thu cong: xem muc **Chay vLLM thu cong** ben duoi. |
 | `cloudflared` 429 Too Many Requests | Cloudflare rate limit quick tunnels | Doi 5-10 phut roi thu lai. Hoac dung SSH tunnel thay the. |
-| `ModuleNotFoundError: fastapi` | Chua cai deps | `pip install fastapi "uvicorn[standard]" pydantic-settings httpx openai python-dotenv scipy sympy numpy pandas pyyaml tqdm` |
+| `ModuleNotFoundError: fastapi` | Chua cai deps | `uv pip install --system fastapi "uvicorn[standard]" pydantic-settings httpx python-dotenv scipy sympy pandas` |
 | Model download cham | Khong co HF_TOKEN | `export HF_TOKEN=hf_xxx` truoc khi chay |
 | OOM tren RTX 3090 | Model qua lon hoac max-model-len qua cao | Giam `--max-model-len 2048` hoac `--gpu-memory-utilization 0.85` |
 | Port SSH doi sau reboot | vast.ai cap port moi | Check dashboard vast.ai, cap nhat `<PORT>` |
