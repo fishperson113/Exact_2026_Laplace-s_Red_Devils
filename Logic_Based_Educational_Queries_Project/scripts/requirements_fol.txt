@@ -1,0 +1,42 @@
+# === FOL Training Pipeline — Core Dependencies ===
+# Dùng với: uv pip install -r requirements_fol.txt
+
+# --- Deep Learning ---
+torch>=2.10.0
+torchvision>=0.25.0
+triton>=3.6.0
+xformers>=0.0.35
+
+# --- LLM Fine-tuning ---
+transformers>=5.5.0
+trl>=0.24.0
+peft>=0.19.1
+accelerate>=1.13.0
+
+# --- Quantization ---
+bitsandbytes>=0.49.2
+
+# --- VRAM Optimization (Unsloth) ---
+unsloth>=2026.5.0
+unsloth_zoo>=2026.5.0
+cut-cross-entropy>=25.1.0
+
+# --- Data ---
+datasets>=4.3.0
+pandas>=3.0.0
+pyarrow>=20.0.0
+
+# --- Tokenization ---
+sentencepiece>=0.2.1
+tokenizers>=0.22.0
+
+# --- Hub ---
+huggingface_hub>=1.16.0
+safetensors>=0.8.0
+
+# --- Logic Evaluation ---
+z3-solver>=4.16.0
+
+# --- Config ---
+python-dotenv>=1.2.0
+PyYAML>=6.0.0
