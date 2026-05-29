@@ -36,7 +36,7 @@ refinement:
 # use_fol: true   → FOL + Z3 + QA (full Neurosymbolic pipeline)
 # use_fol: false  → QA model chi nhan NL premises + question (baseline, khong FOL/Z3)
 ablation:
-  use_fol: false
+  use_fol: true
 
 # --- Hub: upload ket qua len HuggingFace ---
 hub:
