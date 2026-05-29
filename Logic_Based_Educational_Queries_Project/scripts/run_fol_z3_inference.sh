@@ -17,15 +17,15 @@
 
 # Trong tmux:
 #   tmux new -s infer
-cd /home/
-rm -rf /home/*
-rm -rf /home/.[!.]* /home/..?* # remove all hidden files
-git clone https://{token}@github.com/fishperson113/Exact_2026_Laplace-s_Red_Devils.git .
-git config --global user.email "{email}"
-git config --global user.email "{username}"
-git checkout Son/Logic_Based_Educational_Queries
-cd Logic_Based_Educational_Queries_Project/
-  bash scripts/run_fol_z3_inference.sh
+# cd /home/
+# rm -rf /home/*
+# rm -rf /home/.[!.]* /home/..?* # remove all hidden files
+# git clone https://{token}@github.com/fishperson113/Exact_2026_Laplace-s_Red_Devils.git .
+# git config --global user.email "{email}"
+# git config --global user.email "{username}"
+# git checkout Son/Logic_Based_Educational_Queries
+# cd Logic_Based_Educational_Queries_Project/
+#   bash scripts/run_fol_z3_inference.sh
 # ==============================================================================
 
 set -euo pipefail
@@ -75,13 +75,19 @@ source "${VENV_DIR}/bin/activate"
 echo "  Python: $(python --version) — $(which python)"
 
 # ==============================================================================
-# Step 3: Cai dependencies
+# Step 3: Cai dependencies (skip neu da cai — SKIP_INSTALL=1)
 # ==============================================================================
 echo ""
-echo "[3/5] Cai dependencies..."
-uv pip install -r "${REQUIREMENTS}"
-uv pip install -e "${PROJECT_DIR}"
-echo "  Dependencies da cai xong."
+INSTALLED_MARKER="${VENV_DIR}/.deps_installed"
+if [ "${SKIP_INSTALL:-0}" = "1" ] || [ -f "${INSTALLED_MARKER}" ]; then
+    echo "[3/5] Dependencies da cai. Skip. (xoa ${INSTALLED_MARKER} neu muon cai lai)"
+else
+    echo "[3/5] Cai dependencies..."
+    uv pip install -r "${REQUIREMENTS}"
+    uv pip install -e "${PROJECT_DIR}"
+    touch "${INSTALLED_MARKER}"
+    echo "  Dependencies da cai xong."
+fi
 
 # ==============================================================================
 # Step 4: Kiem tra imports
