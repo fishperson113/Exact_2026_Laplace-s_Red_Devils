@@ -3,7 +3,7 @@
 # Tùy chọn ghi đè khi chạy CI hoặc notebook: biến `FOL_*` / `LOGIC_SFT_PROCESSED_DIR` trên shell.
 
 model:
-  name: Qwen/Qwen2.5-3B-Instruct
+  name: Laplaces-Red-Devils/fol-pretrain-malls-qwen2.5-3
   trust_remote_code: true
   max_seq_length: 2048
   gen_max_new_tokens: 512
@@ -58,9 +58,9 @@ paths:
 
 hub:
   org: Laplaces-Red-Devils
-  repo_version: v03
+  repo_version: v04
   method: CoT              # Ghép sau version: fol-v03-cot-origin-{slug}. Env: FOL_METHOD
-  data_variant: origin     # origin | augmented
+  data_variant: augmented     # origin | augmented
   push_to_hub: true
   hf_private: false
 
