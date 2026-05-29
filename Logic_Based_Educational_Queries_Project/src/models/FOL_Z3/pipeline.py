@@ -117,9 +117,9 @@ class FOLz3Pipeline:
             options_fol = self.fol.generate_options_fol(mcq_options, premises_fol)
         timing.fol_sec = time.perf_counter() - t0
 
-        # Stage 2: FOL -> Z3 consistency + entailment
+        # Stage 2: FOL -> Z3 consistency + entailment (ca question + MCQ options)
         t0 = time.perf_counter()
-        z3_result = self.z3.solve_safe(premises_fol, question_fol)
+        z3_result = self.z3.solve_safe(premises_fol, question_fol, options_fol)
         timing.z3_sec = time.perf_counter() - t0
 
         # Stage 3: FOL + Z3 + question -> answer + explanation

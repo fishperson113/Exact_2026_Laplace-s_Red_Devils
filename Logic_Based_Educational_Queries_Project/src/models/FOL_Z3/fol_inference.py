@@ -22,7 +22,12 @@ from data.prompts import (
 )
 
 from .config import FOLz3Config
-from .prompts import SYSTEM_PROMPT_Q2FOL, USER_TEMPLATE_Q2FOL
+from .prompts import (
+    SYSTEM_PROMPT_OPTIONS2FOL,
+    SYSTEM_PROMPT_Q2FOL,
+    USER_TEMPLATE_OPTIONS2FOL,
+    USER_TEMPLATE_Q2FOL,
+)
 
 
 class FOLInference:
@@ -108,7 +113,7 @@ class FOLInference:
         with torch.no_grad():
             out = self.model.generate(
                 **inputs,
-                max_new_tokens=256,
+                max_new_tokens=128,   # question FOL = 1 formula, thuong ~20-50 tokens
                 do_sample=False,
                 temperature=1.0,
             )
@@ -122,16 +127,41 @@ class FOLInference:
     def generate_options_fol(
         self, options: dict[str, str], premises_fol: list[str]
     ) -> dict[str, str]:
-        """Dich tung MCQ option NL thanh FOL. Reuse premise predicates.
+        """Dich tat ca MCQ options thanh FOL trong 1 call duy nhat.
 
         options: {"A": "option text", "B": "option text", ...}
         Returns: {"A": "FOL_A", "B": "FOL_B", ...}
         """
-        result = {}
-        for label in sorted(options):
-            fol = self.generate_question_fol(options[label], premises_fol)
-            result[label] = fol
-        return result
+        fol_block = "\n".join(f"{i}. {p}" for i, p in enumerate(premises_fol, 1))
+        options_block = "\n".join(
+            f"{label}. {options[label]}" for label in sorted(options)
+        )
+        user_msg = USER_TEMPLATE_OPTIONS2FOL.format(
+            premises_fol_block=fol_block,
+            options_block=options_block,
+        )
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT_OPTIONS2FOL},
+            {"role": "user", "content": user_msg},
+        ]
+        text = self.tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+        inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+
+        with torch.no_grad():
+            out = self.model.generate(
+                **inputs,
+                max_new_tokens=256,   # 4 FOL formulas, thuong ~80-150 tokens
+                do_sample=False,
+                temperature=1.0,
+            )
+
+        generated = self.tokenizer.decode(
+            out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
+        ).strip()
+
+        return self._parse_options_fol(generated, list(options.keys()))
 
     @staticmethod
     def _parse_single_fol(text: str) -> str:
@@ -149,6 +179,21 @@ class FOLInference:
             if any(c in line for c in "∀∃→∧∨¬↔") or re.match(r"\w+\(", line):
                 return line
         return ""
+
+    @staticmethod
+    def _parse_options_fol(text: str, labels: list[str]) -> dict[str, str]:
+        """Parse JSON {"A":"FOL","B":"FOL",...} tu model output.
+
+        Fallback: tra ve dict rong cho cac label khong parse duoc.
+        """
+        result = {label: "" for label in labels}
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if match:
+            parsed = json.loads(match.group())
+            for label in labels:
+                if label in parsed:
+                    result[label] = str(parsed[label]).strip()
+        return result
 
     @staticmethod
     def _parse_fol_output(text: str) -> list[str]:

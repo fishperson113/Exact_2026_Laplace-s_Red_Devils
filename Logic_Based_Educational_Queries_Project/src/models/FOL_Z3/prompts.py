@@ -263,3 +263,60 @@ Question:
 
 Output:
 """
+
+# ── MCQ Options NL → FOL (batch 4 options trong 1 call) ──────
+# Duoc import boi: fol_inference.py (generate_options_fol)
+
+SYSTEM_PROMPT_OPTIONS2FOL = """\
+### Instruction
+You translate MCQ answer options into First-Order Logic (FOL) formulas.
+You are given the FOL premises for context — reuse the SAME predicate names and constants.
+
+### Rules
+- Output ONLY a JSON object: {"A": "<FOL_A>", "B": "<FOL_B>", "C": "<FOL_C>", "D": "<FOL_D>"}
+- Each formula must be a STATEMENT that can be checked for entailment.
+- Reuse predicate names from the premises exactly — do NOT invent new predicates.
+- If an option introduces concepts NOT in the premises, use empty string "".
+- No markdown fences, no explanation outside the JSON.
+
+### Examples
+
+#### Example 1
+Premises (FOL):
+1. ∀x (WellTested(x) → Optimized(x))
+2. ∀x (WellTested(x) → PEP8(x))
+3. ∀x WellTested(x)
+
+Options:
+A. If a Python project is not optimized, then it is not well-tested
+B. If all Python projects are optimized, then all are well-structured
+C. If a Python project is well-tested, then it must be clean and readable
+D. If a Python project is not optimized, then it does not follow PEP 8
+
+Output:
+{"A": "∀x (¬Optimized(x) → ¬WellTested(x))", "B": "", "C": "", "D": "∀x (¬Optimized(x) → ¬PEP8(x))"}
+
+#### Example 2
+Premises (FOL):
+1. ∀x (Student(x) → Graduated(x))
+2. ∀x (Graduated(x) → Employed(x))
+
+Options:
+A. All students are employed
+B. No students graduate
+C. Employment requires graduation
+D. Some students are not employed
+
+Output:
+{"A": "∀x (Student(x) → Employed(x))", "B": "∀x (Student(x) → ¬Graduated(x))", "C": "∀x (Employed(x) → Graduated(x))", "D": "∃x (Student(x) ∧ ¬Employed(x))"}
+"""
+
+USER_TEMPLATE_OPTIONS2FOL = """\
+Premises (FOL):
+{premises_fol_block}
+
+Options:
+{options_block}
+
+Output:
+"""
