@@ -1,8 +1,11 @@
-"""FOL_Z3 Pipeline — Orchestrator ket noi 3 stages + timing log.
+"""FOL_Z3 Pipeline — Neurosymbolic Hybrid orchestrator.
 
-Stage 1: FOLInference  — NL premises -> FOL premises  (fol_inference.py)
-Stage 2: Z3Solver      — FOL premises -> Z3Result     (z3_solver.py)
-Stage 3: QAInference   — FOL + Z3 + question -> JSON  (qa_inference.py)
+Luong Neurosymbolic:
+  Stage 1: FOLInference sinh FOL
+  Refinement loop: Z3 check → parse_fail/unsat → feedback → FOL model sinh lai (toi da N lan)
+  Stage 1b: question FOL + options FOL (sau khi premises da refined)
+  Stage 2: Z3Solver full check (consistency + entailment)
+  Stage 3: QAInference sinh answer + explanation
 
 Duoc import boi: __init__.py
 Import tu:       .config, .fol_inference, .z3_solver, .qa_inference
@@ -34,10 +37,11 @@ class PipelineResult:
     """Ket qua cuoi cung tu pipeline."""
     answer: str                    # A / B / C / D / Yes / No / Unknown
     explanation: str               # Giai thich tu QA model
-    premises_fol: list[str]        # FOL output tu Stage 1
+    premises_fol: list[str]        # FOL output tu Stage 1 (sau refinement)
     question_fol: str              # FOL cua question (tu Stage 1)
     z3_result: Z3Result            # Z3 output tu Stage 2
     options_fol: dict[str, str] = field(default_factory=dict)  # MCQ: {"A":"FOL",...}
+    refinement_count: int = 0      # So lan Z3 reject → FOL model sinh lai
     timing: TimingLog = field(default_factory=TimingLog)
 
 
@@ -77,8 +81,8 @@ class FOLz3Pipeline:
         return cls(cfg)
 
     def run(self, premises_nl: list[str], question: str) -> PipelineResult:
-        """Chay pipeline theo cfg.use_fol:
-        - True:  NL -> FOL -> Z3 -> QA (full pipeline)
+        """Chay pipeline Neurosymbolic theo cfg.use_fol:
+        - True:  NL -> FOL -> [refinement loop] -> Z3 -> QA
         - False: NL -> QA (baseline, khong FOL/Z3)
         """
         t_start = time.perf_counter()
@@ -104,20 +108,52 @@ class FOLz3Pipeline:
                 timing=timing,
             )
 
-        # Full pipeline: NL -> FOL -> Z3 -> QA
-        # Stage 1a: premises NL -> FOL
+        # === Neurosymbolic pipeline ===
         t0 = time.perf_counter()
+
+        # Stage 1a: premises NL -> FOL (lan dau)
         premises_fol = self.fol.generate(premises_nl)
-        # Stage 1b: question NL -> FOL (dung chung model, reuse predicates)
+
+        # Refinement loop: Z3 check → reject → FOL model sinh lai
+        refinement_count = 0
+        max_retries = self.cfg.refinement_max_retries
+
+        for attempt in range(max_retries):
+            # Z3 quick check: parse + consistency (khong entailment)
+            z3_check = self.z3.solve_safe(premises_fol)
+
+            needs_retry = (
+                len(z3_check.premises_failed) > 0
+                or z3_check.raw_status in ("unsat", "no_valid_premises")
+            )
+            if not needs_retry:
+                break
+
+            # Z3 rejected → feedback cho FOL model sinh lai
+            refinement_count += 1
+            n_ok = len(z3_check.premises_parsed)
+            n_fail = len(z3_check.premises_failed)
+            print(
+                f"[Refine] Attempt {refinement_count}/{max_retries}: "
+                f"parsed={n_ok}, failed={n_fail}, "
+                f"status={z3_check.raw_status} → regenerating FOL"
+            )
+            premises_fol = self.fol.regenerate_with_feedback(
+                premises_nl, premises_fol, z3_check
+            )
+
+        # Stage 1b: question NL -> FOL (sau khi premises da refined)
         question_fol = self.fol.generate_question_fol(question, premises_fol)
+
         # Stage 1c: MCQ options -> FOL (neu la trac nghiem)
         mcq_options = parse_mcq_options(question)
         options_fol = {}
         if mcq_options:
             options_fol = self.fol.generate_options_fol(mcq_options, premises_fol)
+
         timing.fol_sec = time.perf_counter() - t0
 
-        # Stage 2: FOL -> Z3 consistency + entailment (ca question + MCQ options)
+        # Stage 2: Z3 full check (consistency + entailment)
         t0 = time.perf_counter()
         z3_result = self.z3.solve_safe(premises_fol, question_fol, options_fol)
         timing.z3_sec = time.perf_counter() - t0
@@ -141,6 +177,7 @@ class FOLz3Pipeline:
             question_fol=question_fol,
             z3_result=z3_result,
             options_fol=options_fol,
+            refinement_count=refinement_count,
             timing=timing,
         )
 

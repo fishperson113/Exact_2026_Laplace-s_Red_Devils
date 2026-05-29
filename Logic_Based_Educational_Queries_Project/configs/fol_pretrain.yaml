@@ -49,3 +49,9 @@ data:
 paths:
   output_dir: notebooks/output/pipeline_fol_pretrain
   checkpoint_dir: notebooks/output/pipeline_fol_pretrain/pretrain_lora
+
+hub:
+  # Sau pretrain: merge LoRA + push len Hub de Stage 2 load lam base model
+  push_to_hub: true
+  repo_id: Laplaces-Red-Devils/fol-pretrain-malls-qwen2.5-3
+  private: false

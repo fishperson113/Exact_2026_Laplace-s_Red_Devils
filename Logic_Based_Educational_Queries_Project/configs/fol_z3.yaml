@@ -27,6 +27,11 @@ inference:
   trust_remote_code: true
   batch_size: 1
 
+# --- Refinement: Z3 reject → FOL model sinh lai ---
+# Neurosymbolic: FOL model sinh FOL → Z3 check → parse_fail/unsat → feedback → sinh lai
+refinement:
+  max_retries: 2          # Toi da 2 lan sinh lai (tong cong 3 lan thu)
+
 # --- Ablation: bat/tat FOL + Z3 de so sanh hieu nang ---
 # use_fol: true   → QA model nhan ca FOL + Z3 (full pipeline)
 # use_fol: false  → QA model chi nhan NL premises (baseline, khong FOL/Z3)

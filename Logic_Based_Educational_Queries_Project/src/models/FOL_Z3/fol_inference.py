@@ -1,11 +1,12 @@
 """Stage 1: Load trained FOL model tu HF Hub va sinh FOL tu NL.
 
-- generate(premises_nl)            → list[str] premises FOL
-- generate_question_fol(q, pl)     → str question FOL (1 formula cho Z3 entailment)
-- generate_options_fol(opts, pl)   → dict[str,str] MCQ options FOL {"A":"FOL",...}
+- generate(premises_nl)                         → list[str] premises FOL
+- regenerate_with_feedback(nl, prev, z3_check)  → list[str] FOL sua lai (refinement)
+- generate_question_fol(q, pl)                  → str question FOL
+- generate_options_fol(opts, pl)                → dict[str,str] MCQ options FOL
 
 Duoc import boi: pipeline.py
-Import tu:       data.prompts (SYSTEM_PROMPT_FOL_SFT, USER_TEMPLATE_FOL_SFT)
+Import tu:       data.prompts, .prompts (refinement), .z3_solver (Z3Result)
 """
 from __future__ import annotations
 
@@ -23,11 +24,14 @@ from data.prompts import (
 
 from .config import FOLz3Config
 from .prompts import (
+    SYSTEM_PROMPT_FOL_REFINE,
     SYSTEM_PROMPT_OPTIONS2FOL,
     SYSTEM_PROMPT_Q2FOL,
+    USER_TEMPLATE_FOL_REFINE,
     USER_TEMPLATE_OPTIONS2FOL,
     USER_TEMPLATE_Q2FOL,
 )
+from .z3_solver import Z3Result
 
 
 class FOLInference:
@@ -162,6 +166,71 @@ class FOLInference:
         ).strip()
 
         return self._parse_options_fol(generated, list(options.keys()))
+
+    def regenerate_with_feedback(
+        self,
+        premises_nl: list[str],
+        prev_fol: list[str],
+        z3_check: Z3Result,
+    ) -> list[str]:
+        """Sinh lai FOL dua tren feedback tu Z3 (refinement loop).
+
+        prev_fol: FOL output lan truoc (bi Z3 reject).
+        z3_check: ket qua Z3 check (parse failures + consistency).
+        """
+        # Build previous FOL block voi trang thai tung formula
+        failed_set = set(z3_check.premises_failed)
+        prev_lines = []
+        for i, fol in enumerate(prev_fol):
+            status = "PARSE FAILED" if fol in failed_set else "OK"
+            prev_lines.append(f"{i+1}. {fol}  [{status}]")
+        prev_fol_block = "\n".join(prev_lines)
+
+        # Build Z3 feedback summary
+        n_parsed = len(z3_check.premises_parsed)
+        n_failed = len(z3_check.premises_failed)
+        n_total = n_parsed + n_failed
+
+        if z3_check.raw_status == "unsat":
+            z3_feedback = (
+                f"{n_failed}/{n_total} premises failed to parse. "
+                f"Parsed premises are INCONSISTENT (unsat) — check for contradictions."
+            )
+        elif z3_check.raw_status == "no_valid_premises":
+            z3_feedback = f"All {n_total} premises failed to parse. Fix syntax errors."
+        else:
+            z3_feedback = f"{n_failed}/{n_total} premises failed to parse. Fix syntax errors."
+
+        # Build prompt
+        nl_block = format_nl_block_numbered(premises_nl)
+        user_msg = USER_TEMPLATE_FOL_REFINE.format(
+            prev_fol_block=prev_fol_block,
+            z3_feedback=z3_feedback,
+            premises_nl=nl_block,
+        )
+
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT_FOL_REFINE},
+            {"role": "user", "content": user_msg},
+        ]
+        text = self.tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+        inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+
+        with torch.no_grad():
+            out = self.model.generate(
+                **inputs,
+                max_new_tokens=self.cfg.fol_max_new_tokens,
+                do_sample=False,
+                temperature=1.0,
+            )
+
+        generated = self.tokenizer.decode(
+            out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
+        ).strip()
+
+        return self._parse_fol_output(generated)
 
     @staticmethod
     def _parse_single_fol(text: str) -> str:

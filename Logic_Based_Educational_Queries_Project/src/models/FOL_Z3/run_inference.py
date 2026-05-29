@@ -128,6 +128,7 @@ def _build_inference_output(
             "explan_gt": s["gold_explanation"],
             "ans_pred": r.answer,
             "explan_pred": r.explanation,
+            "refinement_count": r.refinement_count,
             "timing_fol": r.timing.fol_sec,
             "timing_z3": r.timing.z3_sec,
             "timing_qa": r.timing.qa_sec,
@@ -291,10 +292,11 @@ def run(config_path: str):
                 f"{k}:{v}" for k, v in sorted(result.z3_result.options_entailment.items())
             )
             ent_info = f"opts[{opts_str}]"
+        refine_info = f" refine={result.refinement_count}" if result.refinement_count > 0 else ""
         print(
             f"[{i+1}/{len(samples)}] {status} "
             f"pred={result.answer} gold={s['gold_answer']} "
-            f"ent={ent_info} "
+            f"ent={ent_info}{refine_info} "
             f"fol={result.timing.fol_sec:.1f}s z3={result.timing.z3_sec:.1f}s "
             f"qa={result.timing.qa_sec:.1f}s total={result.timing.total_sec:.1f}s"
         )
@@ -329,6 +331,7 @@ def run(config_path: str):
             "z3_entailment": r.z3_result.entailment,
             "z3_options_entailment": r.z3_result.options_entailment,
             "z3_conclusions": r.z3_result.conclusions,
+            "refinement_count": r.refinement_count,
             "timing_fol": r.timing.fol_sec,
             "timing_z3": r.timing.z3_sec,
             "timing_qa": r.timing.qa_sec,

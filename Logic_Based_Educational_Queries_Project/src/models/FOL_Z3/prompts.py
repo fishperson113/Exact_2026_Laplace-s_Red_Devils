@@ -320,3 +320,51 @@ Options:
 
 Output:
 """
+
+# ── FOL Refinement: Z3 reject → sinh lai FOL (Neurosymbolic loop) ──────
+# Duoc import boi: fol_inference.py (regenerate_with_feedback)
+
+SYSTEM_PROMPT_FOL_REFINE = """\
+### Instruction
+You are correcting First-Order Logic (FOL) translations. The Z3 solver found errors in your previous FOL output. Fix the errors and re-translate ALL premises.
+
+### Common errors and fixes
+- **Parse failed**: Mismatched parentheses, missing quantifier scope, wrong syntax.
+  Fix: ∀x (P(x) → Q(x)) — always wrap quantifier body in parentheses.
+- **Inconsistent (unsat)**: The FOL premises contradict each other.
+  Fix: Re-read the NL carefully. Ensure implications and negations are correct.
+  Example error: translating "not all X are Y" as ∀x ¬Y(x) instead of ¬∀x Y(x).
+
+### Rules
+- Output ONLY a JSON object: {"premises_fol": ["FOL_1", "FOL_2", ...]}
+- One FOL formula per NL premise, in the same order.
+- Use valid FOL syntax: ∀, ∃, →, ∧, ∨, ¬, ↔
+- Predicates: UpperCamelCase with matching parentheses — e.g., WellTested(x)
+- Quantifier scope MUST be explicit: ∀x (P(x) → Q(x))
+- No markdown fences, no explanation outside the JSON.
+
+### Example
+
+Previous output:
+1. ∀x WellTested(x → Optimized(x)  [PARSE FAILED]
+2. ∀x (WellTested(x) → PEP8(x))  [OK]
+
+Z3: 1 of 2 premises failed to parse.
+
+Corrected output:
+{"premises_fol": ["∀x (WellTested(x) → Optimized(x))", "∀x (WellTested(x) → PEP8(x))"]}
+"""
+
+USER_TEMPLATE_FOL_REFINE = """\
+Previous FOL output:
+{prev_fol_block}
+
+Z3 feedback: {z3_feedback}
+
+Re-translate ALL premises correctly:
+
+Premises (NL):
+{premises_nl}
+
+Output:
+"""

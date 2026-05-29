@@ -27,6 +27,9 @@ class FOLz3Config:
     z3_timeout_ms: int = 5000
     z3_max_premises: int = 50
 
+    # Refinement (Neurosymbolic loop)
+    refinement_max_retries: int = 2  # Z3 reject → FOL model sinh lai, toi da N lan
+
     # Inference
     device: str = "auto"
     load_in_8bit: bool = True
@@ -52,6 +55,7 @@ class FOLz3Config:
             fm = raw.get("fol_model", {})
             qa = raw.get("qa_model", {})
             z3 = raw.get("z3", {})
+            ref = raw.get("refinement", {})
             inf = raw.get("inference", {})
             abl = raw.get("ablation", {})
             hub = raw.get("hub", {})
@@ -63,6 +67,7 @@ class FOLz3Config:
                 "qa_max_new_tokens": qa.get("max_new_tokens"),
                 "z3_timeout_ms": z3.get("timeout_ms"),
                 "z3_max_premises": z3.get("max_premises"),
+                "refinement_max_retries": ref.get("max_retries"),
                 "device": inf.get("device"),
                 "load_in_8bit": inf.get("load_in_8bit"),
                 "trust_remote_code": inf.get("trust_remote_code"),

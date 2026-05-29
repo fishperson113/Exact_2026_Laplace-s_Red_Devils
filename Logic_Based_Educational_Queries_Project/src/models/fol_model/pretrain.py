@@ -1,15 +1,15 @@
 """Stage 1 Pretrain: train FOL model tren MALLS dataset (28K samples, 3 epochs).
 
-Output: LoRA adapter luu tai configs/fol_pretrain.yaml > paths.checkpoint_dir
-Sau do Stage 2 (train.py) load adapter nay lam diem khoi dau de fine-tune tren target.
+Output:
+  1. LoRA adapter luu tai configs/fol_pretrain.yaml > paths.checkpoint_dir
+  2. Merge LoRA + push len Hub (hub.repo_id trong fol_pretrain.yaml)
+     → Stage 2 (train.py) set model.name = repo_id nay de fine-tune tiep
 
 Cach chay:
   cd src && python -m models.fol_model.pretrain
-  hoac trong notebook:
-    from models.fol_model.pretrain import run_pretrain
-    run_pretrain()
+  hoac: bash scripts/run_fol_pretrain.sh
 
-Duoc import boi: notebook
+Duoc import boi: notebook, scripts/run_fol_pretrain.sh
 Import tu:       data.fol_dataset, services.config_fol, train.py (shared utils)
 """
 from __future__ import annotations
@@ -123,6 +123,89 @@ def build_pretrain_config() -> tuple[FolSFTConfig, Path, Path, str]:
     return cfg, out_dir, checkpoint_dir, malls_json
 
 
+def _merge_and_push_pretrain(
+    base_model_name: str,
+    checkpoint_dir: Path,
+    out_dir: Path,
+    repo_id: str,
+    hf_token: str,
+    private: bool = False,
+    trust_remote_code: bool = True,
+) -> str:
+    """Merge LoRA adapter voi base model, push len HF Hub.
+
+    Chay tren CPU (device_map="cpu") de giai phong GPU cho Stage 2.
+    Returns: URL repo tren Hub.
+    """
+    from huggingface_hub import HfApi
+    from peft import PeftModel
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    # Load base + LoRA, merge
+    base = AutoModelForCausalLM.from_pretrained(
+        base_model_name,
+        torch_dtype="auto",
+        trust_remote_code=trust_remote_code,
+        device_map="cpu",
+    )
+    model = PeftModel.from_pretrained(base, str(checkpoint_dir))
+    merged = model.merge_and_unload()
+
+    # Save merged local
+    merged_dir = out_dir / "merged_for_hub"
+    merged_dir.mkdir(parents=True, exist_ok=True)
+    merged.save_pretrained(merged_dir)
+
+    tok = AutoTokenizer.from_pretrained(
+        str(checkpoint_dir), trust_remote_code=trust_remote_code
+    )
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+    tok.padding_side = "left"
+    tok.save_pretrained(merged_dir)
+
+    # Push to Hub
+    merged.push_to_hub(repo_id, token=hf_token, private=private)
+    tok.push_to_hub(repo_id, token=hf_token, private=private)
+
+    # Upload README
+    api = HfApi(token=hf_token)
+    readme_path = merged_dir / "README.md"
+    readme_path.write_text(
+        f"""---
+license: apache-2.0
+base_model: {base_model_name}
+tags:
+  - exact-2026
+  - fol
+  - pretrain
+  - malls
+---
+
+# {repo_id.split("/")[-1]}
+
+Stage 1 Pretrain: LoRA SFT tren MALLS dataset (28K mau, 3 epochs).
+
+Base model: `{base_model_name}`
+
+Day la model trung gian — dung lam base cho Stage 2 fine-tune tren target dataset.
+""",
+        encoding="utf-8",
+    )
+    api.upload_file(
+        path_or_fileobj=str(readme_path),
+        path_in_repo="README.md",
+        repo_id=repo_id,
+        repo_type="model",
+    )
+
+    # Cleanup merged khoi RAM
+    del base, model, merged
+    gc.collect()
+
+    return f"https://huggingface.co/{repo_id}"
+
+
 def run_pretrain():
     """Chay Stage 1 pretrain tren MALLS."""
     cfg, out_dir, checkpoint_dir, malls_json = build_pretrain_config()
@@ -188,14 +271,45 @@ def run_pretrain():
     tokenizer.save_pretrained(str(checkpoint_dir))
     print(f"[Pretrain] LoRA adapter saved: {checkpoint_dir}", flush=True)
 
-    # Cleanup
+    # Cleanup GPU truoc khi merge (merge chay CPU, can RAM)
+    del trainer, model
     gc.collect()
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
 
-    print("[Pretrain] Stage 1 complete.", flush=True)
-    print(f"[Pretrain] Next: Stage 2 fine-tune voi fol_model.yaml, set checkpoint = {checkpoint_dir}", flush=True)
+    # Merge LoRA + push len Hub
+    raw = _load_pretrain_yaml()
+    hub_cfg = raw.get("hub", {})
+    hub_repo_id = hub_cfg.get("repo_id", "")
+    hub_push = hub_cfg.get("push_to_hub", False)
+    hub_private = hub_cfg.get("private", False)
 
+    if hub_push and hub_repo_id:
+        hf_token = (
+            os.environ.get("HF_TOKEN")
+            or os.environ.get("HUGGINGFACE_HUB_TOKEN")
+            or ""
+        ).strip()
+        if not hf_token:
+            print("[Pretrain][Hub] push_to_hub=True nhung thieu HF_TOKEN — bo qua merge+push.", flush=True)
+        else:
+            print(f"[Pretrain][Hub] Merge LoRA + push len {hub_repo_id} ...", flush=True)
+            hub_url = _merge_and_push_pretrain(
+                base_model_name=cfg.model_name,
+                checkpoint_dir=checkpoint_dir,
+                out_dir=out_dir,
+                repo_id=hub_repo_id,
+                hf_token=hf_token,
+                private=hub_private,
+                trust_remote_code=cfg.trust_remote_code,
+            )
+            print(f"[Pretrain][Hub] Done: {hub_url}", flush=True)
+            print(f"[Pretrain] Next: sua fol_model.yaml > model.name = {hub_repo_id}", flush=True)
+            print(f"[Pretrain] Roi chay Stage 2: bash scripts/run_fol_train.sh", flush=True)
+    else:
+        print("[Pretrain] Hub push disabled. LoRA adapter tai:", checkpoint_dir, flush=True)
+
+    print("[Pretrain] Stage 1 complete.", flush=True)
     return train_result, checkpoint_dir
 
 
