@@ -11,13 +11,13 @@
 # Hoặc chạy trong tmux:
 #   tmux set -g mouse on
 #   tmux new -s train
-#   cd Logic_Based_Educational_Queries_Project/
 # cd /home/
 # rm -rf /home/*
 # git clone https://{token}@github.com/fishperson113/Exact_2026_Laplace-s_Red_Devils.git .
 # git config --global user.email "thaisoncbq@gmail.com"
 # git config --global user.email "{name}"
 # git checkout Son/Logic_Based_Educational_Queries
+# cd Logic_Based_Educational_Queries_Project/
 #   bash scripts/run_fol_train.sh
 # ==============================================================================
 

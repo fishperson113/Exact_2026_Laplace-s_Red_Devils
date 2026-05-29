@@ -13,9 +13,19 @@
 #   USE_FOL=false bash scripts/run_fol_z3_inference.sh   # baseline (khong FOL/Z3)
 #   CONFIG=configs/fol_z3.yaml bash scripts/run_fol_z3_inference.sh
 #
+#   tmux set -g mouse on
+
 # Trong tmux:
 #   tmux new -s infer
-#   bash scripts/run_fol_z3_inference.sh
+cd /home/
+rm -rf /home/*
+rm -rf /home/.[!.]* /home/..?* # remove all hidden files
+git clone https://{token}@github.com/fishperson113/Exact_2026_Laplace-s_Red_Devils.git .
+git config --global user.email "{email}"
+git config --global user.email "{username}"
+git checkout Son/Logic_Based_Educational_Queries
+cd Logic_Based_Educational_Queries_Project/
+  bash scripts/run_fol_z3_inference.sh
 # ==============================================================================
 
 set -euo pipefail

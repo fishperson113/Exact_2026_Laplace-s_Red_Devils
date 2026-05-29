@@ -13,7 +13,7 @@ import json
 import re
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 from data.prompts import (
     SYSTEM_PROMPT_FOL_SFT,
@@ -38,7 +38,7 @@ class FOLInference:
             "device_map": self.device,
         }
         if cfg.load_in_8bit:
-            load_kwargs["load_in_8bit"] = True
+            load_kwargs["quantization_config"] = BitsAndBytesConfig(load_in_8bit=True)
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             cfg.fol_hub_repo_id, trust_remote_code=cfg.trust_remote_code

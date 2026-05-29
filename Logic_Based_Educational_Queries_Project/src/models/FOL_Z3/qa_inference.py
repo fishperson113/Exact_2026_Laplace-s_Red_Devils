@@ -12,7 +12,7 @@ import json
 import re
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 from .config import FOLz3Config
 from .prompts import (
@@ -37,7 +37,7 @@ class QAInference:
             "device_map": self.device,
         }
         if cfg.load_in_8bit:
-            load_kwargs["load_in_8bit"] = True
+            load_kwargs["quantization_config"] = BitsAndBytesConfig(load_in_8bit=True)
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             cfg.qa_model_name, trust_remote_code=cfg.trust_remote_code
