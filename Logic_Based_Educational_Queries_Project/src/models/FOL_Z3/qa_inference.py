@@ -132,12 +132,15 @@ class QAInference:
         """Parse JSON {"answer": "...", "explanation": "..."} tu model output."""
         match = re.search(r"\{.*\}", text, re.DOTALL)
         if match:
-            parsed = json.loads(match.group())
-            if "answer" in parsed:
-                return {
-                    "answer": str(parsed["answer"]).strip(),
-                    "explanation": str(parsed.get("explanation", "")).strip(),
-                }
+            try:
+                parsed = json.loads(match.group())
+                if "answer" in parsed:
+                    return {
+                        "answer": str(parsed["answer"]).strip(),
+                        "explanation": str(parsed.get("explanation", "")).strip(),
+                    }
+            except json.JSONDecodeError:
+                pass
 
         # Fallback: tim answer label trong text
         for label in ("A", "B", "C", "D", "Yes", "No", "Unknown"):

@@ -11,12 +11,11 @@ fol_model:
   hub_repo_id: Laplaces-Red-Devils/fol-v03-cot-origin-qwen2.5-3
   # Base model (phai trung voi model da train FOL)
   base_model: Qwen/Qwen2.5-3B-Instruct
-  max_new_tokens: 384           # premises FOL output (giam tu 512, thuc te ~100-200 tokens)
-
+  max_new_tokens: 512           # premises FOL output 
 qa_model:
   # Model dung de tra loi + giai thich (mac dinh = cung base voi FOL)
   model_name: Qwen/Qwen2.5-3B-Instruct
-  max_new_tokens: 256            # QA JSON output (giam tu 768, thuc te ~50-150 tokens)
+  max_new_tokens: 512            # QA JSON output
 
 z3:
   timeout_ms: 5000        # Timeout cho moi formula khi check Z3

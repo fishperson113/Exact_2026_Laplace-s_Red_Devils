@@ -169,9 +169,12 @@ class FOLInference:
         # Thu JSON {"question_fol": "..."}
         match = re.search(r"\{.*\}", text, re.DOTALL)
         if match:
-            parsed = json.loads(match.group())
-            if "question_fol" in parsed:
-                return str(parsed["question_fol"]).strip()
+            try:
+                parsed = json.loads(match.group())
+                if "question_fol" in parsed:
+                    return str(parsed["question_fol"]).strip()
+            except json.JSONDecodeError:
+                pass
 
         # Fallback: lay dong dau tien co FOL syntax
         for line in text.split("\n"):
@@ -189,10 +192,13 @@ class FOLInference:
         result = {label: "" for label in labels}
         match = re.search(r"\{.*\}", text, re.DOTALL)
         if match:
-            parsed = json.loads(match.group())
-            for label in labels:
-                if label in parsed:
-                    result[label] = str(parsed[label]).strip()
+            try:
+                parsed = json.loads(match.group())
+                for label in labels:
+                    if label in parsed:
+                        result[label] = str(parsed[label]).strip()
+            except json.JSONDecodeError:
+                pass
         return result
 
     @staticmethod
@@ -201,9 +207,12 @@ class FOLInference:
         # Tim JSON object trong output
         match = re.search(r"\{.*\}", text, re.DOTALL)
         if match:
-            parsed = json.loads(match.group())
-            if "premises_fol" in parsed and isinstance(parsed["premises_fol"], list):
-                return [str(f).strip() for f in parsed["premises_fol"]]
+            try:
+                parsed = json.loads(match.group())
+                if "premises_fol" in parsed and isinstance(parsed["premises_fol"], list):
+                    return [str(f).strip() for f in parsed["premises_fol"]]
+            except json.JSONDecodeError:
+                pass
 
         # Fallback: tach tung dong co FOL syntax
         lines = []
