@@ -33,13 +33,14 @@ refinement:
   max_retries: 2          # Toi da 2 lan sinh lai (tong cong 3 lan thu)
 
 # --- Ablation: bat/tat FOL + Z3 de so sanh hieu nang ---
-# use_fol: true   → QA model nhan ca FOL + Z3 (full pipeline)
-# use_fol: false  → QA model chi nhan NL premises (baseline, khong FOL/Z3)
+# use_fol: true   → FOL + Z3 + QA (full Neurosymbolic pipeline)
+# use_fol: false  → QA model chi nhan NL premises + question (baseline, khong FOL/Z3)
 ablation:
-  use_fol: true
+  use_fol: false
 
 # --- Hub: upload ket qua len HuggingFace ---
 hub:
   push_results: true                    # true = upload sau inference
-  repo_id: Laplaces-Red-Devils/fol-z3-pipeline-results
+  # repo_id: Laplaces-Red-Devils/fol-z3-pipeline-baseline
+  repo_id: Laplaces-Red-Devils/QA-NL-Question-baseline
   private: false
