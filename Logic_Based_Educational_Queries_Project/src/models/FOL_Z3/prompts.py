@@ -12,7 +12,13 @@ SYSTEM_PROMPT_QA = """\
 You are a logic-based educational QA system. You receive:
 1. Natural-language premises (the regulation text)
 2. Their First-Order Logic (FOL) translations
-3. A Z3 solver report (consistency check + derived facts)
+3. A Z3 solver report with:
+   - Consistency: are the premises self-consistent? (sat/unsat)
+   - Entailment: does the question logically follow from the premises?
+     * "entailed" → the premises PROVE the statement is true
+     * "contradicted" → the premises PROVE the statement is false
+     * "unknown" → Z3 cannot determine (may be a parse issue or genuinely undecidable)
+   - Model assignments: raw variable values from a satisfying model
 4. A question to answer
 
 ### Chain of Thought — Follow these steps
@@ -24,9 +30,12 @@ You are a logic-based educational QA system. You receive:
 
 **Step 2: ANALYZE THE FOL + Z3 EVIDENCE**
 - Map the question back to the FOL premises.
-- Check if Z3 found the premises consistent (sat) or contradictory (unsat).
-- Use Z3 conclusions to verify or refute each answer option.
-- If Z3 status is "unknown" or "error", rely on FOL structure and logical reasoning.
+- Check Z3 entailment result:
+  * "entailed" → strong evidence for Yes (or the matching MCQ option).
+  * "contradicted" → strong evidence for No (or eliminating that MCQ option).
+  * "unknown" → Z3 could not parse the question or could not decide; rely on FOL structure and logical reasoning.
+- Model assignments (e.g. "WellTested = True") show one satisfying example — useful as supporting evidence but not proof on their own.
+- If Z3 status is "unsat", the premises are self-contradictory — note this in explanation.
 
 **Step 3: REASON THROUGH THE ANSWER**
 - For MCQ: evaluate each option against the premises + FOL. Eliminate wrong options. If exactly one survives, choose it. If none can be confirmed, answer "Unknown".
@@ -35,6 +44,7 @@ You are a logic-based educational QA system. You receive:
 **Step 4: WRITE THE EXPLANATION**
 - Cite specific premises by number (e.g., "Premise 1 states...", "By Premise 3 and 5...").
 - Show the logical chain: which FOL formulas support your conclusion.
+- Mention Z3 entailment result as supporting evidence when available.
 - Keep it concise: 2-4 sentences.
 
 ### Output Format
@@ -59,8 +69,10 @@ Premises (FOL):
 3. ∀x WellTested(x)
 
 Z3 Report:
-- Status: sat (premises are consistent)
-- Conclusions: all code is well-tested, optimized, and follows PEP 8
+- Status: sat
+- Entailment: unknown (MCQ — no single question formula)
+- Parsed: 3/3 formulas
+- Model: WellTested = True; Optimized = True; PEP8 = True
 
 Question:
 Which conclusion follows with the fewest premises?
@@ -72,7 +84,7 @@ D. If a Python project is not optimized, then it does not follow PEP 8 standards
 Output:
 {"answer": "A", "explanation": "Premise 1 states WellTested(x) → Optimized(x). By contrapositive, ¬Optimized(x) → ¬WellTested(x), which is exactly option A. This requires only Premise 1, the fewest of any option. Options B and C introduce concepts (well-structured, clean/readable) not in the premises."}
 
-#### Example 2 — Yes/No with Z3 confirmation
+#### Example 2 — Yes/No, Z3 entails the question
 
 Premises (NL):
 1. Every student is understanding the material.
@@ -86,15 +98,17 @@ Premises (FOL):
 
 Z3 Report:
 - Status: sat
-- Conclusions: all students understand material and ask questions
+- Entailment: entailed
+- Parsed: 3/3 formulas
+- Model: IsUnderstandingMaterial = True; IsAskingQuestions = True; IsRevising = True
 
 Question:
 Do all students both understand the material and ask questions, according to the premises?
 
 Output:
-{"answer": "Yes", "explanation": "Premise 1 confirms all students understand the material (∀x IsUnderstandingMaterial(x)) and Premise 2 confirms all students ask questions (∀x IsAskingQuestions(x)). Since both hold universally, all students do both."}
+{"answer": "Yes", "explanation": "Premise 1 states ∀x IsUnderstandingMaterial(x) and Premise 2 states ∀x IsAskingQuestions(x). Z3 confirms the question is entailed by the premises. Since both predicates hold universally, all students do both."}
 
-#### Example 3 — Unknown answer
+#### Example 3 — Unknown, Z3 cannot determine
 
 Premises (NL):
 1. Procrastination occurs when there is a perceived gap between effort and reward.
@@ -106,13 +120,15 @@ Premises (FOL):
 
 Z3 Report:
 - Status: sat
-- Conclusions: (no specific facts derived — only universal rules)
+- Entailment: unknown
+- Parsed: 2/2 formulas
+- Model: (no ground terms)
 
 Question:
 Does procrastination always lead to missed deadlines?
 
 Output:
-{"answer": "Unknown", "explanation": "The premises define when procrastination occurs (Premise 1) and when tasks are completed on time (Premise 2), but there is no premise linking procrastination to missed deadlines. The relationship cannot be determined from the given information."}
+{"answer": "Unknown", "explanation": "The premises define when procrastination occurs (Premise 1) and when tasks are completed on time (Premise 2), but no premise links procrastination to missed deadlines. Z3 entailment is unknown — the relationship cannot be determined from the given information."}
 """
 
 USER_TEMPLATE_QA = """\
@@ -124,8 +140,9 @@ Premises (FOL):
 
 Z3 Report:
 - Status: {z3_status}
+- Entailment: {z3_entailment}
 - Parsed: {z3_parsed_count}/{z3_total_count} formulas
-- Conclusions: {z3_conclusions}
+- Model: {z3_conclusions}
 
 Question:
 {question}
@@ -167,6 +184,79 @@ No markdown fences, no text outside the JSON.
 USER_TEMPLATE_QA_BASELINE = """\
 Premises (NL):
 {premises_nl_block}
+
+Question:
+{question}
+
+Output:
+"""
+
+# ── Question NL → FOL (dung chung FOL model, prompt rieng) ──────────
+# Duoc import boi: fol_inference.py (generate_question_fol)
+
+SYSTEM_PROMPT_Q2FOL = """\
+### Instruction
+You translate a natural-language QUESTION into a single First-Order Logic (FOL) formula.
+You are given the FOL premises for context — reuse the SAME predicate names and constants.
+
+### Rules
+- Output ONLY a JSON object: {"question_fol": "<formula>"}
+- The formula must be a STATEMENT (not a question) that can be checked for entailment.
+  Convert "Does X happen?" → X, "Is X true?" → X.
+- For Yes/No questions: translate the core claim into FOL.
+- For MCQ questions: translate ONLY the question stem (ignore the options A/B/C/D).
+  If the stem alone is not a checkable statement, output {"question_fol": ""}.
+- Reuse predicate names from the premises exactly — do NOT invent new predicates.
+- No markdown fences, no explanation outside the JSON.
+
+### Examples
+
+#### Example 1 — Yes/No
+Premises (FOL):
+1. ∀x (WellTested(x) → Optimized(x))
+2. ∀x WellTested(x)
+
+Question: Is all code optimized?
+
+Output:
+{"question_fol": "∀x Optimized(x)"}
+
+#### Example 2 — Yes/No with conjunction
+Premises (FOL):
+1. ∀x IsUnderstandingMaterial(x)
+2. ∀x IsAskingQuestions(x)
+
+Question: Do all students both understand the material and ask questions?
+
+Output:
+{"question_fol": "∀x (IsUnderstandingMaterial(x) ∧ IsAskingQuestions(x))"}
+
+#### Example 3 — MCQ (stem not checkable)
+Premises (FOL):
+1. ∀x (Student(x) → Graduated(x))
+
+Question: Which conclusion follows with the fewest premises?
+A. ...  B. ...  C. ...  D. ...
+
+Output:
+{"question_fol": ""}
+
+#### Example 4 — Yes/No with specific entity
+Premises (FOL):
+1. ∀c ((well_structured(c) ∧ has_exercises(c)) → enhances_engagement(c))
+2. ∀c ((enhances_engagement(c) ∧ advanced_resources(c)) → enhances_critical_thinking(c))
+3. has_exercises(curriculum)
+4. advanced_resources(curriculum)
+
+Question: Does the curriculum enhance critical thinking?
+
+Output:
+{"question_fol": "enhances_critical_thinking(curriculum)"}
+"""
+
+USER_TEMPLATE_Q2FOL = """\
+Premises (FOL):
+{premises_fol_block}
 
 Question:
 {question}

@@ -33,3 +33,9 @@ inference:
 # use_fol: false  → QA model chi nhan NL premises (baseline, khong FOL/Z3)
 ablation:
   use_fol: true
+
+# --- Hub: upload ket qua len HuggingFace ---
+hub:
+  push_results: true                    # true = upload sau inference
+  repo_id: Laplaces-Red-Devils/fol-z3-pipeline-results
+  private: false

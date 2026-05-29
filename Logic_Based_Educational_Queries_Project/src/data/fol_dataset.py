@@ -1,4 +1,9 @@
-"""SFT NL→FOL: lọc len(premises_nl)==len(premises_fol), build HF messages."""
+"""SFT NL→FOL: lọc len(premises_nl)==len(premises_fol), build HF messages.
+
+Ho tro 2-stage curriculum:
+  - build_fol_dataset_dict()       → target dataset tu CSV (Stage 2 fine-tune)
+  - build_malls_pretrain_dataset() → MALLS dataset tu JSON (Stage 1 pretrain)
+"""
 from __future__ import annotations
 
 import json
@@ -172,6 +177,54 @@ def build_fol_dataset_dict(cfg: FolSFTConfig, tokenizer) -> tuple[DatasetDict, d
 
     ds_out = DatasetDict({k: _map_split(v) for k, v in raw_splits.items()})
     return ds_out, dropped
+
+
+def build_malls_pretrain_dataset(
+    malls_json_path: str | Path,
+    tokenizer,
+    val_ratio: float = 0.02,
+    seed: int = 42,
+) -> DatasetDict:
+    """Load MALLS JSON → HF DatasetDict {train, dev} cho Stage 1 pretrain.
+
+    malls_json_path: duong dan toi malls_v01_normalized.json
+    val_ratio: ty le tach dev tu MALLS (mac dinh 2% ~ 565 mau)
+    """
+    malls_path = Path(malls_json_path).resolve()
+    with open(malls_path, "r", encoding="utf-8") as f:
+        raw = json.load(f)
+
+    _LOG.info("MALLS loaded: %d samples from %s", len(raw), malls_path)
+
+    rows = []
+    for item in raw:
+        nl = item["premises_nl"]
+        fol = item["premises_fol"]
+        if not isinstance(nl, list) or not isinstance(fol, list):
+            continue
+        if len(nl) != len(fol) or len(nl) == 0:
+            continue
+        row = {"premises_nl": nl, "premises_fol": fol}
+        rows.append({
+            "record_id": -1,
+            "q_idx": -1,
+            "gold_assistant": build_fol_assistant_content(row),
+            "messages": build_fol_messages(row),
+            "premises_nl": nl,
+            "premises_fol": fol,
+        })
+
+    ds = Dataset.from_list(rows)
+    split = ds.train_test_split(test_size=val_ratio, seed=seed)
+
+    def _map(example):
+        return attach_fol_chat_text_and_eval_prompt(example, tokenizer)
+
+    train_ds = split["train"].map(_map, remove_columns=["messages"])
+    dev_ds = split["test"].map(_map, remove_columns=["messages"])
+
+    _LOG.info("MALLS pretrain: train=%d, dev=%d", len(train_ds), len(dev_ds))
+    return DatasetDict({"train": train_ds, "dev": dev_ds})
 
 
 def export_filtered_fol_csvs(

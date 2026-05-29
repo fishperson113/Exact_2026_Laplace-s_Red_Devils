@@ -1,7 +1,8 @@
-"""Stage 1: Load trained FOL model tu HF Hub va sinh premises_fol tu NL.
+"""Stage 1: Load trained FOL model tu HF Hub va sinh FOL tu NL.
 
-Input:  list[str] premises NL
-Output: list[str] premises FOL
+- generate(premises_nl)            → list[str] premises FOL
+- generate_question_fol(q, pl)     → str question FOL (1 formula cho Z3 entailment)
+- generate_options_fol(opts, pl)   → dict[str,str] MCQ options FOL {"A":"FOL",...}
 
 Duoc import boi: pipeline.py
 Import tu:       data.prompts (SYSTEM_PROMPT_FOL_SFT, USER_TEMPLATE_FOL_SFT)
@@ -21,6 +22,7 @@ from data.prompts import (
 )
 
 from .config import FOLz3Config
+from .prompts import SYSTEM_PROMPT_Q2FOL, USER_TEMPLATE_Q2FOL
 
 
 class FOLInference:
@@ -80,6 +82,73 @@ class FOLInference:
         ).strip()
 
         return self._parse_fol_output(generated)
+
+    def generate_question_fol(
+        self, question: str, premises_fol: list[str]
+    ) -> str:
+        """Dich question NL thanh 1 FOL formula de Z3 check entailment.
+
+        premises_fol duoc truyen vao de model biet dung chung predicate names.
+        Tra ve "" neu khong parse duoc.
+        """
+        fol_block = "\n".join(f"{i}. {p}" for i, p in enumerate(premises_fol, 1))
+        user_msg = USER_TEMPLATE_Q2FOL.format(
+            premises_fol_block=fol_block,
+            question=question,
+        )
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT_Q2FOL},
+            {"role": "user", "content": user_msg},
+        ]
+        text = self.tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+        inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+
+        with torch.no_grad():
+            out = self.model.generate(
+                **inputs,
+                max_new_tokens=256,
+                do_sample=False,
+                temperature=1.0,
+            )
+
+        generated = self.tokenizer.decode(
+            out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
+        ).strip()
+
+        return self._parse_single_fol(generated)
+
+    def generate_options_fol(
+        self, options: dict[str, str], premises_fol: list[str]
+    ) -> dict[str, str]:
+        """Dich tung MCQ option NL thanh FOL. Reuse premise predicates.
+
+        options: {"A": "option text", "B": "option text", ...}
+        Returns: {"A": "FOL_A", "B": "FOL_B", ...}
+        """
+        result = {}
+        for label in sorted(options):
+            fol = self.generate_question_fol(options[label], premises_fol)
+            result[label] = fol
+        return result
+
+    @staticmethod
+    def _parse_single_fol(text: str) -> str:
+        """Parse 1 FOL formula tu model output. Tra ve "" neu fail."""
+        # Thu JSON {"question_fol": "..."}
+        match = re.search(r"\{.*\}", text, re.DOTALL)
+        if match:
+            parsed = json.loads(match.group())
+            if "question_fol" in parsed:
+                return str(parsed["question_fol"]).strip()
+
+        # Fallback: lay dong dau tien co FOL syntax
+        for line in text.split("\n"):
+            line = line.strip().lstrip("0123456789.)-  ")
+            if any(c in line for c in "∀∃→∧∨¬↔") or re.match(r"\w+\(", line):
+                return line
+        return ""
 
     @staticmethod
     def _parse_fol_output(text: str) -> list[str]:

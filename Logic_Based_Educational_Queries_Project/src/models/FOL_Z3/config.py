@@ -36,6 +36,11 @@ class FOLz3Config:
     # Ablation
     use_fol: bool = True  # False = baseline (chi NL, khong FOL/Z3)
 
+    # Hub
+    hub_push_results: bool = True
+    hub_repo_id: str = "Laplaces-Red-Devils/fol-z3-pipeline-results"
+    hub_private: bool = False
+
     @classmethod
     def from_yaml(cls, yaml_path: str | Path) -> FOLz3Config:
         """Load config tu YAML, override bang env vars FOL_Z3_*."""
@@ -49,6 +54,7 @@ class FOLz3Config:
             z3 = raw.get("z3", {})
             inf = raw.get("inference", {})
             abl = raw.get("ablation", {})
+            hub = raw.get("hub", {})
             cfg = {
                 "fol_hub_repo_id": fm.get("hub_repo_id"),
                 "fol_base_model": fm.get("base_model"),
@@ -62,6 +68,9 @@ class FOLz3Config:
                 "trust_remote_code": inf.get("trust_remote_code"),
                 "batch_size": inf.get("batch_size"),
                 "use_fol": abl.get("use_fol"),
+                "hub_push_results": hub.get("push_results"),
+                "hub_repo_id": hub.get("repo_id"),
+                "hub_private": hub.get("private"),
             }
             cfg = {k: v for k, v in cfg.items() if v is not None}
 

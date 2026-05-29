@@ -66,16 +66,17 @@ class QAInference:
         nl_block = "\n".join(f"{i}. {p}" for i, p in enumerate(premises_nl, 1))
         fol_block = "\n".join(f"{i}. {p}" for i, p in enumerate(premises_fol, 1))
 
-        # Format Z3 conclusions
+        # Format Z3 model assignments
         if z3_result.conclusions:
             z3_conclusions = "; ".join(z3_result.conclusions)
         else:
-            z3_conclusions = "(no specific facts derived)"
+            z3_conclusions = "(no ground terms)"
 
         user_msg = USER_TEMPLATE_QA.format(
             premises_nl_block=nl_block,
             premises_fol_block=fol_block,
             z3_status=z3_result.raw_status,
+            z3_entailment=z3_result.entailment,
             z3_parsed_count=len(z3_result.premises_parsed),
             z3_total_count=len(z3_result.premises_parsed) + len(z3_result.premises_failed),
             z3_conclusions=z3_conclusions,

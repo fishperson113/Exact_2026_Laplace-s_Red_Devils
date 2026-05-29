@@ -9,6 +9,7 @@ Import tu:       .config, .fol_inference, .z3_solver, .qa_inference
 """
 from __future__ import annotations
 
+import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -34,8 +35,23 @@ class PipelineResult:
     answer: str                    # A / B / C / D / Yes / No / Unknown
     explanation: str               # Giai thich tu QA model
     premises_fol: list[str]        # FOL output tu Stage 1
+    question_fol: str              # FOL cua question (tu Stage 1)
     z3_result: Z3Result            # Z3 output tu Stage 2
+    options_fol: dict[str, str] = field(default_factory=dict)  # MCQ: {"A":"FOL",...}
     timing: TimingLog = field(default_factory=TimingLog)
+
+
+def parse_mcq_options(question: str) -> dict[str, str]:
+    """Tach lua chon A/B/C/D tu question text MCQ.
+
+    Returns {"A": "option text", ...}. Dict rong neu khong phai MCQ.
+    """
+    options = {}
+    for line in question.split("\n"):
+        m = re.match(r"^\s*([A-D])[.):\s]+(.+)$", line.strip())
+        if m:
+            options[m.group(1)] = m.group(2).strip()
+    return options
 
 
 class FOLz3Pipeline:
@@ -79,22 +95,31 @@ class FOLz3Pipeline:
                 answer=qa_output["answer"],
                 explanation=qa_output["explanation"],
                 premises_fol=[],
+                question_fol="",
                 z3_result=Z3Result(
                     premises_parsed=[], premises_failed=[],
                     raw_status="skipped",
                 ),
+                options_fol={},
                 timing=timing,
             )
 
         # Full pipeline: NL -> FOL -> Z3 -> QA
-        # Stage 1: NL -> FOL
+        # Stage 1a: premises NL -> FOL
         t0 = time.perf_counter()
         premises_fol = self.fol.generate(premises_nl)
+        # Stage 1b: question NL -> FOL (dung chung model, reuse predicates)
+        question_fol = self.fol.generate_question_fol(question, premises_fol)
+        # Stage 1c: MCQ options -> FOL (neu la trac nghiem)
+        mcq_options = parse_mcq_options(question)
+        options_fol = {}
+        if mcq_options:
+            options_fol = self.fol.generate_options_fol(mcq_options, premises_fol)
         timing.fol_sec = time.perf_counter() - t0
 
-        # Stage 2: FOL -> Z3
+        # Stage 2: FOL -> Z3 consistency + entailment
         t0 = time.perf_counter()
-        z3_result = self.z3.solve_safe(premises_fol, question)
+        z3_result = self.z3.solve_safe(premises_fol, question_fol)
         timing.z3_sec = time.perf_counter() - t0
 
         # Stage 3: FOL + Z3 + question -> answer + explanation
@@ -113,23 +138,32 @@ class FOLz3Pipeline:
             answer=qa_output["answer"],
             explanation=qa_output["explanation"],
             premises_fol=premises_fol,
+            question_fol=question_fol,
             z3_result=z3_result,
+            options_fol=options_fol,
             timing=timing,
         )
 
     def run_with_gold_fol(
-        self, premises_nl: list[str], premises_fol: list[str], question: str
+        self,
+        premises_nl: list[str],
+        premises_fol: list[str],
+        question: str,
+        question_fol: str = "",
+        options_fol: dict[str, str] | None = None,
     ) -> PipelineResult:
         """Chay pipeline voi FOL da co san (skip Stage 1).
 
         Huu ich khi evaluate voi gold FOL tu dataset.
+        question_fol: FOL cua question (neu co) de Z3 check entailment.
+        options_fol: {"A":"FOL_A",...} cho MCQ (neu co).
         """
         t_start = time.perf_counter()
         timing = TimingLog()
 
-        # Stage 2: FOL -> Z3
+        # Stage 2: FOL -> Z3 + entailment check
         t0 = time.perf_counter()
-        z3_result = self.z3.solve_safe(premises_fol, question)
+        z3_result = self.z3.solve_safe(premises_fol, question_fol)
         timing.z3_sec = time.perf_counter() - t0
 
         # Stage 3
@@ -148,7 +182,9 @@ class FOLz3Pipeline:
             answer=qa_output["answer"],
             explanation=qa_output["explanation"],
             premises_fol=premises_fol,
+            question_fol=question_fol,
             z3_result=z3_result,
+            options_fol=options_fol or {},
             timing=timing,
         )
 
