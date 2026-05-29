@@ -45,6 +45,7 @@ data:
   # Duong dan tuong doi tu project root
   malls_json: data/processed/malls_v01_normalized.json
   val_ratio: 0.02    # 2% MALLS lam dev (~565 mau)
+  max_train_samples: 5000   # Gioi han so mau train (null = dung het ~27K)
 
 paths:
   output_dir: notebooks/output/pipeline_fol_pretrain

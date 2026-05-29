@@ -120,7 +120,12 @@ def build_pretrain_config() -> tuple[FolSFTConfig, Path, Path, str]:
     cfg.checkpoint_dir = checkpoint_dir
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    return cfg, out_dir, checkpoint_dir, malls_json
+    # max_train_samples: gioi han so mau train (None = dung het)
+    max_train_samples = d.get("max_train_samples", None)
+    if max_train_samples is not None:
+        max_train_samples = int(max_train_samples)
+
+    return cfg, out_dir, checkpoint_dir, malls_json, max_train_samples
 
 
 def _merge_and_push_pretrain(
@@ -208,7 +213,7 @@ Day la model trung gian — dung lam base cho Stage 2 fine-tune tren target data
 
 def run_pretrain():
     """Chay Stage 1 pretrain tren MALLS."""
-    cfg, out_dir, checkpoint_dir, malls_json = build_pretrain_config()
+    cfg, out_dir, checkpoint_dir, malls_json, max_train_samples = build_pretrain_config()
 
     _fol_cuda_bootstrap()
     print("[Pretrain] Stage 1: MALLS pretrain", flush=True)
@@ -229,6 +234,12 @@ def run_pretrain():
         model, train_bf16, train_fp16 = build_model(cfg)
 
     dataset_dict = build_malls_pretrain_dataset(malls_json, tokenizer)
+
+    # Gioi han so mau train neu config chi dinh (random shuffle)
+    if max_train_samples and len(dataset_dict["train"]) > max_train_samples:
+        dataset_dict["train"] = dataset_dict["train"].shuffle(seed=cfg.train_seed).select(range(max_train_samples))
+        print(f"[Pretrain] Limited train to {max_train_samples} samples (random)", flush=True)
+
     print(
         f"[Pretrain] Dataset: train={len(dataset_dict['train'])}, dev={len(dataset_dict['dev'])}",
         flush=True,
