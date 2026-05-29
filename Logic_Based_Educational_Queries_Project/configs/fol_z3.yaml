@@ -8,7 +8,7 @@
 
 fol_model:
   # HF repo chua LoRA/merged model FOL da train
-  hub_repo_id: Laplaces-Red-Devils/fol-v03-cot-origin-qwen2.5-3
+  hub_repo_id: Laplaces-Red-Devils/fol-pretrain-malls-qwen2.5-3
   # Base model (phai trung voi model da train FOL)
   base_model: Qwen/Qwen2.5-3B-Instruct
   max_new_tokens: 512           # premises FOL output 
