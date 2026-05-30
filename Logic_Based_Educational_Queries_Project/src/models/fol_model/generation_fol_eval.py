@@ -110,6 +110,7 @@ def fol_exact_match_rate(
             do_sample=False,
             pad_token_id=pad_id,
             eos_token_id=tokenizer.eos_token_id,
+            repetition_penalty=1.2,
         )
         in_len = enc["input_ids"].shape[1]
         for row, gold_txt in zip(out, golds):
@@ -240,6 +241,7 @@ def fol_rm_score(
             do_sample=False,
             pad_token_id=pad_id,
             eos_token_id=tokenizer.eos_token_id,
+            repetition_penalty=1.2,
         )
         in_len = enc["input_ids"].shape[1]
         for row, gold_txt in zip(out, golds):
@@ -330,6 +332,7 @@ def _fol_one_greedy_generate(
         do_sample=False,
         pad_token_id=pad_id,
         eos_token_id=tokenizer.eos_token_id,
+        repetition_penalty=1.2,
     )
 
 
@@ -434,6 +437,7 @@ def collect_fol_inference_samples(
             do_sample=False,
             pad_token_id=pad_id,
             eos_token_id=tokenizer.eos_token_id,
+            repetition_penalty=1.2,
         )
         gen_ids = gen_out[0, enc["input_ids"].shape[1] :]
         pred_txt = tokenizer.decode(gen_ids, skip_special_tokens=True)
@@ -482,6 +486,7 @@ def collect_fol_inference_at_indices(
             do_sample=False,
             pad_token_id=pad_id,
             eos_token_id=tokenizer.eos_token_id,
+            repetition_penalty=1.2,
         )
         gen_ids = gen_out[0, enc["input_ids"].shape[1] :]
         pred_txt = tokenizer.decode(gen_ids, skip_special_tokens=True)

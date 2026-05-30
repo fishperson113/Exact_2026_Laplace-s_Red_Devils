@@ -11,7 +11,7 @@ fol_model:
   hub_repo_id: Laplaces-Red-Devils/fol-v04-cot-augmented-fol-pretrain-malls-qwen2.5-3
   # Base model (phai trung voi model da train FOL)
   base_model: Qwen/Qwen2.5-3B-Instruct
-  max_new_tokens: 512           # premises FOL output 
+  max_new_tokens: 1024          # premises FOL output
 qa_model:
   # Model dung de tra loi + giai thich (mac dinh = cung base voi FOL)
   model_name: Qwen/Qwen2.5-3B-Instruct
@@ -42,5 +42,5 @@ ablation:
 hub:
   push_results: true                    # true = upload sau inference
   # repo_id: Laplaces-Red-Devils/fol-z3-pipeline-baseline
-  repo_id: Laplaces-Red-Devils/fol-augmented-exact-z3-baseline
+  repo_id: Laplaces-Red-Devils/fol-augmented-exact-z3-full-pipeline-baseline
   private: false

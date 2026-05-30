@@ -5,8 +5,8 @@
 model:
   name: Laplaces-Red-Devils/fol-pretrain-malls-qwen2.5-3
   trust_remote_code: true
-  max_seq_length: 2048
-  gen_max_new_tokens: 512
+  max_seq_length: 4096
+  gen_max_new_tokens: 1024
 
 lora:
   r: 8
@@ -66,11 +66,11 @@ hub:
 
 eval:
   eval_gen_batch_size: 10
-  eval_fol_max_samples: 20
+  eval_fol_max_samples: 50
   experiment_inference_sample_n: 8
   # Sau push Hub: tải merged từ Hub, **chỉ** greedy trên N mẫu test ngẫu nhiên + exact-match trên đúng N mẫu (fol_hub_reload_eval.json; README Hub ~2 mẫu).
   hub_reload_after_push: true
-  hub_reload_random_test_n: 20
+  hub_reload_random_test_n: 50
   hub_reload_random_seed: 42
   # Sau FT: benchmark latency greedy (trung bình N mẫu; 0 = tắt) — chỉnh tại đây hoặc `FOL_INFER_BENCH_*` trên shell.
   inference_latency_benchmark_n: 30
