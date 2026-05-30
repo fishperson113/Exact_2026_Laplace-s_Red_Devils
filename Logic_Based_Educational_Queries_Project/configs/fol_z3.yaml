@@ -8,10 +8,10 @@
 
 fol_model:
   # HF repo chua LoRA/merged model FOL da train
-  hub_repo_id: Laplaces-Red-Devils/fol-v04-cot-augmented-fol-pretrain-malls-qwen2.5-3
+  hub_repo_id: Laplaces-Red-Devils/fol-pretrain-malls-qwen2.5-3
   # Base model (phai trung voi model da train FOL)
   base_model: Qwen/Qwen2.5-3B-Instruct
-  max_new_tokens: 1024           # premises FOL output 
+  max_new_tokens: 512           # premises FOL output 
 qa_model:
   # Model dung de tra loi + giai thich (mac dinh = cung base voi FOL)
   model_name: Qwen/Qwen2.5-3B-Instruct
@@ -36,11 +36,11 @@ refinement:
 # use_fol: true   → FOL + Z3 + QA (full Neurosymbolic pipeline)
 # use_fol: false  → QA model chi nhan NL premises + question (baseline, khong FOL/Z3)
 ablation:
-  use_fol: false
+  use_fol: true
 
 # --- Hub: upload ket qua len HuggingFace ---
 hub:
   push_results: true                    # true = upload sau inference
   # repo_id: Laplaces-Red-Devils/fol-z3-pipeline-baseline
-  repo_id: Laplaces-Red-Devils/fol-augmented-exact-z3-full-pipeline-baseline
+  repo_id: Laplaces-Red-Devils/fol-pretrained-malls-z3-baseline
   private: false

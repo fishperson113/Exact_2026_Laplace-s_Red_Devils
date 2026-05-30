@@ -73,8 +73,6 @@ You are a First-Order Logic (FOL) translator. Convert each numbered natural-lang
   NL: "A student who completes the internship and receives a certificate"
   ✗ CompletesInternshipAndReceivesCertificate(x) — two concepts in one predicate.
   ✓ CompletesInternship(x) ∧ ReceivesCertificate(x) — each concept is one predicate.
-- CRITICAL — UNIQUE PREDICATE NAMES: Each distinct concept MUST have a UNIQUE predicate name. If the premises mention both "attends lectures" and "completes assignments", they MUST map to different predicates (e.g., AttendsLectures vs CompletesAssignments). Using the same name for two concepts makes formulas meaningless.
-- REUSE the SAME predicate name when different premises refer to the SAME concept. If premise 1 says "completes prerequisite" and premise 5 says "completed the prerequisite", both must use the same predicate (e.g., CompletesPrerequisite).
 
 **Step 4: BUILD THE LOGICAL STRUCTURE**
 - "If A then B" → A → B
@@ -84,9 +82,6 @@ You are a First-Order Logic (FOL) translator. Convert each numbered natural-lang
 - "A if and only if B" → A ↔ B
 - Nested: "If (if A then B) then C" → (A → B) → C
 - Negated quantifiers: "not necessarily ∀" → ¬∀x (...)
-- "A is required/necessary for B" means B → A (NOT A → B). Example: "Mastery of X is required to do Y" → DoesY(x) → MastersX(x)
-- Domain guard: When the domain is "students" (or any specific class) and the sentence says "All students do X", encode as ∀x (Student(x) → X(x)), NOT as ∀x X(x). Keep the guard predicate consistent across all premises.
-- Sentence-level implication between quantified statements: "If all students have P, then all students have Q" → ∀x P(x) → ∀x Q(x) — use two SEPARATE quantifiers, NOT ∀x (P(x) → Q(x)). Similarly: "If there exists a student with P, then all students have Q" → ∃x P(x) → ∀x Q(x).
 
 **Step 5: ASSEMBLE THE FORMULA**
 - ALWAYS place quantifiers and bound variables at the BEGINNING of the formula, before the body: ∀x (...), ∃x (...).
@@ -168,25 +163,6 @@ Output:
   "taught_min_five_years(John)",
   "good_grades(Alex)",
   "¬depleted_fund"
-]}
-
-#### Example 4 — Compound quantifier scope, domain guards, "required/necessary" pattern, predicate reuse
-Input:
-1. All students attend lectures.
-2. If a student completes assignments, then they study regularly.
-3. If a student does not attend lectures, then they do not complete assignments.
-4. If a student does not complete assignments, then they do not study regularly.
-5. If completing assignments implies studying regularly, then all students understand the material.
-6. If all students understand the material, then there is at least one student who completes assignments.
-
-Output:
-{"premises_fol": [
-  "∀x (AttendsLectures(x))",
-  "∀x (CompletesAssignments(x) → StudiesRegularly(x))",
-  "∀x (¬AttendsLectures(x) → ¬CompletesAssignments(x))",
-  "∀x (¬CompletesAssignments(x) → ¬StudiesRegularly(x))",
-  "(∀x (CompletesAssignments(x) → StudiesRegularly(x)) → ∀x (UnderstandsMaterial(x)))",
-  "(∀x (UnderstandsMaterial(x)) → ∃x (CompletesAssignments(x)))"
 ]}
 """
 

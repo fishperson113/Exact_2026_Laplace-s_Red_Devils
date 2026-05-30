@@ -84,7 +84,6 @@ class FOLInference:
                 max_new_tokens=self.cfg.fol_max_new_tokens,
                 do_sample=False,
                 temperature=1.0,
-                repetition_penalty=1.2,
             )
 
         generated = self.tokenizer.decode(
@@ -225,7 +224,6 @@ class FOLInference:
                 max_new_tokens=self.cfg.fol_max_new_tokens,
                 do_sample=False,
                 temperature=1.0,
-                repetition_penalty=1.2,
             )
 
         generated = self.tokenizer.decode(

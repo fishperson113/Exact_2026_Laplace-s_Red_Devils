@@ -43,7 +43,7 @@ echo "  FOL_Z3 Pipeline — Setup & Inference"
 echo "=============================================="
 echo "Project dir : ${PROJECT_DIR}"
 echo "Config      : ${CONFIG}"
-echo "Config      : use_fol doc tu YAML"
+echo "USE_FOL     : ${USE_FOL:-true}"
 echo ""
 
 # ==============================================================================
@@ -121,5 +121,10 @@ echo "=============================================="
 echo ""
 
 cd "${PROJECT_DIR}/src"
+
+# Truyen USE_FOL qua env neu co
+if [ -n "${USE_FOL:-}" ]; then
+    export FOL_Z3_USE_FOL="${USE_FOL}"
+fi
 
 PYTHONPATH=. python -m models.FOL_Z3.run_inference --config "${PROJECT_DIR}/${CONFIG}"

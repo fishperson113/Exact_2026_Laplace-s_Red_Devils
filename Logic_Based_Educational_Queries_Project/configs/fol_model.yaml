@@ -5,8 +5,8 @@
 model:
   name: Laplaces-Red-Devils/fol-pretrain-malls-qwen2.5-3
   trust_remote_code: true
-  max_seq_length: 4096
-  gen_max_new_tokens: 1024
+  max_seq_length: 2048
+  gen_max_new_tokens: 512
 
 lora:
   r: 8
@@ -14,11 +14,11 @@ lora:
   dropout: 0.05
 
 training:
-  num_train_epochs: 30
-  per_device_train_batch_size: 1
-  per_device_eval_batch_size: 1
-  gradient_accumulation_steps: 8
-  learning_rate: 5e-5
+  num_train_epochs: 20
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 2
+  gradient_accumulation_steps: 4
+  learning_rate: 3e-5
   warmup_ratio: 0.05
   weight_decay: 0.01
   logging_steps: 10
@@ -35,7 +35,7 @@ training:
   unsloth_train_on_responses_only: true
   use_adamw_8bit: true
   # Early stop theo metric trên dev (mỗi epoch eval); 0 = tắt. Env: FOL_EARLY_STOPPING_PATIENCE
-  early_stopping_patience: 10
+  early_stopping_patience: 7
   # Checkpoint tốt nhất + early stop: eval_loss (NLL dev) hoặc greedy exact-match trên dev (tên metric phải chứa "exact_match", vd. eval_exact_match_rate).
   load_best_model_at_end: true
   metric_for_best_model: eval_rm_score
@@ -43,7 +43,7 @@ training:
   # Số mẫu dev tối đa khi tính exact-match cho metric trên (null = cả dev, chậm). Env: FOL_BEST_MODEL_EM_MAX_SAMPLES
   best_model_exact_match_max_samples: null
   # Số mẫu dev tối đa khi tính RM (LE+BLEU) cho metric chọn best model (null = cả dev). Env: FOL_BEST_MODEL_RM_MAX_SAMPLES
-  best_model_rm_max_samples: null
+  best_model_rm_max_samples: 30
   # Trọng số RM = le_weight * LE + bleu_weight * BLEU (LogicLLaMA: 0.6 / 0.4)
   rm_le_weight: 0.6
   rm_bleu_weight: 0.4
