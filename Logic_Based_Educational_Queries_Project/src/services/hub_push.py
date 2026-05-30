@@ -76,19 +76,19 @@ def _fol_hub_readme_metrics_section(out_dir: Path) -> str:
         lines.append("")
 
     if fol_m:
-        lines.append("### FOL greedy exact match (`fol_eval_metrics.json`)")
+        lines.append("### FOL RM eval (`fol_rm_eval_metrics.json`)")
         lines.append("")
-        lines.append("| Split | Exact match | Đúng / Tổng |")
-        lines.append("|-------|-------------|-------------|")
-        for split in ("train", "dev", "test"):
+        lines.append("| Split | RM | LE | BLEU |")
+        lines.append("|-------|-----|-----|------|")
+        for split in ("dev", "test"):
             row = fol_m.get(split)
             if not isinstance(row, dict):
                 continue
-            rate = row.get("exact_match_rate")
-            cnt = row.get("exact_match_count")
-            tot = row.get("total")
+            rm = row.get("rm_score")
+            le = row.get("le_score")
+            bleu = row.get("fol_bleu")
             lines.append(
-                f"| **{split}** | {_md_num(rate, nd=4)} | {cnt} / {tot} |"
+                f"| **{split}** | {_md_num(rm, nd=4)} | {_md_num(le, nd=4)} | {_md_num(bleu, nd=4)} |"
             )
         lines.append("")
 

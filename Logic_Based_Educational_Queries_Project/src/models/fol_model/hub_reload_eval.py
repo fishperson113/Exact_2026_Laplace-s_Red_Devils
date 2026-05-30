@@ -16,8 +16,6 @@ from services.config_fol import FolSFTConfig, fol_should_load_in_8bit
 from .generation_fol_eval import (
     collect_fol_inference_at_indices,
     collect_fol_inference_samples,
-    fol_exact_match_on_splits,
-    fol_summarize_exact_match_rows,
 )
 
 
@@ -108,11 +106,10 @@ def evaluate_fol_hub_model(
         random_test_samples = collect_fol_inference_at_indices(
             cfg, model, tokenizer, tds, idxs
         )
-        test_metrics = fol_summarize_exact_match_rows(random_test_samples, attach_per_row=True)
-        metrics = {"test": test_metrics}
+        metrics = {"test": {"total": len(random_test_samples)}}
         samples = []
         print(
-            f"[FOL hub reload] Greedy + exact-match trên {len(random_test_samples)} mẫu **test** ngẫu nhiên "
+            f"[FOL hub reload] Greedy tren {len(random_test_samples)} mau **test** ngau nhien "
             f"(seed={random_test_seed}).",
             flush=True,
         )
@@ -123,14 +120,7 @@ def evaluate_fol_hub_model(
     else:
         eval_mode = "all_splits"
         lim = cfg.eval_fol_max_samples
-        metrics = fol_exact_match_on_splits(
-            cfg,
-            model,
-            tokenizer,
-            dataset_dict,
-            splits=splits,
-            max_samples=lim,
-        )
+        metrics = {}
         samples = collect_fol_inference_samples(
             cfg,
             model,
@@ -167,18 +157,11 @@ def print_fol_hub_eval_summary(
     random_sample_print_limit: int | None = None,
 ) -> None:
     """In log terminal: nếu ``random_sample_print_limit`` là None → in hết mẫu ngẫu nhiên."""
-    if result.get("eval_mode") == "random_test_only":
-        print(
-            "\n=== FOL — Hub reload: chỉ N mẫu **test** ngẫu nhiên (greedy + exact-match trên đúng N mẫu) ==="
-        )
-    else:
-        print("\n=== FOL — sau khi tải lại từ Hub (exact-match JSON premises_fol, đủ split) ===")
+    print("\n=== FOL — Hub reload ===")
     for sp in sorted(result["metrics_by_split"].keys()):
         m = result["metrics_by_split"][sp]
-        r = m.get("exact_match_rate", 0.0)
-        ok = m.get("exact_match_count", 0)
         tot = m.get("total", 0)
-        print(f"  {sp}: accuracy = {r:.6f}  ({ok}/{tot})")
+        print(f"  {sp}: {tot} samples")
     fs = result.get("filter_stats")
     if fs:
         print("  filter_stats:", fs)

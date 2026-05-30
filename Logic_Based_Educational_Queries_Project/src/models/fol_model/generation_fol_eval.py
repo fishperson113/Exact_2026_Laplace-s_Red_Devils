@@ -191,7 +191,6 @@ def fol_rm_score(
     """Tính RM = le_weight * LE + bleu_weight * FOL BLEU trên split.
 
     Greedy generate → parse gold/pred → tính LE (Z3 nếu có) + FOL BLEU → RM.
-    Đồng thời trả exact_match_rate để so sánh.
     """
     from evaluation.fol_bleu import fol_bleu_record
     from evaluation.fol_le import _z3_available, le_record, le_record_no_z3
@@ -218,7 +217,6 @@ def fol_rm_score(
     tag = split_label or "eval"
     print(f"[FOL RM eval] {tag}: {total} mẫu, batch_size={bs}", flush=True)
 
-    ok = 0  # exact match count
     rm_scores: list[float] = []
     le_scores: list[float] = []
     bleu_scores: list[float] = []
@@ -255,10 +253,6 @@ def fol_rm_score(
             if pred_list is None:
                 pred_list = []
 
-            # Exact match
-            if gold_list and pred_list and _lists_exact_match(gold_list, pred_list):
-                ok += 1
-
             # FOL BLEU
             bleu = fol_bleu_record(gold_list, pred_list)
             bleu_scores.append(bleu)
@@ -274,14 +268,12 @@ def fol_rm_score(
             rm = le_weight * le + bleu_weight * bleu
             rm_scores.append(rm)
 
-    em_rate = float(ok) / float(total) if total else 0.0
     rm_avg = sum(rm_scores) / len(rm_scores) if rm_scores else 0.0
     le_avg = sum(le_scores) / len(le_scores) if le_scores else 0.0
     bleu_avg = sum(bleu_scores) / len(bleu_scores) if bleu_scores else 0.0
 
     print(
-        f"[FOL RM eval] {tag}: RM={rm_avg:.4f} (LE={le_avg:.4f}, BLEU={bleu_avg:.4f}) "
-        f"| exact_match={ok}/{total} ({em_rate:.4f})",
+        f"[FOL RM eval] {tag}: RM={rm_avg:.4f} (LE={le_avg:.4f}, BLEU={bleu_avg:.4f})",
         flush=True,
     )
     tokenizer.padding_side = orig_padding_side
@@ -289,8 +281,6 @@ def fol_rm_score(
         "rm_score": rm_avg,
         "le_score": le_avg,
         "fol_bleu": bleu_avg,
-        "exact_match_rate": em_rate,
-        "exact_match_count": ok,
         "total": total,
         "le_weight": le_weight,
         "bleu_weight": bleu_weight,

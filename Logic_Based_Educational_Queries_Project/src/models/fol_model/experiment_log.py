@@ -156,9 +156,6 @@ def build_fol_experiment_log_document(
         doc["fol_test_benchmark"] = _json_safe(fol_test_benchmark)
     if fol_inference_latency_benchmark is not None:
         doc["fol_inference_latency_benchmark"] = _json_safe(fol_inference_latency_benchmark)
-    if fol_eval:
-        doc["fol_eval_dev_exact_match"] = fol_eval.get("dev", {}).get("exact_match_rate")
-        doc["fol_eval_test_exact_match"] = fol_eval.get("test", {}).get("exact_match_rate")
     return doc
 
 
@@ -172,7 +169,5 @@ def merge_fol_eval_into_experiment_log(path: Path, fol_eval: dict[str, Any]) -> 
         return
     doc = json.loads(path.read_text(encoding="utf-8"))
     doc["fol_eval_greedy"] = fol_eval
-    doc["fol_eval_dev_exact_match"] = fol_eval.get("dev", {}).get("exact_match_rate")
-    doc["fol_eval_test_exact_match"] = fol_eval.get("test", {}).get("exact_match_rate")
     doc["updated_utc"] = datetime.now(timezone.utc).isoformat()
     write_experiment_log_json(path, doc)
