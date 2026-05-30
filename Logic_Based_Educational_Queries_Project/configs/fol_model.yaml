@@ -14,7 +14,7 @@ lora:
   dropout: 0.05
 
 training:
-  num_train_epochs: 15
+  num_train_epochs: 50
   per_device_train_batch_size: 2
   per_device_eval_batch_size: 2
   gradient_accumulation_steps: 4
@@ -35,7 +35,7 @@ training:
   unsloth_train_on_responses_only: true
   use_adamw_8bit: true
   # Early stop theo metric trên dev (mỗi epoch eval); 0 = tắt. Env: FOL_EARLY_STOPPING_PATIENCE
-  early_stopping_patience: 5
+  early_stopping_patience: 10
   # Checkpoint tốt nhất + early stop: eval_loss (NLL dev) hoặc greedy exact-match trên dev (tên metric phải chứa "exact_match", vd. eval_exact_match_rate).
   load_best_model_at_end: true
   metric_for_best_model: eval_rm_score
@@ -58,7 +58,7 @@ paths:
 
 hub:
   org: Laplaces-Red-Devils
-  repo_version: v04
+  repo_version: v05
   method: CoT              # Ghép sau version: fol-v03-cot-origin-{slug}. Env: FOL_METHOD
   data_variant: augmented     # origin | augmented
   push_to_hub: true
