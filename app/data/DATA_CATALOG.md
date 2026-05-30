@@ -3,19 +3,21 @@
 ## 1. MetaData (Siêu dữ liệu)
 - **Tên Data Asset**: Exact Physics Textbook Pre-training Corpus
 - **Định dạng dữ liệu**: Unstructured (Markdown Text) + JSONL intermediate pairs
-- **Kích thước hiện tại**: 245 golden markdown samples
-- **Nguồn gốc (Lineage)**: Trích xuất từ OpenStax College Physics 2e và Giancoli Physics: Principles with Applications 7th ed.
+- **Kích thước hiện tại**: 377 golden markdown samples
+- **Nguồn gốc (Lineage)**: Trích xuất từ OpenStax College Physics 2e, Giancoli Physics: Principles with Applications 7th ed., và Young & Freedman University Physics 13th ed.
 - **Source files**:
   - `app/data/openstax/college-physics-2e_-_WEB.pdf`
   - `app/data/Giancoli/Giancoli-Physics-Principles-with-Applications-7th-c2014-txtbk-1.pdf`
+  - `app/data/university_of_physic/Young-Freedman-University-Physics-13th-txtbk_compressed.pdf`
 - **Phiên bản**: v1.0
 - **Ngày cập nhật cuối**: 2026-05-30
 - **Ngôn ngữ**: English (Physics explanations) & Mathematics (Formulas)
 
 ## 2. Thống kê & Mức độ tin cậy (Data Quality Assessment)
-Bộ dữ liệu hiện gồm hai asset chính:
+Bộ dữ liệu hiện gồm ba asset chính:
 - **OpenStax Loại B**: lý thuyết + công thức + ví dụ, tách theo numbered sections.
 - **Giancoli Loại A**: end-of-chapter problem statements paired with odd-numbered appendix answers, transformed into worked-solution markdown.
+- **Young & Freedman Worked Examples**: textbook worked examples from Chapters 21-31, transformed into standalone markdown named by example subtitle.
 
 ### 2.1 OpenStax College Physics 2e — Loại B
 OpenStax được tách theo đúng mục lục PDF, chỉ giữ các numbered sections như `5.1`, `6.2`, `12.7`. Các phần outline, introduction, glossary, section summary, conceptual questions, và problems không được đưa vào corpus Loại B.
@@ -46,6 +48,24 @@ Giancoli được tách theo chapter 16-22, lấy `Problems`, `General Problems`
 | Chapter 22 | Electromagnetic Waves | 13 | 13 | Included |
 | **Tổng cộng** | | **191** | **191** | **53 flagged** |
 
+### 2.3 Young & Freedman University Physics — Worked Examples
+Young & Freedman được tách theo chapter 21-31, chỉ lấy worked examples có nhãn `Example <chapter>.<number>` trước phần `Summary`. File markdown được đặt tên theo quy ước `<example_number>_<subtitle_slug>.md`.
+
+| Chapter | Chủ đề | Parsed Examples | Golden Examples | Needs Review |
+| :--- | :--- | :---: | :---: | :---: |
+| Chapter 21 | Electric Charge and Electric Field | 14 | 14 | Included |
+| Chapter 22 | Gauss's Law | 13 | 13 | Included |
+| Chapter 23 | Electric Potential | 14 | 14 | Included |
+| Chapter 24 | Capacitance and Dielectrics | 12 | 12 | Included |
+| Chapter 25 | Current, Resistance, and Electromotive Force | 11 | 11 | Included |
+| Chapter 26 | Direct-Current Circuits | 14 | 14 | Included |
+| Chapter 27 | Magnetic Field and Magnetic Forces | 12 | 12 | Included |
+| Chapter 28 | Sources of Magnetic Field | 12 | 12 | Included |
+| Chapter 29 | Electromagnetic Induction | 11 | 11 | Included |
+| Chapter 30 | Inductance | 10 | 10 | Included |
+| Chapter 31 | Alternating Current | 9 | 9 | Included |
+| **Tổng cộng** | | **132** | **132** | **120 flagged** |
+
 **Dung lượng hiện tại:**
 - OpenStax source PDF: ~251.26 MiB
 - OpenStax processed markdown: ~824 KiB
@@ -53,6 +73,9 @@ Giancoli được tách theo chapter 16-22, lấy `Problems`, `General Problems`
 - Giancoli raw extracted PDFs: ~14.60 MiB
 - Giancoli processed files: ~1.10 MiB
 - Giancoli golden markdown: ~381 KiB
+- Young & Freedman raw extracted PDFs: ~13.88 MiB
+- Young & Freedman processed files: ~2.68 MiB
+- Young & Freedman golden markdown: ~346 KiB
 
 ## 3. Data Lineage & Pipeline (Nguồn gốc & Quá trình xử lý)
 Để đảm bảo tính minh bạch và khả năng tái lập (reproducibility), quá trình hình thành dữ liệu được thực hiện qua các bước:
@@ -103,8 +126,22 @@ Giancoli được tách theo chapter 16-22, lấy `Problems`, `General Problems`
   - Dùng OpenAI để tạo worked solutions, ràng buộc final answer theo source answer.
 - **Quality flag**: `needs_review: true` cho bài phụ thuộc hình vẽ, bảng, OCR không chắc chắn, hoặc lời giải cần kiểm tra thủ công.
 
+### 3.5. Young & Freedman Worked Example Pipeline
+- **Script xử lý**: `app/data/university_of_physic/prepare_university_physics_examples.py`
+- **Nguồn PDF**: `app/data/university_of_physic/Young-Freedman-University-Physics-13th-txtbk_compressed.pdf`
+- **Phạm vi**: Chapter 21 đến Chapter 31
+- **Raw output**: `app/data/university_of_physic/raw/<chapter_slug>/`
+- **Processed output**: `app/data/university_of_physic/processed/<chapter_slug>/worked_examples.jsonl`
+- **Golden output**: `app/data/university_of_physic/golden/<chapter_slug>/<example_number>_<subtitle_slug>.md`
+- **Quy trình**:
+  - Dùng PyMuPDF để tách chapter và numbered sections.
+  - Dùng Microsoft MarkItDown để chuyển section PDFs sang Markdown.
+  - Parse worked examples từ source text bằng nhãn `Example N.M`, loại bỏ summary và end-of-chapter problems.
+  - Dùng OpenAI để chuẩn hóa mỗi worked example thành Markdown độc lập.
+- **Quality flag**: `needs_review: true` cho ví dụ phụ thuộc hình vẽ, bảng, OCR không chắc chắn, hoặc công thức bị mất ký hiệu.
+
 ## 4. Cấu trúc dữ liệu & Xem trước (Data Schema & Preview)
-Mỗi data asset là một file Markdown độc lập. OpenStax dùng schema Loại B theo section lý thuyết; Giancoli dùng schema problem-solution theo từng bài odd-numbered.
+Mỗi data asset là một file Markdown độc lập. OpenStax dùng schema Loại B theo section lý thuyết; Giancoli dùng schema problem-solution theo từng bài odd-numbered; Young & Freedman dùng schema worked-example theo từng ví dụ trong textbook.
 
 **OpenStax Loại B schema:**
 ```markdown
@@ -201,13 +238,53 @@ and propagation direction are mutually perpendicular.
 - Direction from vector cross product
 ```
 
+**Young & Freedman worked-example schema:**
+```markdown
+---
+source: Young and Freedman University Physics, 13th ed.
+chapter: <chapter number>
+section: <section number>
+example_number: <example number>
+subtitle: <example subtitle>
+needs_review: <true|false>
+---
+
+# Example <example number>: <example subtitle>
+
+## Problem
+...
+
+## Setup
+...
+
+## Solution
+...
+
+## Evaluation
+...
+
+## Key concepts used
+...
+```
+
+**Young & Freedman filename convention:**
+```text
+<example_number>_<subtitle_slug>.md
+```
+
+Example:
+```text
+30_010_an_underdamped_l_r_c_series_circuit.md
+```
+
 ## 5. Quy định sử dụng & Tuân thủ (Compliance & Usage)
 - **Mục đích sử dụng**: Sử dụng nội bộ cho việc Continue Pre-training (CPT), giúp mô hình nâng cao kiến thức nền và khả năng giải bài tập vật lý.
 - **Hạn chế**: Không sử dụng trực tiếp bộ dữ liệu này cho Supervised Fine-Tuning (SFT) nếu chưa format lại thành dạng Instruction/Response hoặc JSONL phù hợp.
-- **Bản quyền**: Dữ liệu nguồn đến từ OpenStax College Physics 2e và Giancoli Physics: Principles with Applications 7th ed. Khi phân phối hoặc tái sử dụng bên ngoài, cần kiểm tra license/rights của từng nguồn.
+- **Bản quyền**: Dữ liệu nguồn đến từ OpenStax College Physics 2e, Giancoli Physics: Principles with Applications 7th ed., và Young & Freedman University Physics 13th ed. Khi phân phối hoặc tái sử dụng bên ngoài, cần kiểm tra license/rights của từng nguồn.
 - **Tái lập dữ liệu**:
   - OpenStax: `app/data/openstax/prepare_openstax_type_b.py`
   - Giancoli: `app/data/Giancoli/prepare_giancoli_solutions.py`
+  - Young & Freedman: `app/data/university_of_physic/prepare_university_physics_examples.py`
 
 ---
 *Data Catalog Generated Auto-magically by Exact 2026 Script*
