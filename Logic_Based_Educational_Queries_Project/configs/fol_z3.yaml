@@ -42,5 +42,5 @@ ablation:
 hub:
   push_results: true                    # true = upload sau inference
   # repo_id: Laplaces-Red-Devils/fol-z3-pipeline-baseline
-  repo_id: Laplaces-Red-Devils/fol-pretrained-malls-z3-baseline
+  repo_id: Laplaces-Red-Devils/fol-augmented-exact-z3-full-pipeline
   private: false
