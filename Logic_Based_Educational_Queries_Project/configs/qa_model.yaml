@@ -5,6 +5,7 @@ model:
   name: Qwen/Qwen2.5-3B-Instruct
   trust_remote_code: true
   max_seq_length: 3500
+  gen_max_new_tokens: 256
 
 lora:
   r: 8
@@ -32,10 +33,20 @@ training:
   greater_is_better: false
   save_total_limit: 2
 
+eval:
+  # Số mẫu dev tối đa để tính accuracy mỗi epoch (null = cả dev, chậm)
+  eval_accuracy_max_samples: 40
+  # Số mẫu random in full JSON mỗi epoch (NL, FOL, question, gold, prediction)
+  eval_print_samples: 6
+  # Latency benchmark sau training
+  inference_latency_benchmark_n: 40
+  inference_latency_warmup: 2
+  inference_latency_benchmark_split: test
+
 inference:
   # After training, set this to the merged model path or Hub repo
   model_path: null  # Will use model.name as fallback
-  max_new_tokens: 512
+  max_new_tokens: 256
   load_in_8bit: true
 
 hub:

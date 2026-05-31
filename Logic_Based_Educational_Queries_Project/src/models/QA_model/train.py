@@ -15,6 +15,7 @@ import gc
 import inspect
 import json
 import os
+import random
 import re
 import time
 from pathlib import Path
@@ -145,16 +146,59 @@ def parse_qa_output(text: str) -> str:
     return "Unknown"
 
 
+def _parse_user_content(user_content: str) -> dict[str, Any]:
+    """Extract NL, FOL, question từ user message → dict cho display."""
+    sections = re.split(r"\n(?=Premises \((?:NL|FOL)\):|Question:)", user_content)
+    nl_lines, fol_lines, question = [], [], ""
+    for section in sections:
+        section = section.strip()
+        if section.startswith("Premises (NL):"):
+            body = section[len("Premises (NL):"):].strip()
+            for line in body.split("\n"):
+                m = re.match(r"^\d+\.\s*(.+)$", line.strip())
+                if m:
+                    nl_lines.append(m.group(1))
+        elif section.startswith("Premises (FOL):"):
+            body = section[len("Premises (FOL):"):].strip()
+            for line in body.split("\n"):
+                m = re.match(r"^\d+\.\s*(.+)$", line.strip())
+                if m:
+                    fol_lines.append(m.group(1))
+        elif section.startswith("Question:"):
+            question = section[len("Question:"):].strip()
+    return {"premises_nl": nl_lines, "premises_fol": fol_lines, "question": question}
+
+
+def _parse_full_output(text: str) -> dict[str, str]:
+    """Extract answer + explanation từ model output."""
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if match:
+        try:
+            parsed = json.loads(match.group())
+            return {
+                "answer": str(parsed.get("answer", "Unknown")).strip(),
+                "explanation": str(parsed.get("explanation", "")).strip(),
+            }
+        except json.JSONDecodeError:
+            pass
+    answer = "Unknown"
+    for label in ("A", "B", "C", "D", "Yes", "No", "Unknown"):
+        if label in text:
+            answer = label
+            break
+    return {"answer": answer, "explanation": text}
+
+
 def compute_accuracy_on_split(
     model,
     tokenizer,
     dataset,
     max_samples: int | None = None,
     max_new_tokens: int = 512,
-    print_n: int = 0,
+    print_n: int = 6,
     log_file: Any = None,
 ) -> dict[str, Any]:
-    """Greedy decode trên dataset, tính accuracy + in mẫu + đo latency.
+    """Greedy decode trên dataset, tính accuracy + in mẫu random full JSON + đo latency.
 
     Returns: {"accuracy": float, "correct": int, "total": int, "avg_latency_sec": float, "samples": list}
     """
@@ -162,16 +206,22 @@ def compute_accuracy_on_split(
     if max_samples:
         dataset = dataset.select(range(min(max_samples, len(dataset))))
 
+    n_total = len(dataset)
+
+    # Chọn trước print_n indices random để in full detail
+    print_indices = set(random.sample(range(n_total), min(print_n, n_total)))
+
     correct = 0
     total = 0
     latencies = []
-    sample_logs = []
+    all_results = []       # Tất cả (để tính accuracy)
+    detail_samples = []    # Chỉ các mẫu random (để in full JSON)
 
     for i, item in enumerate(dataset):
         messages = item["messages"]
-        # Gold answer
+        # Gold
         gold_text = messages[2]["content"]
-        gold_answer = parse_qa_output(gold_text)
+        gold_parsed = _parse_full_output(gold_text)
 
         # Build input (system + user only)
         input_messages = messages[:2]
@@ -197,22 +247,41 @@ def compute_accuracy_on_split(
             out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
         ).strip()
 
-        pred_answer = parse_qa_output(generated)
-        is_correct = pred_answer.strip().upper() == gold_answer.strip().upper()
+        pred_parsed = _parse_full_output(generated)
+        is_correct = pred_parsed["answer"].strip().upper() == gold_parsed["answer"].strip().upper()
         correct += int(is_correct)
         total += 1
 
-        # Log mẫu
-        if i < print_n or (print_n > 0 and not is_correct and len(sample_logs) < print_n * 2):
-            sample_entry = {
+        all_results.append({
+            "idx": i,
+            "pred_answer": pred_parsed["answer"],
+            "gold_answer": gold_parsed["answer"],
+            "correct": is_correct,
+            "latency_sec": round(latency, 3),
+        })
+
+        # Full detail cho mẫu random
+        if i in print_indices:
+            user_content = messages[1]["content"]
+            parsed_input = _parse_user_content(user_content)
+            detail_samples.append({
                 "idx": i,
-                "gold": gold_answer,
-                "pred": pred_answer,
                 "correct": is_correct,
                 "latency_sec": round(latency, 3),
-                "generated": generated[:300],
-            }
-            sample_logs.append(sample_entry)
+                "input": {
+                    "premises_nl": parsed_input["premises_nl"],
+                    "premises_fol": parsed_input["premises_fol"],
+                    "question": parsed_input["question"],
+                },
+                "gold": {
+                    "answer": gold_parsed["answer"],
+                    "explanation": gold_parsed["explanation"],
+                },
+                "prediction": {
+                    "answer": pred_parsed["answer"],
+                    "explanation": pred_parsed["explanation"],
+                },
+            })
 
     accuracy = correct / total if total > 0 else 0.0
     avg_latency = sum(latencies) / len(latencies) if latencies else 0.0
@@ -222,23 +291,24 @@ def compute_accuracy_on_split(
         "correct": correct,
         "total": total,
         "avg_latency_sec": avg_latency,
-        "samples": sample_logs,
+        "samples": all_results,
     }
 
-    # In ra terminal
-    if print_n > 0 and sample_logs:
-        print(f"\n  {'─'*50}")
-        print(f"  Sample predictions ({min(print_n, len(sample_logs))} shown):")
-        for s in sample_logs[:print_n]:
-            status = "✓" if s["correct"] else "✗"
-            print(f"    [{s['idx']:3d}] {status} pred={s['pred']:8s} gold={s['gold']:8s} ({s['latency_sec']:.2f}s)")
-            if not s["correct"]:
-                print(f"          output: {s['generated'][:120]}...")
-        print(f"  {'─'*50}")
+    # In full detail JSON cho các mẫu random
+    if detail_samples:
+        print(f"\n  {'━'*70}")
+        print(f"  DETAILED PREDICTIONS ({len(detail_samples)} random samples)")
+        print(f"  {'━'*70}")
+        for s in detail_samples:
+            status = "✅ CORRECT" if s["correct"] else "❌ WRONG"
+            print(f"\n  ── Sample [{s['idx']}] {status} ({s['latency_sec']:.2f}s) ──")
+            print(json.dumps(s, ensure_ascii=False, indent=4))
+        print(f"\n  {'━'*70}")
 
     # Ghi log file
     if log_file:
-        log_file.write(json.dumps(result, ensure_ascii=False) + "\n")
+        log_entry = {**result, "detail_samples": detail_samples}
+        log_file.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
         log_file.flush()
 
     return result
@@ -344,11 +414,14 @@ def benchmark_latency(model, tokenizer, dataset, cfg: dict):
             latencies.append(elapsed)
             print(f"    [{i - warmup + 1:3d}/{n}] {elapsed:.3f}s")
 
-    if latencies:
-        avg = sum(latencies) / len(latencies)
-        min_l = min(latencies)
-        max_l = max(latencies)
-        print(f"\n  Avg: {avg:.3f}s | Min: {min_l:.3f}s | Max: {max_l:.3f}s")
+    if not latencies:
+        print(f"{'='*60}\n")
+        return None
+
+    avg = sum(latencies) / len(latencies)
+    min_l = min(latencies)
+    max_l = max(latencies)
+    print(f"\n  Avg: {avg:.3f}s | Min: {min_l:.3f}s | Max: {max_l:.3f}s")
     print(f"{'='*60}\n")
 
     return {"avg_sec": avg, "min_sec": min_l, "max_sec": max_l, "n": len(latencies)}
@@ -509,8 +582,14 @@ def train(cfg: dict, debug_max_samples: int | None = None):
 
     # 10. Latency benchmark
     bench_split = cfg.get("eval", {}).get("inference_latency_benchmark_split", "test")
+    latency_result = None
     if bench_split in ds_dict:
-        benchmark_latency(model, tokenizer, ds_dict[bench_split], cfg)
+        latency_result = benchmark_latency(model, tokenizer, ds_dict[bench_split], cfg)
+    if latency_result:
+        latency_path = output_dir / "inference_latency.json"
+        with open(latency_path, "w", encoding="utf-8") as f:
+            json.dump(latency_result, f, ensure_ascii=False, indent=2)
+        print(f"[Log] Latency benchmark saved to: {latency_path}")
 
     # 11. Save epoch accuracy history
     if accuracy_cb.epoch_results:
