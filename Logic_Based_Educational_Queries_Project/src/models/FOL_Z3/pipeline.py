@@ -158,6 +158,9 @@ class FOLz3Pipeline:
         z3_result = self.z3.solve_safe(premises_fol, question_fol, options_fol)
         timing.z3_sec = time.perf_counter() - t0
 
+        # Stage 2b: Heuristic — phát hiện FOL sai qua entailment patterns
+        z3_result = self._flag_suspicious_entailment(z3_result)
+
         # Stage 3: FOL + Z3 + question -> answer + explanation
         t0 = time.perf_counter()
         qa_output = self.qa.generate(
@@ -224,6 +227,40 @@ class FOLz3Pipeline:
             options_fol=options_fol or {},
             timing=timing,
         )
+
+    @staticmethod
+    def _flag_suspicious_entailment(z3_result: Z3Result) -> Z3Result:
+        """Phát hiện FOL sai qua entailment patterns bất thường.
+
+        Khi FOL sinh sai, Z3 có thể cho kết quả entailment sai lệch.
+        Heuristic: nếu pattern bất thường → gắn cờ để QA model cảnh giác.
+
+        Ví dụ: tất cả 4 options đều entailed → FOL quá permissive → suspicious.
+        """
+        opts = z3_result.options_entailment
+        if not opts:
+            return z3_result
+
+        entailed_count = sum(1 for v in opts.values() if v == "entailed")
+        empty_count = sum(1 for v in opts.values() if v == "empty")
+        total = len(opts)
+
+        # Case 1: Tất cả options entailed → FOL chắc chắn sai
+        if entailed_count == total and total >= 3:
+            z3_result.entailment = "suspicious_all_entailed"
+            print(f"[Heuristic] ALL {total} options entailed → suspicious, likely FOL error")
+
+        # Case 2: Tất cả options empty → FOL predicates không match options
+        elif empty_count == total:
+            z3_result.entailment = "suspicious_all_empty"
+            print(f"[Heuristic] ALL {total} options empty → FOL predicates don't match options")
+
+        # Case 3: 3+ options entailed trong MCQ single-answer → suspicious
+        elif entailed_count >= 3 and total >= 4:
+            z3_result.entailment = "suspicious_many_entailed"
+            print(f"[Heuristic] {entailed_count}/{total} options entailed → suspicious")
+
+        return z3_result
 
     @staticmethod
     def summarize_timing(results: list[PipelineResult]) -> dict:

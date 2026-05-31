@@ -11,7 +11,7 @@
 model:
   name: Qwen/Qwen2.5-3B-Instruct
   trust_remote_code: true
-  max_seq_length: 3072
+  max_seq_length: 3500
   gen_max_new_tokens: 512
 
 lora:

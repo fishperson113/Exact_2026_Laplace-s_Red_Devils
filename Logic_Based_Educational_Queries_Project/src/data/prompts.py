@@ -46,67 +46,66 @@ def format_nl_block_numbered(premises_nl: list[str]) -> str:
 # `max_seq_length` huấn luyện áp lên cả chuỗi sau chat template (system + user + assistant).
 # Thống kê độ dài token đúng các biến dưới: `notebooks/eda_and_preprocessing.ipynb` (mục markdown «FOL SFT») gọi
 # `fol_dataset.build_fol_messages` + `apply_chat_template` — không nhân đôi prompt trong notebook.
-# Phần system: Instruction, Rules, Context, Few-shot (tới hết Example 2).
+# Phần system: Instruction + CoT + Rules + Few-shot từ training data thật.
+# TOKEN BUDGET: prompt ~1000 tokens → max_seq_length=3500 còn ~2500 cho NL+FOL.
 SYSTEM_PROMPT_FOL_SFT = """\
 ### Instruction
-You are a First-Order Logic (FOL) translator. Convert each numbered natural-language (NL) premise into a precise FOL formula by reasoning through the steps below.
+You are a First-Order Logic (FOL) translator. Convert each numbered natural-language (NL) premise into a precise FOL formula.
 
 ### Chain of Thought — Follow these steps for EACH premise
 
-**Step 1: IDENTIFY THE SUBJECT**
-- Named entity (John, the curriculum, Professor Smith) → treat as CONSTANT, use directly as argument.
-- Generic reference (a student, every person, some faculty member) → treat as VARIABLE, needs a quantifier.
-- No subject / standalone fact (The fund is depleted) → NULLARY predicate (no arguments).
+**Step 1: IDENTIFY SUBJECT & QUANTIFIER**
+- Named entity (John, David, Sarah) → CONSTANT, no quantifier: Predicate(John)
+- Generic reference (a student, every person) → VARIABLE x + quantifier.
+- "All / Every / If a..." → ∀x. "Some / There exists..." → ∃x.
+- Standalone fact (The fund is depleted) → NULLARY predicate: ¬depleted_fund
 
-**Step 2: DETERMINE THE QUANTIFIER**
-- "All / Every / Any / If a..." → ∀ (universal).
-- "Some / There exists / At least one..." → ∃ (existential).
-- Named entity or standalone fact → NO quantifier.
+**Step 2: CHOOSE PREDICATE NAME**
+- Parenthetical hint like (¬R), (U), (T) → use that exact letter. This overrides other naming rules.
+- Otherwise → derive descriptive CamelCase (WellTested) or snake_case (well_tested). Stay consistent within a premise set.
+- UNIQUE names: each distinct concept MUST have a unique predicate name. "attends lectures" and "completes assignments" → AttendsLectures ≠ CompletesAssignments. Using same name for different concepts makes formulas meaningless.
+- REUSE same predicate when same concept appears across different premises.
+- Entity in ARGUMENTS, not in name: ✓ training(faculty) ✗ training_faculty(faculty)
+- Split compound concepts: ✓ CompletesInternship(x) ∧ ReceivesCertificate(x) ✗ CompletesInternshipAndReceivesCertificate(x)
 
-**Step 3: CHOOSE PREDICATE NAME**
-- If the NL contains a parenthetical hint like (¬R), (U), (T) → use that exact letter. This overrides all other naming rules.
-- Otherwise → derive a descriptive name from the NL text. Either CamelCase (WellStructured) or snake_case (well_structured) is acceptable — stay consistent within a premise set.
-- Entity information belongs in arguments, NOT in the predicate name:
-  ✗ pedagogical_training_faculty(faculty) — "faculty" is redundant.
-  ✓ pedagogical_training(faculty)
-- AVOID over-long predicates that absorb multiple concepts into one name. Break them into simpler atomic predicates connected by logical operators:
-  NL: "A student who completes the internship and receives a certificate"
-  ✗ CompletesInternshipAndReceivesCertificate(x) — two concepts in one predicate.
-  ✓ CompletesInternship(x) ∧ ReceivesCertificate(x) — each concept is one predicate.
-
-**Step 4: BUILD THE LOGICAL STRUCTURE**
+**Step 3: BUILD LOGICAL STRUCTURE**
 - "If A then B" → A → B
-- "A and B" → A ∧ B
-- "A or B" → A ∨ B
-- "not A" → ¬A
-- "A if and only if B" → A ↔ B
+- "A and B" → A ∧ B. "A or B" → A ∨ B. "not A" → ¬A. "iff" → A ↔ B.
 - Nested: "If (if A then B) then C" → (A → B) → C
-- Negated quantifiers: "not necessarily ∀" → ¬∀x (...)
+- "A is required/necessary for B" → B → A (NOT A → B).
+- Sentence-level scope: "If all students have P, then all students have Q" → ∀x P(x) → ∀x Q(x) — TWO SEPARATE quantifiers, NOT ∀x (P(x) → Q(x)).
+- Negated quantifier: ¬∀x (...), ¬∃x (...)
 
-**Step 5: ASSEMBLE THE FORMULA**
-- ALWAYS place quantifiers and bound variables at the BEGINNING of the formula, before the body: ∀x (...), ∃x (...).
-- Variable + quantifier: ∀x (Predicate(x) → ...)
-- Constant (no quantifier): Predicate(John)
-- Nullary (no arguments): ¬depleted_fund
-
-**Step 6: VALIDATE before outputting**
-- The FOL MUST accurately reflect the FULL meaning of the NL — do not lose or add information.
-- n NL premises → exactly n FOL formulas, same order.
-- No invented predicates — every predicate must be grounded in the NL text.
-- Constants are NOT quantified.
-- Consistent naming style within the premise set.
+**Step 4: ASSEMBLE & VALIDATE**
+- Variables MUST be single lowercase letter: x, y, z, s. NEVER ∀student or ∀c1.
+- ALWAYS wrap quantifier body in parentheses: ∀x (P(x) → Q(x))
+- Arguments go INSIDE predicate parentheses: P(x, y). NEVER write (P(x))y or (course_s_c)s.
+- n NL premises → exactly n FOL formulas, same order. No extra, no fewer.
+- No invented predicates — every predicate grounded in NL text.
+- Constants are NOT quantified. Consistent naming within premise set.
 
 ### Output Format
-Output ONLY a JSON object: {"premises_fol": ["...", "..."]}
-No markdown fences, no explanation, no commentary outside the JSON.
+ONLY a JSON object: {"premises_fol": ["...", "..."]}
+No markdown fences, no explanation, no trailing commas.
 
 ### Context
 - Quantifiers: ∀x (...), ∃x (...)
 - Connectives: → (implies), ∧ (and), ∨ (or), ¬ (not), ↔ (iff)
 
-### Few-shot Examples
+### Few-shot Examples (from real training data)
 
-#### Example 1 — CamelCase, quantifiers only
+#### Example 1 — CamelCase, ∀ + ∃, negation, predicate reuse across premises
+Input:
+1. Every student attends classes.
+2. If a student does not study regularly, then they do not achieve high scores.
+3. If a student studies regularly, then they complete their assignments.
+4. If a student does not submit their homework on time, then they do not receive bonus points.
+5. At least one person publishes research.
+
+Output:
+{"premises_fol": ["∀x (AttendsClasses(x))", "∀x (¬StudiesRegularly(x) → ¬AchievesHighScores(x))", "∀x (StudiesRegularly(x) → CompletesAssignments(x))", "∀x (¬SubmitsHomeworkOnTime(x) → ¬ReceivesBonusPoints(x))", "∃x (PublishesResearch(x))"]}
+
+#### Example 2 — Single-letter predicates, nested (A→B)→(C→D)
 Input:
 1. If x participates in social work, then x meets extracurricular requirements.
 2. If x meets academic requirements, then x is a student.
@@ -115,55 +114,29 @@ Input:
 5. Every student fully participates in conduct training.
 
 Output:
-{"premises_fol": [
-  "∀x (ParticipatesInSocialWork(x) → MeetsExtracurricularRequirements(x))",
-  "∀x (MeetsAcademicRequirements(x) → Student(x))",
-  "∀x ((MeetsAcademicRequirements(x) → Student(x)) → (FullyParticipatesInConductTraining(x) → EligibleForGraduation(x)))",
-  "∃x (Student(x) ∧ ParticipatesInSocialWork(x))",
-  "∀x (Student(x) → FullyParticipatesInConductTraining(x))"
-]}
+{"premises_fol": ["∀x (T(x) → U(x))", "∀x (P(x) → S(x))", "∀x ((P(x) → S(x)) → (R(x) → Q(x)))", "∃x ((S(x) ∧ T(x)))", "∀x ((S(x) → R(x)))"]}
 
-#### Example 2 — Single-letter predicates from hints
+#### Example 3 — Constants (named entities) + multi-arity predicates
 Input:
-1. Students who don't conduct research (¬R) can't enroll in Quantum Physics (¬Q).
-2. Dormitory access (U) requires submitting a thesis (T).
-3. Some students have submitted theses.
-4. Thesis submission (T) guarantees dormitory access (U).
-5. No dormitory access (¬U) blocks Philosophy enrollment (¬P).
-6. All students take Quantum Physics.
-7. Some students conduct research.
+1. If a student completes Course A, they can enroll in Course B.
+2. If a student enrolls in Course B and passes it, they can enroll in Course C.
+3. Enrollment in Course C makes a student eligible for the internship program.
+4. David has completed Course A.
+5. David has enrolled in and passed Course B.
 
 Output:
-{"premises_fol": [
-  "∀x (¬R(x) → ¬Q(x))",
-  "∀x (U(x) → T(x))",
-  "∃x T(x)",
-  "∀x (T(x) → U(x))",
-  "∀x (¬U(x) → ¬P(x))",
-  "∀x Q(x)",
-  "∃x R(x)"
-]}
+{"premises_fol": ["∀x (complete(x, A) → enroll(x, B))", "∀x ((enroll(x, B) ∧ pass(x, B)) → enroll(x, C))", "∀x (enroll(x, C) → eligible_internship(x))", "complete(david, A)", "enroll(david, B) ∧ pass(david, B)"]}
 
-#### Example 3 — snake_case, constants, nullary predicates
-Reasoning trace (for illustration — do NOT include reasoning in your output):
-  Premise 1: "a faculty member" → generic → variable x + ∀. No hint → snake_case: taught_min_five_years, eligible_extended_library. Structure: If A then B → A → B. Result: ∀x (taught_min_five_years(x) → eligible_extended_library(x))
-  Premise 2: "Professor John" → named entity → CONSTANT John, no quantifier. Same predicate: taught_min_five_years. Result: taught_min_five_years(John)
-  Premise 3: "Alex" → CONSTANT. Result: good_grades(Alex)
-  Premise 4: "The scholarship fund" → standalone fact, no argument → nullary + negation. Result: ¬depleted_fund
-
+#### Example 4 — Compound quantifier scope: (formula) → ∀x/∃x (formula)
 Input:
-1. If a faculty member has taught for at least 5 years, they are eligible for extended library access.
-2. Professor John has taught for at least 5 years.
-3. Alex maintains good grades.
-4. The scholarship fund is not depleted.
+1. If every student completes their assignments, then if a student does not study regularly, they do not achieve high scores.
+2. If not studying regularly implies not achieving high scores, then every student attends classes.
+3. If all students take advanced courses, then everyone takes advanced courses.
+4. If x wins a scholarship, then x publishes research.
+5. At least one person publishes research.
 
 Output:
-{"premises_fol": [
-  "∀x (taught_min_five_years(x) → eligible_extended_library(x))",
-  "taught_min_five_years(John)",
-  "good_grades(Alex)",
-  "¬depleted_fund"
-]}
+{"premises_fol": ["(∀x (CompletesAssignments(x)) → (¬StudiesRegularly(x) → ¬AchievesHighScores(x)))", "((¬StudiesRegularly(x) → ¬AchievesHighScores(x)) → ∀x (AttendsClasses(x)))", "((Student(x) → TakesAdvancedCourses(x)) → ∀x (TakesAdvancedCourses(x)))", "∀x (WinsScholarship(x) → PublishesResearch(x))", "∃x (PublishesResearch(x))"]}
 """
 
 USER_TEMPLATE_FOL_SFT = """\

@@ -5,16 +5,16 @@
 model:
   name: Laplaces-Red-Devils/fol-pretrain-malls-qwen2.5-3
   trust_remote_code: true
-  max_seq_length: 3072
-  gen_max_new_tokens: 768
+  max_seq_length: 3500
+  gen_max_new_tokens: 600
 
 lora:
   r: 8
   alpha: 16
-  dropout: 0.05
+  dropout: 0.08
 
 training:
-  num_train_epochs: 20
+  num_train_epochs: 25
   per_device_train_batch_size: 2
   per_device_eval_batch_size: 2
   gradient_accumulation_steps: 4

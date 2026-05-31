@@ -11,7 +11,7 @@ fol_model:
   hub_repo_id: Laplaces-Red-Devils/fol-v04-cot-augmented-fol-pretrain-malls-qwen2.5-3
   # Base model (phai trung voi model da train FOL)
   base_model: Qwen/Qwen2.5-3B-Instruct
-  max_new_tokens: 1024           # premises FOL output 
+  max_new_tokens: 768            # premises FOL output (gold max=684, 768 covers 100%)
 qa_model:
   # Model dung de tra loi + giai thich (mac dinh = cung base voi FOL)
   model_name: Qwen/Qwen2.5-3B-Instruct

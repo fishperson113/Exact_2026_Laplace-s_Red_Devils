@@ -4,6 +4,7 @@ Yêu cầu: ``pip install z3-solver``
 """
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from .fol_parser import (
@@ -103,6 +104,20 @@ def ast_to_z3(
         return z3.Not(ast_to_z3(node.child, cache, var_map))
 
     elif isinstance(node, BinaryNode):
+        # Comparison operators (≥, ≤, >, <, =, ≠): treat as boolean predicates
+        # vì Z3 Entity sort không hỗ trợ arithmetic — encode thành Bool predicate
+        if node.op in ("≥", "≤", ">", "<", "=", "≠", "!="):
+            # Flatten left and right thành string representation → Bool predicate
+            left_str = repr(node.left) if not isinstance(node.left, PredicateNode) else repr(node.left)
+            right_str = repr(node.right) if not isinstance(node.right, PredicateNode) else repr(node.right)
+            comp_name = f"_cmp_{left_str}_{node.op}_{right_str}"
+            # Sanitize name cho Z3
+            comp_name = re.sub(r"[^A-Za-z0-9_]", "_", comp_name)
+            cache_key = f"comp_{comp_name}"
+            if cache_key not in cache:
+                cache[cache_key] = z3.Bool(comp_name)
+            return cache[cache_key]
+
         left = ast_to_z3(node.left, cache, var_map)
         right = ast_to_z3(node.right, cache, var_map)
         if node.op == "∧":
