@@ -122,17 +122,21 @@ class FOLz3Pipeline:
             # Z3 quick check: parse + consistency (khong entailment)
             z3_check = self.z3.solve_safe(premises_fol)
 
+            n_ok = len(z3_check.premises_parsed)
+            n_fail = len(z3_check.premises_failed)
+            n_total = n_ok + n_fail
+
+            # Chỉ retry khi: >50% fail HOẶC hoàn toàn không parse được
+            # Nếu chỉ 1-2 premises fail → Z3 vẫn hoạt động được, không cần retry
             needs_retry = (
-                len(z3_check.premises_failed) > 0
-                or z3_check.raw_status in ("unsat", "no_valid_premises")
+                z3_check.raw_status == "no_valid_premises"
+                or (n_total > 0 and n_fail / n_total > 0.5)
             )
             if not needs_retry:
                 break
 
             # Z3 rejected → feedback cho FOL model sinh lai
             refinement_count += 1
-            n_ok = len(z3_check.premises_parsed)
-            n_fail = len(z3_check.premises_failed)
             print(
                 f"[Refine] Attempt {refinement_count}/{max_retries}: "
                 f"parsed={n_ok}, failed={n_fail}, "

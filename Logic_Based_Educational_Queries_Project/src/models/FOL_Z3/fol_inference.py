@@ -76,14 +76,16 @@ class FOLInference:
         text = self.tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
-        inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+        inputs = self.tokenizer(
+            text, return_tensors="pt", truncation=True, max_length=3500
+        ).to(self.model.device)
 
         with torch.no_grad():
             out = self.model.generate(
                 **inputs,
                 max_new_tokens=self.cfg.fol_max_new_tokens,
                 do_sample=False,
-                temperature=1.0,
+                repetition_penalty=1.2,
             )
 
         generated = self.tokenizer.decode(
@@ -216,14 +218,16 @@ class FOLInference:
         text = self.tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )
-        inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+        inputs = self.tokenizer(
+            text, return_tensors="pt", truncation=True, max_length=3500
+        ).to(self.model.device)
 
         with torch.no_grad():
             out = self.model.generate(
                 **inputs,
                 max_new_tokens=self.cfg.fol_max_new_tokens,
                 do_sample=False,
-                temperature=1.0,
+                repetition_penalty=1.2,
             )
 
         generated = self.tokenizer.decode(
