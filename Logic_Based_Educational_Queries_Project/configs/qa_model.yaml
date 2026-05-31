@@ -15,7 +15,7 @@ lora:
 training:
   num_train_epochs: 30
   per_device_train_batch_size: 1
-  per_device_eval_batch_size: 4
+  per_device_eval_batch_size: 8
   gradient_accumulation_steps: 8
   learning_rate: 2e-5
   warmup_ratio: 0.05
@@ -43,5 +43,5 @@ hub:
   repo_version: v01
   type: QA
   method: CoT
-  push_to_hub: false
+  push_to_hub: true
   hf_private: true
