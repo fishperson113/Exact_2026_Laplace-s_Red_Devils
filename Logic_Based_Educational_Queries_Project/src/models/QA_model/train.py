@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import gc
+import inspect
 import json
 import os
 import re
@@ -432,7 +433,9 @@ def train(cfg: dict, debug_max_samples: int | None = None):
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # 4. SFT Config
-    sft_config = SFTConfig(
+    max_seq_len = model_cfg.get("max_seq_length", 3500)
+
+    sft_kw: dict[str, Any] = dict(
         output_dir=str(output_dir),
         num_train_epochs=train_cfg.get("num_train_epochs", 20),
         per_device_train_batch_size=train_cfg.get("per_device_train_batch_size", 1),
@@ -450,10 +453,16 @@ def train(cfg: dict, debug_max_samples: int | None = None):
         greater_is_better=train_cfg.get("greater_is_better", True),
         bf16=train_cfg.get("bf16", True),
         gradient_checkpointing=train_cfg.get("gradient_checkpointing", True),
-        max_seq_length=model_cfg.get("max_seq_length", 4096),
         seed=train_cfg.get("train_seed", 3407),
         report_to="none",
+        max_length=max_seq_len,
+        packing=False,
     )
+    # TRL version compat: một số version dùng max_seq_length thay vì max_length
+    if "max_seq_length" in inspect.signature(SFTConfig.__init__).parameters:
+        sft_kw["max_seq_length"] = max_seq_len
+
+    sft_config = SFTConfig(**sft_kw)
 
     # 5. Callbacks
     callbacks = []
