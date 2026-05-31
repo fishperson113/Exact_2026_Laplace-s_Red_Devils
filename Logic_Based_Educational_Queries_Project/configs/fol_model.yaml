@@ -5,8 +5,8 @@
 model:
   name: Laplaces-Red-Devils/fol-pretrain-malls-qwen2.5-3
   trust_remote_code: true
-  max_seq_length: 2048
-  gen_max_new_tokens: 512
+  max_seq_length: 3072
+  gen_max_new_tokens: 768
 
 lora:
   r: 8
