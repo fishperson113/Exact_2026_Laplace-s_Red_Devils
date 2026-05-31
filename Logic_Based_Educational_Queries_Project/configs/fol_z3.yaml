@@ -16,6 +16,7 @@ qa_model:
   # Model dung de tra loi + giai thich (mac dinh = cung base voi FOL)
   model_name: Qwen/Qwen2.5-3B-Instruct
   max_new_tokens: 650            # QA JSON output
+  type: cot                      # cot = CoT prompt (SYSTEM_PROMPT_QA_COT) | z3 = Z3 report prompt (SYSTEM_PROMPT_QA)
 
 z3:
   timeout_ms: 5000        # Timeout cho moi formula khi check Z3

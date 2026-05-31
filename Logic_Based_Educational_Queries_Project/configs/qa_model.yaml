@@ -4,16 +4,16 @@
 model:
   name: Qwen/Qwen2.5-3B-Instruct
   trust_remote_code: true
-  max_seq_length: 4096
+  max_seq_length: 3500
 
 lora:
-  r: 16
-  alpha: 32
+  r: 8
+  alpha: 16
   dropout: 0.05
   target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
 
 training:
-  num_train_epochs: 15
+  num_train_epochs: 30
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 4
   gradient_accumulation_steps: 8
@@ -26,7 +26,7 @@ training:
   train_seed: 42
   load_in_8bit: true
   # Early stopping
-  early_stopping_patience: 5
+  early_stopping_patience: 7
   load_best_model_at_end: true
   metric_for_best_model: eval_loss
   greater_is_better: false
@@ -41,5 +41,7 @@ inference:
 hub:
   org: Laplaces-Red-Devils
   repo_version: v01
+  type: QA
+  method: CoT
   push_to_hub: false
   hf_private: true

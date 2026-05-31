@@ -22,6 +22,7 @@ class FOLz3Config:
     # QA model
     qa_model_name: str = "Qwen/Qwen2.5-3B-Instruct"
     qa_max_new_tokens: int = 768
+    qa_type: str = "cot"  # "cot" = CoT prompt | "z3" = Z3 report prompt
 
     # Z3
     z3_timeout_ms: int = 5000
@@ -65,6 +66,7 @@ class FOLz3Config:
                 "fol_max_new_tokens": fm.get("max_new_tokens"),
                 "qa_model_name": qa.get("model_name"),
                 "qa_max_new_tokens": qa.get("max_new_tokens"),
+                "qa_type": qa.get("type"),
                 "z3_timeout_ms": z3.get("timeout_ms"),
                 "z3_max_premises": z3.get("max_premises"),
                 "refinement_max_retries": ref.get("max_retries"),

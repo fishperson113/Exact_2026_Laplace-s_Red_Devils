@@ -1,6 +1,8 @@
-"""Train QA Stage 2: LoRA SFT on COT reasoning (NL + FOL → answer + explanation).
+"""Train QA Stage 2: LoRA SFT — COT reasoning (NL + FOL → answer + explanation).
 
-Single-file training script. Loads config from YAML, prepares data, trains with SFT.
+Metric chính: **Accuracy** (greedy decode trên dev mỗi epoch).
+Tối ưu hoá: early stop + best model chọn theo eval_accuracy.
+Log: in mẫu predictions mỗi epoch + benchmark latency sau training.
 
 Usage:
     python -m models.QA_model.train --config configs/qa_model.yaml
@@ -12,8 +14,10 @@ import argparse
 import gc
 import json
 import os
-import shutil
+import re
+import time
 from pathlib import Path
+from typing import Any
 
 import torch
 import yaml
@@ -25,6 +29,7 @@ from transformers import (
     BitsAndBytesConfig,
     EarlyStoppingCallback,
 )
+from transformers.trainer_callback import TrainerCallback
 from trl import SFTConfig, SFTTrainer
 
 from .prepare_data import build_qa_dataset_dict
@@ -120,6 +125,281 @@ def load_model_and_tokenizer(cfg: dict):
     return model, tokenizer
 
 
+# ─── Accuracy Evaluation ─────────────────────────────────────────────────────
+
+def parse_qa_output(text: str) -> str:
+    """Extract answer label from model output."""
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if match:
+        try:
+            parsed = json.loads(match.group())
+            if "answer" in parsed:
+                return str(parsed["answer"]).strip()
+        except json.JSONDecodeError:
+            pass
+    # Fallback: tìm label đầu tiên
+    for label in ("A", "B", "C", "D", "Yes", "No", "Unknown"):
+        if label in text:
+            return label
+    return "Unknown"
+
+
+def compute_accuracy_on_split(
+    model,
+    tokenizer,
+    dataset,
+    max_samples: int | None = None,
+    max_new_tokens: int = 512,
+    print_n: int = 0,
+    log_file: Any = None,
+) -> dict[str, Any]:
+    """Greedy decode trên dataset, tính accuracy + in mẫu + đo latency.
+
+    Returns: {"accuracy": float, "correct": int, "total": int, "avg_latency_sec": float, "samples": list}
+    """
+    model.eval()
+    if max_samples:
+        dataset = dataset.select(range(min(max_samples, len(dataset))))
+
+    correct = 0
+    total = 0
+    latencies = []
+    sample_logs = []
+
+    for i, item in enumerate(dataset):
+        messages = item["messages"]
+        # Gold answer
+        gold_text = messages[2]["content"]
+        gold_answer = parse_qa_output(gold_text)
+
+        # Build input (system + user only)
+        input_messages = messages[:2]
+        text = tokenizer.apply_chat_template(
+            input_messages, tokenize=False, add_generation_prompt=True
+        )
+        inputs = tokenizer(
+            text, return_tensors="pt", truncation=True, max_length=4096
+        ).to(model.device)
+
+        t0 = time.perf_counter()
+        with torch.no_grad():
+            out = model.generate(
+                **inputs,
+                max_new_tokens=max_new_tokens,
+                do_sample=False,
+                repetition_penalty=1.1,
+            )
+        latency = time.perf_counter() - t0
+        latencies.append(latency)
+
+        generated = tokenizer.decode(
+            out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
+        ).strip()
+
+        pred_answer = parse_qa_output(generated)
+        is_correct = pred_answer.strip().upper() == gold_answer.strip().upper()
+        correct += int(is_correct)
+        total += 1
+
+        # Log mẫu
+        if i < print_n or (print_n > 0 and not is_correct and len(sample_logs) < print_n * 2):
+            sample_entry = {
+                "idx": i,
+                "gold": gold_answer,
+                "pred": pred_answer,
+                "correct": is_correct,
+                "latency_sec": round(latency, 3),
+                "generated": generated[:300],
+            }
+            sample_logs.append(sample_entry)
+
+    accuracy = correct / total if total > 0 else 0.0
+    avg_latency = sum(latencies) / len(latencies) if latencies else 0.0
+
+    result = {
+        "accuracy": accuracy,
+        "correct": correct,
+        "total": total,
+        "avg_latency_sec": avg_latency,
+        "samples": sample_logs,
+    }
+
+    # In ra terminal
+    if print_n > 0 and sample_logs:
+        print(f"\n  {'─'*50}")
+        print(f"  Sample predictions ({min(print_n, len(sample_logs))} shown):")
+        for s in sample_logs[:print_n]:
+            status = "✓" if s["correct"] else "✗"
+            print(f"    [{s['idx']:3d}] {status} pred={s['pred']:8s} gold={s['gold']:8s} ({s['latency_sec']:.2f}s)")
+            if not s["correct"]:
+                print(f"          output: {s['generated'][:120]}...")
+        print(f"  {'─'*50}")
+
+    # Ghi log file
+    if log_file:
+        log_file.write(json.dumps(result, ensure_ascii=False) + "\n")
+        log_file.flush()
+
+    return result
+
+
+# ─── Accuracy Callback ───────────────────────────────────────────────────────
+
+class QAAccuracyCallback(TrainerCallback):
+    """Mỗi epoch: greedy decode trên dev → eval_accuracy.
+
+    Ghi vào metrics để EarlyStopping + load_best_model_at_end sử dụng.
+    """
+
+    def __init__(self, cfg: dict, dev_dataset, log_path: Path | None = None):
+        self.cfg = cfg
+        self.dev_dataset = dev_dataset
+        self.log_path = log_path
+        self.log_file = None
+        self.epoch_results: list[dict] = []
+
+    def on_train_begin(self, args, state, control, **kwargs):
+        if self.log_path:
+            self.log_path.parent.mkdir(parents=True, exist_ok=True)
+            self.log_file = open(self.log_path, "w", encoding="utf-8")
+
+    def on_train_end(self, args, state, control, **kwargs):
+        if self.log_file:
+            self.log_file.close()
+            self.log_file = None
+
+    def on_evaluate(self, args, state, control, metrics=None, model=None, processing_class=None, **kwargs):
+        if metrics is None or model is None:
+            return
+
+        tokenizer = processing_class or kwargs.get("tokenizer")
+        if tokenizer is None:
+            return
+
+        eval_cfg = self.cfg.get("eval", {})
+        max_samples = eval_cfg.get("eval_accuracy_max_samples")
+        print_n = eval_cfg.get("eval_print_samples", 5)
+        max_new_tokens = self.cfg["model"].get("gen_max_new_tokens", 512)
+
+        epoch = state.epoch or 0
+        print(f"\n{'='*60}")
+        print(f"  [Epoch {epoch:.0f}] Computing accuracy on dev...")
+
+        result = compute_accuracy_on_split(
+            model=model,
+            tokenizer=tokenizer,
+            dataset=self.dev_dataset,
+            max_samples=max_samples,
+            max_new_tokens=max_new_tokens,
+            print_n=print_n,
+            log_file=self.log_file,
+        )
+
+        accuracy = result["accuracy"]
+        metrics["eval_accuracy"] = accuracy
+
+        print(f"  [Epoch {epoch:.0f}] Accuracy: {result['correct']}/{result['total']} = {accuracy:.1%}")
+        print(f"  [Epoch {epoch:.0f}] Avg latency: {result['avg_latency_sec']:.2f}s/sample")
+        print(f"{'='*60}\n")
+
+        self.epoch_results.append({"epoch": epoch, **result})
+
+
+# ─── Latency Benchmark ───────────────────────────────────────────────────────
+
+def benchmark_latency(model, tokenizer, dataset, cfg: dict):
+    """Benchmark latency sau training (warmup + N samples)."""
+    eval_cfg = cfg.get("eval", {})
+    n = eval_cfg.get("inference_latency_benchmark_n", 30)
+    warmup = eval_cfg.get("inference_latency_warmup", 2)
+    max_new_tokens = cfg["model"].get("gen_max_new_tokens", 512)
+
+    if n <= 0:
+        return
+
+    total = min(warmup + n, len(dataset))
+    subset = dataset.select(range(total))
+
+    print(f"\n{'='*60}")
+    print(f"  Latency Benchmark: {warmup} warmup + {n} measured samples")
+    print(f"{'='*60}")
+
+    latencies = []
+    model.eval()
+
+    for i, item in enumerate(subset):
+        messages = item["messages"][:2]
+        text = tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=4096).to(model.device)
+
+        t0 = time.perf_counter()
+        with torch.no_grad():
+            model.generate(**inputs, max_new_tokens=max_new_tokens, do_sample=False)
+        elapsed = time.perf_counter() - t0
+
+        if i >= warmup:
+            latencies.append(elapsed)
+            print(f"    [{i - warmup + 1:3d}/{n}] {elapsed:.3f}s")
+
+    if latencies:
+        avg = sum(latencies) / len(latencies)
+        min_l = min(latencies)
+        max_l = max(latencies)
+        print(f"\n  Avg: {avg:.3f}s | Min: {min_l:.3f}s | Max: {max_l:.3f}s")
+    print(f"{'='*60}\n")
+
+    return {"avg_sec": avg, "min_sec": min_l, "max_sec": max_l, "n": len(latencies)}
+
+
+# ─── Full Evaluation (train + dev + test) ────────────────────────────────────
+
+def evaluate_all_splits(model, tokenizer, ds_dict: DatasetDict, cfg: dict, output_dir: Path):
+    """Tính accuracy trên cả 3 splits, ghi kết quả JSON."""
+    max_new_tokens = cfg["model"].get("gen_max_new_tokens", 512)
+    print_n = cfg.get("eval", {}).get("eval_print_samples", 5)
+
+    results = {}
+    for split_name in ["train", "dev", "test"]:
+        if split_name not in ds_dict:
+            continue
+        print(f"\n{'='*60}")
+        print(f"  Final Accuracy — [{split_name}] ({len(ds_dict[split_name])} samples)")
+        print(f"{'='*60}")
+
+        result = compute_accuracy_on_split(
+            model=model,
+            tokenizer=tokenizer,
+            dataset=ds_dict[split_name],
+            max_new_tokens=max_new_tokens,
+            print_n=print_n if split_name != "train" else 3,
+        )
+        results[split_name] = {
+            "accuracy": result["accuracy"],
+            "correct": result["correct"],
+            "total": result["total"],
+            "avg_latency_sec": result["avg_latency_sec"],
+        }
+        print(f"  → {split_name}: {result['correct']}/{result['total']} = {result['accuracy']:.1%}")
+
+    # Summary
+    print(f"\n{'='*60}")
+    print(f"  FINAL ACCURACY SUMMARY")
+    print(f"{'='*60}")
+    for split_name, r in results.items():
+        print(f"  {split_name:5s}: {r['accuracy']:.1%} ({r['correct']}/{r['total']}), avg {r['avg_latency_sec']:.2f}s/sample")
+    print(f"{'='*60}\n")
+
+    # Save
+    eval_path = output_dir / "eval_results.json"
+    with open(eval_path, "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+    print(f"[Eval] Results saved to: {eval_path}")
+
+    return results
+
+
 # ─── Training ────────────────────────────────────────────────────────────────
 
 def train(cfg: dict, debug_max_samples: int | None = None):
@@ -127,6 +407,7 @@ def train(cfg: dict, debug_max_samples: int | None = None):
     project_root = resolve_project_root()
     train_cfg = cfg["training"]
     model_cfg = cfg["model"]
+    hub_cfg = cfg.get("hub", {})
 
     # 1. Dataset
     ds_dict = get_or_build_dataset(cfg, project_root)
@@ -143,17 +424,19 @@ def train(cfg: dict, debug_max_samples: int | None = None):
     model, tokenizer = load_model_and_tokenizer(cfg)
 
     # 3. Output dir
-    hub_cfg = cfg.get("hub", {})
     version = hub_cfg.get("repo_version", "v01")
-    output_dir = project_root / "outputs" / f"qa-sft-{version}"
+    model_type = hub_cfg.get("type", "QA")
+    method = hub_cfg.get("method", "CoT")
+    slug = model_cfg["name"].split("/")[-1]
+    output_dir = project_root / "outputs" / f"{model_type.lower()}-{version}-{method.lower()}-{slug}"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # 4. SFT Config
     sft_config = SFTConfig(
         output_dir=str(output_dir),
-        num_train_epochs=train_cfg.get("num_train_epochs", 10),
+        num_train_epochs=train_cfg.get("num_train_epochs", 20),
         per_device_train_batch_size=train_cfg.get("per_device_train_batch_size", 1),
-        per_device_eval_batch_size=train_cfg.get("per_device_eval_batch_size", 4),
+        per_device_eval_batch_size=train_cfg.get("per_device_eval_batch_size", 8),
         gradient_accumulation_steps=train_cfg.get("gradient_accumulation_steps", 8),
         learning_rate=float(train_cfg.get("learning_rate", 2e-5)),
         warmup_ratio=train_cfg.get("warmup_ratio", 0.05),
@@ -161,20 +444,27 @@ def train(cfg: dict, debug_max_samples: int | None = None):
         logging_steps=train_cfg.get("logging_steps", 10),
         eval_strategy="epoch",
         save_strategy="epoch",
-        save_total_limit=train_cfg.get("save_total_limit", 2),
+        save_total_limit=train_cfg.get("save_total_limit", 1),
         load_best_model_at_end=train_cfg.get("load_best_model_at_end", True),
-        metric_for_best_model=train_cfg.get("metric_for_best_model", "eval_loss"),
-        greater_is_better=train_cfg.get("greater_is_better", False),
+        metric_for_best_model=train_cfg.get("metric_for_best_model", "eval_accuracy"),
+        greater_is_better=train_cfg.get("greater_is_better", True),
         bf16=train_cfg.get("bf16", True),
         gradient_checkpointing=train_cfg.get("gradient_checkpointing", True),
         max_seq_length=model_cfg.get("max_seq_length", 4096),
-        seed=train_cfg.get("train_seed", 42),
+        seed=train_cfg.get("train_seed", 3407),
         report_to="none",
     )
 
     # 5. Callbacks
     callbacks = []
-    patience = train_cfg.get("early_stopping_patience", 5)
+
+    # Accuracy callback (ghi eval_accuracy vào metrics mỗi epoch)
+    log_path = output_dir / "accuracy_log.jsonl"
+    accuracy_cb = QAAccuracyCallback(cfg, ds_dict["dev"], log_path=log_path)
+    callbacks.append(accuracy_cb)
+
+    # Early stopping
+    patience = train_cfg.get("early_stopping_patience", 7)
     if patience > 0:
         callbacks.append(EarlyStoppingCallback(early_stopping_patience=patience))
 
@@ -189,9 +479,14 @@ def train(cfg: dict, debug_max_samples: int | None = None):
     )
 
     # 7. Train
-    print("\n" + "=" * 60)
-    print("  Starting QA COT SFT Training")
-    print("=" * 60)
+    print(f"\n{'='*60}")
+    print(f"  Starting QA COT SFT Training")
+    print(f"  Model: {model_cfg['name']}")
+    print(f"  Type: {model_type} | Method: {method} | Version: {version}")
+    print(f"  Metric: accuracy (early_stop patience={patience})")
+    print(f"  Output: {output_dir}")
+    print(f"{'='*60}\n")
+
     trainer.train()
 
     # 8. Save final LoRA adapter
@@ -200,18 +495,34 @@ def train(cfg: dict, debug_max_samples: int | None = None):
     tokenizer.save_pretrained(str(final_dir))
     print(f"\n[Save] LoRA adapter saved to: {final_dir}")
 
-    # 9. Push to Hub (optional)
+    # 9. Final evaluation trên cả 3 splits
+    evaluate_all_splits(model, tokenizer, ds_dict, cfg, output_dir)
+
+    # 10. Latency benchmark
+    bench_split = cfg.get("eval", {}).get("inference_latency_benchmark_split", "test")
+    if bench_split in ds_dict:
+        benchmark_latency(model, tokenizer, ds_dict[bench_split], cfg)
+
+    # 11. Save epoch accuracy history
+    if accuracy_cb.epoch_results:
+        history_path = output_dir / "epoch_accuracy_history.json"
+        with open(history_path, "w", encoding="utf-8") as f:
+            json.dump(accuracy_cb.epoch_results, f, ensure_ascii=False, indent=2)
+        print(f"[Log] Epoch history saved to: {history_path}")
+
+    # 12. Push to Hub (optional)
     if hub_cfg.get("push_to_hub", False):
         org = hub_cfg.get("org", "")
-        repo_name = f"qa-{version}-cot-{model_cfg['name'].split('/')[-1]}"
+        repo_name = f"{model_type.lower()}-{version}-{method.lower()}-{slug}"
         hub_repo_id = f"{org}/{repo_name}" if org else repo_name
         print(f"[Hub] Pushing to: {hub_repo_id}")
         trainer.push_to_hub(repo_id=hub_repo_id, private=hub_cfg.get("hf_private", True))
 
-    # 10. Cleanup
+    # 13. Cleanup
     del model, trainer
     gc.collect()
-    torch.cuda.empty_cache() if torch.cuda.is_available() else None
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
     print("\n[Done] Training complete.")
     return str(final_dir)
@@ -227,9 +538,12 @@ def merge_and_push(cfg: dict, lora_dir: str | None = None):
     model_cfg = cfg["model"]
     hub_cfg = cfg.get("hub", {})
     version = hub_cfg.get("repo_version", "v01")
+    model_type = hub_cfg.get("type", "QA")
+    method = hub_cfg.get("method", "CoT")
+    slug = model_cfg["name"].split("/")[-1]
 
     if lora_dir is None:
-        lora_dir = str(project_root / "outputs" / f"qa-sft-{version}" / "final_lora")
+        lora_dir = str(project_root / "outputs" / f"{model_type.lower()}-{version}-{method.lower()}-{slug}" / "final_lora")
 
     print(f"[Merge] Loading base: {model_cfg['name']}")
     base_model = AutoModelForCausalLM.from_pretrained(
@@ -246,14 +560,16 @@ def merge_and_push(cfg: dict, lora_dir: str | None = None):
     model = PeftModel.from_pretrained(base_model, lora_dir)
     model = model.merge_and_unload()
 
-    merged_dir = str(project_root / "outputs" / f"qa-sft-{version}" / "merged")
+    merged_dir = str(
+        project_root / "outputs" / f"{model_type.lower()}-{version}-{method.lower()}-{slug}" / "merged"
+    )
     model.save_pretrained(merged_dir)
     tokenizer.save_pretrained(merged_dir)
     print(f"[Merge] Merged model saved to: {merged_dir}")
 
     if hub_cfg.get("push_to_hub", False):
         org = hub_cfg.get("org", "")
-        repo_name = f"qa-{version}-cot-{model_cfg['name'].split('/')[-1]}"
+        repo_name = f"{model_type.lower()}-{version}-{method.lower()}-{slug}"
         hub_repo_id = f"{org}/{repo_name}" if org else repo_name
         print(f"[Hub] Pushing merged model to: {hub_repo_id}")
         model.push_to_hub(hub_repo_id, private=hub_cfg.get("hf_private", True))
@@ -269,7 +585,7 @@ def main():
     parser = argparse.ArgumentParser(description="Train QA COT model (Stage 2)")
     parser.add_argument("--config", type=str, default="configs/qa_model.yaml")
     parser.add_argument("--debug-samples", type=int, default=None, help="Limit samples for quick test")
-    parser.add_argument("--merge", action="store_true", help="Merge LoRA into base model after training")
+    parser.add_argument("--merge", action="store_true", help="Merge LoRA after training")
     parser.add_argument("--merge-only", action="store_true", help="Only merge (skip training)")
     parser.add_argument("--lora-dir", type=str, default=None, help="Path to LoRA adapter for merge")
     args = parser.parse_args()

@@ -18,8 +18,10 @@ from .config import FOLz3Config
 from .prompts import (
     SYSTEM_PROMPT_QA,
     SYSTEM_PROMPT_QA_BASELINE,
+    SYSTEM_PROMPT_QA_COT,
     USER_TEMPLATE_QA,
     USER_TEMPLATE_QA_BASELINE,
+    USER_TEMPLATE_QA_COT,
 )
 from .z3_solver import Z3Result
 
@@ -61,42 +63,59 @@ class QAInference:
         z3_result: Z3Result,
         question: str,
     ) -> dict:
-        """Compose prompt tu FOL + Z3 output, generate JSON {answer, explanation}."""
-        # Format premises blocks
+        """Compose prompt tu FOL + Z3 output, generate JSON {answer, explanation}.
+
+        Chon prompt theo cfg.qa_type:
+          - "cot": CoT prompt (chi NL + FOL + question, khong truyen Z3 report)
+          - "z3":  Z3 report prompt (truyen day du Z3 status/entailment/options)
+        """
         nl_block = "\n".join(f"{i}. {p}" for i, p in enumerate(premises_nl, 1))
         fol_block = "\n".join(f"{i}. {p}" for i, p in enumerate(premises_fol, 1))
 
-        # Format Z3 model assignments
-        if z3_result.conclusions:
-            z3_conclusions = "; ".join(z3_result.conclusions)
-        else:
-            z3_conclusions = "(no ground terms)"
+        qa_type = getattr(self.cfg, "qa_type", "z3")
 
-        # Format Z3 options entailment (MCQ)
-        if z3_result.options_entailment:
-            z3_options_str = ", ".join(
-                f"{k}:{v}"
-                for k, v in sorted(z3_result.options_entailment.items())
+        if qa_type == "cot":
+            # CoT mode: chi NL + FOL + question, model tu suy luan
+            user_msg = USER_TEMPLATE_QA_COT.format(
+                premises_nl_block=nl_block,
+                premises_fol_block=fol_block,
+                question=question,
             )
+            messages = [
+                {"role": "system", "content": SYSTEM_PROMPT_QA_COT},
+                {"role": "user", "content": user_msg},
+            ]
         else:
-            z3_options_str = "(no MCQ options)"
+            # Z3 mode: truyen day du Z3 report
+            if z3_result.conclusions:
+                z3_conclusions = "; ".join(z3_result.conclusions)
+            else:
+                z3_conclusions = "(no ground terms)"
 
-        user_msg = USER_TEMPLATE_QA.format(
-            premises_nl_block=nl_block,
-            premises_fol_block=fol_block,
-            z3_status=z3_result.raw_status,
-            z3_entailment=z3_result.entailment,
-            z3_options_entailment=z3_options_str,
-            z3_parsed_count=len(z3_result.premises_parsed),
-            z3_total_count=len(z3_result.premises_parsed) + len(z3_result.premises_failed),
-            z3_conclusions=z3_conclusions,
-            question=question,
-        )
+            if z3_result.options_entailment:
+                z3_options_str = ", ".join(
+                    f"{k}:{v}"
+                    for k, v in sorted(z3_result.options_entailment.items())
+                )
+            else:
+                z3_options_str = "(no MCQ options)"
 
-        messages = [
-            {"role": "system", "content": SYSTEM_PROMPT_QA},
-            {"role": "user", "content": user_msg},
-        ]
+            user_msg = USER_TEMPLATE_QA.format(
+                premises_nl_block=nl_block,
+                premises_fol_block=fol_block,
+                z3_status=z3_result.raw_status,
+                z3_entailment=z3_result.entailment,
+                z3_options_entailment=z3_options_str,
+                z3_parsed_count=len(z3_result.premises_parsed),
+                z3_total_count=len(z3_result.premises_parsed) + len(z3_result.premises_failed),
+                z3_conclusions=z3_conclusions,
+                question=question,
+            )
+            messages = [
+                {"role": "system", "content": SYSTEM_PROMPT_QA},
+                {"role": "user", "content": user_msg},
+            ]
+
         return self._call_model(messages)
 
     def generate_baseline(

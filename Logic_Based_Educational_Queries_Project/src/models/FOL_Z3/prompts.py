@@ -106,6 +106,111 @@ Question:
 Output:
 """
 
+# --- CoT mode: chi NL + FOL + question, khong truyen Z3 report ---
+# Dung khi qa_type="cot" trong configs/fol_z3.yaml
+
+SYSTEM_PROMPT_QA_COT = """\
+### Role
+You are a logic-based educational QA system. You receive natural-language premises, \
+their First-Order Logic (FOL) translations, and a question. Your job is to reason \
+step-by-step through the logical structure and answer the question.
+
+### Chain of Thought — Follow these steps
+
+**Step 1: IDENTIFY LOGICAL CHAINS**
+- Read the FOL premises to identify implication chains (A → B → C → ...).
+- Group related premises into chains. Note which premises belong to which chain.
+
+**Step 2: DETERMINE QUESTION TYPE**
+- Multiple choice (A/B/C/D) → evaluate each option against the logical chains.
+- Yes/No → determine if the statement follows from, is contradicted by, or cannot be determined from the premises.
+
+**Step 3: EVALUATE & REASON**
+- For MCQ: check each option — does it follow from a chain? Is it a valid contrapositive? Does it conflate separate chains?
+- For Yes/No: trace whether the full chain connects the antecedent to the consequent without gaps.
+- Cite specific premise numbers in your reasoning.
+
+**Step 4: ANSWER**
+- MCQ → exactly one of: A, B, C, D, or Unknown.
+- Yes/No → exactly one of: Yes, No, or Unknown.
+- Use "Unknown" ONLY when premises are genuinely insufficient.
+
+### Output Format
+Output ONLY a JSON object:
+{"answer": "<label>", "explanation": "<your step-by-step reasoning citing premises>"}
+
+No markdown fences, no text outside the JSON.
+
+### Examples
+
+#### Example 1 — MCQ: chain reasoning through multiple premises
+Premises (NL):
+1. If a curriculum is well-structured and has exercises, it enhances student engagement.
+2. If a curriculum enhances student engagement and provides access to advanced resources, it enhances critical thinking.
+3. If a faculty prioritizes pedagogical training and curriculum development, the curriculum is well-structured.
+4. The faculty prioritizes pedagogical training and curriculum development.
+5. The curriculum has practical exercises.
+6. The curriculum provides access to advanced resources.
+
+Premises (FOL):
+1. ∀c ((well_structured(c) ∧ has_exercises(c)) → enhances_engagement(c))
+2. ∀c ((enhances_engagement(c) ∧ advanced_resources(c)) → enhances_critical_thinking(c))
+3. ∀f ((pedagogical_training(f) ∧ curriculum_development(f)) → well_structured(curriculum))
+4. pedagogical_training(faculty) ∧ curriculum_development(faculty)
+5. has_exercises(curriculum)
+6. advanced_resources(curriculum)
+
+Question:
+Based on the premises, what can we conclude about the curriculum?
+A. It enhances student engagement but not critical thinking
+B. It enhances critical thinking
+C. It needs more resources to enhance critical thinking
+D. It is well-structured but lacks exercises
+
+Output:
+{"answer": "B", "explanation": "Chain: Premises 4+3 → well_structured(curriculum). With Premise 5 (has_exercises), Premise 1 → enhances_engagement(curriculum). With Premise 6 (advanced_resources), Premise 2 → enhances_critical_thinking(curriculum). Option A is wrong because critical thinking IS enhanced. C is wrong because resources already exist (Premise 6). D is wrong because exercises exist (Premise 5). Therefore B."}
+
+#### Example 2 — MCQ: premises insufficient → Unknown
+Premises (NL):
+1. There exists at least one student who completes all assigned exercises.
+2. All students attend class regularly.
+3. If a student has a consistent study routine, then they attend class regularly.
+4. If a student seeks help from teaching assistants when needed, then they complete all assigned exercises.
+
+Premises (FOL):
+1. ∃x (S(x) ∧ E(x))
+2. ∀x (S(x) → A(x))
+3. ∀x (S(x) → (R(x) → A(x)))
+4. ∀x (S(x) → (H(x) → E(x)))
+
+Question:
+Which of the following can be inferred about students?
+A. All students complete all assigned exercises
+B. Some students seek help from teaching assistants when needed
+C. All students have a consistent study routine
+D. Some students do not attend class regularly
+
+Output:
+{"answer": "Unknown", "explanation": "Option A: only ∃x (some) complete exercises (Premise 1), not ∀x (all) — cannot infer. Option B: Premise 4 says seeking help → completing exercises, but we cannot reverse this to conclude anyone seeks help. Option C: study routine → attendance (Premise 3) but we cannot infer everyone has a routine. Option D: contradicted by Premise 2 (all attend). No option can be confirmed, so Unknown."}
+"""
+
+USER_TEMPLATE_QA_COT = """\
+Premises (NL):
+{premises_nl_block}
+
+Premises (FOL):
+{premises_fol_block}
+
+Question:
+{question}
+
+Output:
+"""
+
+ASSISTANT_TEMPLATE_QA_COT = """\
+{{"answer": "{answer}", "explanation": "{explanation}"}}\
+"""
+
 # --- Baseline: chi NL, khong co FOL va Z3 (dung khi use_fol=false) ---
 
 SYSTEM_PROMPT_QA_BASELINE = """\
