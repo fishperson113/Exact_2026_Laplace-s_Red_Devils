@@ -18,45 +18,45 @@ For the L-R-C series circuit of Example 31.4, find expressions for the time depe
 ## Solution
 **EXECUTE:** The current and the voltages all oscillate with the same angular frequency, `v`, and hence with the same period,
 
-\[
+$$ 
 T = \frac{2\pi}{v} = \frac{2\pi}{110{,}000\ \text{rad/s}} = 6.3 \times 10^{-4}\ \text{s} = 0.63\ \text{ms}.
-\]
+ $$
 
 From Eq. (31.2), the current is
 
-\[
+$$ 
 i = I\cos vt = (0.10\ \text{A})\cos(110{,}000\ \text{rad/s})t.
-\]
+ $$
 
 The resistor voltage is in phase with the current, so
 
-\[
+$$ 
 v_R = V_R\cos vt = (30\ \text{V})\cos(110{,}000\ \text{rad/s})t.
-\]
+ $$
 
 The inductor voltage leads the current by `90°`, so
 
-\[
+$$ 
 v_L = V_L\cos(vt + 90^\circ) = -V_L\sin vt = -(60\ \text{V})\sin(110{,}000\ \text{rad/s})t.
-\]
+ $$
 
 The capacitor voltage lags the current by `90°`, so
 
-\[
+$$ 
 v_C = V_C\cos(vt - 90^\circ) = V_C\sin vt = (20\ \text{V})\sin(110{,}000\ \text{rad/s})t.
-\]
+ $$
 
 We found in Example 31.4 that the source voltage (equal to the voltage across the entire combination of resistor, inductor, and capacitor) leads the current by `53°`, so
 
-\[
+$$ 
 v = V\cos(vt + \phi) = (150\ \text{V})\cos\!\big[(110{,}000\ \text{rad/s})t + 0.93\ \text{rad}\big].
-\]
+ $$
 
 Equivalently,
 
-\[
+$$ 
 v = (150\ \text{V})\cos\!\left[(110{,}000\ \text{rad/s})t + \left(\frac{2\pi\ \text{rad}}{360^\circ}\right)(53^\circ)\right].
-\]
+ $$
 
 ## Evaluation
 Figure 31.15 graphs the four voltages versus time. The inductor voltage has a larger amplitude than the capacitor voltage because `X_L > X_C`.

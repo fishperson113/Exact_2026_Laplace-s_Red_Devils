@@ -14,34 +14,34 @@ Each branching of larger vessels into smaller vessels increases the total cross-
 ## Key formulas
 Reynolds number for flow in a tube of uniform diameter:
 
-\[
+$$ 
 \text{Re} = \frac{2 \rho r v}{\eta}
-\]
+ $$
 
 where:
-- \(\rho\) is the fluid density
-- \(r\) is the tube radius
-- \(v\) is the fluid speed
-- \(\eta\) is the fluid viscosity
+- $\rho $ is the fluid density
+- $r $ is the tube radius
+- $v $ is the fluid speed
+- $\eta $ is the fluid viscosity
 
 Interpretation:
-- \(\text{Re} < 2000\): laminar flow
-- \(2000 \lesssim \text{Re} \lesssim 3000\): unstable flow
-- \(\text{Re} > 3000\): turbulent flow
+- $\text{Re} < 2000 $: laminar flow
+- $2000 \lesssim \text{Re} \lesssim 3000 $: unstable flow
+- $\text{Re} > 3000 $: turbulent flow
 
 ## Variables and units
-- Reynolds number, \(\text{Re}\): unitless
-- Fluid density, \(\rho\): mass density, units not specified in the source section
-- Tube radius, \(r\): length
-- Fluid speed, \(v\): speed
-- Fluid viscosity, \(\eta\): viscosity
+- Reynolds number, $\text{Re} $: unitless
+- Fluid density, $\rho $: mass density, units not specified in the source section
+- Tube radius, $r $: length
+- Fluid speed, $v $: speed
+- Fluid viscosity, $\eta $: viscosity
 
 ## Worked example
 **Example 12.9: Is This Flow Laminar or Turbulent?**
 
 Calculate the Reynolds number for flow in the needle considered in Example 12.8 to verify the assumption that the flow is laminar. Assume that the density of the saline solution is given.
 
-**Strategy:** Use the Reynolds number formula and the fluid speed \(v\), which can be calculated from Example 12.8.
+**Strategy:** Use the Reynolds number formula and the fluid speed $v $, which can be calculated from Example 12.8.
 
 **Solution:** Entering the known values into the Reynolds number equation gives the result in Eq. 12.54.
 

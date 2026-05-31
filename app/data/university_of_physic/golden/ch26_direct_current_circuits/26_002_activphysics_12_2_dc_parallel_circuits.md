@@ -23,7 +23,7 @@ The source OCR does not include the actual worked-example problem statement. The
 ## Solution
 **EXECUTE the solution as follows:**
 1. Use Eq. (26.1) or (26.2), respectively, to find the equivalent resistance for series or parallel combinations.
-2. If the network is more complex, try reducing it to series and parallel combinations. For example, in Fig. 26.1c we first replace the parallel combination of \(R_3\) and \(R_2\) with its equivalent resistance; this then forms a series combination with \(R_1\). In Fig. 26.1d, the combination of \(R_3\) and \(R_2\) in series forms a parallel combination with \(R_1\).
+2. If the network is more complex, try reducing it to series and parallel combinations. For example, in Fig. 26.1c we first replace the parallel combination of $R_3 $ and $R_2 $ with its equivalent resistance; this then forms a series combination with $R_1 $. In Fig. 26.1d, the combination of $R_3 $ and $R_2 $ in series forms a parallel combination with $R_1 $.
 3. Keep in mind that the total potential difference across resistors connected in series is the sum of the individual potential differences. The potential difference across resistors connected in parallel is the same for every resistor and equals the potential difference across the combination.
 4. The current through resistors connected in series is the same through every resistor and equals the current through the combination. The total current through resistors connected in parallel is the sum of the currents through the individual resistors.
 

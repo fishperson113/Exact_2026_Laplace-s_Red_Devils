@@ -20,134 +20,134 @@ The section emphasizes that many collisions of everyday objects involve rotation
 ## Key formulas
 Conservation of angular momentum for the collision:
 
-\[
+$$ 
 L_i = L_f
-\]
+ $$
 
 For a point mass moving tangentially around a pivot:
 
-\[
+$$ 
 L = r p = r m v
-\]
+ $$
 
 For the stick and disk after they stick together:
 
-\[
+$$ 
 L_f = I' \omega'
-\]
+ $$
 
-where \(I'\) is the total moment of inertia about the pivot and \(\omega'\) is the final angular velocity.
+where $I' $ is the total moment of inertia about the pivot and $\omega' $ is the final angular velocity.
 
 For a rod rotating about one end:
 
-\[
+$$ 
 I_{\text{rod}} = \frac{1}{3} M \ell^2
-\]
+ $$
 
 Rotational kinetic energy:
 
-\[
+$$ 
 K_{\text{rot}} = \frac{1}{2} I \omega^2
-\]
+ $$
 
 Translational kinetic energy:
 
-\[
+$$ 
 K = \frac{1}{2} m v^2
-\]
+ $$
 
 Total linear momentum:
 
-\[
+$$ 
 p = mv
-\]
+ $$
 
 For the rotating stick-disk system, the stick’s center of mass moves at half the speed of the disk’s end when rotating about the nail, because the center of mass is halfway along the rod.
 
 ## Variables and units
-- \(m\): mass, in kilograms (kg)
-- \(v\): speed, in meters per second (m/s)
-- \(p\): linear momentum, in kilogram meters per second (kg·m/s)
-- \(L\): angular momentum, in kilogram meter squared per second (kg·m\(^2\)/s)
-- \(I\): moment of inertia, in kilogram meter squared (kg·m\(^2\))
-- \(\omega\): angular velocity, in radians per second (rad/s)
-- \(K\): kinetic energy, in joules (J)
-- \(M\): mass of the stick, in kilograms (kg)
-- \(\ell\): length of the stick, in meters (m)
+- $m $: mass, in kilograms (kg)
+- $v $: speed, in meters per second (m/s)
+- $p $: linear momentum, in kilogram meters per second (kg·m/s)
+- $L $: angular momentum, in kilogram meter squared per second (kg·m$^2 $/s)
+- $I $: moment of inertia, in kilogram meter squared (kg·m$^2 $)
+- $\omega $: angular velocity, in radians per second (rad/s)
+- $K $: kinetic energy, in joules (J)
+- $M $: mass of the stick, in kilograms (kg)
+- $\ell $: length of the stick, in meters (m)
 
 In the worked example:
-- Disk mass: \(50.0\ \text{g} = 0.0500\ \text{kg}\)
-- Disk initial speed: \(30.0\ \text{m/s}\)
-- Stick length: \(1.20\ \text{m}\)
-- Stick mass: \(2.00\ \text{kg}\)
+- Disk mass: $50.0\ \text{g} = 0.0500\ \text{kg} $
+- Disk initial speed: $30.0\ \text{m/s} $
+- Stick length: $1.20\ \text{m} $
+- Stick mass: $2.00\ \text{kg} $
 
 ## Worked example
-A disk of mass \(50.0\ \text{g}\) moving at \(30.0\ \text{m/s}\) strikes a \(1.20\ \text{m}\)-long stick of mass \(2.00\ \text{kg}\) nailed at one end on a frictionless surface and sticks to it.
+A disk of mass $50.0\ \text{g} $ moving at $30.0\ \text{m/s} $ strikes a $1.20\ \text{m} $-long stick of mass $2.00\ \text{kg} $ nailed at one end on a frictionless surface and sticks to it.
 
 ### (a) Angular velocity after the collision
 Use conservation of angular momentum about the nail:
 
-\[
+$$ 
 L_i = L_f
-\]
+ $$
 
 The initial angular momentum comes from the disk:
 
-\[
+$$ 
 L_i = r m v
-\]
+ $$
 
 After the collision, the disk and stick rotate together:
 
-\[
+$$ 
 L_f = I' \omega'
-\]
+ $$
 
 So,
 
-\[
+$$ 
 r m v = I' \omega'
-\]
+ $$
 
 with
 
-\[
+$$ 
 I' = I_{\text{disk}} + I_{\text{stick}}
-\]
+ $$
 
 and the stick’s moment of inertia about the nail is
 
-\[
+$$ 
 I_{\text{stick}} = \frac{1}{3} M \ell^2
-\]
+ $$
 
 Using the given values yields the final angular velocity:
 
-\[
+$$ 
 \omega' \approx 11.9\ \text{rad/s}
-\]
+ $$
 
 ### (b) Kinetic energy before and after the collision
 Before the collision, the kinetic energy is the disk’s translational kinetic energy:
 
-\[
+$$ 
 K_i = \frac{1}{2} m v^2
-\]
+ $$
 
 After the collision, the kinetic energy is the rotational kinetic energy of the combined system:
 
-\[
+$$ 
 K_f = \frac{1}{2} I' \omega'^2
-\]
+ $$
 
-The collision is inelastic, so \(K_f < K_i\).
+The collision is inelastic, so $K_f < K_i $.
 
 ### (c) Total linear momentum before and after the collision
 Before the collision, the linear momentum is that of the disk:
 
-\[
+$$ 
 p_i = mv
-\]
+ $$
 
 After the collision, the total linear momentum is the momentum of the disk plus the momentum of the stick’s center of mass, which moves in the same direction as the disk. The stick’s center of mass moves at half the speed of the disk’s end because it is halfway along the rod.
 

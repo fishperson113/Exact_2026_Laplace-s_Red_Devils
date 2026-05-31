@@ -16,73 +16,73 @@ When both conservative and nonconservative forces act, the net work is the sum o
 
 The work done by conservative forces comes from a loss of gravitational potential energy, so the change in mechanical energy is equal to the work done by nonconservative forces:
 
-\[
+$$ 
 \Delta E_{\text{mech}} = W_{\text{nc}}
-\]
+ $$
 
 Rearranging gives:
 
-\[
+$$ 
 W_{\text{nc}} = \Delta E_{\text{mech}}
-\]
+ $$
 
-If \(W_{\text{nc}} > 0\), mechanical energy increases. If \(W_{\text{nc}} < 0\), mechanical energy decreases. If \(W_{\text{nc}} = 0\), mechanical energy is conserved.
+If $W_{\text{nc}} > 0 $, mechanical energy increases. If $W_{\text{nc}} < 0 $, mechanical energy decreases. If $W_{\text{nc}} = 0 $, mechanical energy is conserved.
 
 For the sliding baseball player on level ground, friction removes the initial kinetic energy by doing negative work:
 
-\[
+$$ 
 W_f = -fd
-\]
+ $$
 
 and the work-energy relation becomes:
 
-\[
+$$ 
 -fd = \Delta K
-\]
+ $$
 
 For the incline case, the change in mechanical energy is written using gravitational potential energy and kinetic energy:
 
-\[
+$$ 
 W_{\text{nc}} = \Delta K + \Delta U
-\]
+ $$
 
 ## Variables and units
-- \(W_{\text{nc}}\): total work done by nonconservative forces, units of joules (J)
-- \(W_f\): work done by friction, units of joules (J)
-- \(\Delta E_{\text{mech}}\): change in mechanical energy, units of joules (J)
-- \(\Delta K\): change in kinetic energy, units of joules (J)
-- \(\Delta U\): change in potential energy, units of joules (J)
-- \(f\): friction force, units of newtons (N)
-- \(d\): distance traveled, units of meters (m)
-- \(m\): mass, units of kilograms (kg)
-- \(v\): speed, units of meters per second (m/s)
+- $W_{\text{nc}} $: total work done by nonconservative forces, units of joules (J)
+- $W_f $: work done by friction, units of joules (J)
+- $\Delta E_{\text{mech}} $: change in mechanical energy, units of joules (J)
+- $\Delta K $: change in kinetic energy, units of joules (J)
+- $\Delta U $: change in potential energy, units of joules (J)
+- $f $: friction force, units of newtons (N)
+- $d $: distance traveled, units of meters (m)
+- $m $: mass, units of kilograms (kg)
+- $v $: speed, units of meters per second (m/s)
 
 ## Worked example
 A 65.0-kg baseball player slides to a stop on level ground with an initial speed of 6.00 m/s. The force of friction is constant at 450 N. The player stops when friction removes all of the initial kinetic energy.
 
 Using the work-energy relation for friction:
 
-\[
+$$ 
 -fd = \Delta K
-\]
+ $$
 
 Since the final speed is zero,
 
-\[
+$$ 
 \Delta K = 0 - \frac{1}{2}mv^2
-\]
+ $$
 
 so
 
-\[
+$$ 
 -fd = -\frac{1}{2}mv^2
-\]
+ $$
 
 and therefore
 
-\[
+$$ 
 d = \frac{\frac{1}{2}mv^2}{f}
-\]
+ $$
 
 Substituting the values gives the stopping distance.
 

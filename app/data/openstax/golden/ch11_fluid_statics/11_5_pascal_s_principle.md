@@ -16,43 +16,43 @@ Hydraulic systems can increase force, but they do not do more work than is done 
 ## Key formulas
 Pressure is defined by
 
-\[
+$$ 
 P = \frac{F}{A}
-\]
+ $$
 
 For a hydraulic system with pistons at the same vertical height and negligible friction:
 
-\[
+$$ 
 P_1 = P_2
-\]
+ $$
 
 so
 
-\[
+$$ 
 \frac{F_1}{A_1} = \frac{F_2}{A_2}
-\]
+ $$
 
 which can be rearranged as
 
-\[
+$$ 
 F_2 = F_1 \frac{A_2}{A_1}
-\]
+ $$
 
-For circular pistons, area may be found from diameter \(d\) using
+For circular pistons, area may be found from diameter $d $ using
 
-\[
+$$ 
 A = \pi \left(\frac{d}{2}\right)^2
-\]
+ $$
 
 ## Variables and units
-- \(P\): pressure, units of pascals (Pa) or newtons per square meter (N/m\(^2\))
-- \(F\): force, units of newtons (N)
-- \(A\): area, units of square meters (m\(^2\))
-- \(F_1\): input force on the first piston
-- \(F_2\): output force on the second piston
-- \(A_1\): area of the first piston
-- \(A_2\): area of the second piston
-- \(d\): diameter of a circular piston, units of meters (m) or centimeters (cm)
+- $P $: pressure, units of pascals (Pa) or newtons per square meter (N/m$^2 $)
+- $F $: force, units of newtons (N)
+- $A $: area, units of square meters (m$^2 $)
+- $F_1 $: input force on the first piston
+- $F_2 $: output force on the second piston
+- $A_1 $: area of the first piston
+- $A_2 $: area of the second piston
+- $d $: diameter of a circular piston, units of meters (m) or centimeters (cm)
 
 Conditions stated in the section:
 - the pistons must be at the same vertical height
@@ -66,9 +66,9 @@ A force of 100 N is applied to the brake pedal. The pedal force is increased by 
 
 Using Pascal’s principle for the hydraulic system:
 
-\[
+$$ 
 \frac{F_1}{A_1} = \frac{F_2}{A_2}
-\]
+ $$
 
 The result is that each wheel cylinder exerts a force of 125 N.
 

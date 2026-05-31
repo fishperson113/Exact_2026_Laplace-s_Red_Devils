@@ -12,21 +12,21 @@ An understanding of impulse explains many real-world safety features. Dashboard 
 For a force that varies with time, the average effective force can be used to produce the same impulse as the actual time-varying force. The area under a force-versus-time graph equals the impulse, and therefore equals the change in momentum.
 
 ## Key formulas
-\[
+$$ 
 \Delta \vec{p} = \vec{F}_{\text{ave}} \Delta t
-\]
+ $$
 
-\[
+$$ 
 \vec{J} = \Delta \vec{p}
-\]
+ $$
 
 Where force varies with time, the impulse is also equal to the area under the force-time curve.
 
 ## Variables and units
-- \(\Delta \vec{p}\): change in momentum, units of \(\text{kg} \cdot \text{m/s}\)
-- \(\vec{F}_{\text{ave}}\): average net external force, units of newtons (N)
-- \(\Delta t\): time interval over which the force acts, units of seconds (s)
-- \(\vec{J}\): impulse, units of \(\text{N} \cdot \text{s}\), equivalent to \(\text{kg} \cdot \text{m/s}\)
+- $\Delta \vec{p} $: change in momentum, units of $\text{kg} \cdot \text{m/s} $
+- $\vec{F}_{\text{ave}} $: average net external force, units of newtons (N)
+- $\Delta t $: time interval over which the force acts, units of seconds (s)
+- $\vec{J} $: impulse, units of $\text{N} \cdot \text{s} $, equivalent to $\text{kg} \cdot \text{m/s} $
 
 ## Worked example
 ### Example 8.3 Calculating Magnitudes of Impulses: Two Billiard Balls Striking a Rigid Wall

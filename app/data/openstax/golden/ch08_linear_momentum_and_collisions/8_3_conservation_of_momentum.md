@@ -20,63 +20,63 @@ Momentum can be conserved separately along different dimensions. For example, in
 The principle applies to many systems, from car collisions and projectile motion to comets striking Earth, gas molecules, and subatomic particle collisions. Momentum is also a key idea in atomic and subatomic physics, where collision experiments are used to infer particle properties. Momentum is a property of all subatomic particles, including massless particles such as photons.
 
 ## Key formulas
-\[
+$$ 
 \Delta p_1 = F_{21}\Delta t
-\]
+ $$
 
-\[
+$$ 
 \Delta p_2 = F_{12}\Delta t
-\]
+ $$
 
 With Newton’s third law,
-\[
+$$ 
 F_{21} = -F_{12}
-\]
+ $$
 
 So the changes in momentum satisfy
-\[
+$$ 
 \Delta p_1 = -\Delta p_2
-\]
+ $$
 
 For a two-object system,
-\[
+$$ 
 p_1 + p_2 = p_1' + p_2'
-\]
+ $$
 
 For an isolated system,
-\[
+$$ 
 p_{\text{tot}} = p_{\text{tot}}'
-\]
+ $$
 
 Equivalent statement:
-\[
+$$ 
 \sum p = \sum p'
-\]
+ $$
 
 Using Newton’s second law in momentum form,
-\[
+$$ 
 \sum F = \frac{dp}{dt}
-\]
+ $$
 
 For an isolated system,
-\[
+$$ 
 \sum F = 0 \Rightarrow \frac{dp}{dt} = 0
-\]
+ $$
 so total momentum is constant.
 
 ## Variables and units
-- \(p\): momentum
-- \(p_1, p_2\): momenta of objects 1 and 2
-- \(p_1', p_2'\): final momenta after the collision
-- \(p_{\text{tot}}\): total momentum of the system
-- \(F_{21}\): force on object 1 due to object 2
-- \(F_{12}\): force on object 2 due to object 1
-- \(\Delta p\): change in momentum
-- \(\Delta t\): collision duration or time interval
-- \(\sum F\): net external force
-- Units of momentum: \(\text{kg} \cdot \text{m/s}\)
-- Units of force: newtons, \(\text{N}\)
-- Units of time: seconds, \(\text{s}\)
+- $p $: momentum
+- $p_1, p_2 $: momenta of objects 1 and 2
+- $p_1', p_2' $: final momenta after the collision
+- $p_{\text{tot}} $: total momentum of the system
+- $F_{21} $: force on object 1 due to object 2
+- $F_{12} $: force on object 2 due to object 1
+- $\Delta p $: change in momentum
+- $\Delta t $: collision duration or time interval
+- $\sum F $: net external force
+- Units of momentum: $\text{kg} \cdot \text{m/s} $
+- Units of force: newtons, $\text{N} $
+- Units of time: seconds, $\text{s} $
 
 Conditions and assumptions:
 - Momentum conservation applies to isolated systems with zero net external force.

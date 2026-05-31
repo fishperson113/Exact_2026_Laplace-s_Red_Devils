@@ -26,45 +26,45 @@ The section also compares the Ptolemaic and Copernican models. The Ptolemaic vie
 
 ## Key formulas
 Kepler’s third law for two bodies orbiting the same parent mass:
-\[
+$$ 
 \frac{T_1^2}{T_2^2}=\frac{r_1^3}{r_2^3}
-\]
-where \(T\) is the period and \(r\) is the average orbital radius.
+ $$
+where $T $ is the period and $r $ is the average orbital radius.
 
 For a circular orbit, gravity supplies the centripetal force:
-\[
+$$ 
 \frac{Gm_1m_2}{r^2}=\frac{mv^2}{r}
-\]
+ $$
 After cancellation of the orbiting mass:
-\[
+$$ 
 \frac{GM}{r^2}=\frac{v^2}{r}
-\]
-where \(M\) is the mass of the central body.
+ $$
+where $M $ is the mass of the central body.
 
-Using orbital speed \(v=\frac{2\pi r}{T}\), the circular-orbit relation becomes:
-\[
+Using orbital speed $v=\frac{2\pi r}{T} $, the circular-orbit relation becomes:
+$$ 
 \frac{GM}{r^2}=\frac{4\pi^2r}{T^2}
-\]
+ $$
 
 From this, for a single satellite orbiting a parent body:
-\[
+$$ 
 \frac{r^3}{T^2}=\frac{GM}{4\pi^2}
-\]
+ $$
 
 These relations are valid only for small masses orbiting the same large one, and the two-satellite form is valid only when the parent mass is the same in both cases.
 
 ## Variables and units
-- \(T\): period, time for one orbit
+- $T $: period, time for one orbit
   - Units: s, d, or y depending on context
-- \(r\): average orbital radius
+- $r $: average orbital radius
   - Units: m or km
-- \(v\): orbital speed
+- $v $: orbital speed
   - Units: m/s
-- \(G\): gravitational constant
-  - Units: N·m\(^2\)/kg\(^2\)
-- \(M\): mass of the parent body
+- $G $: gravitational constant
+  - Units: N·m$^2 $/kg$^2 $
+- $M $: mass of the parent body
   - Units: kg
-- \(m\): mass of the satellite or orbiting object
+- $m $: mass of the satellite or orbiting object
   - Units: kg
 
 The section uses:
@@ -76,32 +76,32 @@ The section uses:
 **Find the Time for One Orbit of an Earth Satellite**
 
 Given:
-- The Moon orbits Earth each \(27.3\ \text{d}\)
-- The Moon’s average distance from Earth’s center is \(3.84\times10^5\ \text{km}\)
-- An artificial satellite orbits at an average altitude of \(1500\ \text{km}\) above Earth’s surface
-- Earth’s radius is \(6380\ \text{km}\)
+- The Moon orbits Earth each $27.3\ \text{d} $
+- The Moon’s average distance from Earth’s center is $3.84\times10^5\ \text{km} $
+- An artificial satellite orbits at an average altitude of $1500\ \text{km} $ above Earth’s surface
+- Earth’s radius is $6380\ \text{km} $
 
-We want the satellite’s period \(T_2\).
+We want the satellite’s period $T_2 $.
 
 The satellite’s orbital radius is:
-\[
+$$ 
 r_2 = 6380\ \text{km} + 1500\ \text{km} = 7880\ \text{km}
-\]
+ $$
 
 Using Kepler’s third law for the Moon (subscript 1) and satellite (subscript 2):
-\[
+$$ 
 \frac{T_1^2}{T_2^2}=\frac{r_1^3}{r_2^3}
-\]
+ $$
 
-Solving for \(T_2\):
-\[
+Solving for $T_2 $:
+$$ 
 T_2=T_1\left(\frac{r_2}{r_1}\right)^{3/2}
-\]
+ $$
 
 Substituting values gives:
-\[
+$$ 
 T_2 \approx 1.77\ \text{d}
-\]
+ $$
 
 This is a reasonable period for a satellite in a fairly low orbit. The result also shows that any satellite at this altitude will orbit in the same amount of time, because the satellite’s mass is small compared with Earth’s.
 

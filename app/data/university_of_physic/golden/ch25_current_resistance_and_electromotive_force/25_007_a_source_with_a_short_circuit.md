@@ -13,25 +13,25 @@ needs_review: true
 In the circuit of Example 25.5, the resistor is replaced with a zero-resistance conductor. What are the meter readings now?
 
 ## Setup
-**IDENTIFY and SET UP:** Figure 25.19 shows the new circuit. Our target variables are again \(I\) and \(V_{ab}\).
+**IDENTIFY and SET UP:** Figure 25.19 shows the new circuit. Our target variables are again $I $ and $V_{ab} $.
 
-There is now a zero-resistance path between points \(a\) and \(b\), through the lower loop, so the potential difference between these points must be zero.
+There is now a zero-resistance path between points $a $ and $b $, through the lower loop, so the potential difference between these points must be zero.
 
 ## Solution
 **EXECUTE:** We must have
-\[
+$$ 
 V_{ab} = IR = 0
-\]
+ $$
 no matter what the current is.
 
 We can therefore find the current from Eq. (25.15):
-\[
+$$ 
 V_{ab} = E - Ir = 0
-\]
+ $$
 so
-\[
+$$ 
 I = \frac{E}{r} = \frac{12\ \text{V}}{2\ \Omega} = 6\ \text{A}.
-\]
+ $$
 
 ## Evaluation
 The current has a different value than in Example 25.5, even though the same battery is used; the current depends on both the internal resistance and the resistance of the external circuit.
@@ -42,6 +42,6 @@ Warning: Short circuits can be dangerous! An automobile battery or a household p
 
 ## Key concepts used
 - A zero-resistance connection makes the potential difference between its endpoints zero.
-- For a source with internal resistance, the terminal voltage is \(V_{ab} = E - Ir\).
-- In a short circuit, \(V_{ab} = 0\), so the current is \(I = E/r\).
+- For a source with internal resistance, the terminal voltage is $V_{ab} = E - Ir $.
+- In a short circuit, $V_{ab} = 0 $, so the current is $I = E/r $.
 - Short-circuit current can be very large when the internal resistance is small.

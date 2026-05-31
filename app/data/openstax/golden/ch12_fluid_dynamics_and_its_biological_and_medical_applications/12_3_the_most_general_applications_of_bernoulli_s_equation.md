@@ -13,31 +13,31 @@ Bernoulli’s equation can also be used to relate fluid flow to power. Since eac
 
 ## Key formulas
 Bernoulli’s equation:
-\[
+$$ 
 P + \frac{1}{2}\rho v^2 + \rho gh = \text{constant}
-\]
+ $$
 
 For flow from a reservoir surface to an outlet with negligible resistance:
-\[
+$$ 
 P_1 + \frac{1}{2}\rho v_1^2 + \rho gh_1
 =
 P_2 + \frac{1}{2}\rho v_2^2 + \rho gh_2
-\]
+ $$
 
 With both points at atmospheric pressure and the reservoir surface speed negligible, Torricelli’s theorem gives:
-\[
+$$ 
 v = \sqrt{2gh}
-\]
+ $$
 
-For power in fluid flow, multiplying Bernoulli’s equation by volume flow rate \(\frac{\Delta V}{\Delta t}\) gives power.
+For power in fluid flow, multiplying Bernoulli’s equation by volume flow rate $\frac{\Delta V}{\Delta t} $ gives power.
 
 ## Variables and units
-- \(P\): pressure, units of pascals (Pa)
-- \(\rho\): density, units of kilograms per cubic meter (kg/m\(^3\))
-- \(v\): fluid speed, units of meters per second (m/s)
-- \(g\): acceleration due to gravity, units of meters per second squared (m/s\(^2\))
-- \(h\): height, units of meters (m)
-- \(\Delta V / \Delta t\): volume flow rate, units of cubic meters per second (m\(^3\)/s)
+- $P $: pressure, units of pascals (Pa)
+- $\rho $: density, units of kilograms per cubic meter (kg/m$^3 $)
+- $v $: fluid speed, units of meters per second (m/s)
+- $g $: acceleration due to gravity, units of meters per second squared (m/s$^2 $)
+- $h $: height, units of meters (m)
+- $\Delta V / \Delta t $: volume flow rate, units of cubic meters per second (m$^3 $/s)
 - Gauge pressure: pressure measured relative to atmospheric pressure
 - Atmospheric pressure: pressure of the surrounding air
 
@@ -46,26 +46,26 @@ For power in fluid flow, multiplying Bernoulli’s equation by volume flow rate 
 A fire hose has an inside diameter of 6.40 cm and carries a flow of 40.0 L/s. The hose starts at a gauge pressure of 0.0? The nozzle is 10.0 m above the ground and has an inside diameter of 3.00 cm. Assuming negligible resistance, find the initial water pressure at the base of the hose.
 
 Using Bernoulli’s equation between the ground-level point and the nozzle:
-\[
+$$ 
 P_1 + \frac{1}{2}\rho v_1^2 + \rho gh_1
 =
 P_2 + \frac{1}{2}\rho v_2^2 + \rho gh_2
-\]
+ $$
 
 First determine the speeds from the flow rate and hose areas:
-\[
+$$ 
 v_1 = \frac{\Delta V/\Delta t}{A_1}, \quad v_2 = \frac{\Delta V/\Delta t}{A_2}
-\]
+ $$
 
 Using the given values yields:
-\[
+$$ 
 v_1 = 12.4\ \text{m/s}, \quad v_2 = 56.1\ \text{m/s}
-\]
+ $$
 
 Taking the nozzle gauge pressure to be zero, solving Bernoulli’s equation for the initial pressure gives:
-\[
+$$ 
 P_1 = 1.25 \times 10^5\ \text{Pa}
-\]
+ $$
 
 This is a gauge pressure, consistent with the fact that the nozzle pressure is very close to atmospheric pressure as the water exits into the air.
 

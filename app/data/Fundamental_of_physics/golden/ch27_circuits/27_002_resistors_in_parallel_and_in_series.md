@@ -85,15 +85,15 @@ The current through the battery is **0.30 A**.
 - Current is the same through elements in series.
 - Resistors in parallel have the same potential difference.
 - Equivalent resistance for parallel resistors:
-  \[
+  $$ 
   R_{23}=\frac{R_2R_3}{R_2+R_3}
-  \]
+   $$
 - Equivalent resistance for series resistors:
-  \[
+  $$ 
   R=R_1+R_{23}+R_4
-  \]
+   $$
 - Ohm’s law:
-  \[
+  $$ 
   V=iR
-  \]
+   $$
 - Loop rule and current conservation at junctions.

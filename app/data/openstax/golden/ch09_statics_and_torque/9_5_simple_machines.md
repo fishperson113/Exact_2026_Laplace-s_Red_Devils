@@ -24,43 +24,43 @@ Wheels and gears also use this simple ratio of radii for their mechanical advant
 An ordinary pulley has MA = 1 because it changes only the direction of the force, not its magnitude. Combinations of pulleys can multiply force. For friction-free pulleys, the output force is approximately an integral multiple of the cable tension. The number of cable segments pulling upward on the system of interest is approximately the MA.
 
 ## Key formulas
-\[
+$$ 
 \text{MA}=\frac{\text{output force magnitude}}{\text{input force magnitude}}
-\]
+ $$
 
 For a lever in equilibrium:
-\[
+$$ 
 F_{\text{in}}\,r_{\text{in}}=F_{\text{out}}\,r_{\text{out}}
-\]
+ $$
 
 So the mechanical advantage of a lever is:
-\[
+$$ 
 \text{MA}=\frac{F_{\text{out}}}{F_{\text{in}}}=\frac{r_{\text{in}}}{r_{\text{out}}}
-\]
+ $$
 
 For a crank or wheel-and-axle:
-\[
+$$ 
 \text{MA}=\frac{r_{\text{wheel}}}{r_{\text{axle}}}
-\]
+ $$
 where the MA may be greater than 1 or less than 1 depending on the radii.
 
 For an ordinary pulley:
-\[
+$$ 
 \text{MA}=1
-\]
+ $$
 
 For a friction-free combination of pulleys, the MA is approximately the number of cable segments directly supporting the load.
 
 ## Variables and units
-- \(\text{MA}\): mechanical advantage, dimensionless
-- \(F_{\text{in}}\): input force magnitude, newtons (N)
-- \(F_{\text{out}}\): output force magnitude, newtons (N)
-- \(r_{\text{in}}\): perpendicular input lever arm, meters (m) or centimeters (cm)
-- \(r_{\text{out}}\): perpendicular output lever arm, meters (m) or centimeters (cm)
-- \(r_{\text{wheel}}\): wheel radius, meters (m)
-- \(r_{\text{axle}}\): axle radius, meters (m)
-- \(m\): mass, kilograms (kg)
-- \(g\): gravitational field strength, newtons per kilogram or meters per second squared, depending on context
+- $\text{MA} $: mechanical advantage, dimensionless
+- $F_{\text{in}} $: input force magnitude, newtons (N)
+- $F_{\text{out}} $: output force magnitude, newtons (N)
+- $r_{\text{in}} $: perpendicular input lever arm, meters (m) or centimeters (cm)
+- $r_{\text{out}} $: perpendicular output lever arm, meters (m) or centimeters (cm)
+- $r_{\text{wheel}} $: wheel radius, meters (m)
+- $r_{\text{axle}} $: axle radius, meters (m)
+- $m $: mass, kilograms (kg)
+- $g $: gravitational field strength, newtons per kilogram or meters per second squared, depending on context
 
 ## Worked example
 What is the advantage for the wheelbarrow?
@@ -72,13 +72,13 @@ In the wheelbarrow of Figure 9.22, the load has a perpendicular lever arm of 7.5
 (b) What force does the wheelbarrow exert on the ground?
 
 Using lever equilibrium:
-\[
+$$ 
 F_{\text{in}}\,r_{\text{in}}=F_{\text{out}}\,r_{\text{out}}
-\]
+ $$
 
 The lever arms are:
-- \(r_{\text{out}}=7.50\text{ cm}\)
-- \(r_{\text{in}}=1.02\text{ m}\)
+- $r_{\text{out}}=7.50\text{ cm} $
+- $r_{\text{in}}=1.02\text{ m} $
 
 With the combined weight of the wheelbarrow and load, the required upward force at the hands is found from the mechanical advantage relation. The free-body diagram gives the normal force acting on the wheel, and by Newton’s third law, the force the wheel exerts on the ground is equal and opposite.
 

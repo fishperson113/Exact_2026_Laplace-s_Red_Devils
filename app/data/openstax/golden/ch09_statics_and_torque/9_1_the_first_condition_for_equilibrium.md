@@ -21,20 +21,20 @@ It is not sufficient for the net external force of a system to be zero for a sys
 ## Key formulas
 - First condition for equilibrium:
   
-  \[
+  $$ 
   \sum \vec{F}_{\text{ext}} = 0
-  \]
+   $$
 
 - Equivalent component form along typical axes:
   
-  \[
+  $$ 
   \sum F_x = 0, \qquad \sum F_y = 0
-  \]
+   $$
 
 ## Variables and units
-- \(\sum \vec{F}_{\text{ext}}\): net external force on the system, in newtons (N)
-- \(\sum F_x\): sum of force components in the x-direction, in newtons (N)
-- \(\sum F_y\): sum of force components in the y-direction, in newtons (N)
+- $\sum \vec{F}_{\text{ext}} $: net external force on the system, in newtons (N)
+- $\sum F_x $: sum of force components in the x-direction, in newtons (N)
+- $\sum F_y $: sum of force components in the y-direction, in newtons (N)
 
 ## Worked example
 Worked example unavailable in source section

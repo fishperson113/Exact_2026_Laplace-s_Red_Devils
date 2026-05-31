@@ -23,33 +23,33 @@ An object falling through a fluid will not continue to accelerate indefinitely. 
 ## Key formulas
 Reynolds number for an object moving in a fluid:
 
-\[
+$$ 
 R = \frac{2 \rho v r}{\eta}
-\]
+ $$
 
-For a small sphere of radius \(r\) moving slowly in a fluid of viscosity \(\eta\), Stoke’s law gives the drag force:
+For a small sphere of radius $r $ moving slowly in a fluid of viscosity $\eta $, Stoke’s law gives the drag force:
 
-\[
+$$ 
 F_{\text{drag}} = 6 \pi \eta r v
-\]
+ $$
 
 ## Variables and units
-- \(R\): Reynolds number, dimensionless
-- \(\rho\): fluid density
-- \(v\): object’s speed in the fluid, in m/s
-- \(r\): characteristic length of the object; for a sphere, the radius, in m
-- \(\eta\): fluid viscosity
-- \(F_{\text{drag}}\): viscous drag force, in newtons (N)
-- \(\pi\): mathematical constant
+- $R $: Reynolds number, dimensionless
+- $\rho $: fluid density
+- $v $: object’s speed in the fluid, in m/s
+- $r $: characteristic length of the object; for a sphere, the radius, in m
+- $\eta $: fluid viscosity
+- $F_{\text{drag}} $: viscous drag force, in newtons (N)
+- $\pi $: mathematical constant
 
 ## Worked example
 **Example 12.10: Does a Ball Have a Turbulent Wake?**
 
-Calculate the Reynolds number \(R\) for a ball with a 7.40-cm diameter thrown at 40.0 m/s.
+Calculate the Reynolds number $R $ for a ball with a 7.40-cm diameter thrown at 40.0 m/s.
 
 **Strategy**
 
-Use the Reynolds number equation to calculate \(R\), since the needed values are given or can be found in tables of density and viscosity.
+Use the Reynolds number equation to calculate $R $, since the needed values are given or can be found in tables of density and viscosity.
 
 **Discussion**
 

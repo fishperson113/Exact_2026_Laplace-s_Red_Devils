@@ -17,52 +17,52 @@ Submerged objects appear lighter because of the buoyant force. The apparent weig
 
 ## Key formulas
 Archimedes’ principle:
-\[
+$$ 
 F_B = w_{\text{fluid displaced}}
-\]
+ $$
 
 Density:
-\[
+$$ 
 \rho = \frac{m}{V}
-\]
+ $$
 
 Fraction submerged for a floating object:
-\[
+$$ 
 \frac{V_{\text{sub}}}{V_{\text{obj}}} = \frac{\rho_{\text{obj}}}{\rho_{\text{fluid}}}
-\]
+ $$
 
 Specific gravity:
-\[
+$$ 
 \text{specific gravity} = \frac{\rho_{\text{obj}}}{\rho_{\text{water}}}
-\]
+ $$
 
 Apparent weight loss when submerged:
-\[
+$$ 
 \Delta w = F_B
-\]
+ $$
 
 Apparent mass loss when using a balance that measures mass:
-\[
+$$ 
 \Delta m = m_{\text{fluid displaced}}
-\]
+ $$
 
 ## Variables and units
-- \(F_B\): buoyant force, in newtons (N)
-- \(w_{\text{fluid displaced}}\): weight of displaced fluid, in newtons (N)
-- \(\rho\): density, in kilograms per cubic meter (kg/m\(^3\))
-- \(m\): mass, in kilograms (kg)
-- \(V\): volume, in cubic meters (m\(^3\))
-- \(V_{\text{sub}}\): submerged volume, in m\(^3\)
-- \(V_{\text{obj}}\): object volume, in m\(^3\)
-- \(\rho_{\text{obj}}\): average density of the object, in kg/m\(^3\)
-- \(\rho_{\text{fluid}}\): density of the surrounding fluid, in kg/m\(^3\)
-- \(\rho_{\text{water}}\): density of water at \(4.00^\circ\text{C}\), in kg/m\(^3\)
+- $F_B $: buoyant force, in newtons (N)
+- $w_{\text{fluid displaced}} $: weight of displaced fluid, in newtons (N)
+- $\rho $: density, in kilograms per cubic meter (kg/m$^3 $)
+- $m $: mass, in kilograms (kg)
+- $V $: volume, in cubic meters (m$^3 $)
+- $V_{\text{sub}} $: submerged volume, in m$^3 $
+- $V_{\text{obj}} $: object volume, in m$^3 $
+- $\rho_{\text{obj}} $: average density of the object, in kg/m$^3 $
+- $\rho_{\text{fluid}} $: density of the surrounding fluid, in kg/m$^3 $
+- $\rho_{\text{water}} $: density of water at $4.00^\circ\text{C} $, in kg/m$^3 $
 - Specific gravity: dimensionless
 
 Conditions:
-- Floating occurs when \(F_B > وزن\) of object.
-- Sinking occurs when \(F_B <\) object weight.
-- Suspension occurs when \(F_B =\) object weight.
+- Floating occurs when $F_B > وزن $ of object.
+- Sinking occurs when $F_B < $ object weight.
+- Suspension occurs when $F_B = $ object weight.
 - For a floating object, the fraction submerged equals its specific gravity.
 
 ## Worked example
@@ -71,7 +71,7 @@ A solid steel object of mass 10,000 metric tons is completely submerged in water
 
 (a) Find the buoyant force and compare it with the steel’s weight.
 
-(b) Find the maximum buoyant force if the same steel is shaped into a boat that could displace \(10{,}000\ \text{m}^3\) of water.
+(b) Find the maximum buoyant force if the same steel is shaped into a boat that could displace $10{,}000\ \text{m}^3 $ of water.
 
 **Strategy for (a)**  
 Use the density of steel to find the object’s volume. Since it is completely submerged, the displaced water has the same volume. Then find the mass and weight of the displaced water. By Archimedes’ principle, this is the buoyant force.

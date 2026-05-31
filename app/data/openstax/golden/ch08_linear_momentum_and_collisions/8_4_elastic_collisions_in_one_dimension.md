@@ -14,26 +14,26 @@ To solve one-dimensional elastic collisions between two objects, use both conser
 ## Key formulas
 Conservation of momentum for two objects in a one-dimensional collision:
 
-\[
+$$ 
 m_1 v_1 + m_2 v_2 = m_1 v_1' + m_2 v_2'
-\]
+ $$
 
 Conservation of internal kinetic energy in a one-dimensional elastic collision:
 
-\[
+$$ 
 \frac{1}{2}m_1 v_1^2 + \frac{1}{2}m_2 v_2^2
 =
 \frac{1}{2}m_1 {v_1'}^2 + \frac{1}{2}m_2 {v_2'}^2
-\]
+ $$
 
 ## Variables and units
-- \(m_1, m_2\): masses of the two objects
-- \(v_1, v_2\): initial velocities of the objects
-- \(v_1', v_2'\): final velocities of the objects after the collision
-- Momentum units: \(\mathrm{kg \cdot m/s}\)
-- Kinetic energy units: \(\mathrm{J}\)
+- $m_1, m_2 $: masses of the two objects
+- $v_1, v_2 $: initial velocities of the objects
+- $v_1', v_2' $: final velocities of the objects after the collision
+- Momentum units: $\mathrm{kg \cdot m/s} $
+- Kinetic energy units: $\mathrm{J} $
 
-Primes \((\, '\,)\) indicate values after the collision.
+Primes $(\, '\,) $ indicate values after the collision.
 
 ## Worked example
 **Example 8.4: Calculating Velocities Following an Elastic Collision**
@@ -41,12 +41,12 @@ Primes \((\, '\,)\) indicate values after the collision.
 Given a small object striking a larger object initially at rest, use conservation of momentum and conservation of internal kinetic energy to find the final velocities.
 
 The setup uses:
-- object 2 initially at rest, so \(v_2 = 0\)
-- two unknowns after the collision: \(v_1'\) and \(v_2'\)
+- object 2 initially at rest, so $v_2 = 0 $
+- two unknowns after the collision: $v_1' $ and $v_2' $
 
-Using conservation of momentum and the fact that \(v_2 = 0\), the momentum equation becomes a relation between the final velocities. Using conservation of internal kinetic energy with \(v_2 = 0\) gives a second equation. Solving these two equations yields two mathematical solutions. One solution corresponds to the initial condition and is discarded. The physically meaningful result is that the first object bounces backward and the second object moves forward at low speed.
+Using conservation of momentum and the fact that $v_2 = 0 $, the momentum equation becomes a relation between the final velocities. Using conservation of internal kinetic energy with $v_2 = 0 $ gives a second equation. Solving these two equations yields two mathematical solutions. One solution corresponds to the initial condition and is discarded. The physically meaningful result is that the first object bounces backward and the second object moves forward at low speed.
 
-The example states that the internal kinetic energy is unchanged at \(4.00\ \mathrm{J}\), and the total momentum is also unchanged before and after the collision.
+The example states that the internal kinetic energy is unchanged at $4.00\ \mathrm{J} $, and the total momentum is also unchanged before and after the collision.
 
 ## Key concepts used
 - One-dimensional collision

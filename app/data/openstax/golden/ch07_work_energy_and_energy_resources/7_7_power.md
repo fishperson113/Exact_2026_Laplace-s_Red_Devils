@@ -17,45 +17,45 @@ Efficiency values for some human activities and devices show that only part of t
 
 ## Key formulas
 Power is defined by
-\[
+$$ 
 P = \frac{W}{t}
-\]
-where \(P\) is power, \(W\) is work, and \(t\) is time.
+ $$
+where $P $ is power, $W $ is work, and $t $ is time.
 
 Since work is energy transfer,
-\[
+$$ 
 P = \frac{\Delta E}{t}
-\]
+ $$
 
 For the stairs example, the mechanical energy gain is
-\[
+$$ 
 W = \Delta K + \Delta U_g
-\]
+ $$
 and
-\[
+$$ 
 \Delta U_g = mgh
-\]
+ $$
 so the power output can be written as
-\[
+$$ 
 P = \frac{\Delta K + mgh}{t}
-\]
+ $$
 
 For electrical energy use, the energy consumed over time is
-\[
+$$ 
 E = Pt
-\]
+ $$
 When power is expressed in kilowatts and time in hours, energy is commonly measured in kilowatt-hours (kWh).
 
 ## Variables and units
-- \(P\): power, in watts (W)
-- \(W\): work, in joules (J)
-- \(t\): time, in seconds (s) unless otherwise stated
-- \(\Delta E\): change in energy, in joules (J)
-- \(m\): mass, in kilograms (kg)
-- \(g\): acceleration due to gravity, in meters per second squared (m/s\(^2\))
-- \(h\): vertical height, in meters (m)
-- \(K\): kinetic energy, in joules (J)
-- \(U_g\): gravitational potential energy, in joules (J)
+- $P $: power, in watts (W)
+- $W $: work, in joules (J)
+- $t $: time, in seconds (s) unless otherwise stated
+- $\Delta E $: change in energy, in joules (J)
+- $m $: mass, in kilograms (kg)
+- $g $: acceleration due to gravity, in meters per second squared (m/s$^2 $)
+- $h $: vertical height, in meters (m)
+- $K $: kinetic energy, in joules (J)
+- $U_g $: gravitational potential energy, in joules (J)
 - kW: kilowatt, where 1 kW = 1000 W
 - kWh: kilowatt-hour, a unit of electrical energy
 
@@ -65,36 +65,36 @@ When power is expressed in kilowatts and time in hours, energy is commonly measu
 What is the power output for a 60.0-kg woman who runs up a 3.00 m high flight of stairs in 3.50 s, starting from rest but having a final speed of 2.00 m/s?
 
 The work going into mechanical energy is the increase in kinetic and gravitational potential energy:
-\[
+$$ 
 W = \Delta K + \Delta U_g
-\]
+ $$
 
 At the bottom of the stairs, both kinetic energy and gravitational potential energy are initially zero, so:
-\[
+$$ 
 \Delta K = \frac{1}{2}mv^2
-\]
+ $$
 and
-\[
+$$ 
 \Delta U_g = mgh
-\]
+ $$
 
 Thus,
-\[
+$$ 
 W = \frac{1}{2}mv^2 + mgh
-\]
+ $$
 
 Substituting the known values:
-- \(m = 60.0\ \text{kg}\)
-- \(v = 2.00\ \text{m/s}\)
-- \(h = 3.00\ \text{m}\)
-- \(t = 3.50\ \text{s}\)
+- $m = 60.0\ \text{kg} $
+- $v = 2.00\ \text{m/s} $
+- $h = 3.00\ \text{m} $
+- $t = 3.50\ \text{s} $
 
 gives the work done and then the power:
-\[
+$$ 
 P = \frac{W}{t}
-\]
+ $$
 
-This yields a power output of about \(5.35 \times 10^2\ \text{W}\), or approximately 0.72 hp.
+This yields a power output of about $5.35 \times 10^2\ \text{W} $, or approximately 0.72 hp.
 
 The discussion notes that the woman does 1764 J of work to move up the stairs compared with only 120 J to increase her kinetic energy, so most of her power output is required for climbing rather than accelerating.
 

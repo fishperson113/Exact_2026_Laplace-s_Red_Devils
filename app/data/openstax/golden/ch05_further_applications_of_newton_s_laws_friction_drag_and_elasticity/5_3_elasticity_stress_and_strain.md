@@ -22,58 +22,58 @@ The section also notes that bones, tendons, arteries, lungs, skin, and other bio
 
 ## Key formulas
 Hooke’s law:
-\[
+$$ 
 F = -kx
-\]
-where \(x\) is deformation and \(F\) is the restoring force.
+ $$
+where $x $ is deformation and $F $ is the restoring force.
 
 For changes in length:
-\[
+$$ 
 \Delta L = \frac{F L_0}{A Y}
-\]
+ $$
 
 Stress:
-\[
+$$ 
 \text{stress} = \frac{F}{A}
-\]
+ $$
 
 Strain:
-\[
+$$ 
 \text{strain} = \frac{\Delta L}{L_0}
-\]
+ $$
 
 Shear deformation:
-\[
+$$ 
 \frac{\Delta x}{L_0} = \frac{F}{A S}
-\]
+ $$
 
 Bulk deformation:
-\[
+$$ 
 \frac{\Delta V}{V_0} = \frac{F}{A B}
-\]
+ $$
 
 Equivalent Hooke’s-law form for length change:
-\[
+$$ 
 F = \left(\frac{A Y}{L_0}\right)\Delta L
-\]
+ $$
 
 ## Variables and units
-- \(F\): applied force or restoring force, in newtons (N)
-- \(k\): spring constant, in newtons per meter (N/m)
-- \(x\): deformation or displacement, in meters (m)
-- \(\Delta L\): change in length, in meters (m)
-- \(L_0\): original length, in meters (m)
-- \(A\): cross-sectional area, in square meters (m\(^2\))
-- \(Y\): Young’s modulus, in pascals (Pa = N/m\(^2\))
-- \(S\): shear modulus, in pascals (Pa = N/m\(^2\))
-- \(B\): bulk modulus, in pascals (Pa = N/m\(^2\))
+- $F $: applied force or restoring force, in newtons (N)
+- $k $: spring constant, in newtons per meter (N/m)
+- $x $: deformation or displacement, in meters (m)
+- $\Delta L $: change in length, in meters (m)
+- $L_0 $: original length, in meters (m)
+- $A $: cross-sectional area, in square meters (m$^2 $)
+- $Y $: Young’s modulus, in pascals (Pa = N/m$^2 $)
+- $S $: shear modulus, in pascals (Pa = N/m$^2 $)
+- $B $: bulk modulus, in pascals (Pa = N/m$^2 $)
 - stress: force per area, in pascals (Pa)
 - strain: fractional change in length, unitless
-- \(\Delta x\): shear deformation, in meters (m)
-- \(\Delta V\): change in volume, in cubic meters (m\(^3\))
-- \(V_0\): original volume, in cubic meters (m\(^3\))
+- $\Delta x $: shear deformation, in meters (m)
+- $\Delta V $: change in volume, in cubic meters (m$^3 $)
+- $V_0 $: original volume, in cubic meters (m$^3 $)
 
-The section states that the ratio \(F/A\) is stress, and \(\Delta L/L_0\) is strain. It also states that the force in the length-change relation is the applied force magnitude, with equal and opposite forces acting so the object does not accelerate.
+The section states that the ratio $F/A $ is stress, and $\Delta L/L_0 $ is strain. It also states that the force in the length-change relation is the applied force magnitude, with equal and opposite forces acting so the object does not accelerate.
 
 ## Worked example
 **Example 5.3: The Stretch of a Long Cable**
@@ -81,9 +81,9 @@ The section states that the ratio \(F/A\) is stress, and \(\Delta L/L_0\) is str
 A suspension cable has an unsupported span of 3020 m. Calculate the amount of stretch in the steel cable. The cable has a diameter of 5.6 cm and can withstand a maximum tension of the given value.
 
 Strategy:
-- Use \(F\) equal to the maximum tension.
+- Use $F $ equal to the maximum tension.
 - Compute the cross-sectional area from the cable diameter.
-- Use the length-change equation \(\Delta L = \frac{F L_0}{A Y}\).
+- Use the length-change equation $\Delta L = \frac{F L_0}{A Y} $.
 
 Discussion:
 - The stretch is quite large in absolute terms but only about 0.6% of the unsupported length.

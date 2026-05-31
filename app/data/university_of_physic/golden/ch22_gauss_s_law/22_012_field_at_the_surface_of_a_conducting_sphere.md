@@ -15,22 +15,22 @@ Verify Eq. (22.10) for a conducting sphere with radius and total charge.
 ## Setup
 In Example 22.5 (Section 22.4) we showed that the electric field just outside the surface is
 
-\[
+$$ 
 E = \frac{1}{4\pi\epsilon_0}\frac{q}{R^2}\,\hat{r}
-\]
+ $$
 
-The surface charge density is uniform and equal to \(q\) divided by the surface area of the sphere:
+The surface charge density is uniform and equal to $q $ divided by the surface area of the sphere:
 
-\[
+$$ 
 \sigma = \frac{q}{4\pi R^2}
-\]
+ $$
 
 ## Solution
 Comparing these two expressions, we see that
 
-\[
+$$ 
 E = \frac{\sigma}{\epsilon_0}
-\]
+ $$
 
 which verifies Eq. (22.10).
 
@@ -40,4 +40,4 @@ The result agrees with the general relation between the electric field just outs
 ## Key concepts used
 - Electric field just outside a conducting surface
 - Uniform surface charge density on a sphere
-- Relation \(E = \sigma/\epsilon_0\)
+- Relation $E = \sigma/\epsilon_0 $

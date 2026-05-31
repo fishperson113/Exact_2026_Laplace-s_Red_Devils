@@ -26,103 +26,103 @@ For a horizontal tube of uniform radius and length, Poiseuille’s law gives the
 This behavior is important in blood flow. Plaque deposits can reduce artery radius and greatly reduce blood flow. The circulatory system regulates flow by changing vessel size and blood pressure. During vigorous exercise, vessels dilate to increase flow to important muscles and organs. Narrowing of vessels can reduce blood flow and increase strain on the heart.
 
 ## Key formulas
-\[
+$$ 
 F = \eta A \frac{v}{d}
-\]
+ $$
 
-\[
+$$ 
 \eta = \frac{F d}{A v}
-\]
+ $$
 
-\[
+$$ 
 \Delta P = Q R
-\]
+ $$
 
-\[
+$$ 
 R = \frac{8 \eta l}{\pi r^4}
-\]
+ $$
 
-\[
+$$ 
 Q = \frac{\pi r^4 \Delta P}{8 \eta l}
-\]
+ $$
 
 For the pressure-drop form:
-\[
+$$ 
 \Delta P = P_1 - P_2
-\]
+ $$
 
 For laminar flow in a tube:
-\[
+$$ 
 Q \propto r^4
-\]
+ $$
 
 ## Variables and units
-- \(F\): force required to move the top plate
-- \(\eta\): coefficient of viscosity
-- \(A\): area of the plate
-- \(v\): speed of the moving plate
-- \(d\): distance between the plates
-- \(\Delta P\): pressure difference
-- \(Q\): flow rate
-- \(R\): resistance to flow
-- \(P_1, P_2\): pressures at two points
-- \(l\): length of tube
-- \(r\): radius of tube
+- $F $: force required to move the top plate
+- $\eta $: coefficient of viscosity
+- $A $: area of the plate
+- $v $: speed of the moving plate
+- $d $: distance between the plates
+- $\Delta P $: pressure difference
+- $Q $: flow rate
+- $R $: resistance to flow
+- $P_1, P_2 $: pressures at two points
+- $l $: length of tube
+- $r $: radius of tube
 
 SI unit of viscosity:
-\[
+$$ 
 \mathrm{N \cdot s/m^2}
-\]
+ $$
 equivalently
-\[
+$$ 
 \mathrm{Pa \cdot s}
-\]
+ $$
 
 ## Worked example
 ### Example 12.7: Using Flow Rate: Plaque Deposits Reduce Blood Flow
 Suppose the flow rate of blood in a coronary artery has been reduced to half its normal value by plaque deposits. By what factor has the radius of the artery been reduced, assuming no turbulence occurs?
 
 Assuming laminar flow and constant pressure difference, length, and viscosity:
-\[
+$$ 
 Q \propto r^4
-\]
+ $$
 
 So,
-\[
+$$ 
 \frac{Q_{\text{new}}}{Q_{\text{old}}} = \left(\frac{r_{\text{new}}}{r_{\text{old}}}\right)^4
-\]
+ $$
 
 Given:
-\[
+$$ 
 \frac{Q_{\text{new}}}{Q_{\text{old}}} = \frac{1}{2}
-\]
+ $$
 
 Therefore,
-\[
+$$ 
 \frac{r_{\text{new}}}{r_{\text{old}}} = \left(\frac{1}{2}\right)^{1/4} \approx 0.84
-\]
+ $$
 
-So the radius is reduced to about \(0.84\) of its original value, a decrease of about 16%.
+So the radius is reduced to about $0.84 $ of its original value, a decrease of about 16%.
 
 ### Example 12.8: What Pressure Produces This Flow Rate?
-An intravenous (IV) system supplies saline solution to a patient at the rate of through a needle of radius \(0.150\ \text{mm}\) and length \(2.50\ \text{cm}\). What pressure is needed at the entrance of the needle to cause this flow, assuming the viscosity of the saline solution is the same as that of water? The gauge pressure of the blood in the patient’s vein is \(8.00\ \text{mm Hg}\). Assume the temperature is \(20^\circ\text{C}\).
+An intravenous (IV) system supplies saline solution to a patient at the rate of through a needle of radius $0.150\ \text{mm} $ and length $2.50\ \text{cm} $. What pressure is needed at the entrance of the needle to cause this flow, assuming the viscosity of the saline solution is the same as that of water? The gauge pressure of the blood in the patient’s vein is $8.00\ \text{mm Hg} $. Assume the temperature is $20^\circ\text{C} $.
 
 Using Poiseuille’s law:
-\[
+$$ 
 Q = \frac{\pi r^4 (P_1 - P_2)}{8 \eta l}
-\]
+ $$
 
 Solving for the entrance pressure:
-\[
+$$ 
 P_1 = P_2 + \frac{8 \eta l Q}{\pi r^4}
-\]
+ $$
 
-With \(P_2 = 8.00\ \text{mm Hg}\) and the given values substituted, the required pressure is:
-\[
+With $P_2 = 8.00\ \text{mm Hg} $ and the given values substituted, the required pressure is:
+$$ 
 P_1 = 1.61 \times 10^4\ \text{Pa}
-\]
+ $$
 
-This pressure could be supplied by an IV bottle with the surface of the saline solution \(1.61\ \text{m}\) above the entrance to the needle, assuming negligible pressure drop in the tubing.
+This pressure could be supplied by an IV bottle with the surface of the saline solution $1.61\ \text{m} $ above the entrance to the needle, assuming negligible pressure drop in the tubing.
 
 ## Key concepts used
 - viscosity
@@ -132,7 +132,7 @@ This pressure could be supplied by an IV bottle with the surface of the saline s
 - fluid resistance
 - pressure difference
 - Poiseuille’s law
-- dependence on tube radius \(r^4\)
+- dependence on tube radius $r^4 $
 - blood flow through arteries and veins
 - pressure drops due to resistance
 - effect of plaque deposits on flow

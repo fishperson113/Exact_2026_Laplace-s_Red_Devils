@@ -7,11 +7,11 @@ Atoms and molecules are in constant random motion at any temperature. In fluids,
 
 Diffusion is the movement of substances due to random thermal molecular motion. Diffusion can occur through fluids and even through solids. Because molecular collisions constantly scatter particles, diffusion is slow over macroscopic distances.
 
-The average distance a molecule travels by diffusion in time \(t\) is proportional to the square root of time:
-\[
+The average distance a molecule travels by diffusion in time $t $ is proportional to the square root of time:
+$$ 
 d_{\mathrm{rms}}=\sqrt{2Dt}
-\]
-where \(d_{\mathrm{rms}}\) is the root-mean-square distance and \(D\) is the diffusion constant for the molecule in a specific medium.
+ $$
+where $d_{\mathrm{rms}} $ is the root-mean-square distance and $D $ is the diffusion constant for the molecule in a specific medium.
 
 The diffusion constant depends on the molecule and the medium. Representative values are given in the source section for substances such as hydrogen in air, oxygen in air, oxygen in water, glucose in water, hemoglobin in water, and DNA in water. The diffusion constant is smaller for more massive molecules because average molecular speed at a given temperature is inversely proportional to molecular mass. Diffusion constants are larger in air than in water for the same molecule because collisions are much more frequent in water. Diffusion constants also increase with temperature because average molecular speed increases with temperature, and average kinetic energy is proportional to absolute temperature.
 
@@ -34,29 +34,29 @@ Reverse osmosis and reverse dialysis are the processes that occur when back pres
 Active transport is different from passive diffusion and osmosis. In active transport, a living membrane expends energy to move substances across it. The kidneys use active transport as well as osmosis and dialysis. The source states that at least 25% of the body’s energy is expended on active transport at the cellular level.
 
 ## Key formulas
-\[
+$$ 
 d_{\mathrm{rms}}=\sqrt{2Dt}
-\]
+ $$
 
 Glucose diffusion example setup:
-\[
+$$ 
 t=\frac{d_{\mathrm{rms}}^{\,2}}{2D}
-\]
-This is obtained by solving \(d_{\mathrm{rms}}=\sqrt{2Dt}\) for \(t\).
+ $$
+This is obtained by solving $d_{\mathrm{rms}}=\sqrt{2Dt} $ for $t $.
 
 Example 12.11 uses:
-- \(d_{\mathrm{rms}}=1.0\ \text{cm}\)
-- \(D\) for glucose in water from Table 12.2
+- $d_{\mathrm{rms}}=1.0\ \text{cm} $
+- $D $ for glucose in water from Table 12.2
 - the result is an average diffusion time for glucose across 1.0 cm in water
 
 Osmotic pressure details stated in the source:
-- osmotic pressure can be \(25.9\ \text{atm}\) for pure water and sea water separated by a semipermeable membrane that passes no salt
-- this corresponds to a height difference of \(268\ \text{m}\)
+- osmotic pressure can be $25.9\ \text{atm} $ for pure water and sea water separated by a semipermeable membrane that passes no salt
+- this corresponds to a height difference of $268\ \text{m} $
 
 ## Variables and units
-- \(d_{\mathrm{rms}}\): root-mean-square diffusion distance, unit of length
-- \(D\): diffusion constant, units of \(\text{m}^2/\text{s}\)
-- \(t\): time, unit of seconds
+- $d_{\mathrm{rms}} $: root-mean-square diffusion distance, unit of length
+- $D $: diffusion constant, units of $\text{m}^2/\text{s} $
+- $t $: time, unit of seconds
 - concentration difference: drives net diffusion from higher concentration to lower concentration
 - semipermeable membrane: allows only certain molecules to pass through
 - osmotic pressure: pressure, measured in atmospheres in the example
@@ -68,18 +68,18 @@ Osmotic pressure details stated in the source:
 ## Worked example
 Example 12.11: Calculating Diffusion: How Long Does Glucose Diffusion Take?
 
-Problem: Calculate the average time it takes a glucose molecule to move \(1.0\ \text{cm}\) in water.
+Problem: Calculate the average time it takes a glucose molecule to move $1.0\ \text{cm} $ in water.
 
 Strategy: Use
-\[
+$$ 
 d_{\mathrm{rms}}=\sqrt{2Dt}
-\]
-and solve for \(t\).
+ $$
+and solve for $t $.
 
 Solution:
-\[
+$$ 
 t=\frac{d_{\mathrm{rms}}^{\,2}}{2D}
-\]
+ $$
 Substituting the known values for glucose in water gives the result stated in the source section.
 
 Discussion: This is a remarkably long time for glucose to move only 1 cm. For this reason, sugar is stirred into water rather than waiting for diffusion to mix it.

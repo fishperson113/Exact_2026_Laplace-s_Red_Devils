@@ -17,55 +17,55 @@ Mechanical energy is the total kinetic plus potential energy of a system.
 
 ## Key formulas
 - Hooke’s law force magnitude:
-  \[
+  $$ 
   F = kx
-  \]
-  where \(k\) is the spring’s force constant and \(x\) is the deformation.
+   $$
+  where $k $ is the spring’s force constant and $x $ is the deformation.
 
 - Work done in stretching or compressing a Hooke’s-law spring:
-  \[
+  $$ 
   W = \frac{1}{2}kx^2
-  \]
+   $$
 
 - Spring potential energy:
-  \[
+  $$ 
   U = \frac{1}{2}kx^2
-  \]
+   $$
 
 - Work-energy theorem:
-  \[
+  $$ 
   W_{\text{net}} = \Delta K
-  \]
+   $$
 
 - For only conservative forces:
-  \[
+  $$ 
   W_{\text{cons}} = -\Delta U
-  \]
+   $$
 
 - Conservation of mechanical energy:
-  \[
+  $$ 
   K_i + U_i = K_f + U_f
-  \]
+   $$
 
 - Mechanical energy:
-  \[
+  $$ 
   E_{\text{mech}} = K + U
-  \]
+   $$
 
 ## Variables and units
-- \(F\): force, newtons (N)
-- \(k\): spring force constant, N/m
-- \(x\): displacement from undeformed position, meters (m)
-- \(W\): work, joules (J)
-- \(U\): potential energy, joules (J)
-- \(K\): kinetic energy, joules (J)
-- \(E_{\text{mech}}\): mechanical energy, joules (J)
-- \(i, f\): initial and final values
-- Height is denoted by \(h\) in the worked example, measured in meters (m)
-- Spring compression is denoted by \(x\), measured in meters (m)
+- $F $: force, newtons (N)
+- $k $: spring force constant, N/m
+- $x $: displacement from undeformed position, meters (m)
+- $W $: work, joules (J)
+- $U $: potential energy, joules (J)
+- $K $: kinetic energy, joules (J)
+- $E_{\text{mech}} $: mechanical energy, joules (J)
+- $i, f $: initial and final values
+- Height is denoted by $h $ in the worked example, measured in meters (m)
+- Spring compression is denoted by $x $, measured in meters (m)
 
 ## Worked example
-A 0.100-kg toy car is propelled by a compressed spring. The track rises 0.180 m above the starting point. The spring is compressed 4.00 cm and has force constant \(k = 250.0\ \text{N/m}\). Assuming friction is negligible, find:
+A 0.100-kg toy car is propelled by a compressed spring. The track rises 0.180 m above the starting point. The spring is compressed 4.00 cm and has force constant $k = 250.0\ \text{N/m} $. Assuming friction is negligible, find:
 
 (a) the car’s speed just after it leaves the spring  
 (b) the car’s speed at the top of the slope

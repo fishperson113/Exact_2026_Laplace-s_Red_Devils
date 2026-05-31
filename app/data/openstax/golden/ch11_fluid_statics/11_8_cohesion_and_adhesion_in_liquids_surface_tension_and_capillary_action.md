@@ -24,58 +24,58 @@ The section also notes that capillary action alone cannot explain sap rising to 
 
 ## Key formulas
 Surface tension is defined as force per unit length:
-\[
+$$ 
 \gamma = \frac{F}{l}
-\]
+ $$
 
 Gauge pressure inside a spherical bubble:
-\[
+$$ 
 P = \frac{4\gamma}{r}
-\]
+ $$
 
 Capillary rise or suppression height:
-\[
+$$ 
 h = \frac{2\gamma \cos\theta}{\rho g r}
-\]
+ $$
 
 Where:
-- \(\gamma\) is surface tension
-- \(F\) is force
-- \(l\) is length
-- \(P\) is gauge pressure
-- \(r\) is bubble radius or tube radius, depending on context
-- \(h\) is height of rise or suppression
-- \(\theta\) is contact angle
-- \(\rho\) is fluid density
-- \(g\) is gravitational acceleration
+- $\gamma $ is surface tension
+- $F $ is force
+- $l $ is length
+- $P $ is gauge pressure
+- $r $ is bubble radius or tube radius, depending on context
+- $h $ is height of rise or suppression
+- $\theta $ is contact angle
+- $\rho $ is fluid density
+- $g $ is gravitational acceleration
 
 ## Variables and units
-- \(\gamma\): surface tension, units N/m
-- \(F\): force, units N
-- \(l\): length, units m
-- \(P\): gauge pressure, units Pa
-- \(r\): radius, units m
-- \(h\): height, units m
-- \(\theta\): contact angle, units degrees or radians
-- \(\rho\): density, units kg/m\(^3\)
-- \(g\): acceleration due to gravity, units m/s\(^2\)
+- $\gamma $: surface tension, units N/m
+- $F $: force, units N
+- $l $: length, units m
+- $P $: gauge pressure, units Pa
+- $r $: radius, units m
+- $h $: height, units m
+- $\theta $: contact angle, units degrees or radians
+- $\rho $: density, units kg/m$^3 $
+- $g $: acceleration due to gravity, units m/s$^2 $
 
 Other stated quantities and conditions:
 - Surface tension values depend on the liquid and are tabulated in N/m.
 - For the bubble-pressure relation, the result is gauge pressure.
-- Capillary rise depends on the sign of \(\cos\theta\): rise if \(\theta < 90^\circ\), suppression if \(\theta > 90^\circ\).
+- Capillary rise depends on the sign of $\cos\theta $: rise if $\theta < 90^\circ $, suppression if $\theta > 90^\circ $.
 
 ## Worked example
 **Example 11.11: Surface Tension: Pressure Inside a Bubble**
 
-Calculate the gauge pressure inside a soap bubble with radius \(r\) using the surface tension for soapy water in Table 11.3. Convert this pressure to mm Hg.
+Calculate the gauge pressure inside a soap bubble with radius $r $ using the surface tension for soapy water in Table 11.3. Convert this pressure to mm Hg.
 
 **Strategy**
 
 The radius is given and the surface tension can be found in Table 11.3, so the gauge pressure can be found directly from
-\[
+$$ 
 P = \frac{4\gamma}{r}.
-\]
+ $$
 
 **Solution**
 
@@ -87,23 +87,23 @@ If a hole is made in the bubble, air is forced out, the radius decreases, the ga
 
 **Example 11.12: Calculating Radius of a Capillary Tube: Capillary Action: Tree Sap**
 
-Can capillary action be solely responsible for sap rising in trees? To answer this question, calculate the radius of a capillary tube that would raise sap 100 m to the top of a giant redwood, assuming that sap’s density is \(\rho\), its contact angle is zero, and its surface tension is the same as that of water at \(20^\circ\text{C}\).
+Can capillary action be solely responsible for sap rising in trees? To answer this question, calculate the radius of a capillary tube that would raise sap 100 m to the top of a giant redwood, assuming that sap’s density is $\rho $, its contact angle is zero, and its surface tension is the same as that of water at $20^\circ\text{C} $.
 
 **Strategy**
 
 The height to which a liquid will rise as a result of capillary action is given by
-\[
+$$ 
 h = \frac{2\gamma \cos\theta}{\rho g r},
-\]
-and every quantity is known except for \(r\).
+ $$
+and every quantity is known except for $r $.
 
 **Solution**
 
-Solving for \(r\) and substituting the known values gives the required capillary radius.
+Solving for $r $ and substituting the known values gives the required capillary radius.
 
 **Discussion**
 
-The result is unreasonable. Sap in trees moves through the xylem, which forms tubes with radii as small as \(2\times 10^{-5}\,\text{m}\). This is about 180 times as large as the radius found necessary to raise sap 100 m, so capillary action alone cannot be solely responsible for sap reaching the tops of trees. The text suggests that sap is pulled upward by cohesion and transpiration-related negative pressure.
+The result is unreasonable. Sap in trees moves through the xylem, which forms tubes with radii as small as $2\times 10^{-5}\,\text{m} $. This is about 180 times as large as the radius found necessary to raise sap 100 m, so capillary action alone cannot be solely responsible for sap reaching the tops of trees. The text suggests that sap is pulled upward by cohesion and transpiration-related negative pressure.
 
 ## Key concepts used
 - Cohesive forces

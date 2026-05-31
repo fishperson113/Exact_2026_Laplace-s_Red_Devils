@@ -23,51 +23,51 @@ Having most skeletal muscles attached close to joints has benefits. One advantag
 
 ## Key formulas
 - Torque relation:
-  \[
+  $$ 
   \tau = rF\sin\theta
-  \]
+   $$
 - Using perpendicular lever arm:
-  \[
+  $$ 
   \tau = F\ell
-  \]
-  where \(\ell\) is the perpendicular lever arm.
+   $$
+  where $\ell $ is the perpendicular lever arm.
 - Static equilibrium conditions:
-  \[
+  $$ 
   \sum F = 0
-  \]
-  \[
+   $$
+  $$ 
   \sum \tau = 0
-  \]
+   $$
 - Mechanical advantage:
-  \[
+  $$ 
   \text{mechanical advantage} = \frac{\text{output force}}{\text{input force}}
-  \]
+   $$
 
 ## Variables and units
-- \(\tau\): torque, SI unit newton-meter, written N·m
-- \(F\): force, in newtons (N)
-- \(r\): distance from pivot point to point where the force is applied
-- \(\theta\): angle between \(\vec r\) and \(\vec F\)
-- \(\ell\): perpendicular lever arm, the shortest distance from the pivot point to the line along which the force acts
-- \(m\): mass, in kilograms (kg)
-- \(g\): gravitational field strength, used for weight \(mg\)
+- $\tau $: torque, SI unit newton-meter, written N·m
+- $F $: force, in newtons (N)
+- $r $: distance from pivot point to point where the force is applied
+- $\theta $: angle between $\vec r $ and $\vec F $
+- $\ell $: perpendicular lever arm, the shortest distance from the pivot point to the line along which the force acts
+- $m $: mass, in kilograms (kg)
+- $g $: gravitational field strength, used for weight $mg $
 - Center of gravity: point where the total weight of the body is assumed to be concentrated
 
 ## Worked example
 **Example 9.4: Muscles Exert Bigger Forces Than You Might Think**
 
-Calculate the force the biceps muscle must exert to hold the forearm and its load as shown in Figure 9.25, and compare this force with the weight of the forearm plus its load. The angle between the forearm and upper arm is \(90^\circ\).
+Calculate the force the biceps muscle must exert to hold the forearm and its load as shown in Figure 9.25, and compare this force with the weight of the forearm plus its load. The angle between the forearm and upper arm is $90^\circ $.
 
 Using the second condition for equilibrium about the elbow joint:
-\[
+$$ 
 \sum \tau = 0
-\]
+ $$
 the torques from the weights are clockwise and the torque from the biceps is counterclockwise. Solving gives the biceps force in terms of the known quantities. Substituting the values from the figure yields the muscle force and the comparison with the total supported weight.
 
 The combined weight of the arm and its load is 111 N, and the ratio of the force exerted by the biceps to the total weight is:
-\[
+$$ 
 \frac{F_{\text{biceps}}}{W} = 7.38
-\]
+ $$
 So the biceps muscle exerts a force 7.38 times the weight supported.
 
 A related statement from the text notes that the downward force exerted by the humerus at the elbow joint is 407 N, or 6.38 times the total weight supported.

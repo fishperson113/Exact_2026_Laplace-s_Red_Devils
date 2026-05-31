@@ -18,25 +18,25 @@ We can mentally separate the solenoid into a resistance and an inductance that a
 ## Solution
 According to that solution, current i increases exponentially from zero to its final equilibrium value of ε/R. Let t₀ be the time that current i takes to reach half its equilibrium value. Then Eq. 30-41 gives us
 
-\[
+$$ 
 \frac{1}{2}\frac{\varepsilon}{R}=\frac{\varepsilon}{R}\left(1-e^{-t_0/t_L}\right).
-\]
+ $$
 
 We solve for t₀ by canceling ε/R, isolating the exponential, and taking the natural logarithm of each side. We find
 
-\[
+$$ 
 t_0=t_L\ln 2=\frac{L}{R}\ln 2
 = \frac{53\times 10^{-3}\ \text{H}}{0.37\ \Omega}\ln 2.
-\]
+ $$
 
 ## Answer
-\[
+$$ 
 t_0 \approx 0.10\ \text{s}.
-\]
+ $$
 
 ## Key concepts used
 - RL circuit
 - Inductance in series with resistance
 - Exponential current growth
-- Time constant \(t_L = L/R\)
+- Time constant $t_L = L/R $
 - Half-value condition and logarithms

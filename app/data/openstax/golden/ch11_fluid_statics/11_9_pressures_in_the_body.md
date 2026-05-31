@@ -29,32 +29,32 @@ Other pressures in the body include pressures in the digestive tract, stomach, i
 
 ## Key formulas
 Pressure is defined as force per unit area:
-\[
+$$ 
 P = \frac{F}{A}
-\]
+ $$
 
 For fluid pressure due to depth:
-\[
+$$ 
 P = \rho g h
-\]
-where \(P\) is the pressure due to the fluid, \(\rho\) is the fluid density, \(g\) is the acceleration due to gravity, and \(h\) is depth or fluid height.
+ $$
+where $P $ is the pressure due to the fluid, $\rho $ is the fluid density, $g $ is the acceleration due to gravity, and $h $ is depth or fluid height.
 
 For the eye-pressure discussion, force is calculated from:
-\[
+$$ 
 F = PA
-\]
+ $$
 
 To convert mm Hg to pressure in SI units, use the standard mercury-pressure relation consistent with the definition of pressure due to a fluid column.
 
 For pressure differences in a standing person, pressure increases with the height of the blood column relative to the heart.
 
 ## Variables and units
-- \(P\): pressure, in pascals (Pa) or mm Hg when stated medically
-- \(F\): force, in newtons (N)
-- \(A\): area, in square meters (m\(^2\))
-- \(\rho\): density, in kg/m\(^3\)
-- \(g\): acceleration due to gravity, in m/s\(^2\)
-- \(h\): depth or height of a fluid column, in meters (m)
+- $P $: pressure, in pascals (Pa) or mm Hg when stated medically
+- $F $: force, in newtons (N)
+- $A $: area, in square meters (m$^2 $)
+- $\rho $: density, in kg/m$^3 $
+- $g $: acceleration due to gravity, in m/s$^2 $
+- $h $: depth or height of a fluid column, in meters (m)
 
 Common medical pressure units in this section:
 - mm Hg for blood pressure, eye pressure, spinal fluid pressure, bladder pressure, and other bodily pressures
@@ -80,9 +80,9 @@ Example 11.13: Calculating Gauge Pressure and Depth: Damage to the Eardrum
 
 A 3.00-N force can rupture an eardrum.
 
-(a) If the eardrum has a given area, the maximum tolerable gauge pressure on the eardrum is found from \(P = F/A\), and then converted to mm Hg.
+(a) If the eardrum has a given area, the maximum tolerable gauge pressure on the eardrum is found from $P = F/A $, and then converted to mm Hg.
 
-(b) To find the depth in freshwater at which the eardrum would rupture, the water pressure relation \(P = \rho g h\) is used, assuming the gauge pressure in the middle ear is zero.
+(b) To find the depth in freshwater at which the eardrum would rupture, the water pressure relation $P = \rho g h $ is used, assuming the gauge pressure in the middle ear is zero.
 
 The discussion notes that increased pressure on the eardrum from the middle ear can also arise when infection causes fluid buildup.
 

@@ -13,9 +13,9 @@ needs_review: true
 The source excerpt provided for this sample problem contains the heading “Sample Problem 27.04 Multiloop circuit and simultaneous loop equations,” but the actual worked sample-problem statement is not present in the OCR text. Instead, the excerpt includes the surrounding section “The Ammeter and the Voltmeter” and then “RC Circuits.”
 
 ## Key ideas
-● An ammeter measures current. To measure current in a wire, the wire must usually be broken and the ammeter inserted so that the current passes through it. The ammeter’s resistance \(R_A\) must be very much smaller than the other resistances in the circuit.
+● An ammeter measures current. To measure current in a wire, the wire must usually be broken and the ammeter inserted so that the current passes through it. The ammeter’s resistance $R_A $ must be very much smaller than the other resistances in the circuit.
 
-● A voltmeter measures potential difference. Its terminals are connected between two points without breaking the wire. The voltmeter’s resistance \(R_V\) must be very much larger than the resistance of the circuit element across which it is connected.
+● A voltmeter measures potential difference. Its terminals are connected between two points without breaking the wire. The voltmeter’s resistance $R_V $ must be very much larger than the resistance of the circuit element across which it is connected.
 
 ● A multimeter can be switched to serve as an ammeter, voltmeter, or ohmmeter.
 

@@ -22,62 +22,62 @@ The voltages are rms values.
 ## Solution
 **EXECUTE:**  
 (a) To get the required turns ratio,
-\[
+$$ 
 \frac{N_2}{N_1}=\frac{V_2}{V_1}=\frac{240\ \text{V}}{120\ \text{V}}=2.
-\]
+ $$
 That is, the secondary coil (connected to the coffeemaker) should have twice as many turns as the primary coil (connected to the 120-V line).
 
 (b) We find the rms current in the 120-V primary by using
-\[
+$$ 
 P_{\text{av}}=V_{\text{rms}} I_{\text{rms}},
-\]
-where \(P_{\text{av}}\) is the average power drawn by the coffeemaker and hence the power supplied by the 120-V line. Assuming no energy is lost in the transformer,
-\[
+ $$
+where $P_{\text{av}} $ is the average power drawn by the coffeemaker and hence the power supplied by the 120-V line. Assuming no energy is lost in the transformer,
+$$ 
 I_1=\frac{P_{\text{av}}}{V_1}=\frac{960\ \text{W}}{120\ \text{V}}=8.0\ \text{A}.
-\]
+ $$
 The secondary current is then
-\[
+$$ 
 I_2=\frac{P_{\text{av}}}{V_2}=\frac{960\ \text{W}}{240\ \text{V}}=4.0\ \text{A}.
-\]
+ $$
 
 (c) We have
-\[
+$$ 
 V_1=120\ \text{V}, \qquad I_1=8.0\ \text{A},
-\]
+ $$
 so
-\[
+$$ 
 R=\frac{V_1}{I_1}=\frac{120\ \text{V}}{8.0\ \text{A}}=15\ \Omega.
-\]
+ $$
 From Eq. (31.37),
-\[
+$$ 
 R=\frac{V_2^2}{P_{\text{av}}}=\frac{(240\ \text{V})^2}{960\ \text{W}}=60\ \Omega.
-\]
+ $$
 
 ## Evaluation
 As a check, using the secondary values gives the same resistance:
-\[
+$$ 
 R=\frac{V_2}{I_2}=\frac{240\ \text{V}}{4.0\ \text{A}}=60\ \Omega.
-\]
-You can also check this result for \(R\) by using the expression
-\[
+ $$
+You can also check this result for $R $ by using the expression
+$$ 
 P_{\text{av}}=\frac{V^2}{R}
-\]
+ $$
 for the power drawn by the coffeemaker.
 
 ## Key concepts used
 - Transformer voltage ratio:
-  \[
+  $$ 
   \frac{N_2}{N_1}=\frac{V_2}{V_1}
-  \]
+   $$
 - Power relation for rms values:
-  \[
+  $$ 
   P_{\text{av}}=V_{\text{rms}} I_{\text{rms}}
-  \]
+   $$
 - Ohm’s law:
-  \[
+  $$ 
   R=\frac{V}{I}
-  \]
+   $$
 - Resistive power relation:
-  \[
+  $$ 
   P_{\text{av}}=\frac{V^2}{R}
-  \]
+   $$

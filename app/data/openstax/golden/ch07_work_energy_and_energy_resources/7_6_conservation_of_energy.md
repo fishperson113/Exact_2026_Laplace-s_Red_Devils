@@ -27,32 +27,32 @@ Efficiency is defined for an energy conversion process as the fraction of input 
 
 ## Key formulas
 Total energy conservation, general form:
-\[
+$$ 
 \text{initial energy} = \text{final energy}
-\]
+ $$
 as represented in the text by the general conservation of energy equation.
 
 Conservation of mechanical energy, when all forces are conservative:
-\[
+$$ 
 K_i + U_i = K_f + U_f
-\]
+ $$
 
 General conservation of energy, when other forms of energy and/or nonconservative work are included:
-\[
+$$ 
 K_i + U_i + W_{\text{nc}} = K_f + U_f + E_{\text{other}}
-\]
+ $$
 with the understanding that the section states all types of energy and work can be included in this very general statement.
 
 Efficiency:
-\[
+$$ 
 \text{efficiency} = \frac{\text{useful output energy or work}}{\text{energy input}}
-\]
+ $$
 
 ## Variables and units
-- \(K\): kinetic energy, in joules (J)
-- \(U\): potential energy, in joules (J)
-- \(W_{\text{nc}}\): work done by nonconservative forces, in joules (J)
-- \(E_{\text{other}}\): other energy, in joules (J)
+- $K $: kinetic energy, in joules (J)
+- $U $: potential energy, in joules (J)
+- $W_{\text{nc}} $: work done by nonconservative forces, in joules (J)
+- $E_{\text{other}} $: other energy, in joules (J)
 - efficiency: dimensionless fraction, often reported as a percentage (%)
 - energy: joules (J)
 

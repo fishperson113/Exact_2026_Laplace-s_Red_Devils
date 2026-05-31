@@ -18,32 +18,32 @@ Find the equivalent capacitance of the five-capacitor network shown in Fig. 24.1
 ## Solution
 **EXECUTE:** The caption of Fig. 24.10 outlines our procedure. We first use Eq. (24.5) to replace the 6-mF and 12-mF series combination by its equivalent capacitance:
 
-\[
+$$ 
 \frac{1}{C'}=\frac{1}{12\ \text{mF}}+\frac{1}{6\ \text{mF}}
 \qquad
 C' = 4\ \text{mF}
-\]
+ $$
 
 This gives us the equivalent combination of Fig. 24.10b. Now we see three capacitors in parallel, and we use Eq. (24.7) to replace them with their equivalent capacitance:
 
-\[
+$$ 
 C_- = 3\ \text{mF} + 11\ \text{mF} + 4\ \text{mF} = 18\ \text{mF}
-\]
+ $$
 
-This gives us the equivalent combination of Fig. 24.10c, which has two capacitors in series. We use Eq. (24.5) to replace them with their equivalent capacitance, which is our target variable \(C_{\mathrm{eq}}\) (Fig. 24.10d):
+This gives us the equivalent combination of Fig. 24.10c, which has two capacitors in series. We use Eq. (24.5) to replace them with their equivalent capacitance, which is our target variable $C_{\mathrm{eq}} $ (Fig. 24.10d):
 
-\[
+$$ 
 \frac{1}{C_{\mathrm{eq}}}=\frac{1}{18\ \text{mF}}+\frac{1}{9\ \text{mF}}
 \qquad
 C_{\mathrm{eq}} = 6\ \text{mF}
-\]
+ $$
 
 ## Evaluation
-If the potential difference across the entire network in Fig. 24.10a is \(V_{ab} = 9.0\ \text{V}\), the net charge on the network is
+If the potential difference across the entire network in Fig. 24.10a is $V_{ab} = 9.0\ \text{V} $, the net charge on the network is
 
-\[
+$$ 
 Q = C_{\mathrm{eq}}V_{ab} = (6\ \text{mF})(9.0\ \text{V}) = 54\ \text{mC}
-\]
+ $$
 
 Can you find the charge on, and the voltage across, each of the five individual capacitors?
 
@@ -52,4 +52,4 @@ Can you find the charge on, and the voltage across, each of the five individual 
 - Replace series combinations using Eq. (24.5).
 - Replace parallel combinations using Eq. (24.7).
 - Repeat reduction steps until a single equivalent capacitance remains.
-- Use \(Q = C_{\mathrm{eq}}V\) to find the net charge when the potential difference is known.
+- Use $Q = C_{\mathrm{eq}}V $ to find the net charge when the potential difference is known.

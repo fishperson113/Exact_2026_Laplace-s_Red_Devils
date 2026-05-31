@@ -25,17 +25,17 @@ The conservation of energy and energy conservation are different ideas. The law 
 ## Key formulas
 - Law of conservation of energy: total energy in an isolated system remains constant.
 - Efficiency:
-  \[
+  $$ 
   \text{efficiency}=\frac{\text{useful work output}}{\text{energy consumed}}
-  \]
+   $$
 - Energy consumption units in the source table include exajoules:
-  \[
+  $$ 
   1\ \text{EJ}=10^{18}\ \text{J}
-  \]
+   $$
 
 ## Variables and units
 - Energy: joule (J)
-- Exajoule: EJ \(=10^{18}\,\text{J}\)
+- Exajoule: EJ $=10^{18}\,\text{J} $
 - GDP per capita: gross domestic product per person
 - Power: watt (W)
 - Kilowatt-hour: energy unit used especially for electrical energy

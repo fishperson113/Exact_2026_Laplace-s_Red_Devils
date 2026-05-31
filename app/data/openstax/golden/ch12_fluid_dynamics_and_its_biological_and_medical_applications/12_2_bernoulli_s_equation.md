@@ -15,70 +15,70 @@ Applications include entrainment devices, wings and sails, and fluid velocity me
 
 ## Key formulas
 Bernoulli’s equation for an incompressible, frictionless fluid:
-\[
+$$ 
 P+\frac{1}{2}\rho v^2+\rho gy=\text{constant}
-\]
+ $$
 
 Between two points:
-\[
+$$ 
 P_1+\frac{1}{2}\rho v_1^2+\rho gy_1
 =
 P_2+\frac{1}{2}\rho v_2^2+\rho gy_2
-\]
+ $$
 
 Static fluid case:
-\[
+$$ 
 P+\rho gy=\text{constant}
-\]
+ $$
 
-If the top of the fluid is chosen as \(y=0\), then:
-\[
+If the top of the fluid is chosen as $y=0 $, then:
+$$ 
 P+\rho gh=\text{constant}
-\]
-where \(h\) is depth below the surface.
+ $$
+where $h $ is depth below the surface.
 
 Constant-depth flow, Bernoulli’s principle:
-\[
+$$ 
 P+\frac{1}{2}\rho v^2=\text{constant}
-\]
+ $$
 
-For a tube facing the flow, the dead spot has \(v=0\), so Bernoulli’s principle becomes:
-\[
+For a tube facing the flow, the dead spot has $v=0 $, so Bernoulli’s principle becomes:
+$$ 
 P_1+\rho gy_1=P_2+\frac{1}{2}\rho v^2+\rho gy_2
-\]
+ $$
 and for equal heights:
-\[
+$$ 
 P_1=P_2+\frac{1}{2}\rho v^2
-\]
+ $$
 
 ## Variables and units
-- \(P\): absolute pressure, in pascals (Pa)
-- \(\rho\): fluid density, in kilograms per cubic meter (\(\text{kg/m}^3\))
-- \(v\): fluid speed, in meters per second (m/s)
-- \(g\): acceleration due to gravity, in meters per second squared (\(\text{m/s}^2\))
-- \(y\): height above a chosen reference point, in meters (m)
-- \(h\): depth below the fluid surface, in meters (m)
+- $P $: absolute pressure, in pascals (Pa)
+- $\rho $: fluid density, in kilograms per cubic meter ($\text{kg/m}^3 $)
+- $v $: fluid speed, in meters per second (m/s)
+- $g $: acceleration due to gravity, in meters per second squared ($\text{m/s}^2 $)
+- $y $: height above a chosen reference point, in meters (m)
+- $h $: depth below the fluid surface, in meters (m)
 
 Each term in Bernoulli’s equation has units of energy per unit volume:
-\[
+$$ 
 \text{Pa}=\text{N/m}^2=\text{J/m}^3
-\]
+ $$
 
 ## Worked example
 EXAMPLE 12.4: Calculating Pressure: Pressure Drops as a Fluid Speeds Up
 
 In Example 12.2, the speed of water in a hose increased from 1.96 m/s to 25.5 m/s going from the hose to the nozzle. Calculate the pressure in the hose, given that the absolute pressure in the nozzle is atmospheric and assuming level, frictionless flow.
 
-Strategy: Level flow means constant depth, so Bernoulli’s principle applies. Use subscript 1 for the hose and subscript 2 for the nozzle. Solve for \(P_1\).
+Strategy: Level flow means constant depth, so Bernoulli’s principle applies. Use subscript 1 for the hose and subscript 2 for the nozzle. Solve for $P_1 $.
 
 Solution:
-\[
+$$ 
 P_1+\frac{1}{2}\rho v_1^2=P_2+\frac{1}{2}\rho v_2^2
-\]
+ $$
 so
-\[
+$$ 
 P_1=P_2+\frac{1}{2}\rho\left(v_2^2-v_1^2\right)
-\]
+ $$
 
 Substituting the known values gives the hose pressure.
 

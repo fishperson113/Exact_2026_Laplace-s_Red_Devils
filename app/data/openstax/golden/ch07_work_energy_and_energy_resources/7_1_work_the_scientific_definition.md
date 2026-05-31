@@ -14,55 +14,55 @@ Work and energy have the same units. In SI units, both are measured in joules (J
 ## Key formulas
 For constant force and one-way motion in one dimension:
 
-\[
+$$ 
 W = Fd\cos\theta
-\]
+ $$
 
-where \(\theta\) is the angle between the force vector and the displacement vector.
+where $\theta $ is the angle between the force vector and the displacement vector.
 
 Equivalent interpretation:
 
-\[
+$$ 
 W = F_{\parallel} d
-\]
+ $$
 
-where \(F_{\parallel}\) is the component of the force in the direction of motion.
+where $F_{\parallel} $ is the component of the force in the direction of motion.
 
 Unit relation:
 
-\[
+$$ 
 1\ \text{J} = 1\ \text{N}\cdot\text{m}
-\]
+ $$
 
 Energy unit conversion used in the example:
 
-\[
+$$ 
 1\ \text{cal} \text{ is the heat required to warm } 1\ \text{g of water by } 1^\circ\text{C}
-\]
+ $$
 
-\[
+$$ 
 1\ \text{kcal} = 1000\ \text{cal}
-\]
+ $$
 
 ## Variables and units
-- \(W\): work, measured in joules (J)
-- \(F\): force, measured in newtons (N)
-- \(d\): displacement magnitude, measured in meters (m)
-- \(\theta\): angle between force and displacement, measured in degrees or radians
-- \(F_{\parallel}\): component of force parallel to displacement, measured in newtons (N)
+- $W $: work, measured in joules (J)
+- $F $: force, measured in newtons (N)
+- $d $: displacement magnitude, measured in meters (m)
+- $\theta $: angle between force and displacement, measured in degrees or radians
+- $F_{\parallel} $: component of force parallel to displacement, measured in newtons (N)
 
 ## Worked example
-A person pushes a lawn mower across level ground with a constant force of \(62\ \text{N}\) at an angle of \(30^\circ\) below the horizontal, over a distance of \(50\ \text{m}\).
+A person pushes a lawn mower across level ground with a constant force of $62\ \text{N} $ at an angle of $30^\circ $ below the horizontal, over a distance of $50\ \text{m} $.
 
 Using the work formula:
 
-\[
+$$ 
 W = Fd\cos\theta
-\]
+ $$
 
-\[
+$$ 
 W = (62\ \text{N})(50\ \text{m})\cos(30^\circ)
-\]
+ $$
 
 This gives the work done on the mower in joules. The source also converts this result from joules to kilocalories and compares it with daily food energy intake, noting that the work done is a tiny fraction of daily consumption.
 
