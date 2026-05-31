@@ -72,11 +72,21 @@ class QAInference:
         else:
             z3_conclusions = "(no ground terms)"
 
+        # Format Z3 options entailment (MCQ)
+        if z3_result.options_entailment:
+            z3_options_str = ", ".join(
+                f"{k}:{v}"
+                for k, v in sorted(z3_result.options_entailment.items())
+            )
+        else:
+            z3_options_str = "(no MCQ options)"
+
         user_msg = USER_TEMPLATE_QA.format(
             premises_nl_block=nl_block,
             premises_fol_block=fol_block,
             z3_status=z3_result.raw_status,
             z3_entailment=z3_result.entailment,
+            z3_options_entailment=z3_options_str,
             z3_parsed_count=len(z3_result.premises_parsed),
             z3_total_count=len(z3_result.premises_parsed) + len(z3_result.premises_failed),
             z3_conclusions=z3_conclusions,
