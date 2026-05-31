@@ -1,0 +1,45 @@
+# QA Stage 2: COT Reasoning (NL + FOL → answer + explanation)
+# Usage: python -m models.QA_model.train --config configs/qa_model.yaml
+
+model:
+  name: Qwen/Qwen2.5-3B-Instruct
+  trust_remote_code: true
+  max_seq_length: 4096
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+
+training:
+  num_train_epochs: 15
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 4
+  gradient_accumulation_steps: 8
+  learning_rate: 2e-5
+  warmup_ratio: 0.05
+  weight_decay: 0.01
+  logging_steps: 10
+  bf16: true
+  gradient_checkpointing: true
+  train_seed: 42
+  load_in_8bit: true
+  # Early stopping
+  early_stopping_patience: 5
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  save_total_limit: 2
+
+inference:
+  # After training, set this to the merged model path or Hub repo
+  model_path: null  # Will use model.name as fallback
+  max_new_tokens: 512
+  load_in_8bit: true
+
+hub:
+  org: Laplaces-Red-Devils
+  repo_version: v01
+  push_to_hub: false
+  hf_private: true
