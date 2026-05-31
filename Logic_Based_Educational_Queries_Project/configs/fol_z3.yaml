@@ -8,14 +8,14 @@
 
 fol_model:
   # HF repo chua LoRA/merged model FOL da train
-  hub_repo_id: Laplaces-Red-Devils/fol-v04-cot-augmented-fol-pretrain-malls-qwen2.5-3
+  hub_repo_id: Laplaces-Red-Devils/fol-v05-cot-augmented-fol-pretrain-malls-qwen2.5-3
   # Base model (phai trung voi model da train FOL)
   base_model: Qwen/Qwen2.5-3B-Instruct
-  max_new_tokens: 768            # premises FOL output (gold max=684, 768 covers 100%)
+  max_new_tokens: 650            # premises FOL output (gold max=684, 768 covers 100%)
 qa_model:
   # Model dung de tra loi + giai thich (mac dinh = cung base voi FOL)
   model_name: Qwen/Qwen2.5-3B-Instruct
-  max_new_tokens: 512            # QA JSON output
+  max_new_tokens: 650            # QA JSON output
 
 z3:
   timeout_ms: 5000        # Timeout cho moi formula khi check Z3
@@ -25,7 +25,7 @@ inference:
   device: auto            # auto | cuda | cpu
   load_in_8bit: true
   trust_remote_code: true
-  batch_size: 4
+  batch_size: 8
 
 # --- Refinement: Z3 reject → FOL model sinh lai ---
 # Neurosymbolic: FOL model sinh FOL → Z3 check → parse_fail/unsat → feedback → sinh lai
@@ -42,5 +42,5 @@ ablation:
 hub:
   push_results: true                    # true = upload sau inference
   # repo_id: Laplaces-Red-Devils/fol-z3-pipeline-baseline
-  repo_id: Laplaces-Red-Devils/fol-augmented-exact-z3-full-pipeline-v01
+  repo_id: Laplaces-Red-Devils/fol-augmented-exact-z3-full-pipeline-v02
   private: false
