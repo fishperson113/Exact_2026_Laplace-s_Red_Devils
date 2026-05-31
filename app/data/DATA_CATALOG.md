@@ -3,21 +3,23 @@
 ## 1. MetaData (Siêu dữ liệu)
 - **Tên Data Asset**: Exact Physics Textbook Pre-training Corpus
 - **Định dạng dữ liệu**: Unstructured (Markdown Text) + JSONL intermediate pairs
-- **Kích thước hiện tại**: 377 golden markdown samples
-- **Nguồn gốc (Lineage)**: Trích xuất từ OpenStax College Physics 2e, Giancoli Physics: Principles with Applications 7th ed., và Young & Freedman University Physics 13th ed.
+- **Kích thước hiện tại**: 451 golden markdown samples
+- **Nguồn gốc (Lineage)**: Trích xuất từ OpenStax College Physics 2e, Giancoli Physics: Principles with Applications 7th ed., Young & Freedman University Physics 13th ed., và Fundamentals of Physics.
 - **Source files**:
   - `app/data/openstax/college-physics-2e_-_WEB.pdf`
   - `app/data/Giancoli/Giancoli-Physics-Principles-with-Applications-7th-c2014-txtbk-1.pdf`
   - `app/data/university_of_physic/Young-Freedman-University-Physics-13th-txtbk_compressed.pdf`
+  - `app/data/Fundamental_of_physics/Fundamental_of_physics.pdf`
 - **Phiên bản**: v1.0
-- **Ngày cập nhật cuối**: 2026-05-30
+- **Ngày cập nhật cuối**: 2026-05-31
 - **Ngôn ngữ**: English (Physics explanations) & Mathematics (Formulas)
 
 ## 2. Thống kê & Mức độ tin cậy (Data Quality Assessment)
-Bộ dữ liệu hiện gồm ba asset chính:
+Bộ dữ liệu hiện gồm bốn asset chính:
 - **OpenStax Loại B**: lý thuyết + công thức + ví dụ, tách theo numbered sections.
 - **Giancoli Loại A**: end-of-chapter problem statements paired with odd-numbered appendix answers, transformed into worked-solution markdown.
 - **Young & Freedman Worked Examples**: textbook worked examples from Chapters 21-31, transformed into standalone markdown named by example subtitle.
+- **Fundamentals of Physics Sample Problems**: sample problems from Chapters 21-33, transformed into standalone worked-example markdown named by sample subtitle.
 
 ### 2.1 OpenStax College Physics 2e — Loại B
 OpenStax được tách theo đúng mục lục PDF, chỉ giữ các numbered sections như `5.1`, `6.2`, `12.7`. Các phần outline, introduction, glossary, section summary, conceptual questions, và problems không được đưa vào corpus Loại B.
@@ -66,6 +68,26 @@ Young & Freedman được tách theo chapter 21-31, chỉ lấy worked examples 
 | Chapter 31 | Alternating Current | 9 | 9 | Included |
 | **Tổng cộng** | | **132** | **132** | **120 flagged** |
 
+### 2.4 Fundamentals of Physics — Sample Problems
+Fundamentals of Physics được tách theo chapter 21-33, chỉ lấy các worked sample problems có nhãn `Sample Problem <chapter>.<number>`. File markdown được đặt tên theo quy ước `<sample_number>_<subtitle_slug>.md`.
+
+| Chapter | Chủ đề | Parsed Sample Problems | Golden Sample Problems | Needs Review |
+| :--- | :--- | :---: | :---: | :---: |
+| Chapter 21 | Coulomb's Law | 4 | 4 | 4 |
+| Chapter 22 | Electric Fields | 5 | 5 | 5 |
+| Chapter 23 | Gauss' Law | 7 | 7 | 7 |
+| Chapter 24 | Electric Potential | 7 | 7 | 7 |
+| Chapter 25 | Capacitance | 6 | 6 | 6 |
+| Chapter 26 | Current and Resistance | 6 | 6 | 6 |
+| Chapter 27 | Circuits | 5 | 5 | 5 |
+| Chapter 28 | Magnetic Fields | 7 | 7 | 7 |
+| Chapter 29 | Magnetic Fields Due to Currents | 4 | 4 | 4 |
+| Chapter 30 | Induction and Inductance | 8 | 8 | 7 |
+| Chapter 31 | Electromagnetic Oscillations and Alternating Current | 8 | 8 | 8 |
+| Chapter 32 | Maxwell's Equations; Magnetism of Matter | 4 | 4 | 4 |
+| Chapter 33 | Electromagnetic Waves | 3 | 3 | 3 |
+| **Tổng cộng** | | **74** | **74** | **73 flagged** |
+
 **Dung lượng hiện tại:**
 - OpenStax source PDF: ~251.26 MiB
 - OpenStax processed markdown: ~824 KiB
@@ -76,6 +98,9 @@ Young & Freedman được tách theo chapter 21-31, chỉ lấy worked examples 
 - Young & Freedman raw extracted PDFs: ~13.88 MiB
 - Young & Freedman processed files: ~2.68 MiB
 - Young & Freedman golden markdown: ~346 KiB
+- Fundamentals raw extracted PDFs: ~38.54 MiB
+- Fundamentals processed files: ~4.06 MiB
+- Fundamentals golden markdown: ~205 KiB
 
 ## 3. Data Lineage & Pipeline (Nguồn gốc & Quá trình xử lý)
 Để đảm bảo tính minh bạch và khả năng tái lập (reproducibility), quá trình hình thành dữ liệu được thực hiện qua các bước:
@@ -140,8 +165,22 @@ Young & Freedman được tách theo chapter 21-31, chỉ lấy worked examples 
   - Dùng OpenAI để chuẩn hóa mỗi worked example thành Markdown độc lập.
 - **Quality flag**: `needs_review: true` cho ví dụ phụ thuộc hình vẽ, bảng, OCR không chắc chắn, hoặc công thức bị mất ký hiệu.
 
+### 3.6. Fundamentals of Physics Sample Problem Pipeline
+- **Script xử lý**: `app/data/Fundamental_of_physics/prepare_fundamentals_physics_examples.py`
+- **Nguồn PDF**: `app/data/Fundamental_of_physics/Fundamental_of_physics.pdf`
+- **Phạm vi**: Chapter 21 đến Chapter 33
+- **Raw output**: `app/data/Fundamental_of_physics/raw/<chapter_slug>/`
+- **Processed output**: `app/data/Fundamental_of_physics/processed/<chapter_slug>/sample_problems.jsonl`
+- **Golden output**: `app/data/Fundamental_of_physics/golden/<chapter_slug>/<sample_number>_<subtitle_slug>.md`
+- **Quy trình**:
+  - Dùng PyMuPDF để tách chapter và numbered sections.
+  - Dùng Microsoft MarkItDown để chuyển section PDFs sang Markdown.
+  - Parse sample problems từ source text bằng nhãn `Sample Problem N.NN`, loại bỏ summary và end-of-chapter problems.
+  - Dùng OpenAI để chuẩn hóa mỗi sample problem thành Markdown độc lập.
+- **Quality flag**: `needs_review: true` cho sample problem phụ thuộc hình vẽ, bảng, OCR không chắc chắn, hoặc công thức bị mất ký hiệu.
+
 ## 4. Cấu trúc dữ liệu & Xem trước (Data Schema & Preview)
-Mỗi data asset là một file Markdown độc lập. OpenStax dùng schema Loại B theo section lý thuyết; Giancoli dùng schema problem-solution theo từng bài odd-numbered; Young & Freedman dùng schema worked-example theo từng ví dụ trong textbook.
+Mỗi data asset là một file Markdown độc lập. OpenStax dùng schema Loại B theo section lý thuyết; Giancoli dùng schema problem-solution theo từng bài odd-numbered; Young & Freedman dùng schema worked-example theo từng ví dụ trong textbook; Fundamentals of Physics dùng schema sample-problem theo từng worked sample problem.
 
 **OpenStax Loại B schema:**
 ```markdown
@@ -277,14 +316,54 @@ Example:
 30_010_an_underdamped_l_r_c_series_circuit.md
 ```
 
+**Fundamentals of Physics sample-problem schema:**
+```markdown
+---
+source: Fundamentals of Physics
+chapter: <chapter number>
+section: <section number>
+sample_problem_number: <sample problem number>
+subtitle: <sample problem subtitle>
+needs_review: <true|false>
+---
+
+# Sample Problem <sample problem number>: <sample problem subtitle>
+
+## Problem
+...
+
+## Key ideas
+...
+
+## Solution
+...
+
+## Answer
+...
+
+## Key concepts used
+...
+```
+
+**Fundamentals of Physics filename convention:**
+```text
+<sample_number>_<subtitle_slug>.md
+```
+
+Example:
+```text
+30_008_mutual_inductance_of_two_parallel_coils.md
+```
+
 ## 5. Quy định sử dụng & Tuân thủ (Compliance & Usage)
 - **Mục đích sử dụng**: Sử dụng nội bộ cho việc Continue Pre-training (CPT), giúp mô hình nâng cao kiến thức nền và khả năng giải bài tập vật lý.
 - **Hạn chế**: Không sử dụng trực tiếp bộ dữ liệu này cho Supervised Fine-Tuning (SFT) nếu chưa format lại thành dạng Instruction/Response hoặc JSONL phù hợp.
-- **Bản quyền**: Dữ liệu nguồn đến từ OpenStax College Physics 2e, Giancoli Physics: Principles with Applications 7th ed., và Young & Freedman University Physics 13th ed. Khi phân phối hoặc tái sử dụng bên ngoài, cần kiểm tra license/rights của từng nguồn.
+- **Bản quyền**: Dữ liệu nguồn đến từ OpenStax College Physics 2e, Giancoli Physics: Principles with Applications 7th ed., Young & Freedman University Physics 13th ed., và Fundamentals of Physics. Khi phân phối hoặc tái sử dụng bên ngoài, cần kiểm tra license/rights của từng nguồn.
 - **Tái lập dữ liệu**:
   - OpenStax: `app/data/openstax/prepare_openstax_type_b.py`
   - Giancoli: `app/data/Giancoli/prepare_giancoli_solutions.py`
   - Young & Freedman: `app/data/university_of_physic/prepare_university_physics_examples.py`
+  - Fundamentals of Physics: `app/data/Fundamental_of_physics/prepare_fundamentals_physics_examples.py`
 
 ---
 *Data Catalog Generated Auto-magically by Exact 2026 Script*

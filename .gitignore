@@ -45,3 +45,4 @@ CC-Session-Logs/
 ToRA-main/
 
 app/data/*.pdf
+*.pdf
