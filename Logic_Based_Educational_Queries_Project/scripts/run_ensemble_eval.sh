@@ -70,7 +70,7 @@ echo "  Done."
 echo ""
 echo "[5/5] Kiểm tra imports..."
 python -c "
-import torch, transformers, peft, datasets, bitsandbytes, pandas
+import torch, transformers, peft, datasets, bitsandbytes, pandas, huggingface_hub
 print(f'  PyTorch      : {torch.__version__}')
 print(f'  CUDA         : {torch.cuda.is_available()} — {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"N/A\"}')
 print(f'  Transformers : {transformers.__version__}')

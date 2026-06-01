@@ -400,7 +400,162 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
         json.dump(summary, f, ensure_ascii=False, indent=2)
     print(f"[Log] Summary: {summary_path}")
 
+    # Build full eval log text (giống screenshot)
+    eval_log_lines = []
+    for r in results:
+        idx = r["idx"]
+        status = "OK" if r["correct"] else "WRONG"
+        pred = r["prediction"]["answer"]
+        gold = r["gold"]["answer"]
+        t = r["latency"]["total_sec"]
+        warn = " !! SLOW" if t > slow_threshold else ""
+        eval_log_lines.append(f"[{idx+1:2d}/{total}] {status:5s} pred={pred:8s} gold={gold:8s} time={t:.2f}s{warn}")
+    eval_log_text = "\n".join(eval_log_lines)
+
+    # Save eval log text
+    eval_log_txt_path = output_dir / "eval_log.txt"
+    with open(eval_log_txt_path, "w", encoding="utf-8") as f:
+        f.write(eval_log_text + "\n")
+
+    # Push to HF Hub
+    hub_cfg = cfg.get("hub", {})
+    if hub_cfg.get("push_results", False):
+        _push_to_hub(cfg, summary, results, eval_log_text, log_path, summary_path, output_dir)
+
     return {"summary": summary, "results": results}
+
+
+def _push_to_hub(cfg: dict, summary: dict, results: list, eval_log_text: str,
+                 log_path: Path, summary_path: Path, output_dir: Path):
+    """Build README + push log files lên HF Hub."""
+    from huggingface_hub import HfApi, create_repo
+
+    hub_cfg = cfg["hub"]
+    fol_cfg = cfg["fol_model"]
+    qa_cfg = cfg["qa_model"]
+    inf_cfg = cfg.get("inference", {})
+    slow_threshold = inf_cfg.get("slow_threshold_sec", 60)
+
+    org = hub_cfg.get("org", "")
+    repo_name = hub_cfg.get("repo_name", "Logic-Final-Result-V01")
+    hub_repo_id = f"{org}/{repo_name}" if org else repo_name
+    private = hub_cfg.get("private", False)
+
+    accuracy = summary["accuracy"]
+    correct = summary["correct"]
+    total = summary["total"]
+    avg_total = summary["avg_total_latency_sec"]
+    avg_fol = summary["avg_fol_latency_sec"]
+    avg_qa = summary["avg_qa_latency_sec"]
+    n_slow = summary["slow_samples_count"]
+    slow_indices = summary["slow_sample_indices"]
+
+    # Build README
+    readme = f"""---
+tags:
+- logic
+- qa
+- ensemble
+- fol
+- chain-of-thought
+- education
+language:
+- en
+---
+
+# Logic-Based Educational QA — Ensemble Final Results
+
+## Pipeline
+
+```
+NL premises + Question
+        |
+  Stage 1: FOL Model (NL -> FOL)
+  Model: {fol_cfg['hub_repo_id']}
+        |
+  Stage 2: QA COT Model (NL + FOL + Question -> Answer + Explanation)
+  Model: {qa_cfg['hub_repo_id']}
+        |
+  {{"answer": "B", "explanation": "Premise 1 states..."}}
+```
+
+## Models Used
+
+| Stage | Model | Type |
+|-------|-------|------|
+| FOL (Stage 1) | [{fol_cfg['hub_repo_id']}](https://huggingface.co/{fol_cfg['hub_repo_id']}) | Merged (Qwen2.5-3B) |
+| QA (Stage 2) | [{qa_cfg['hub_repo_id']}](https://huggingface.co/{qa_cfg['hub_repo_id']}) | LoRA adapter (Qwen2.5-3B-Instruct) |
+
+## Inference Config
+
+| Parameter | Value |
+|-----------|-------|
+| FOL max_new_tokens | {fol_cfg.get('max_new_tokens', 400)} |
+| QA max_new_tokens | {qa_cfg.get('max_new_tokens', 200)} |
+| Quantization | INT8 (bitsandbytes) |
+| Decoding | Greedy (do_sample=False) |
+| Slow threshold | {slow_threshold}s |
+
+## Results on Test Set
+
+| Metric | Value |
+|--------|-------|
+| **Accuracy** | **{correct}/{total} ({accuracy:.1%})** |
+| Avg total latency | {avg_total:.2f}s / sample |
+| Avg FOL latency | {avg_fol:.2f}s / sample |
+| Avg QA latency | {avg_qa:.2f}s / sample |
+| Slow samples (>{slow_threshold}s) | {n_slow} samples |
+
+## Full Evaluation Log
+
+```
+{eval_log_text}
+```
+
+## Files
+
+| File | Description |
+|------|-------------|
+| `ensemble_eval_log.jsonl` | Full detail per sample (NL, FOL gold, FOL generated, question, gold, prediction, latency) |
+| `ensemble_eval_summary.json` | Summary statistics |
+| `eval_log.txt` | Plain text evaluation log |
+| `README.md` | This file |
+
+## Team
+
+**Laplace's Red Devils** — EXACT 2026 Competition
+"""
+
+    # Save README locally
+    readme_path = output_dir / "README.md"
+    with open(readme_path, "w", encoding="utf-8") as f:
+        f.write(readme)
+
+    # Push to Hub
+    print(f"\n[Hub] Pushing to: {hub_repo_id}")
+    api = HfApi()
+    try:
+        create_repo(hub_repo_id, repo_type="dataset", private=private, exist_ok=True)
+    except Exception as e:
+        print(f"[Hub] create_repo: {e}")
+
+    files_to_upload = [
+        (str(readme_path), "README.md"),
+        (str(log_path), "ensemble_eval_log.jsonl"),
+        (str(summary_path), "ensemble_eval_summary.json"),
+        (str(output_dir / "eval_log.txt"), "eval_log.txt"),
+    ]
+    for local_path, hub_path in files_to_upload:
+        if Path(local_path).exists():
+            api.upload_file(
+                path_or_fileobj=local_path,
+                path_in_repo=hub_path,
+                repo_id=hub_repo_id,
+                repo_type="dataset",
+            )
+            print(f"  Uploaded: {hub_path}")
+
+    print(f"[Hub] Done: https://huggingface.co/datasets/{hub_repo_id}")
 
 
 # ─── Inference Mode ───────────────────────────────────────────────────────────
