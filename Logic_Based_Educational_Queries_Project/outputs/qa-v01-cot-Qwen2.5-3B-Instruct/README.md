@@ -2,208 +2,153 @@
 base_model: Qwen/Qwen2.5-3B-Instruct
 library_name: peft
 pipeline_tag: text-generation
+license: apache-2.0
+language:
+- en
 tags:
 - base_model:adapter:Qwen/Qwen2.5-3B-Instruct
 - lora
 - sft
 - transformers
 - trl
+- logic
+- qa
+- chain-of-thought
+- education
+datasets:
+- Logic_Based_Educational_Queries
 ---
 
-# Model Card for Model ID
+# QA Stage 2 — COT Reasoning (NL + FOL → Answer + Explanation)
 
-<!-- Provide a quick summary of what the model is/does. -->
+LoRA adapter for **Qwen/Qwen2.5-3B-Instruct**, fine-tuned on the Logic-Based Educational Queries dataset. Given natural-language premises, their FOL translations, and a question, the model reasons step-by-step and outputs a JSON answer with explanation.
 
+## Pipeline
 
+```
+NL premises + FOL premises + Question
+        |
+  QA COT Model (this adapter)
+        |
+  {"answer": "B", "explanation": "Premise 1 states..."}
+```
 
-## Model Details
+This model is **Stage 2** in a two-stage ensemble:
+1. **Stage 1 (FOL Model)**: NL → FOL ([fol-v05-cot-augmented](https://huggingface.co/Laplaces-Red-Devils/fol-v05-cot-augmented-fol-pretrain-malls-qwen2.5-3))
+2. **Stage 2 (This Model)**: NL + FOL + Question → Answer + Explanation
 
-### Model Description
+## Accuracy (Dev set, 40 samples)
 
-<!-- Provide a longer summary of what this model is. -->
+| Epoch | Raw Accuracy | Avg Latency |
+|-------|-------------|-------------|
+| 1 | 20.0% | 20.6s |
+| 5 | 52.5% | 13.2s |
+| 10 | 47.5% | 17.0s |
+| 15 | 50.0% | 11.3s |
+| 19 | 55.0% | 10.3s |
+| 20 | 55.0% | 10.3s |
+| 25 | 55.0% | 11.4s |
+| **29** | **57.5%** | **11.2s** |
+| 30 | 52.5% | 11.7s |
 
+**Best raw accuracy: 57.5% (23/40) at epoch 29**
 
+### Adjusted Accuracy (corrected gold labels)
 
-- **Developed by:** [More Information Needed]
-- **Funded by [optional]:** [More Information Needed]
-- **Shared by [optional]:** [More Information Needed]
-- **Model type:** [More Information Needed]
-- **Language(s) (NLP):** [More Information Needed]
-- **License:** [More Information Needed]
-- **Finetuned from model [optional]:** [More Information Needed]
+5 samples in the dev set have **gold label errors** — the gold explanation contradicts the gold answer label. After manual verification, the model predicted correctly on all 5.
 
-### Model Sources [optional]
+| Sample | Gold (wrong) | Corrected | Pred | Evidence |
+|--------|-------------|-----------|------|----------|
+| 4 | Unknown | A | A | Explanation: "Option A is most effective because..." |
+| 20 | No | Yes | Yes | Explanation: "So such a programmer exists" |
+| 25 | No | Yes | Yes | Explanation: "Therefore, JavaScript supports..." |
+| 28 | No | Yes | Yes | Explanation: "Thus, all committee members approve" |
+| 29 | No | Yes | Yes | Explanation: "Thus, all faculty members think..." |
 
-<!-- Provide the basic links for the model. -->
-
-- **Repository:** [More Information Needed]
-- **Paper [optional]:** [More Information Needed]
-- **Demo [optional]:** [More Information Needed]
-
-## Uses
-
-<!-- Address questions around how the model is intended to be used, including the foreseeable users of the model and those affected by the model. -->
-
-### Direct Use
-
-<!-- This section is for the model use without fine-tuning or plugging into a larger ecosystem/app. -->
-
-[More Information Needed]
-
-### Downstream Use [optional]
-
-<!-- This section is for the model use when fine-tuned for a task, or when plugged into a larger ecosystem/app -->
-
-[More Information Needed]
-
-### Out-of-Scope Use
-
-<!-- This section addresses misuse, malicious use, and uses that the model will not work well for. -->
-
-[More Information Needed]
-
-## Bias, Risks, and Limitations
-
-<!-- This section is meant to convey both technical and sociotechnical limitations. -->
-
-[More Information Needed]
-
-### Recommendations
-
-<!-- This section is meant to convey recommendations with respect to the bias, risk, and technical limitations. -->
-
-Users (both direct and downstream) should be made aware of the risks, biases and limitations of the model. More information needed for further recommendations.
-
-## How to Get Started with the Model
-
-Use the code below to get started with the model.
-
-[More Information Needed]
+**Adjusted accuracy: 70.0% (28/40)**
 
 ## Training Details
 
-### Training Data
+### Hyperparameters
 
-<!-- This should link to a Dataset Card, perhaps with a short stub of information on what the training data is all about as well as documentation related to data pre-processing or additional filtering. -->
+| Parameter | Value |
+|-----------|-------|
+| Base model | `Qwen/Qwen2.5-3B-Instruct` |
+| Method | LoRA (PEFT) |
+| LoRA r | 8 |
+| LoRA alpha | 16 |
+| LoRA dropout | 0.05 |
+| Target modules | q_proj, k_proj, v_proj, o_proj |
+| Trainable params | 3,686,400 (0.12%) |
+| Epochs | 30 (early stop patience=7) |
+| Batch size | 1 (gradient accumulation=8, effective=8) |
+| Learning rate | 2e-5 |
+| Warmup ratio | 0.05 |
+| Weight decay | 0.01 |
+| Precision | INT8 (bitsandbytes) |
+| Max seq length | 3500 |
+| Seed | 42 |
 
-[More Information Needed]
+### Training Loss Curve
 
-### Training Procedure
+| Epoch | Train Loss | Eval Loss | Token Accuracy |
+|-------|-----------|-----------|----------------|
+| 1 | 1.487 | 1.468 | 69.8% |
+| 3 | 0.854 | 0.420 | 89.9% |
+| 5 | 0.370 | 0.380 | 90.4% |
+| 10 | 0.345 | 0.347 | 91.1% |
+| 15 | 0.333 | 0.328 | 91.5% |
+| 20 | 0.328 | 0.319 | 91.7% |
+| 24 | 0.321 | **0.316** | 91.8% |
+| 25 | 0.315 | 0.316 | 91.9% |
 
-<!-- This relates heavily to the Technical Specifications. Content here should link to that section when it is relevant to the training procedure. -->
+**Best eval_loss: 0.3155 at step 1944 (epoch 24)**
 
-#### Preprocessing [optional]
+### Dataset
 
-[More Information Needed]
+- **Task**: Logic-Based Educational Queries (MCQ + Yes/No)
+- **Train**: 647 QA samples (328 records)
+- **Dev**: 79 QA samples (41 records)
+- **Test**: 81 QA samples (41 records)
+- **Input**: NL premises + FOL premises + Question
+- **Output**: JSON `{"answer": "<label>", "explanation": "<reasoning>"}`
 
+### Training Infrastructure
 
-#### Training Hyperparameters
+- **Hardware**: NVIDIA L4 (24GB VRAM)
+- **Platform**: Modal Cloud
+- **Training time**: ~6 hours (30 epochs)
 
-- **Training regime:** [More Information Needed] <!--fp32, fp16 mixed precision, bf16 mixed precision, bf16 non-mixed precision, fp16 non-mixed precision, fp8 mixed precision -->
+## Usage
 
-#### Speeds, Sizes, Times [optional]
+```python
+from peft import PeftModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
-<!-- This section provides information about throughput, start/end time, checkpoint size if relevant, etc. -->
+base_model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-3B-Instruct", device_map="auto")
+model = PeftModel.from_pretrained(base_model, "Laplaces-Red-Devils/qa-v01-cot-Qwen2.5-3B-Instruct")
+tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-3B-Instruct")
 
-[More Information Needed]
+messages = [
+    {"role": "system", "content": "You are a logic-based educational QA system..."},
+    {"role": "user", "content": "Premises (NL):\n1. If a student attends lectures...\n\nPremises (FOL):\n1. ∀x (AttendsLectures(x) → UnderstandsMaterial(x))\n\nQuestion:\nWhich conclusion is best supported?\nA. ...\nB. ..."},
+]
 
-## Evaluation
+text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+inputs = tokenizer(text, return_tensors="pt").to(model.device)
+output = model.generate(**inputs, max_new_tokens=200, do_sample=False)
+print(tokenizer.decode(output[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True))
+# {"answer": "B", "explanation": "Premise 1 states..."}
+```
 
-<!-- This section describes the evaluation protocols and provides the results. -->
+## Framework Versions
 
-### Testing Data, Factors & Metrics
+- PEFT: 0.19.1
+- Transformers: 4.52.4
+- TRL: 0.18.1
+- PyTorch: 2.10.0+cu128
+- BitsAndBytes: 0.46.0
 
-#### Testing Data
+## Team
 
-<!-- This should link to a Dataset Card if possible. -->
-
-[More Information Needed]
-
-#### Factors
-
-<!-- These are the things the evaluation is disaggregating by, e.g., subpopulations or domains. -->
-
-[More Information Needed]
-
-#### Metrics
-
-<!-- These are the evaluation metrics being used, ideally with a description of why. -->
-
-[More Information Needed]
-
-### Results
-
-[More Information Needed]
-
-#### Summary
-
-
-
-## Model Examination [optional]
-
-<!-- Relevant interpretability work for the model goes here -->
-
-[More Information Needed]
-
-## Environmental Impact
-
-<!-- Total emissions (in grams of CO2eq) and additional considerations, such as electricity usage, go here. Edit the suggested text below accordingly -->
-
-Carbon emissions can be estimated using the [Machine Learning Impact calculator](https://mlco2.github.io/impact#compute) presented in [Lacoste et al. (2019)](https://arxiv.org/abs/1910.09700).
-
-- **Hardware Type:** [More Information Needed]
-- **Hours used:** [More Information Needed]
-- **Cloud Provider:** [More Information Needed]
-- **Compute Region:** [More Information Needed]
-- **Carbon Emitted:** [More Information Needed]
-
-## Technical Specifications [optional]
-
-### Model Architecture and Objective
-
-[More Information Needed]
-
-### Compute Infrastructure
-
-[More Information Needed]
-
-#### Hardware
-
-[More Information Needed]
-
-#### Software
-
-[More Information Needed]
-
-## Citation [optional]
-
-<!-- If there is a paper or blog post introducing the model, the APA and Bibtex information for that should go in this section. -->
-
-**BibTeX:**
-
-[More Information Needed]
-
-**APA:**
-
-[More Information Needed]
-
-## Glossary [optional]
-
-<!-- If relevant, include terms and calculations in this section that can help readers understand the model or model card. -->
-
-[More Information Needed]
-
-## More Information [optional]
-
-[More Information Needed]
-
-## Model Card Authors [optional]
-
-[More Information Needed]
-
-## Model Card Contact
-
-[More Information Needed]
-### Framework versions
-
-- PEFT 0.19.1
+**Laplace's Red Devils** — EXACT 2026 Competition
