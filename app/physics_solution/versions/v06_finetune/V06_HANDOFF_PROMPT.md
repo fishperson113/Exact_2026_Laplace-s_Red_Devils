@@ -1,11 +1,10 @@
 # V06 Handoff Prompt
-> Copy the prompt below (between the `---` markers) into a new Claude session.
-
----
 
 ## Context: EXACT 2026 Physics Competition — v06: Data Generation + Fine-tune
 
-I'm working on a physics problem-solving system for a competition. The system uses **Qwen 3.5 4B** to solve Vietnamese-translated-to-English physics problems (electrostatics, circuits, capacitors, energy, induction, measurement) by generating and executing Python code.
+I'm working on a physics problem-solving system for a competition. The system uses **Qwen 3.5 4B** to solve **English** physics problems (electrostatics, circuits, capacitors, energy, induction, measurement) by **generating and executing Python code**. The organizer's data is machine-translated from Vietnamese; everything competition-facing is English.
+
+**v06 goal:** fine-tune Qwen so it natively emits **multi-step Program-of-Thought (PoT) trajectories** — `reason → Python → run → observe → … → FINAL ANSWER / UNIT` — without long prompts or few-shot examples, beating the v05_best baseline (58.3% on 60 golden, target >70%). The PoT format also feeds P2 (explanation) and P3 (cot + tool logs) scoring.
 
 ### What we have now (v05_best — current best)
 
@@ -14,27 +13,25 @@ I'm working on a physics problem-solving system for a competition. The system us
 **v05_best accuracy: 35/60 golden = 58.3%** (with scorer bug fix applied)
 
 **Key architectural decisions proven by experiment:**
-1. **Simple, short prompts win for 4B models.** A verbose ToRA-style prompt (3620 chars, SETUP step, few-shot Q&A pairs) scored 48.3% with 23/60 timeouts. A simple direct prompt (~1200 chars, one inline code example) scored 58.3% with only 3 timeouts. The 4B model interprets verbose instructions like "SETUP (1-3 lines)" as permission to write extensive LaTeX reasoning, exhausting its token budget before generating code.
+1. **Simple, short prompts win for 4B models.** A verbose ToRA-style prompt (3620 chars, SETUP step, few-shot Q&A pairs) scored 48.3% with 23/60 timeouts. A simple direct prompt (~1200 chars, one inline code example) scored 58.3% with only 3 timeouts. The 4B model interprets verbose instructions like "SETUP (1-3 lines)" as permission to write extensive LaTeX reasoning, exhausting its token budget before generating code. **Implication for v06:** PoT is multi-step, but keep each step tight (short code + a brief reason line, not LaTeX walls) and watch the 60s budget.
 2. **Hardcoded constants beat library imports.** `k = 9e9` in generated code is far more reliable than `k_e = 1 / (4 * const.pi * const.epsilon_0)` for a 4B model.
 3. **`repetition_penalty=1.15`** in HuggingFace `generate()` breaks degenerate repetition loops.
-4. **No fallback to direct LLM text solve.** When code extraction fails (no ```python block), we give up. When code execution errors, we retry once by feeding error context back to the LLM.
-5. **Formula hints per domain** (from `formulas.yaml`) are injected into the codegen prompt and help significantly.
+4. **Retry once on execution error** by feeding error context back to the model.
+5. **Formula hints per domain** (from `formulas.yaml`) injected into the codegen prompt help significantly.
 
 **Solve method breakdown (60 golden questions):**
 - `code_execution`: 52 (87%) — model generated valid code that ran successfully
 - `failed`: 5 (8%) — code extraction or execution failed even after retry
 - `timeout`: 3 (5%) — exceeded 60s budget
-- All 60 golden questions are in the LDDT domain (electrostatics). Routing accuracy: 100%.
+- All 60 golden questions are LDDT (electrostatics). Routing accuracy: 100%.
 
-**v05_best prompt style (this is what works):**
+**v05_best prompt style (the computational core to preserve inside each PoT step):**
 ```
 System: "You are a physics solver. Write a self-contained Python script..."
 - Allowed imports: math, sympy, scipy.constants, numpy
 - Define all given values at top with SI unit conversions
 - Key formula as comment before each computation
 - Print FINAL ANSWER: <value> and UNIT: <unit>
-- One inline code example (Coulomb's law, 8 lines)
-- ~1200 chars total
 
 User: "DOMAIN: {domain}\nANSWER TYPE: {answer_type}\n\nREFERENCE:\n{formula_hints}\n\nPROBLEM:\n{question}\n\nWrite a Python script to solve this."
 ```
@@ -48,160 +45,112 @@ User: "DOMAIN: {domain}\nANSWER TYPE: {answer_type}\n\nREFERENCE:\n{formula_hint
 | v05 ToRA | Verbose SETUP + few-shots | 29/60 = 48.3% | 23 | Token bloat from verbose prompt |
 | **v05_best** | **Simple direct + retry** | **35/60 = 58.3%** | **3** | **Current best** |
 
-**Error patterns in v05_best (25 wrong answers out of 60):**
-- Most failures are in LDDT (electrostatics with geometry) — wrong coordinate setup, wrong force/field direction decomposition, sign errors
-- 5 `failed` questions: model couldn't generate parseable code at all
-- 3 `timeout` questions: classification + codegen exceeded 60s
-- Some questions require text answers (e.g., `-2√2 q`) that code execution can't produce — v05_best has no fallback for these
-- Answer type routing issue: classifier labels 48/60 questions as `text` but they are actually numeric — the codegen prompt still works because it generates Python regardless, but this mis-classification could cause problems in future versions
+**Error patterns in v05_best (25 wrong of 60):**
+- Most failures are LDDT (electrostatics with geometry) — wrong coordinate setup, wrong force/field decomposition, sign errors.
+- 5 `failed`: model couldn't generate parseable code at all.
+- 3 `timeout`: classification + codegen exceeded 60s.
+- Some questions want text answers (e.g. `-2√2 q`) that pure code execution can't produce — no fallback for these yet.
+- Classifier labels 48/60 as `text` but they're actually numeric — harmless now (codegen runs regardless) but watch it.
 
-**Scorer bug fixed:** `_SCI_DOT_RE` regex in `scorer.py` had optional `^` that falsely matched plain decimals like `957.1068` as `957 . 10^68`. Fixed by requiring `^`. This turned 1 FALSE into TRUE (LD083).
+**Scorer bug fixed:** `_SCI_DOT_RE` in `scorer.py` falsely matched plain decimals like `957.1068` as `957 . 10^68`. Fixed by requiring `^`. Turned 1 FALSE into TRUE (LD083).
 
-### Key files to read for full context
+## DATA ASSETS — three sources, different roles (don't conflate them)
 
-**Strategy & data:**
-- `docs/strategy/TYPE2_PHYSICS.md` — Competition strategy, constraints (model ≤8B, 60s timeout, self-host with vLLM)
-- `docs/eda/TYPE2_PHYSICS_EDA.md` — EDA of 1,352-row training dataset: domain distribution, answer types, data quality
-- `docs/guides/PRETRAIN_DATA_GUIDE.md` — how the pre-training corpus was scoped/collected
-- `docs/guides/DATA_COLLECTION_GUIDE.md` — how the fine-tune data was scoped/collected
-- `docs/guides/UNSLOTH_GUIDE.md` — LoRA/QLoRA fine-tuning with Unsloth on Colab
-- `EXACT_Materials/Datasets/EXACT2026_dataset_2026-05-15/Physics_Problems_Text_Only/Physics_Problems_Text_Only.csv` — The 1,352-row training dataset (id, question, cot, answer, unit)
-- `app/physics_solution/data/golden/deepseek-v4-pro_golden_data.csv` — 1,352 rows of DeepSeek-rewritten CoT (already generated)
-- **`data/pretrain_processed/`** — READY CPT corpus: 2,261 Vietnamese worked solutions (`lop-6…12_high_quality.md`) + `DATA_CATALOG.md`
-- **`data/vietjack_physics_spider/vietjack_physics_spider.rar`** — raw spider archive (74,807 samples before filtering)
-- `scripts/filter_dataset.py`, `scripts/generate_catalog.py` — QC filter + catalog generation for the pretrain corpus
+> **Two `data/` trees:** the pretrain corpora live at **repo-root** `data/`; the
+> golden/test CSVs live at `app/physics_solution/data/`. Once the corpora are
+> normalized they'll be moved under `app/physics_solution/data/` too.
 
-**v05_best implementation (the working baseline to build on):**
-- `app/physics_solution/versions/v05_best/__init__.py` — Version metadata
-- `app/physics_solution/versions/v05_best/prompts.py` — **The prompt that works:** CODEGEN_SYSTEM (~1200 chars), CLASSIFY_SYSTEM, `build_codegen_prompt()`
-- `app/physics_solution/versions/v05_best/code_executor.py` — Code extraction + subprocess execution + answer parsing
-- `app/physics_solution/versions/v05_best/formula_kb.py` — Formula hints per domain with hardcoded constants (k=9e9, epsilon_0, etc.)
-- `app/physics_solution/versions/v05_best/input/formulas.yaml` — Domain formula definitions
-- `app/physics_solution/versions/v05_best/run.py` — Full pipeline: classify → codegen → execute → retry on error → score
-- `app/physics_solution/versions/v05_best/output/results_golden_60.json` — Latest results with per-question detail
+| Path | What | Lang | Role | Status |
+|---|---|---|---|---|
+| `app/physics_solution/data/golden/deepseek-v4-pro_golden_data.csv` | 1,352 organizer (BTC) train rows (`id, question, cot, answer, unit`), DeepSeek-rewritten CoT | EN (translated from VN) | **SFT** | ready, but CoT must be converted into PoT code-gen trajectories |
+| `data/pretrain_corpus/` | English physics textbooks (OpenStax, Giancoli, Young & Freedman, Fundamentals), 451 golden markdown across 4 schemas + `prepare_*.py` per source | EN | **CPT — the *real* pretrain corpus** | complex multi-schema, **needs more processing**; not SFT-ready |
+| `data/pretrain_processed/` | 2,261 QC'd Vietjack worked solutions (lớp 6–12); v06 uses **lớp 10–12** (physics-dense) | VN | **SFT** (after VN→EN + answer/unit extraction) | processed, format fairly good; needs translation + label extraction |
 
-**Shared infrastructure:**
-- `app/physics_solution/shared/model/loader.py` — Model loading + generation (repetition_penalty=1.15)
-- `app/physics_solution/shared/model/batched_llm.py` — HFBatchedLLM wrapper, Qwen3.5 thinking mode disabled
-- `app/physics_solution/shared/eval/scorer.py` — Multi-type scoring (numeric, sci_notation, yes_no, multi_value, text, mixed)
-- `app/physics_solution/shared/router.py` — Question classifier (domain + answer_type)
-- `app/physics_solution/shared/eval/gen_golden.py` — Existing async batch API calls to DeepSeek (can be adapted)
-- `app/physics_solution/config.py` — Central config: DeepSeek V4 Pro API, model IDs, paths
-- `app/physics_solution/cli/inference.py` — CLI dispatcher (v05_best already registered)
+- `data/pretrain_corpus/DATA_CATALOG.md` — its `app/data/...` source paths are **stale**; real files live under `data/pretrain_corpus/<source>/{golden,processed}/`. Intended for CPT; the catalog itself says: don't SFT on it directly until reformatted into instruction/response pairs.
+- `data/pretrain_processed/DATA_CATALOG.md` — built from `data/vietjack_physics_spider/vietjack_physics_spider.rar` (74,807 raw → 2,261 after strict QC) via `scripts/filter_dataset.py` + `scripts/generate_catalog.py`. Figure/graph/table-dependent questions already removed. Grade skew: lớp 12 = 1,130, lớp 11 = 270, lớp 10 = 547.
+- More Vietnamese data is being crawled and will be translated to English later (same reason the BTC set is VN→EN: expand the VN pool, then translate).
 
-### DATA ASSETS — NOW READY (merged from main, 2026-05-30)
+**Domain / answer-type distribution (BTC 1,352, for stratified split + balancing):**
+- Domains: LDDT (electrostatics, 465 — hardest), CH/CHLT (AC/RLC circuits, 310; CHLT has yes_no), NL (energy/LC, 190), TD (capacitors, 177), DDT (induction/solenoids, 130), THCB (measurement/DC, 80; multi-value common).
+- Answer types: numeric 72%, sci_notation 17.5%, text 3.7%, mixed 2.7%, multi_value 1.9%, yes_no 1.6%.
 
-Two data sources have been collected and processed. They live in the repo:
+## DATA-PROCESSING PIPELINE (the heart of v06)
 
-**1. Pre-training corpus (for Continue Pre-Training / CPT)** — `data/pretrain_processed/`
-- **2,261 high-quality Vietnamese worked solutions** filtered from 74,807 raw scraped samples (3.02% retention after strict QC).
-- Source: Vietjack physics (lớp 6–12 essay/MCQ problems with full solutions).
-- Per-grade markdown: `lop-6_high_quality.md` … `lop-12_high_quality.md`. Catalog: `data/pretrain_processed/DATA_CATALOG.md`.
-- Grade distribution skews to upper grades: lớp 12 = 1,130, lớp 11 = 270, lớp 10 = 547 (these are the physics-dense grades matching our electrostatics/circuits domains).
-- Format: each problem is a self-contained markdown block — `## Problem` → `**Question:**` → `### Solution` (Vietnamese reasoning + formulas).
-- QC rules already applied: solution >200 chars, must contain numbers + math operators + reasoning keywords ("Ta có", "Áp dụng", "Suy ra"); **figure/graph/table-dependent questions removed** (no visual context for the model); MCQ noise stripped.
-- Raw spider archive: `data/vietjack_physics_spider/vietjack_physics_spider.rar`. Filter script: `scripts/filter_dataset.py`, catalog gen: `scripts/generate_catalog.py`.
-- **Intended use:** raw-corpus CPT to strengthen the model's Vietnamese physics reasoning/computation BEFORE SFT. NOT directly SFT-ready (it's a corpus, not instruction/response pairs).
+The task is fine-tuning a model to **generate code**. Nothing is SFT-ready as-is. Two tracks — keep them separate.
 
-**2. Fine-tune CoT data** — `app/physics_solution/data/golden/`
-- `deepseek-v4-pro_golden_data.csv` — 1,352 rows of DeepSeek-rewritten CoT (id, question, cot, answer, unit).
-- Plus the original `Physics_Problems_Text_Only.csv` (1,352 rows) as ground truth.
-- These feed Phase 1 code-generation: DeepSeek writes Python for each, we execute + verify against gold.
+### Track A — CPT (knowledge injection, optional but recommended)
+- Source: `data/pretrain_corpus/` (EN textbooks). **No answer verification** — raw corpus.
+- Concatenate per-document (`golden/**/*.md`), pack into ~2k-token sequences (Qwen tokenizer), standard causal-LM objective (mask nothing).
+- Unsloth CPT: LoRA on a wider module set than SFT, low LR, ~1 epoch. Cheap warm-up.
+- Save weights as the **SFT base**. A/B vs stock Qwen on golden; if it doesn't help, SFT from stock.
+- `data/pretrain_processed/` (Vietjack) is **not** CPT in v06 — it's routed to SFT (below).
 
-**This v06 branch (`Nguyen/v06_finetune`) focuses on:** data processing → DeepSeek LLM normalization → code generation → CPT + SFT fine-tuning. Inference-pipeline polish stays minimal (reuse v05_best).
+### Track B — SFT (code-gen, execution-verified)
+Sources: **BTC golden + Vietjack (lớp 10–12)**, normalized to **one** format matching the BTC inference format. Strategy: **self-gen first, teacher residual**, with **multi-step PoT** targets, gated by execution.
 
-### What v06 needs to do
+**Step 0 — Filter first (DeepSeek).** Drop samples that reference a figure/image or are underspecified (unsolvable from text alone). Run this *before* any code-gen so we don't waste compute. (Vietjack already dropped figure-dependent ones; BTC may still have some.)
 
-**Goal:** (a) Optionally **continue-pretrain (CPT)** Qwen 3.5 4B on the 2,261-sample Vietnamese physics corpus to deepen reasoning, then (b) generate high-quality code-generation training data for ALL 1,352 questions using DeepSeek V4 Pro API, then (c) **fine-tune (SFT)** so the model natively produces clean, correct Python code matching the v05_best prompt style — without needing long prompts or few-shot examples at inference time.
+**Step 1 — Normalize / ingest.**
+- BTC golden: already `(id, question, cot, answer, unit)` in EN — convert the CoT into PoT code-gen targets (Steps 2–3). Keep `answer`/`unit` as gold.
+- Vietjack: needs (a) a **single VN→EN translation pass** (dedicated DeepSeek prompt, output shaped exactly like BTC `question`), and (b) **`answer`/`unit` extraction** — Vietjack's answer + unit are embedded in the solution text, not labeled fields. DeepSeek extracts them (and may consult them to write code), but we **still execute** and require the code's answer + unit to match the extracted gold via `scorer.py`.
 
-**Critical lesson from v05 experiments: The fine-tuned model must learn to generate SHORT, DIRECT Python code.** Do NOT train it on verbose SETUP+reasoning patterns — the 4B model's token budget is too small. The training data format should match what v05_best's simple prompt produces: imports → given values with SI conversions → formula comments → computation → print FINAL ANSWER + UNIT.
+**Step 2 — Route 1: self-gen (primary).** Sample multiple PoT trajectories from **Qwen 3.5 4B** at several temperatures (augmentation — any *correct method* counts). Execute; keep trajectories whose final answer matches gold via `shared/eval/scorer.py`. On-policy data → best convergence, least forgetting. **Self-gen sampling needs a GPU** (Vast AI vLLM endpoint), not the local box.
 
-**Phase 0: Continue Pre-Training (CPT) — optional but recommended**
-1. Data is READY: `data/pretrain_processed/lop-*.md` (2,261 samples). No collection needed.
-2. Concatenate the per-grade markdown into a plain-text corpus (one document per `## Problem` block; keep Vietnamese reasoning intact).
-3. Light packing: tokenize with the Qwen tokenizer, pack into ~2k-token sequences, mask nothing (standard causal LM objective).
-4. Train with Unsloth in CPT mode (LoRA on a wider module set than SFT, lower LR, 1 epoch is usually enough on 2k samples). Keep it cheap — this is a warm-up, not the main event.
-5. Save the CPT adapter/merged weights as the BASE for Phase 3 SFT. If CPT doesn't move golden accuracy, skip it and SFT from stock Qwen.
+**Step 3 — Routes 2 & 3: teacher residual.** For problems Qwen can't solve in K samples, hand off to **DeepSeek (teacher)**: keep the correct prefix of Qwen's trajectory and let the teacher continue to a verified-correct trajectory in the same format. Failures retry with error feedback (consistent format). *v1 shortcut* if strict prefix-splicing is fiddly: give DeepSeek the problem + Qwen's failed attempt as a hint and have it write a full correct PoT trajectory.
 
-**Phase 1: Data Generation**
-1. Use DeepSeek V4 Pro API (already configured in `config.py`: `COMMERCIAL_PROVIDER = "deepseek"`, `COMMERCIAL_MODEL = "deepseek-v4-pro"`, API key in env var `DEEPSEEK_API_KEY`). Input rows are READY in `app/physics_solution/data/golden/deepseek-v4-pro_golden_data.csv`.
-2. For each of the 1,352 questions, generate a Python solution that:
-   - Uses only `import math`, `import sympy`, `import numpy`, or `from scipy import constants`
-   - Defines all given values at top with SI unit conversions
-   - Has formula comments before computations
-   - Prints exactly `FINAL ANSWER: <value>` and `UNIT: <unit>`
-   - Uses hardcoded constants where possible (k=9e9, epsilon_0=8.854e-12, etc.)
-   - Is SHORT — aim for 15-30 lines, not 50+
-3. Execute each generated code and verify the answer matches the gold answer (using `scorer.py`)
-4. Smart retry logic: if code errors or answer doesn't match gold, retry with error feedback (like v05_best does)
-5. Flag unrepairable mismatches for manual review
-6. Domain-specific considerations:
-   - LD/DT → LDDT (465 rows): Electrostatics — coordinate setup, vector decomposition, Coulomb's law. Hardest domain.
-   - CH/CHLT (310 rows): AC/RLC circuits — impedance, resonance, phase. Include yes_no for CHLT.
-   - NL (190 rows): Energy, power, LC oscillations
-   - TD (177 rows): Standalone capacitor calculations
-   - DDT (130 rows): Electromagnetic induction, solenoids
-   - THCB (80 rows): Measurement errors, basic DC circuits. Multi-value answers common.
-7. Handle answer types: numeric (72%), sci_notation (17.5%), text (3.7%), mixed (2.7%), multi_value (1.9%), yes_no (1.6%)
+**Step 4 — Guards (both routes).**
+- Reject **spurious-correct** code (must *compute*, not echo/hardcode the gold) — important for yes_no / multi-choice / low-entropy numerics.
+- Dedup; cap trajectories per problem (RFT over-produces easy problems); oversample rare domains (CHLT…).
+- **Execution gate is universal:** run every script sandboxed via v05's `code_executor.py` (subprocess + allowed imports `math/sympy/numpy/scipy.constants` + timeout). Only execution-verified trajectories enter SFT.
 
-**Phase 2: Data Processing & Splitting**
-- Parse and validate all generated solutions (code executes, answer matches gold)
-- Stratified split by domain AND answer_type
-- Training: ~90% (oversample underrepresented domains like CHLT with 20 rows)
-- Validation: ~10% (must include the 60 golden test questions for direct comparison with v05_best)
+**Step 5 — Split.** Stratify by domain AND answer_type. Train ~90% (oversample underrepresented domains); val ~10% that **MUST include the 60 golden questions** for direct comparison with v05_best.
 
-**Phase 3: Fine-tuning (SFT)**
-- Base: the Phase 0 CPT weights if CPT helped, otherwise stock Qwen 3.5 4B
-- Model: Qwen 3.5 4B, LoRA/QLoRA with Unsloth
-- GPU: RTX 3090/4090 (24GB) or A100 on Colab
-- Training format: Qwen chat template with:
-  - System message: shortened CODEGEN_SYSTEM (remove the inline example — the model will have learned the pattern)
-  - User message: `DOMAIN: {domain}\nANSWER TYPE: {answer_type}\nREFERENCE:\n{formula_hints}\nPROBLEM:\n{question}\nWrite a Python script to solve this.`
-  - Assistant message: the generated Python code solution (the DeepSeek output)
-- The fine-tuned model still needs formula hints injected at inference time (domain-specific from `formulas.yaml`)
-- But few-shot examples and verbose system prompts can be REMOVED — the model will have internalized the code-generation pattern
-- Key hyperparameters to tune: LoRA rank, learning rate, epochs (start with rank=16, lr=2e-4, 3 epochs)
+> **Why this shape:** Route 1 (Qwen's own correct samples) is the highest-value data and directly mitigates the forgetting / distribution-shift risk of distilling a much larger teacher (DeepSeek ≫ 4B). Teacher data is confined to the residual Qwen can't reach. Consider iterating **ReST-EM style** later: after the first SFT, re-run Route 1 from the improved model so self-gen covers more and teacher shrinks.
 
-**Phase 4: Inference pipeline**
-- Adapt v05_best's `run.py` for the fine-tuned model
-- Shorter system prompt (no inline example needed)
-- Same retry-on-error logic
-- Same formula hints injection
-- Same code execution + scoring pipeline
-- Target: >70% on 60 golden questions (up from 58.3%)
+### Phase F — Fine-tuning (SFT)
+- Base: CPT weights if Track A helped, else stock Qwen 3.5 4B.
+- Unsloth LoRA/QLoRA. Anti-forgetting: LoRA (not full-FT), low LR, ≤ a few epochs, optionally mix in a little CPT/general data. Start rank=16, lr=2e-4, ~3 epochs.
+- Training format: Qwen chat template. System = shortened CODEGEN system (drop the inline example — the model will have learned the pattern). User = `DOMAIN / ANSWER TYPE / REFERENCE (formula hints) / PROBLEM / Write a Python script to solve this.` Assistant = the verified PoT trajectory.
+- Formula hints (`formulas.yaml`) still injected at inference; few-shot + verbose system text removed.
+
+### Phase G — Inference pipeline
+- Adapt v05_best's `run.py` / `pipeline.py` for the fine-tuned model: shorter system prompt, same retry-on-error, same formula-hint injection, same execution + scoring. Target >70% on 60 golden.
+
+## WHERE EACH STEP RUNS
+
+| Step | Machine | Notes |
+|---|---|---|
+| Data prep (orchestration, DeepSeek teacher/translate/filter, run+score code) | **Local WSL box** | No local GPU. DeepSeek via `config.py` (`COMMERCIAL_PROVIDER=deepseek`, `COMMERCIAL_MODEL=deepseek-v4-pro`, key `DEEPSEEK_API_KEY`, base `https://api.deepseek.com`). |
+| Route-1 Qwen self-gen sampling | **Vast AI** (vLLM endpoint) | Sampling 4B needs a GPU. |
+| Training (CPT + SFT) | **Vast AI** (A100 / RTX 6000) | Unsloth LoRA/QLoRA. |
+| Inference + scoring | **Vast AI** (vLLM template) | `README_GPU_SETUP.md`. |
+
+**All GPU work is on Vast AI** (training, self-gen, serving) — one environment for consistency; setup in `README_GPU_SETUP.md`.
+
+*Fallback (optional):* you can also SSH into a Colab GPU over Tailscale — `ssh -o StrictHostKeyChecking=no root@<tailscale-ip>` (root IP rotates each session, user provides it) → `cd /content/`. It's a generic Linux GPU box with **no preinstalled vLLM template** (prepare a setup script locally: uv, vLLM, deps; SSH in; run it). Prefer Vast AI.
 
 ### Technical constraints
-- DeepSeek V4 Pro API: see `config.py` for all connection details
-- Existing `gen_golden.py` already does async batch API calls to DeepSeek — can be adapted for code generation
-- Python code execution for verification: `code_executor.py` (subprocess with 10s timeout, allowed imports only)
-- Competition deadline: Phase 1 eval Jun 1-2, Phase 2 Jun 5-7
-- vLLM for production inference (model must be HF-compatible)
+- Competition: model ≤8B total params, self-host with vLLM, ≤60s/request, sequential models only, no 3rd-party inference APIs at inference, code execution allowed/encouraged. Use dataset `EXACT2026_dataset_2026-05-15` (1,352 valid rows).
+- External/synthetic data (DeepSeek) allowed for **training only** — declare in the Data Disclosure Document; never at inference.
+- Existing async DeepSeek batching: `shared/eval/gen_golden.py` — adapt for code-gen / translation / filtering.
+- Code execution for verification: reuse `code_executor.py` (subprocess, 10s timeout, allowed imports only).
+
+### Key files
+- `docs/strategy/TYPE2_PHYSICS.md`, `docs/eda/TYPE2_PHYSICS_EDA.md` — strategy + EDA
+- `docs/guides/{UNSLOTH,PRETRAIN_DATA,DATA_COLLECTION}_GUIDE.md` — Unsloth/LoRA + data background (the old Colab-notebook training flow is superseded — all GPU work runs on Vast AI now)
+- `app/physics_solution/versions/v05_best/{prompts.py,code_executor.py,formula_kb.py,run.py,input/formulas.yaml,output/results_golden_60.json}` — the working baseline to build on
+- `app/physics_solution/shared/{model/loader.py,model/batched_llm.py,eval/scorer.py,router.py,eval/gen_golden.py}` — shared infra
+- `app/physics_solution/config.py`, `app/physics_solution/cli/inference.py` — central config + dispatcher
 
 ### What I need from you
+> Data is collected, not finetune-ready. You are building the **processing + training** pipelines, not collecting data.
 
-> Data is already collected — both the CPT corpus (`data/pretrain_processed/`) and the fine-tune CoT rows (`app/physics_solution/data/golden/`). You are NOT collecting data; you are processing it and building pipelines.
+1. **Create the v06 pipeline scaffolding** under `app/physics_solution/versions/v06_finetune/`.
+2. **(Optional) CPT (Track A):** concat/pack `data/pretrain_corpus/` → Unsloth CPT → A/B vs stock; keep weights as SFT base if it helps.
+3. **SFT data pipeline (Track B):** filter → normalize (incl. Vietjack VN→EN + answer/unit extraction) → Route-1 self-gen (Qwen, multi-temp, execution-verified) → Route-2/3 teacher residual (DeepSeek) → guards → stratified split (val includes the 60 golden).
+4. **SFT training (Unsloth/QLoRA)** + an eval script comparing the fine-tuned model vs v05_best on golden.
+5. **Inference pipeline** adapted from v05_best for the fine-tuned model.
 
-1. **Create v06 directory structure** (`app/physics_solution/versions/v06_finetune/`)
-2. **(Optional) Build the CPT pipeline:**
-   - Concatenate `data/pretrain_processed/lop-*.md` into a packed plain-text corpus
-   - Unsloth CPT (causal LM, LoRA, low LR, ~1 epoch) → save weights as SFT base
-   - Quick A/B: does CPT base beat stock Qwen on golden? If not, skip and SFT from stock.
-3. **Build the code-gen data pipeline (DeepSeek normalization):**
-   - Script to generate Python solutions via DeepSeek V4 Pro API for all 1,352 questions (input rows ready in `deepseek-v4-pro_golden_data.csv`)
-   - Prompt for DeepSeek that produces SHORT, direct Python code (matching v05_best output style)
-   - Execution + verification pipeline (run code, compare with gold answer via scorer)
-   - Retry logic for failed/mismatched answers
-   - Output: verified `(question, domain, answer_type, formula_hints, python_code, answer, unit)` tuples
-4. **Build the data processing pipeline:**
-   - Validate all generated solutions
-   - Stratified train/val split (val MUST include the 60 golden questions)
-   - Convert to Qwen chat template format for fine-tuning
-5. **Build the SFT fine-tuning pipeline:**
-   - Unsloth/QLoRA setup for Qwen 3.5 4B (base = CPT weights or stock)
-   - Training script with proper hyperparameters
-   - Evaluation script to compare fine-tuned model vs v05_best on golden data
-6. **Build the inference pipeline for the fine-tuned model** (adapted from v05_best's `run.py` with shorter prompts)
-
-Start by reading the key files listed above to understand the full context, then create a plan before coding.
+Start by reading the key files to understand the full context, then create a plan before coding.
 
 ---

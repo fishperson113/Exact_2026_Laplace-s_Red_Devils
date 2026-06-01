@@ -56,7 +56,8 @@ LANGSMITH_PROJECT = "exact26-physics-type2"
 
 # -------------------------------------------------------------------- commercial LLM (golden-data generation)
 COMMERCIAL_PROVIDER = "deepseek"             # "deepseek" or "openai"
-COMMERCIAL_MODEL = "deepseek-v4-pro"         # model name for the provider's API
+COMMERCIAL_MODEL = "deepseek-v4-pro"         # strong model: code-gen / teacher (Phase 2)
+COMMERCIAL_MODEL_FLASH = "deepseek-v4-flash" # cheap model: filter / translate / extract (Phase 1)
 COMMERCIAL_API_KEY_ENV = {
     "deepseek": "DEEPSEEK_API_KEY",
     "openai":   "OPENAI_API_KEY",
