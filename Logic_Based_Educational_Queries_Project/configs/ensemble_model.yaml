@@ -1,0 +1,24 @@
+# Ensemble Model: FOL Model + QA COT Model
+# Usage:
+#   python -m models.Ensemble_Model.inference --config configs/ensemble_model.yaml --mode evaluate
+#   python -m models.Ensemble_Model.inference --config configs/ensemble_model.yaml --mode inference --input input.json
+
+fol_model:
+  # HF Hub repo chứa FOL model đã merge
+  hub_repo_id: Laplaces-Red-Devils/fol-v05-cot-augmented-fol-pretrain-malls-qwen2.5-3
+  max_new_tokens: 650
+
+qa_model:
+  # Base model (phải trùng với model đã train QA LoRA)
+  base_model_name: Qwen/Qwen2.5-3B-Instruct
+  # Path tới LoRA checkpoint (local hoặc HF Hub)
+  lora_path: outputs/qa-v01-cot-Qwen2.5-3B-Instruct/checkpoint-1863
+  max_new_tokens: 200
+
+inference:
+  load_in_8bit: true
+  # Cảnh báo nếu 1 sample vượt ngưỡng (giây)
+  slow_threshold_sec: 60
+
+# Output directory cho log
+output_dir: outputs/ensemble
