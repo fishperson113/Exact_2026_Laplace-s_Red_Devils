@@ -38,8 +38,13 @@ Thumbs.db
 # Notebooks checkpoints
 .ipynb_checkpoints/
 .claude/
+.codex/
 CLAUDE.md
+AGENTS.md
 CC-Session-Logs/
 
 # ToRA
 ToRA-main/
+
+app/data/*.pdf
+*.pdf
