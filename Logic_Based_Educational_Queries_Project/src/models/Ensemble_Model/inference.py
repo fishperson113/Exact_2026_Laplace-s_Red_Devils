@@ -137,10 +137,9 @@ class FOLModel:
 class QAModel:
     """Load QA model (base + LoRA adapter) và sinh answer + explanation."""
 
-    def __init__(self, base_model_name: str, lora_path: str, load_in_8bit: bool = True):
+    def __init__(self, hub_repo_id: str, load_in_8bit: bool = True):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"[QA] Loading base: {base_model_name}")
-        print(f"[QA] Loading LoRA: {lora_path}")
+        print(f"[QA] Loading from HF Hub: {hub_repo_id}")
 
         load_kwargs = {"trust_remote_code": True, "device_map": "auto"}
         if load_in_8bit and self.device == "cuda":
@@ -148,17 +147,18 @@ class QAModel:
         else:
             load_kwargs["torch_dtype"] = torch.bfloat16
 
+        # Base model name is read from adapter_config.json on Hub
+        from peft import PeftConfig
+        peft_config = PeftConfig.from_pretrained(hub_repo_id)
+        base_model_name = peft_config.base_model_name_or_path
+        print(f"[QA] Base model: {base_model_name}")
+
         self.tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
         base_model = AutoModelForCausalLM.from_pretrained(base_model_name, **load_kwargs)
-        # Resolve path để PEFT nhận diện là local (tránh HFValidationError)
-        from pathlib import Path
-        local_path = Path(lora_path).resolve()
-        if local_path.exists():
-            lora_path = str(local_path)
-        self.model = PeftModel.from_pretrained(base_model, lora_path, local_files_only=True)
+        self.model = PeftModel.from_pretrained(base_model, hub_repo_id)
         self.model.eval()
         print(f"[QA] Loaded on {self.device}")
 
@@ -227,8 +227,7 @@ class EnsemblePipeline:
             load_in_8bit=load_8bit,
         )
         self.qa = QAModel(
-            base_model_name=qa_cfg["base_model_name"],
-            lora_path=qa_cfg["lora_path"],
+            hub_repo_id=qa_cfg["hub_repo_id"],
             load_in_8bit=load_8bit,
         )
         self.fol_max_new_tokens = fol_cfg.get("max_new_tokens", 650)
