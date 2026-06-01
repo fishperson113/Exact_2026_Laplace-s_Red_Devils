@@ -1,14 +1,14 @@
 # run_and_pull.ps1 — Run inference on GPU server and pull results back.
 #
 # Usage:
-#   .\scripts\run_and_pull.ps1 -Host 77.48.24.239 -Port 43789 [-Limit 10] [-TestFile <path>] [-Out <path>]
+#   .\scripts\run_and_pull.ps1 -Host 79.117.5.114 -Port 35562 [-Limit 10] [-TestFile <path>] [-Out <path>]
 #
 # Examples:
 #   # Smoke test 10 questions
-#   .\scripts\run_and_pull.ps1 -Host 77.48.24.239 -Port 43789 -Limit 10
+#   .\scripts\run_and_pull.ps1 -Host 79.117.5.114 -Port 35562 -Limit 10
 #
 #   # Full golden run
-#   .\scripts\run_and_pull.ps1 -Host 77.48.24.239 -Port 43789
+#   .\scripts\run_and_pull.ps1 -Host 79.117.5.114 -Port 35562
 
 param(
     [Parameter(Mandatory=$true)][string]$HostAddr,
