@@ -153,7 +153,12 @@ class QAModel:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
         base_model = AutoModelForCausalLM.from_pretrained(base_model_name, **load_kwargs)
-        self.model = PeftModel.from_pretrained(base_model, lora_path)
+        # Resolve path để PEFT nhận diện là local (tránh HFValidationError)
+        from pathlib import Path
+        local_path = Path(lora_path).resolve()
+        if local_path.exists():
+            lora_path = str(local_path)
+        self.model = PeftModel.from_pretrained(base_model, lora_path, local_files_only=True)
         self.model.eval()
         print(f"[QA] Loaded on {self.device}")
 
