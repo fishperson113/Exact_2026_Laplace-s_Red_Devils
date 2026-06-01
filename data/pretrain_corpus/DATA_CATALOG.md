@@ -3,7 +3,7 @@
 ## 1. MetaData (Siêu dữ liệu)
 - **Tên Data Asset**: Exact Physics Textbook Pre-training Corpus
 - **Định dạng dữ liệu**: Unstructured (Markdown Text) + JSONL intermediate pairs
-- **Kích thước hiện tại**: 451 golden markdown samples
+- **Kích thước hiện tại**: 389 golden markdown samples
 - **Nguồn gốc (Lineage)**: Trích xuất từ OpenStax College Physics 2e, Giancoli Physics: Principles with Applications 7th ed., Young & Freedman University Physics 13th ed., và Fundamentals of Physics.
 - **Source files**:
   - `app/data/openstax/college-physics-2e_-_WEB.pdf`
@@ -11,7 +11,7 @@
   - `app/data/university_of_physic/Young-Freedman-University-Physics-13th-txtbk_compressed.pdf`
   - `app/data/Fundamental_of_physics/Fundamental_of_physics.pdf`
 - **Phiên bản**: v1.0
-- **Ngày cập nhật cuối**: 2026-05-31
+- **Ngày cập nhật cuối**: 2026-06-01
 - **Ngôn ngữ**: English (Physics explanations) & Mathematics (Formulas)
 
 ## 2. Thống kê & Mức độ tin cậy (Data Quality Assessment)
@@ -21,86 +21,89 @@ Bộ dữ liệu hiện gồm bốn asset chính:
 - **Young & Freedman Worked Examples**: textbook worked examples from Chapters 21-31, transformed into standalone markdown named by example subtitle.
 - **Fundamentals of Physics Sample Problems**: sample problems from Chapters 21-33, transformed into standalone worked-example markdown named by sample subtitle.
 
+Sau cleanup ngày 2026-06-01, các markdown file có nội dung khớp regex `Figure \d+` đã bị loại bỏ để giảm phụ thuộc vào hình vẽ. Git diff ghi nhận **398 markdown files deleted** trong `data/pretrain_corpus`, trong đó có **62 golden markdown samples**.
+
 ### 2.1 OpenStax College Physics 2e — Loại B
 OpenStax được tách theo đúng mục lục PDF, chỉ giữ các numbered sections như `5.1`, `6.2`, `12.7`. Các phần outline, introduction, glossary, section summary, conceptual questions, và problems không được đưa vào corpus Loại B.
+Trong bảng dưới đây, `Processed Markdown` và `Golden Markdown` là số file markdown hiện còn trong `data/pretrain_corpus`; `Tỷ lệ giữ lại` là tỷ lệ golden markdown còn lại so với trước cleanup `Figure \d+`.
 
 | Chapter | Chủ đề | Processed Markdown | Golden Markdown | Tỷ lệ giữ lại |
 | :--- | :--- | :---: | :---: | :---: |
-| Chapter 5 | Further Applications of Newton's Laws | 3 | 3 | 100% |
-| Chapter 6 | Uniform Circular Motion and Gravitation | 6 | 6 | 100% |
-| Chapter 7 | Work, Energy, and Energy Resources | 9 | 9 | 100% |
-| Chapter 8 | Linear Momentum and Collisions | 7 | 7 | 100% |
-| Chapter 9 | Statics and Torque | 6 | 6 | 100% |
-| Chapter 10 | Rotational Motion and Angular Momentum | 7 | 7 | 100% |
-| Chapter 11 | Fluid Statics | 9 | 9 | 100% |
-| Chapter 12 | Fluid Dynamics | 7 | 7 | 100% |
-| **Tổng cộng** | | **54** | **54** | **100%** |
+| Chapter 5 | Further Applications of Newton's Laws | 0 | 3 | 100% |
+| Chapter 6 | Uniform Circular Motion and Gravitation | 0 | 6 | 100% |
+| Chapter 7 | Work, Energy, and Energy Resources | 0 | 9 | 100% |
+| Chapter 8 | Linear Momentum and Collisions | 1 | 7 | 100% |
+| Chapter 9 | Statics and Torque | 0 | 4 | 66.7% |
+| Chapter 10 | Rotational Motion and Angular Momentum | 0 | 7 | 100% |
+| Chapter 11 | Fluid Statics | 0 | 9 | 100% |
+| Chapter 12 | Fluid Dynamics | 0 | 7 | 100% |
+| **Tổng cộng** | | **1** | **52** | **96.3%** |
 
 ### 2.2 Giancoli Physics: Principles with Applications — End-of-Chapter Solutions
 Giancoli được tách theo chapter 16-22, lấy `Problems`, `General Problems`, và appendix `Answers to Odd-Numbered Problems`. Pipeline ghép odd-numbered problem statements với source final answers, sau đó tạo worked-solution markdown.
 
 | Chapter | Chủ đề | Paired Problems | Golden Solutions | Needs Review |
 | :--- | :--- | :---: | :---: | :---: |
-| Chapter 16 | Electric Charge and Electric Field | 21 | 21 | Included |
-| Chapter 17 | Electric Potential | 25 | 25 | Included |
-| Chapter 18 | Electric Currents | 33 | 33 | Included |
-| Chapter 19 | DC Circuits | 30 | 30 | Included |
-| Chapter 20 | Magnetism | 32 | 32 | Included |
-| Chapter 21 | Electromagnetic Induction and Faraday's Law | 37 | 37 | Included |
-| Chapter 22 | Electromagnetic Waves | 13 | 13 | Included |
-| **Tổng cộng** | | **191** | **191** | **53 flagged** |
+| Chapter 16 | Electric Charge and Electric Field | 21 | 21 | 15 flagged |
+| Chapter 17 | Electric Potential | 24 | 24 | 14 flagged |
+| Chapter 18 | Electric Currents | 33 | 33 | 12 flagged |
+| Chapter 19 | DC Circuits | 29 | 29 | 22 flagged |
+| Chapter 20 | Magnetism | 32 | 32 | 18 flagged |
+| Chapter 21 | Electromagnetic Induction and Faraday's Law | 37 | 37 | 13 flagged |
+| Chapter 22 | Electromagnetic Waves | 13 | 13 | 6 flagged |
+| **Tổng cộng** | | **189** | **189** | **100 flagged** |
 
 ### 2.3 Young & Freedman University Physics — Worked Examples
 Young & Freedman được tách theo chapter 21-31, chỉ lấy worked examples có nhãn `Example <chapter>.<number>` trước phần `Summary`. File markdown được đặt tên theo quy ước `<example_number>_<subtitle_slug>.md`.
 
 | Chapter | Chủ đề | Parsed Examples | Golden Examples | Needs Review |
 | :--- | :--- | :---: | :---: | :---: |
-| Chapter 21 | Electric Charge and Electric Field | 14 | 14 | Included |
-| Chapter 22 | Gauss's Law | 13 | 13 | Included |
-| Chapter 23 | Electric Potential | 14 | 14 | Included |
-| Chapter 24 | Capacitance and Dielectrics | 12 | 12 | Included |
-| Chapter 25 | Current, Resistance, and Electromotive Force | 11 | 11 | Included |
-| Chapter 26 | Direct-Current Circuits | 14 | 14 | Included |
-| Chapter 27 | Magnetic Field and Magnetic Forces | 12 | 12 | Included |
-| Chapter 28 | Sources of Magnetic Field | 12 | 12 | Included |
-| Chapter 29 | Electromagnetic Induction | 11 | 11 | Included |
-| Chapter 30 | Inductance | 10 | 10 | Included |
-| Chapter 31 | Alternating Current | 9 | 9 | Included |
-| **Tổng cộng** | | **132** | **132** | **120 flagged** |
+| Chapter 21 | Electric Charge and Electric Field | 7 | 7 | 6 flagged |
+| Chapter 22 | Gauss's Law | 8 | 8 | 8 flagged |
+| Chapter 23 | Electric Potential | 11 | 11 | 11 flagged |
+| Chapter 24 | Capacitance and Dielectrics | 12 | 12 | 12 flagged |
+| Chapter 25 | Current, Resistance, and Electromotive Force | 7 | 7 | 7 flagged |
+| Chapter 26 | Direct-Current Circuits | 13 | 13 | 11 flagged |
+| Chapter 27 | Magnetic Field and Magnetic Forces | 9 | 9 | 9 flagged |
+| Chapter 28 | Sources of Magnetic Field | 7 | 7 | 7 flagged |
+| Chapter 29 | Electromagnetic Induction | 7 | 7 | 7 flagged |
+| Chapter 30 | Inductance | 9 | 9 | 9 flagged |
+| Chapter 31 | Alternating Current | 6 | 6 | 5 flagged |
+| **Tổng cộng** | | **96** | **96** | **92 flagged** |
 
 ### 2.4 Fundamentals of Physics — Sample Problems
 Fundamentals of Physics được tách theo chapter 21-33, chỉ lấy các worked sample problems có nhãn `Sample Problem <chapter>.<number>`. File markdown được đặt tên theo quy ước `<sample_number>_<subtitle_slug>.md`.
 
 | Chapter | Chủ đề | Parsed Sample Problems | Golden Sample Problems | Needs Review |
 | :--- | :--- | :---: | :---: | :---: |
-| Chapter 21 | Coulomb's Law | 4 | 4 | 4 |
-| Chapter 22 | Electric Fields | 5 | 5 | 5 |
-| Chapter 23 | Gauss' Law | 7 | 7 | 7 |
-| Chapter 24 | Electric Potential | 7 | 7 | 7 |
-| Chapter 25 | Capacitance | 6 | 6 | 6 |
-| Chapter 26 | Current and Resistance | 6 | 6 | 6 |
-| Chapter 27 | Circuits | 5 | 5 | 5 |
-| Chapter 28 | Magnetic Fields | 7 | 7 | 7 |
-| Chapter 29 | Magnetic Fields Due to Currents | 4 | 4 | 4 |
-| Chapter 30 | Induction and Inductance | 8 | 8 | 7 |
+| Chapter 21 | Coulomb's Law | 2 | 2 | 2 |
+| Chapter 22 | Electric Fields | 3 | 3 | 3 |
+| Chapter 23 | Gauss' Law | 3 | 3 | 3 |
+| Chapter 24 | Electric Potential | 4 | 4 | 4 |
+| Chapter 25 | Capacitance | 5 | 5 | 3 |
+| Chapter 26 | Current and Resistance | 6 | 6 | 4 |
+| Chapter 27 | Circuits | 3 | 3 | 3 |
+| Chapter 28 | Magnetic Fields | 4 | 4 | 4 |
+| Chapter 29 | Magnetic Fields Due to Currents | 2 | 2 | 2 |
+| Chapter 30 | Induction and Inductance | 6 | 6 | 4 |
 | Chapter 31 | Electromagnetic Oscillations and Alternating Current | 8 | 8 | 8 |
-| Chapter 32 | Maxwell's Equations; Magnetism of Matter | 4 | 4 | 4 |
-| Chapter 33 | Electromagnetic Waves | 3 | 3 | 3 |
-| **Tổng cộng** | | **74** | **74** | **73 flagged** |
+| Chapter 32 | Maxwell's Equations; Magnetism of Matter | 4 | 4 | 3 |
+| Chapter 33 | Electromagnetic Waves | 2 | 2 | 2 |
+| **Tổng cộng** | | **52** | **52** | **45 flagged** |
 
 **Dung lượng hiện tại:**
 - OpenStax source PDF: ~251.26 MiB
-- OpenStax processed markdown: ~824 KiB
-- OpenStax golden markdown: ~233 KiB
+- OpenStax processed markdown: ~7 KiB
+- OpenStax golden markdown: ~221 KiB
 - Giancoli raw extracted PDFs: ~14.60 MiB
-- Giancoli processed files: ~1.10 MiB
-- Giancoli golden markdown: ~381 KiB
+- Giancoli processed files: ~349 KiB
+- Giancoli golden markdown: ~378 KiB
 - Young & Freedman raw extracted PDFs: ~13.88 MiB
-- Young & Freedman processed files: ~2.68 MiB
-- Young & Freedman golden markdown: ~346 KiB
+- Young & Freedman processed files: ~1.23 MiB
+- Young & Freedman golden markdown: ~246 KiB
 - Fundamentals raw extracted PDFs: ~38.54 MiB
-- Fundamentals processed files: ~4.06 MiB
-- Fundamentals golden markdown: ~205 KiB
+- Fundamentals processed files: ~1.29 MiB
+- Fundamentals golden markdown: ~128 KiB
 
 ## 3. Data Lineage & Pipeline (Nguồn gốc & Quá trình xử lý)
 Để đảm bảo tính minh bạch và khả năng tái lập (reproducibility), quá trình hình thành dữ liệu được thực hiện qua các bước:
