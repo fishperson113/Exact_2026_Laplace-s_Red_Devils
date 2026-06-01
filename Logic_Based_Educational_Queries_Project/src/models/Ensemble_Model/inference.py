@@ -306,10 +306,16 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
     results = []
     slow_samples = []
 
+    # Streaming log: ghi ngay mỗi mẫu, không chờ xong
+    log_path = output_dir / "ensemble_eval_log.jsonl"
+    log_file = open(log_path, "w", encoding="utf-8")
+
     for i, row in df.iterrows():
         premises_nl = parse_list_field(row["premises_nl"])
+        premises_fol_gold = parse_list_field(row.get("premises_fol", "[]"))
         question = str(row["question"])
         gold_answer = str(row["answer"]).strip()
+        gold_explanation = str(row.get("explanation", ""))
 
         result = pipeline.run(premises_nl, question)
 
@@ -320,33 +326,54 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
         status = "✓" if is_correct else "✗"
         latency_warn = ""
         if result.total_latency_sec > slow_threshold:
-            latency_warn = " ⚠️ SLOW"
+            latency_warn = " SLOW"
             slow_samples.append(i)
 
         print(
-            f"  [{i+1:3d}/{len(df)}] {status} pred={result.answer:8s} gold={gold_answer:8s} "
+            f"  [{total:3d}/{len(df)}] {status} pred={result.answer:8s} gold={gold_answer:8s} "
             f"| FOL:{result.fol_latency_sec:.1f}s QA:{result.qa_latency_sec:.1f}s "
-            f"Total:{result.total_latency_sec:.1f}s{latency_warn}"
+            f"Total:{result.total_latency_sec:.1f}s{latency_warn}",
+            flush=True,
         )
 
-        results.append({
+        # Full record: NL, FOL gold, FOL generated, question, gold, prediction, latency
+        sample_record = {
             "idx": i,
-            "question": question[:100],
-            "gold_answer": gold_answer,
-            "pred_answer": result.answer,
-            "explanation": result.explanation,
             "correct": is_correct,
-            "premises_fol_generated": result.premises_fol,
-            "fol_latency_sec": round(result.fol_latency_sec, 3),
-            "qa_latency_sec": round(result.qa_latency_sec, 3),
-            "total_latency_sec": round(result.total_latency_sec, 3),
-        })
+            "input": {
+                "premises_nl": premises_nl,
+                "premises_fol_gold": premises_fol_gold,
+                "question": question,
+            },
+            "fol_generated": result.premises_fol,
+            "gold": {
+                "answer": gold_answer,
+                "explanation": gold_explanation,
+            },
+            "prediction": {
+                "answer": result.answer,
+                "explanation": result.explanation,
+            },
+            "latency": {
+                "fol_sec": round(result.fol_latency_sec, 3),
+                "qa_sec": round(result.qa_latency_sec, 3),
+                "total_sec": round(result.total_latency_sec, 3),
+            },
+        }
+        results.append(sample_record)
+
+        # Ghi ngay ra file
+        log_file.write(json.dumps(sample_record, ensure_ascii=False) + "\n")
+        log_file.flush()
+
+    log_file.close()
+    print(f"\n[Log] Streaming log: {log_path}")
 
     # Summary
     accuracy = correct / total if total > 0 else 0
-    avg_total = sum(r["total_latency_sec"] for r in results) / total if total > 0 else 0
-    avg_fol = sum(r["fol_latency_sec"] for r in results) / total if total > 0 else 0
-    avg_qa = sum(r["qa_latency_sec"] for r in results) / total if total > 0 else 0
+    avg_total = sum(r["latency"]["total_sec"] for r in results) / total if total > 0 else 0
+    avg_fol = sum(r["latency"]["fol_sec"] for r in results) / total if total > 0 else 0
+    avg_qa = sum(r["latency"]["qa_sec"] for r in results) / total if total > 0 else 0
 
     summary = {
         "accuracy": accuracy,
@@ -365,17 +392,16 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
     print(f"  Accuracy     : {correct}/{total} = {accuracy:.1%}")
     print(f"  Avg latency  : {avg_total:.2f}s/sample (FOL:{avg_fol:.2f}s + QA:{avg_qa:.2f}s)")
     if slow_samples:
-        print(f"  ⚠️  SLOW (>{slow_threshold}s): {len(slow_samples)} samples — indices: {slow_samples}")
+        print(f"  SLOW (>{slow_threshold}s): {len(slow_samples)} samples -- indices: {slow_samples}")
     print(f"{'='*70}\n")
 
-    # Save
-    log = {"summary": summary, "results": results}
-    log_path = output_dir / "ensemble_eval_results.json"
-    with open(log_path, "w", encoding="utf-8") as f:
-        json.dump(log, f, ensure_ascii=False, indent=2)
-    print(f"[Log] Saved to: {log_path}")
+    # Save summary
+    summary_path = output_dir / "ensemble_eval_summary.json"
+    with open(summary_path, "w", encoding="utf-8") as f:
+        json.dump(summary, f, ensure_ascii=False, indent=2)
+    print(f"[Log] Summary: {summary_path}")
 
-    return log
+    return {"summary": summary, "results": results}
 
 
 # ─── Inference Mode ───────────────────────────────────────────────────────────
