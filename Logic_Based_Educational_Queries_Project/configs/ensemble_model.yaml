@@ -11,8 +11,8 @@ fol_model:
 qa_model:
   # Base model (phải trùng với model đã train QA LoRA)
   base_model_name: Qwen/Qwen2.5-3B-Instruct
-  # Path tới LoRA checkpoint (local hoặc HF Hub)
-  lora_path: outputs/qa-v01-cot-Qwen2.5-3B-Instruct/checkpoint-1863
+  # Path tới LoRA checkpoint (absolute path trên Modal hoặc local)
+  lora_path: /root/Logic_Based_Educational_Queries_Project/outputs/qa-v01-cot-Qwen2.5-3B-Instruct
   max_new_tokens: 200
 
 inference:
