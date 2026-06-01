@@ -189,16 +189,60 @@ def _parse_full_output(text: str) -> dict[str, str]:
     return {"answer": answer, "explanation": text}
 
 
+def _detect_stop_strings_support(model, tokenizer) -> bool:
+    """Check once if model.generate() supports stop_strings (transformers >= 4.40)."""
+    import inspect
+    sig = inspect.signature(model.generate)
+    return "stop_strings" in sig.parameters or "stopping_criteria" in sig.parameters
+
+
+def _generate_batch(model, tokenizer, texts: list[str], max_new_tokens: int, use_stop_strings: bool) -> list[str]:
+    """Batched generation: tokenize + generate + decode."""
+    # Left-pad for decoder-only generation
+    tokenizer.padding_side = "left"
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    inputs = tokenizer(
+        texts, return_tensors="pt", padding=True, truncation=True, max_length=4096
+    ).to(model.device)
+
+    gen_kwargs = dict(
+        **inputs,
+        max_new_tokens=max_new_tokens,
+        do_sample=False,
+    )
+
+    if use_stop_strings:
+        try:
+            outputs = model.generate(**gen_kwargs, tokenizer=tokenizer, stop_strings=["}\n", "\n\n"])
+        except TypeError:
+            outputs = model.generate(**gen_kwargs)
+    else:
+        outputs = model.generate(**gen_kwargs)
+
+    # Decode only generated part (skip input tokens)
+    input_len = inputs["input_ids"].shape[1]
+    results = []
+    for i in range(outputs.shape[0]):
+        generated_ids = outputs[i][input_len:]
+        text = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
+        results.append(text)
+
+    return results
+
+
 def compute_accuracy_on_split(
     model,
     tokenizer,
     dataset,
     max_samples: int | None = None,
-    max_new_tokens: int = 512,
+    max_new_tokens: int = 150,
     print_n: int = 6,
     log_file: Any = None,
+    eval_batch_size: int = 4,
 ) -> dict[str, Any]:
-    """Greedy decode trên dataset, tính accuracy + in mẫu random full JSON + đo latency.
+    """Batched greedy decode trên dataset, tính accuracy + in mẫu random full JSON.
 
     Returns: {"accuracy": float, "correct": int, "total": int, "avg_latency_sec": float, "samples": list}
     """
@@ -211,63 +255,70 @@ def compute_accuracy_on_split(
     # Chọn trước print_n indices random để in full detail
     print_indices = set(random.sample(range(n_total), min(print_n, n_total)))
 
-    correct = 0
-    total = 0
-    latencies = []
-    all_results = []       # Tất cả (để tính accuracy)
-    detail_samples = []    # Chỉ các mẫu random (để in full JSON)
+    # Check stop_strings support once
+    use_stop_strings = _detect_stop_strings_support(model, tokenizer)
 
-    for i, item in enumerate(dataset):
+    # Pre-compute all inputs + gold
+    all_texts = []
+    all_gold = []
+    for item in dataset:
         messages = item["messages"]
-        # Gold
         gold_text = messages[2]["content"]
-        gold_parsed = _parse_full_output(gold_text)
+        all_gold.append(_parse_full_output(gold_text))
 
-        # Build input (system + user only)
         input_messages = messages[:2]
         text = tokenizer.apply_chat_template(
             input_messages, tokenize=False, add_generation_prompt=True
         )
-        inputs = tokenizer(
-            text, return_tensors="pt", truncation=True, max_length=4096
-        ).to(model.device)
+        all_texts.append(text)
+
+    # Batched generation
+    all_generated = []
+    total_time = 0.0
+    for batch_start in range(0, n_total, eval_batch_size):
+        batch_end = min(batch_start + eval_batch_size, n_total)
+        batch_texts = all_texts[batch_start:batch_end]
 
         t0 = time.perf_counter()
         with torch.no_grad():
-            out = model.generate(
-                **inputs,
-                max_new_tokens=max_new_tokens,
-                do_sample=False,
-                repetition_penalty=1.1,
-            )
-        latency = time.perf_counter() - t0
-        latencies.append(latency)
+            batch_outputs = _generate_batch(model, tokenizer, batch_texts, max_new_tokens, use_stop_strings)
+        batch_time = time.perf_counter() - t0
+        total_time += batch_time
 
-        generated = tokenizer.decode(
-            out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
-        ).strip()
+        all_generated.extend(batch_outputs)
 
-        pred_parsed = _parse_full_output(generated)
+        # Progress
+        done = batch_end
+        print(f"    eval: {done}/{n_total} ({batch_time:.1f}s for batch of {len(batch_texts)})", flush=True)
+
+    avg_latency = total_time / n_total if n_total > 0 else 0.0
+
+    # Compute accuracy + collect detail samples
+    correct = 0
+    all_results = []
+    detail_samples = []
+
+    for i in range(n_total):
+        gold_parsed = all_gold[i]
+        pred_parsed = _parse_full_output(all_generated[i])
         is_correct = pred_parsed["answer"].strip().upper() == gold_parsed["answer"].strip().upper()
         correct += int(is_correct)
-        total += 1
 
         all_results.append({
             "idx": i,
             "pred_answer": pred_parsed["answer"],
             "gold_answer": gold_parsed["answer"],
             "correct": is_correct,
-            "latency_sec": round(latency, 3),
         })
 
         # Full detail cho mẫu random
         if i in print_indices:
+            messages = dataset[i]["messages"]
             user_content = messages[1]["content"]
             parsed_input = _parse_user_content(user_content)
             detail_samples.append({
                 "idx": i,
                 "correct": is_correct,
-                "latency_sec": round(latency, 3),
                 "input": {
                     "premises_nl": parsed_input["premises_nl"],
                     "premises_fol": parsed_input["premises_fol"],
@@ -283,14 +334,14 @@ def compute_accuracy_on_split(
                 },
             })
 
-    accuracy = correct / total if total > 0 else 0.0
-    avg_latency = sum(latencies) / len(latencies) if latencies else 0.0
+    accuracy = correct / n_total if n_total > 0 else 0.0
 
     result = {
         "accuracy": accuracy,
         "correct": correct,
-        "total": total,
+        "total": n_total,
         "avg_latency_sec": avg_latency,
+        "total_time_sec": round(total_time, 2),
         "samples": all_results,
     }
 
@@ -301,7 +352,7 @@ def compute_accuracy_on_split(
         print(f"  {'━'*70}")
         for s in detail_samples:
             status = "✅ CORRECT" if s["correct"] else "❌ WRONG"
-            print(f"\n  ── Sample [{s['idx']}] {status} ({s['latency_sec']:.2f}s) ──")
+            print(f"\n  ── Sample [{s['idx']}] {status} ──")
             print(json.dumps(s, ensure_ascii=False, indent=4))
         print(f"\n  {'━'*70}")
 
@@ -349,12 +400,13 @@ class QAAccuracyCallback(TrainerCallback):
 
         eval_cfg = self.cfg.get("eval", {})
         max_samples = eval_cfg.get("eval_accuracy_max_samples")
-        print_n = eval_cfg.get("eval_print_samples", 5)
-        max_new_tokens = self.cfg["model"].get("gen_max_new_tokens", 512)
+        print_n = eval_cfg.get("eval_print_samples", 6)
+        max_new_tokens = self.cfg["model"].get("gen_max_new_tokens", 150)
+        eval_batch_size = self.cfg["training"].get("per_device_eval_batch_size", 4)
 
         epoch = state.epoch or 0
         print(f"\n{'='*60}")
-        print(f"  [Epoch {epoch:.0f}] Computing accuracy on dev...")
+        print(f"  [Epoch {epoch:.0f}] Computing accuracy on dev (batch_size={eval_batch_size})...")
 
         result = compute_accuracy_on_split(
             model=model,
@@ -364,13 +416,14 @@ class QAAccuracyCallback(TrainerCallback):
             max_new_tokens=max_new_tokens,
             print_n=print_n,
             log_file=self.log_file,
+            eval_batch_size=eval_batch_size,
         )
 
         accuracy = result["accuracy"]
         metrics["eval_accuracy"] = accuracy
 
         print(f"  [Epoch {epoch:.0f}] Accuracy: {result['correct']}/{result['total']} = {accuracy:.1%}")
-        print(f"  [Epoch {epoch:.0f}] Avg latency: {result['avg_latency_sec']:.2f}s/sample")
+        print(f"  [Epoch {epoch:.0f}] Total eval time: {result['total_time_sec']:.1f}s | Avg: {result['avg_latency_sec']:.2f}s/sample")
         print(f"{'='*60}\n")
 
         self.epoch_results.append({"epoch": epoch, **result})

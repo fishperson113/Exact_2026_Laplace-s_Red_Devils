@@ -1,6 +1,6 @@
 """Prepare SFT dataset for QA Stage 2: NL + FOL → COT answer + explanation.
 
-Load raw dataset + split IDs → build chat messages (system/user/assistant) → save as HF Dataset.
+Load processed CSVs (normalized FOL) → build chat messages (system/user/assistant) → save as HF Dataset.
 
 Usage:
     python -m models.QA_model.prepare_data --config configs/qa_model.yaml
@@ -66,16 +66,25 @@ ASSISTANT_TEMPLATE_QA_COT = """\
 
 # ─── Data Loading & Processing ───────────────────────────────────────────────
 
-def load_raw_data(data_dir: Path) -> list[dict]:
-    raw_path = data_dir / "raw" / "Logic_Based_Educational_Queries.json"
-    with open(raw_path, "r", encoding="utf-8") as f:
-        return json.load(f)
+import ast
+
+import pandas as pd
 
 
-def load_split_ids(data_dir: Path) -> dict[str, list[int]]:
-    split_path = data_dir / "processed" / "split_record_ids.json"
-    with open(split_path, "r", encoding="utf-8") as f:
-        return json.load(f)
+def load_split_csv(data_dir: Path, split: str) -> pd.DataFrame:
+    """Load processed CSV (already normalized FOL, 1 row = 1 question)."""
+    csv_path = data_dir / "processed" / f"{split}.csv"
+    return pd.read_csv(csv_path, encoding="utf-8")
+
+
+def parse_list_field(value: str) -> list[str]:
+    """Parse string representation of list from CSV → actual list."""
+    if pd.isna(value) or not value.strip():
+        return []
+    try:
+        return ast.literal_eval(value)
+    except (ValueError, SyntaxError):
+        return []
 
 
 def format_premises_nl(premises: list[str]) -> str:
@@ -115,44 +124,35 @@ def build_messages_for_sample(
     ]
 
 
-def expand_records_to_samples(records: list[dict]) -> list[dict]:
-    """Expand records (multi-question) into individual QA samples.
-
-    Each record has N questions → N samples, each sharing the same premises.
-    The `idx` field contains premise indices per question (1-indexed lists),
-    but we use ALL premises for each question (model sees full context).
-    """
+def build_samples_from_csv(df: pd.DataFrame) -> list[dict]:
+    """Convert CSV DataFrame → list of chat message samples."""
     samples = []
-    for record in records:
-        premises_nl = record["premises-NL"]
-        premises_fol = record["premises-FOL"]
-        questions = record["questions"]
-        answers = record["answers"]
-        explanations = record["explanation"]
+    for _, row in df.iterrows():
+        premises_nl = parse_list_field(row["premises_nl"])
+        premises_fol = parse_list_field(row["premises_fol"])
+        question = str(row["question"])
+        answer = str(row["answer"])
+        explanation = str(row["explanation"])
 
-        for q_idx in range(len(questions)):
-            messages = build_messages_for_sample(
-                premises_nl=premises_nl,
-                premises_fol=premises_fol,
-                question=questions[q_idx],
-                answer=answers[q_idx],
-                explanation=explanations[q_idx],
-            )
-            samples.append({"messages": messages})
+        messages = build_messages_for_sample(
+            premises_nl=premises_nl,
+            premises_fol=premises_fol,
+            question=question,
+            answer=answer,
+            explanation=explanation,
+        )
+        samples.append({"messages": messages})
     return samples
 
 
 def build_qa_dataset_dict(data_dir: Path) -> DatasetDict:
-    """Build train/dev/test DatasetDict from raw data + split IDs."""
-    raw_data = load_raw_data(data_dir)
-    split_ids = load_split_ids(data_dir)
-
+    """Build train/dev/test DatasetDict from processed CSVs (normalized FOL)."""
     splits = {}
-    for split_name, record_indices in split_ids.items():
-        records = [raw_data[i] for i in record_indices if i < len(raw_data)]
-        samples = expand_records_to_samples(records)
+    for split_name in ["train", "dev", "test"]:
+        df = load_split_csv(data_dir, split_name)
+        samples = build_samples_from_csv(df)
         splits[split_name] = Dataset.from_list(samples)
-        print(f"  [{split_name}] {len(records)} records → {len(samples)} QA samples")
+        print(f"  [{split_name}] {len(df)} rows → {len(samples)} QA samples")
 
     return DatasetDict(splits)
 
