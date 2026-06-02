@@ -1,0 +1,47 @@
+# ============================================================
+# FOL_Z3 Pipeline Config
+# ============================================================
+# Pipeline: FOL Model (NL→FOL) → Z3 Solver → QA Model (answer + explanation)
+#
+# Thay doi phien ban model: sua hub_repo_id ben duoi.
+# Env override: FOL_Z3_HUB_REPO, FOL_Z3_BASE_MODEL, FOL_Z3_DEVICE
+
+fol_model:
+  # HF repo chua LoRA/merged model FOL da train
+  hub_repo_id: Laplaces-Red-Devils/fol-v05-cot-augmented-fol-pretrain-malls-qwen2.5-3
+  # Base model (phai trung voi model da train FOL)
+  base_model: Qwen/Qwen2.5-3B-Instruct
+  max_new_tokens: 650            # premises FOL output (gold max=684, 768 covers 100%)
+qa_model:
+  # Model dung de tra loi + giai thich (mac dinh = cung base voi FOL)
+  model_name: Qwen/Qwen2.5-3B-Instruct
+  max_new_tokens: 650            # QA JSON output
+  type: cot                      # cot = CoT prompt (SYSTEM_PROMPT_QA_COT) | z3 = Z3 report prompt (SYSTEM_PROMPT_QA)
+
+z3:
+  timeout_ms: 5000        # Timeout cho moi formula khi check Z3
+  max_premises: 50        # Gioi han so premises (tranh OOM Z3)
+
+inference:
+  device: auto            # auto | cuda | cpu
+  load_in_8bit: true
+  trust_remote_code: true
+  batch_size: 8
+
+# --- Refinement: Z3 reject → FOL model sinh lai ---
+# Neurosymbolic: FOL model sinh FOL → Z3 check → parse_fail/unsat → feedback → sinh lai
+refinement:
+  max_retries: 2          # Toi da 2 lan sinh lai (tong cong 3 lan thu)
+
+# --- Ablation: bat/tat FOL + Z3 de so sanh hieu nang ---
+# use_fol: true   → FOL + Z3 + QA (full Neurosymbolic pipeline)
+# use_fol: false  → QA model chi nhan NL premises + question (baseline, khong FOL/Z3)
+ablation:
+  use_fol: true
+
+# --- Hub: upload ket qua len HuggingFace ---
+hub:
+  push_results: true                    # true = upload sau inference
+  # repo_id: Laplaces-Red-Devils/fol-z3-pipeline-baseline
+  repo_id: Laplaces-Red-Devils/fol-augmented-exact-z3-full-pipeline-v02
+  private: false

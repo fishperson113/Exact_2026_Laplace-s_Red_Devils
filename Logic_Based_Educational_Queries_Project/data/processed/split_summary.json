@@ -1,0 +1,14 @@
+{
+  "train": {
+    "n_records": 328,
+    "n_questions": 647
+  },
+  "dev": {
+    "n_records": 41,
+    "n_questions": 79
+  },
+  "test": {
+    "n_records": 41,
+    "n_questions": 81
+  }
+}

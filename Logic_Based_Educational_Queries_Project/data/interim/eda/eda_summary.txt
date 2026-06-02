@@ -1,0 +1,13 @@
+
+=== TÓM TẮT EDA — Logic_Based_Educational_Queries ===
+
+• Câu / mẫu: mean=1.97, P50=2, max=2 (3.4% mẫu 1 câu, 96.6% 2 câu)
+• Tổng câu: 808 (BTC 808)
+• Premise NL / mẫu: mean=10.80 (BTC ~10.8)
+• Premise dùng / câu: P50=2, P90=4
+• MCQ: premise dùng P50=3
+• Y/N:  premise dùng P50=2
+• % Unknown: 25.9%
+• % explanation cite ⊆ idx: 88.7%
+• % mẫu có FOL: 100.0%
+• Loại câu (chồng): MCQ=359, Y/N=216, Open=233

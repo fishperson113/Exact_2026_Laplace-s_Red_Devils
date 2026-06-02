@@ -1,0 +1,53 @@
+# Siêu tham số Logic / MCQ SFT — file này được `LogicSFTConfig.from_env()` đọc trước (cùng repo Git).
+# Bí mật không đặt trong YAML: chỉ `HF_TOKEN` / `GIT_TOKEN` trong `.env` (xem `.env.example`).
+# Tùy chọn ghi đè khi chạy CI: export biến `LOGIC_*` tương ứng.
+
+model:
+  name: Qwen/Qwen3.5-4B
+  trust_remote_code: true
+  max_seq_length: 2048
+  gen_max_new_tokens: 160
+
+lora:
+  r: 10
+  alpha: 16
+  dropout: 0.05
+
+training:
+  num_train_epochs: 10
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 2.0e-4
+  warmup_ratio: 0.05
+  weight_decay: 0.01
+  logging_steps: 10
+  bf16: true
+  gradient_checkpointing: true
+  train_seed: 3407
+  gpu_profile: auto  # auto | kaggle_p100 | default
+
+data:
+  data_source: local   # local | drive — Drive: vẫn cần cell notebook tải file (xem `services/drive.py`)
+  split_ratios: [0.8, 0.1, 0.1]
+  split_seed: 42
+  include_fol_in_user: true
+
+paths:
+  # Đường dẫn tương đối gốc repo; cần tuyệt đối thì ghi path đầy đủ tại đây (fork riêng) — không dùng .env cho path.
+  processed_subdir: data/processed
+  raw_filename: Logic_Based_Educational_Queries.json
+
+eval:
+  # Mỗi epoch: đo thêm test (tốn GPU); mẫu inference ghi vào experiment_log.json
+  log_test_each_epoch: true
+  experiment_inference_sample_n: 5
+  eval_gen_batch_size: 2
+  eval_accuracy_max_samples: null
+
+hub:
+  org: Laplaces-Red-Devils
+  repo_version: v01
+  repo_method: sft
+  push_to_hub: false
+  hf_private: false
