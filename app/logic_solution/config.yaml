@@ -1,0 +1,14 @@
+# logic_solution/config.yaml
+# Cấu hình pipeline — chỉnh model hoặc token limit tại đây
+
+fol_model:
+  hub_repo_id: Laplaces-Red-Devils/fol-v05-cot-augmented-fol-pretrain-malls-qwen2.5-3
+  max_new_tokens: 400
+
+qa_model:
+  hub_repo_id: Laplaces-Red-Devils/v01-QA-CoT
+  max_new_tokens: 200
+
+inference:
+  load_in_8bit: true        # true = tiết kiệm VRAM, false = nhanh hơn nếu đủ RAM
+  slow_threshold_sec: 60    # cảnh báo nếu 1 sample vượt ngưỡng này (giây)

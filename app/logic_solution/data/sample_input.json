@@ -1,0 +1,21 @@
+[
+  {
+    "premises-NL": [
+      "Lecturers with a Master's degree can teach undergraduate courses.",
+      "Lecturers with a degree higher than a Master's can teach undergraduate courses.",
+      "A PhD is higher than a Master's degree.",
+      "Dr. John is a department head with a PhD."
+    ],
+    "question": "Based on Dr. John's qualifications, which statement is correct?\nA. He can teach undergraduate courses\nB. He qualifies as department head but cannot teach\nC. He needs a Master's degree to teach undergraduates\nD. His PhD is insufficient for teaching"
+  },
+  {
+    "premises-NL": [
+      "If a person has a research background, then they have strong qualifications.",
+      "If a person has strong qualifications, then they are suitable for a senior role.",
+      "Every person has a research background.",
+      "If a person is eligible for a promotion, then they will receive a bonus.",
+      "Everyone is eligible for a promotion."
+    ],
+    "question": "Do all employees receive a bonus?"
+  }
+]
