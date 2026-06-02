@@ -1,0 +1,12 @@
+[
+  {
+    "answer": "A",
+    "explanation": "From premise 4, we know that Dr. John has a PhD. From premise 3, a PhD is higher than a Master's degree. From premise 2, a PhD allows teaching undergraduate courses. Therefore, Dr. John can teach undergraduate courses, making option A correct.",
+    "fol": "∀x (∀d ((has_degree(x,d) ∧ dual_degree(d,'Masters')) → can_teach_undergrad(x)))\n∀x (∀d ((has_degree(x,d) ∧ postgraduate_degree(d)) → can_teach_undergrad(x)))\nhigher_degree('PhD','Masters')\nhas_degree(john,'PhD')"
+  },
+  {
+    "answer": "Yes",
+    "explanation": "From premise 3, every person has a research background. From premise 1, having a research background implies strong qualifications. From premise 2, strong qualifications imply suitability for a senior role. From premise 4, being eligible for a promotion implies receiving a bonus. Since everyone is eligible for a promotion, all employees receive a bonus.",
+    "fol": "∀x(has_research_background(x) → strong_qualifications(x))\n∀x(strong_qualifications(x) → suitable_for_senior_role(x))\n∀x(has_research_background(x))\n∀x(eligible_for_promotion(x) → receives_bonus(x))\n∀x(eligible_for_promotion(x))"
+  }
+]
