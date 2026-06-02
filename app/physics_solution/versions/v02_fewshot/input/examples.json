@@ -1,0 +1,128 @@
+[
+  {
+    "id": "CH021",
+    "prefix": "CH",
+    "question": "Given an RLC series circuit with an inductance L = 0.4 H and a capacitance C = 40 μF. Determine the resonant frequency of the circuit.",
+    "cot": "Step 1: Identify the given inductance (L) and capacitance (C) from the question.\r\nStep 2: Convert the capacitance from 40 microfarads (μF) to 40 × 10⁻⁶ farads (F).\r\nStep 3: Recall the formula for the resonant frequency (f) of an RLC series circuit is f = 1 / (2π√(LC)).\r\nStep 4: Substitute the given values of L and C into the formula: f = 1 / (2π√(0.4 × 40 × 10⁻⁶)) = 39.79 Hz.",
+    "answer": "39.79",
+    "unit": "Hz",
+    "formatted_assistant": "Step 1: Identify the given inductance (L) and capacitance (C) from the question.\r\nStep 2: Convert the capacitance from 40 microfarads (μF) to 40 × 10⁻⁶ farads (F).\r\nStep 3: Recall the formula for the resonant frequency (f) of an RLC series circuit is f = 1 / (2π√(LC)).\r\nStep 4: Substitute the given values of L and C into the formula: f = 1 / (2π√(0.4 × 40 × 10⁻⁶)) = 39.79 Hz.\n\nFINAL ANSWER: 39.79\nUNIT: Hz"
+  },
+  {
+    "id": "CH023",
+    "prefix": "CH",
+    "question": "What is the resonance frequency of a series AC circuit consisting of an inductor L = 1.5 H and a capacitor C = 2 μF?",
+    "cot": "Step 1: Identify the given values for inductance (L) and capacitance (C).\r\nStep 2: Convert the capacitance from 2 microfarads (μF) to 2 × 10⁻⁶ farads (F).\r\nStep 3: State the formula for the resonance frequency (f) of a series LC circuit is f = 1 / (2π√(LC)).\r\nStep 4: Substitute the values of L and C into the resonance frequency formula: f = 1 / (2π√(1.5 × 2 × 10⁻⁶) = 91.89 Hz.",
+    "answer": "91.89",
+    "unit": "Hz",
+    "formatted_assistant": "Step 1: Identify the given values for inductance (L) and capacitance (C).\r\nStep 2: Convert the capacitance from 2 microfarads (μF) to 2 × 10⁻⁶ farads (F).\r\nStep 3: State the formula for the resonance frequency (f) of a series LC circuit is f = 1 / (2π√(LC)).\r\nStep 4: Substitute the values of L and C into the resonance frequency formula: f = 1 / (2π√(1.5 × 2 × 10⁻⁶) = 91.89 Hz.\n\nFINAL ANSWER: 91.89\nUNIT: Hz"
+  },
+  {
+    "id": "DDT138",
+    "prefix": "DDT",
+    "question": "A long solenoid has a turn density of 3000 turns/m and carries a current of 1.5 A. Calculate the magnetic field inside the solenoid.",
+    "cot": "Step 1: Identify the given values from the question. The turn density (n) is 3000 turns/m, and the current (I) is 1.5 A.\r\nStep 2: Recall the formula for the magnetic field (B) inside a long solenoid, which is B = μ₀ × n × I, where μ₀ is the permeability of free space.\r\nStep 3: State the value of the constant μ₀, which is 4π × 10⁻⁷ T×m/A.\r\nStep 4: Substitute the given values and the constant into the formula: B = (4π × 10⁻⁷ T×m/A) × (3000 turns/m) × (1.5 A).\r\nStep 5: Perform the numerical calculation: B = 4 × 3.14159 × 10⁻⁷ × 3000 × 1.5.\r\nStep 6: Simplify the expression: B = 12.56637 × 10⁻⁷ × 4500 = 0.00565487 T.\r\nStep 7: Convert the result to millitesla (mT): B ≈ 5.654 mT.",
+    "answer": "5.654",
+    "unit": "mT",
+    "formatted_assistant": "Step 1: Identify the given values from the question. The turn density (n) is 3000 turns/m, and the current (I) is 1.5 A.\r\nStep 2: Recall the formula for the magnetic field (B) inside a long solenoid, which is B = μ₀ × n × I, where μ₀ is the permeability of free space.\r\nStep 3: State the value of the constant μ₀, which is 4π × 10⁻⁷ T×m/A.\r\nStep 4: Substitute the given values and the constant into the formula: B = (4π × 10⁻⁷ T×m/A) × (3000 turns/m) × (1.5 A).\r\nStep 5: Perform the numerical calculation: B = 4 × 3.14159 × 10⁻⁷ × 3000 × 1.5.\r\nStep 6: Simplify the expression: B = 12.56637 × 10⁻⁷ × 4500 = 0.00565487 T.\r\nStep 7: Convert the result to millitesla (mT): B ≈ 5.654 mT.\n\nFINAL ANSWER: 5.654\nUNIT: mT"
+  },
+  {
+    "id": "DDT139",
+    "prefix": "DDT",
+    "question": "A solenoid has a cross-sectional area of 4 cm², a turn density of 1000 turns/m, and carries a current of 2 A. Calculate the magnetic field energy density inside the solenoid.",
+    "cot": "Step 1: Identify the given values for the solenoid: turn density (n) = 1000 turns/m and current (I) = 2 A.\r\nStep 2: State the formula for the magnetic field (B) inside a solenoid: B = μ₀ × n × I, where μ₀ is the permeability of free space (4π × 10⁻⁷ T×m/A).\r\nStep 3: Calculate the magnetic field (B): B = (4π × 10⁻⁷ T×m/A) × (1000 turns/m) × (2 A) = 8π × 10⁻⁴ T.\r\nStep 4: State the formula for the magnetic field energy density (u_B) inside a solenoid: u_B = B² / (2μ₀).\r\nStep 5: Substitute the expression for B into the energy density formula: u_B = (μ₀ × n × I)² / (2μ₀) = (1/2) × μ₀ × n² × I².\r\nStep 6: Substitute the numerical values: u_B = 0.5 × (4 × π × 10⁻⁷) × (1000)² × (2)².\r\nStep 7: Perform the calculation: u_B = 0.5 × (12.566 × 10⁻⁷) × 1,000,000 × 4 = 2.51 J/m³.",
+    "answer": "2.51",
+    "unit": "J/m³",
+    "formatted_assistant": "Step 1: Identify the given values for the solenoid: turn density (n) = 1000 turns/m and current (I) = 2 A.\r\nStep 2: State the formula for the magnetic field (B) inside a solenoid: B = μ₀ × n × I, where μ₀ is the permeability of free space (4π × 10⁻⁷ T×m/A).\r\nStep 3: Calculate the magnetic field (B): B = (4π × 10⁻⁷ T×m/A) × (1000 turns/m) × (2 A) = 8π × 10⁻⁴ T.\r\nStep 4: State the formula for the magnetic field energy density (u_B) inside a solenoid: u_B = B² / (2μ₀).\r\nStep 5: Substitute the expression for B into the energy density formula: u_B = (μ₀ × n × I)² / (2μ₀) = (1/2) × μ₀ × n² × I².\r\nStep 6: Substitute the numerical values: u_B = 0.5 × (4 × π × 10⁻⁷) × (1000)² × (2)².\r\nStep 7: Perform the calculation: u_B = 0.5 × (12.566 × 10⁻⁷) × 1,000,000 × 4 = 2.51 J/m³.\n\nFINAL ANSWER: 2.51\nUNIT: J/m³"
+  },
+  {
+    "id": "DT030",
+    "prefix": "DT",
+    "question": "Given two electric charges q1 = 9 x 10^-8 C and q2 = -16 x 10^-8 C are placed at two points A and B in air, separated by 12cm. Find the point where the electric field vector is zero, and calculate its distance from B.",
+    "cot": "Step 1: Identify the given charges q1 = 9 x 10^-8 C and q2 = -16 x 10^-8 C, and their separation distance AB = 12cm = 0.12m.\r\nStep 2: Since the charges have opposite signs and different magnitudes, the point where the net electric field is zero must lie outside the segment AB, on the side of the charge with the smaller magnitude. In this case, |q1| < |q2|, so the point is on the line extending from B through A.\r\nStep 3: Let x be the distance from point A to this zero-field point. The distance from point B to this point will then be (0.12m + x).\r\nStep 4: For the net electric field to be zero, the magnitudes of the electric fields created by q1 (E1) and q2 (E2) at this point must be equal: E1 = E2.\r\nStep 5: Therefore, the net electric field is zero at a point located on the extension of line AB (on the side of A), at a distance of 48 cm from point B.",
+    "answer": "48",
+    "unit": "cm",
+    "formatted_assistant": "Step 1: Identify the given charges q1 = 9 x 10^-8 C and q2 = -16 x 10^-8 C, and their separation distance AB = 12cm = 0.12m.\r\nStep 2: Since the charges have opposite signs and different magnitudes, the point where the net electric field is zero must lie outside the segment AB, on the side of the charge with the smaller magnitude. In this case, |q1| < |q2|, so the point is on the line extending from B through A.\r\nStep 3: Let x be the distance from point A to this zero-field point. The distance from point B to this point will then be (0.12m + x).\r\nStep 4: For the net electric field to be zero, the magnitudes of the electric fields created by q1 (E1) and q2 (E2) at this point must be equal: E1 = E2.\r\nStep 5: Therefore, the net electric field is zero at a point located on the extension of line AB (on the side of A), at a distance of 48 cm from point B.\n\nFINAL ANSWER: 48\nUNIT: cm"
+  },
+  {
+    "id": "DT027",
+    "prefix": "DT",
+    "question": "Two point charges of the same sign and magnitudes such that q1 = 4q2 are placed at points A and B, which are 12 cm apart. Find the point where the net electric field is zero, and calculate its distance from A.",
+    "cot": "Step 1: The two point charges have the same sign, so the point where the net electric field is zero must be located between them.\r\nStep 2: Let q1 be at point A and q2 be at point B. Let the distance from A to the zero-field point be x. The distance from B to this point will be (12 cm - x).\r\nStep 3: For the net electric field to be zero, the magnitude of the electric field due to q1 (E1) must be equal to the magnitude of the electric field due to q2 (E2).\r\nStep 4: Using the formula E = k*q/r^2, we set E1 = E2: k × q1 / x^2 = k × q2 / (12 cm - x)^2.\r\nStep 5: Therefore, the net electric field is zero at a point located between the two charges, at a distance of 8 cm from point A.",
+    "answer": "8",
+    "unit": "cm",
+    "formatted_assistant": "Step 1: The two point charges have the same sign, so the point where the net electric field is zero must be located between them.\r\nStep 2: Let q1 be at point A and q2 be at point B. Let the distance from A to the zero-field point be x. The distance from B to this point will be (12 cm - x).\r\nStep 3: For the net electric field to be zero, the magnitude of the electric field due to q1 (E1) must be equal to the magnitude of the electric field due to q2 (E2).\r\nStep 4: Using the formula E = k*q/r^2, we set E1 = E2: k × q1 / x^2 = k × q2 / (12 cm - x)^2.\r\nStep 5: Therefore, the net electric field is zero at a point located between the two charges, at a distance of 8 cm from point A.\n\nFINAL ANSWER: 8\nUNIT: cm"
+  },
+  {
+    "id": "LD105",
+    "prefix": "LD",
+    "question": "Two electric charges q1 = +4 × 10^-8 C and q2 = +9 × 10^-8 C are placed at two points A and B, 5 cm apart, in the air. A third charge q3 = -9 × 10^-8 C is placed at point C, given that the distance from C to A is 3 cm and from C to B is 4 cm. Calculate the net electrostatic force acting on q3.",
+    "cot": "Step 1: Convert given distances from centimeters to meters and state the value of Coulomb's constant (k).\r\nStep 2: Check the geometric relationship between points A, B, and C using the given distances.\r\nStep 3: Calculate the magnitude of the electrostatic force (F13) exerted by q1 on q3 using Coulomb's Law.\r\nStep 4: Calculate the magnitude of the electrostatic force (F23) exerted by q2 on q3 using Coulomb's Law.\r\nStep 5: The magnitude of the net electrostatic force acting on q3 is approximately 0.058 N.",
+    "answer": "0.058",
+    "unit": "N",
+    "formatted_assistant": "Step 1: Convert given distances from centimeters to meters and state the value of Coulomb's constant (k).\r\nStep 2: Check the geometric relationship between points A, B, and C using the given distances.\r\nStep 3: Calculate the magnitude of the electrostatic force (F13) exerted by q1 on q3 using Coulomb's Law.\r\nStep 4: Calculate the magnitude of the electrostatic force (F23) exerted by q2 on q3 using Coulomb's Law.\r\nStep 5: The magnitude of the net electrostatic force acting on q3 is approximately 0.058 N.\n\nFINAL ANSWER: 0.058\nUNIT: N"
+  },
+  {
+    "id": "LD106",
+    "prefix": "LD",
+    "question": "Two electric charges, q1 = +8 × 10^-8 C and q2 = +8 × 10^-8 C, are placed at two points A and B, separated by 6 cm in the air. A third charge, q3 = -8 × 10^-8 C, is placed at point C. Given that the distance from C to A is 8 cm and from C to B is 3 cm. Calculate the net electric force acting on q3.",
+    "cot": "Step 1: Coulomb's Law states that the magnitude of the electric force between two point charges is F = k × |q1 × q2| / r^2, where k is Coulomb's constant (approximately 9 × 10^9 N m^2/C^2), q1 and q2 are the magnitudes of the charges, and r is the distance between them.\r\nStep 2: The given charges are q1 = +8 × 10^-8 C, q2 = +8 × 10^-8 C, and q3 = -8 × 10^-8 C. The distance between q1 and q3 (r13) is 8 cm = 0.08 m. The distance between q2 and q3 (r23) is 3 cm = 0.03 m.\r\nStep 3: Calculate the magnitude of the force (F13) exerted by q1 on q3: F13 = (9 × 10^9 N m^2/C^2) × |(8 × 10^-8 C) × (-8 × 10^-8 C)| / (0.08 m)^2 = (9 × 10^9) × (64 × 10^-16) / (0.0064) = 9 × 10^-3 N.\r\nStep 4: Since q1 is positive and q3 is negative, the force F13 is attractive, directed from point C towards point A.\r\nStep 5: The magnitude of the net electric force acting on q3 is approximately 0.071 × 10^-3 N.",
+    "answer": "0.071",
+    "unit": "N",
+    "formatted_assistant": "Step 1: Coulomb's Law states that the magnitude of the electric force between two point charges is F = k × |q1 × q2| / r^2, where k is Coulomb's constant (approximately 9 × 10^9 N m^2/C^2), q1 and q2 are the magnitudes of the charges, and r is the distance between them.\r\nStep 2: The given charges are q1 = +8 × 10^-8 C, q2 = +8 × 10^-8 C, and q3 = -8 × 10^-8 C. The distance between q1 and q3 (r13) is 8 cm = 0.08 m. The distance between q2 and q3 (r23) is 3 cm = 0.03 m.\r\nStep 3: Calculate the magnitude of the force (F13) exerted by q1 on q3: F13 = (9 × 10^9 N m^2/C^2) × |(8 × 10^-8 C) × (-8 × 10^-8 C)| / (0.08 m)^2 = (9 × 10^9) × (64 × 10^-16) / (0.0064) = 9 × 10^-3 N.\r\nStep 4: Since q1 is positive and q3 is negative, the force F13 is attractive, directed from point C towards point A.\r\nStep 5: The magnitude of the net electric force acting on q3 is approximately 0.071 × 10^-3 N.\n\nFINAL ANSWER: 0.071\nUNIT: N"
+  },
+  {
+    "id": "NL006",
+    "prefix": "NL",
+    "question": "The energy stored in a 10 μF capacitor is 0.5 mJ. Calculate the voltage (unit: V) across its plates.",
+    "cot": "Step 1: Identify the given values: capacitance (C) = 10 μF and energy stored (E) = 0.5 mJ.\r\nStep 2: Convert the given values to standard SI units: C = 10 × 10⁻⁶ F and E = 0.5 × 10⁻³ J.\r\nStep 3: Recall the formula for energy stored in a capacitor: E = 0.5 × C × U², where U is the voltage.\r\nStep 4: Rearrange the formula to solve for voltage U: U = √(2E / C) = 10.00 V.",
+    "answer": "10.00",
+    "unit": "V",
+    "formatted_assistant": "Step 1: Identify the given values: capacitance (C) = 10 μF and energy stored (E) = 0.5 mJ.\r\nStep 2: Convert the given values to standard SI units: C = 10 × 10⁻⁶ F and E = 0.5 × 10⁻³ J.\r\nStep 3: Recall the formula for energy stored in a capacitor: E = 0.5 × C × U², where U is the voltage.\r\nStep 4: Rearrange the formula to solve for voltage U: U = √(2E / C) = 10.00 V.\n\nFINAL ANSWER: 10.00\nUNIT: V"
+  },
+  {
+    "id": "NL003",
+    "prefix": "NL",
+    "question": "An inductor has an inductance L = 0.2 H, and the current flowing through it is 3 A. Calculate the magnetic field energy (mJ) stored in the inductor.",
+    "cot": "Step 1: Identify the given inductance (L) and current (I) from the question.\r\nStep 2: The inductance L = 0.2 H.\r\nStep 3: The current I = 3 A.\r\nStep 4: Use the formula for the magnetic field energy (E) stored in an inductor: E = (1/2) × L × I^2 = (1/2) × 0.2 × 3^2 = 0.9 J = 900.00 mJ.",
+    "answer": "900.00",
+    "unit": "mJ",
+    "formatted_assistant": "Step 1: Identify the given inductance (L) and current (I) from the question.\r\nStep 2: The inductance L = 0.2 H.\r\nStep 3: The current I = 3 A.\r\nStep 4: Use the formula for the magnetic field energy (E) stored in an inductor: E = (1/2) × L × I^2 = (1/2) × 0.2 × 3^2 = 0.9 J = 900.00 mJ.\n\nFINAL ANSWER: 900.00\nUNIT: mJ"
+  },
+  {
+    "id": "TD401",
+    "prefix": "TD",
+    "question": "Calculate the energy stored in capacitor C when C = 100 μF and U = 30 V.",
+    "cot": "Step 1: Identify the given values for capacitance (C) and voltage (U).\r\nStep 2: Recall the formula for the energy (E) stored in a capacitor, which is E = 0.5 × C × U^2.\r\nStep 3: Convert the capacitance to Farads: C = 100 μF = 100 × 10^-6 F = 1 × 10^-4 F.\r\nStep 4: Substitute the values into the formula: E = 0.5 × (1 × 10^-4 F) × (30 V)^2.",
+    "answer": "0.045",
+    "unit": "J",
+    "formatted_assistant": "Step 1: Identify the given values for capacitance (C) and voltage (U).\r\nStep 2: Recall the formula for the energy (E) stored in a capacitor, which is E = 0.5 × C × U^2.\r\nStep 3: Convert the capacitance to Farads: C = 100 μF = 100 × 10^-6 F = 1 × 10^-4 F.\r\nStep 4: Substitute the values into the formula: E = 0.5 × (1 × 10^-4 F) × (30 V)^2.\n\nFINAL ANSWER: 0.045\nUNIT: J"
+  },
+  {
+    "id": "TD017",
+    "prefix": "TD",
+    "question": "A parallel-plate air capacitor has an area of each plate of 33.2 cm² and the distance between the two plates is 1.86 mm. Calculate the capacitance of the capacitor.",
+    "cot": "Step 1: The formula for the capacitance of a parallel-plate capacitor is C = κ × ε₀ × (A / d), where ε₀ is the permittivity of free space (approximately 8.854 × 10⁻¹² F/m for air).\r\nStep 2: Identify the given values: plate area A = 33.2 cm^2 and plate separation d = 1.86 mm and κ = 1 (for air).\r\nStep 3: Convert the given units to SI units: A = 33.2 × 10^-4 m^2 and d = 1.86 × 10^-3 m.\\\r\nStep 4: The capacitance of the capacitor is approximately 15.76 pF.",
+    "answer": "15.76",
+    "unit": "pF",
+    "formatted_assistant": "Step 1: The formula for the capacitance of a parallel-plate capacitor is C = κ × ε₀ × (A / d), where ε₀ is the permittivity of free space (approximately 8.854 × 10⁻¹² F/m for air).\r\nStep 2: Identify the given values: plate area A = 33.2 cm^2 and plate separation d = 1.86 mm and κ = 1 (for air).\r\nStep 3: Convert the given units to SI units: A = 33.2 × 10^-4 m^2 and d = 1.86 × 10^-3 m.\\\r\nStep 4: The capacitance of the capacitor is approximately 15.76 pF.\n\nFINAL ANSWER: 15.76\nUNIT: pF"
+  },
+  {
+    "id": "THCB007",
+    "prefix": "THCB",
+    "question": "A student measures the current 3 times and obtains the values: 1.8 A, 2.0 A, 2.2 A. What is the random error?",
+    "cot": "Step 1: List the measurements: 1.8 A, 2.0 A, 2.2 A.\r\nStep 2: Calculate the mean value (I_avg): (1.8 + 2.0 + 2.2) / 3 = 6.0 / 3 = 2.0 A.\r\nStep 3: Find the maximum absolute deviation from the mean: ΔI1 = |1.8 - 2.0| = 0.2 A; ΔI2 = |2.0 - 2.0| = 0 A; ΔI3 = |2.2 - 2.0| = 0.2 A.\r\nStep 4: The random error (often represented by the average or maximum deviation) is ΔI = 0.2 A.",
+    "answer": "0.2",
+    "unit": "A",
+    "formatted_assistant": "Step 1: List the measurements: 1.8 A, 2.0 A, 2.2 A.\r\nStep 2: Calculate the mean value (I_avg): (1.8 + 2.0 + 2.2) / 3 = 6.0 / 3 = 2.0 A.\r\nStep 3: Find the maximum absolute deviation from the mean: ΔI1 = |1.8 - 2.0| = 0.2 A; ΔI2 = |2.0 - 2.0| = 0 A; ΔI3 = |2.2 - 2.0| = 0.2 A.\r\nStep 4: The random error (often represented by the average or maximum deviation) is ΔI = 0.2 A.\n\nFINAL ANSWER: 0.2\nUNIT: A"
+  },
+  {
+    "id": "THCB086",
+    "prefix": "THCB",
+    "question": "A student measures the length of a wooden rod as 25.0 ± 0.2 cm. Calculate the percentage relative error.",
+    "cot": "Step 1: Identify Measured Value (L) = 25.0 cm and Absolute Error (delta L) = 0.2 cm.\r\nStep 2: Formula for percentage relative error: (delta L / L) × 100%.\r\nStep 3: Substitute values: (0.2 / 25.0) × 100%.\r\nStep 4: Final calculation: 0.8%.",
+    "answer": "0.8",
+    "unit": "%",
+    "formatted_assistant": "Step 1: Identify Measured Value (L) = 25.0 cm and Absolute Error (delta L) = 0.2 cm.\r\nStep 2: Formula for percentage relative error: (delta L / L) × 100%.\r\nStep 3: Substitute values: (0.2 / 25.0) × 100%.\r\nStep 4: Final calculation: 0.8%.\n\nFINAL ANSWER: 0.8\nUNIT: %"
+  }
+]

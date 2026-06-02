@@ -1,0 +1,22 @@
+id,question,cot,answer,unit
+LD343,"Two charges, q1 = -2.4 × 10^-6 C and q2 = -2.1 × 10^-6 C, are separated by 7.5 cm. Point M lies on the line connecting the two charges but outside the segment between them, and is located 11.9 cm to the left of charge q1. Calculate the net electric field at M. Give your answer rounded three decimal places.","Step 1: Place $q_1$ at $x=0$ and $q_2$ at $x=0.075$ m, so point $M$ is at $x=-0.119$ m.
+Step 2: Compute distances to $M$: $r_1=0.119$ m and $r_2=0.194$ m.
+Step 3: Use $E = k|q|/r^2$ for each charge: $E_1 \approx \frac{(9\times10^9)(2.4\times10^{-6})}{(0.119)^2} \approx 1.523\times10^6$ N/C and $E_2 \approx \frac{(9\times10^9)(2.1\times10^{-6})}{(0.194)^2} \approx 5.025\times10^5$ N/C.
+Step 4: Since both charges are negative and $M$ is left of both, both fields point to the right, so add them: $E_{\text{net}} \approx 2.026\times10^6$ N/C.",2.026 * 10^{6},N/C
+LD248,"Two electric charges q1 = +7 × 10^-6 C and q2 = -7 × 10^-6 C are placed at points A and B, separated by 6 cm. A test charge q = 10^-8 C is placed at point M, which lies on the perpendicular bisector of the line segment AB, 3 cm away from AB. Calculate the net electric force acting on q.","Step 1: Place the charges at $A(-3\,\text{cm},0)$ and $B(3\,\text{cm},0)$, with $M(0,3\,\text{cm})$, so $AM = BM = \sqrt{3^2+3^2}\,\text{cm} = 4.24\,\text{cm} = 0.0424\,\text{m}$.
+Step 2: Find the force from each charge on $q$: $F = k\frac{|q_i q|}{r^2} = 9\times10^9 \cdot \frac{(7\times10^{-6})(10^{-8})}{(0.0424)^2} \approx 0.35\,\text{N}$.
+Step 3: By symmetry, the vertical components cancel and the horizontal components add, with each contributing $F\cos45^\circ = F/\sqrt{2}$.
+Step 4: Compute the net force: $F_{\text{net}} = 2\cdot \frac{F}{\sqrt{2}} = \sqrt{2}F \approx 0.50\,\text{N}$, directed from the positive charge toward the negative charge.",0.50,N
+LD110,"Two charges q1 = +7 × 10^-8 C and q2 = -6 × 10^-8 C are placed at points A and B, 10 cm apart in air. A third charge q3 = +8 × 10^-8 C is placed at point C, such that the distance from C to A is 7 cm and the distance from C to B is 5 cm. Calculate the net electrostatic force acting on q3.","Step 1: Use Coulomb’s law for each force on $q_3$: $F = k\frac{|q_i q_3|}{r^2}$ with $k = 9\times 10^9$ N$\cdot$m$^2$/C$^2$.
+Step 2: Compute $F_{13} = 9\times 10^9 \cdot \frac{(7\times 10^{-8})(8\times 10^{-8})}{(0.07)^2} \approx 1.15\times 10^{-2}$ N, directed away from $q_1$.
+Step 3: Compute $F_{23} = 9\times 10^9 \cdot \frac{(6\times 10^{-8})(8\times 10^{-8})}{(0.05)^2} \approx 1.73\times 10^{-2}$ N, directed toward $q_2$.
+Step 4: Since triangle $ABC$ has sides $7$ cm, $5$ cm, and $10$ cm, the angle at $C$ is $90^\circ$, so the two forces are perpendicular.
+Step 5: Add the perpendicular forces: $F_{\text{net}} = \sqrt{F_{13}^2 + F_{23}^2} \approx \sqrt{(1.15\times 10^{-2})^2 + (1.73\times 10^{-2})^2} \approx 2.08\times 10^{-2}$ N.",0.0208,N
+LD151,"Three identical charges, q = -2 × 10^-8 C, are placed at the three vertices of an isosceles right triangle with legs of length a = 10 cm. Calculate the net force acting on the charge at the right-angle vertex.","Step 1: The charge at the right-angle vertex feels two बराबर forces from the other two identical charges, each at distance $a=0.10$ m.  
+Step 2: Compute one force magnitude with Coulomb’s law: $F = k\frac{q^2}{a^2} = 9\times10^9 \cdot \frac{(2\times10^{-8})^2}{(0.10)^2} = 3.6\times10^{-4}$ N.  
+Step 3: The two forces are perpendicular, so the net force is $F_{\text{net}}=\sqrt{F^2+F^2}=F\sqrt{2}$.  
+Step 4: Thus $F_{\text{net}} = 3.6\times10^{-4}\sqrt{2} \approx 5.1\times10^{-4}$ N.",5.1 * 10^{-4},N
+LD192,Two electric forces with magnitudes of 11 N and 5 N are acting at an angle of 135° to each other. Calculate the resultant force of these two electric forces.,"Step 1: Use the law of cosines for vector addition: $F_R = \sqrt{F_1^2 + F_2^2 + 2F_1F_2\cos\theta}$.
+Step 2: Substitute $F_1 = 11$ N, $F_2 = 5$ N, and $\theta = 135^\circ$.
+Step 3: Compute $F_R = \sqrt{11^2 + 5^2 + 2(11)(5)\cos 135^\circ} \approx \sqrt{121 + 25 - 77.78}$.
+Step 4: Evaluate the result: $F_R \approx \sqrt{68.22} \approx 8.26$ N.",8.26,N

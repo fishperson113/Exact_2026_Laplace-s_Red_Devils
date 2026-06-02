@@ -1,0 +1,10 @@
+# Local-only artefacts.
+.env
+
+# HF snapshot cache used by upload_model.py when --local-dir is omitted.
+.hf_snapshots/
+
+# Local model dirs (LoRA outputs, merged weights, etc.)
+runs/
+checkpoints/
+ssh_to_gpu.txt

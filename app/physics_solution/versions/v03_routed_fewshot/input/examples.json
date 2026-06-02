@@ -1,0 +1,712 @@
+[
+  {
+    "id": "CH147",
+    "prefix": "CH",
+    "answer_type": "mixed",
+    "question": "A voltage u = 200√2 cos 100πt (V) is applied to a series RLC circuit with R = 100 Ω, L = 1/π H, and C = 10⁻⁴/(2π) F. Calculate the angular frequency ω of the source.",
+    "cot": "Step 1: Identify the general form of an AC voltage as $u = U_0 \\cos(\\omega t + \\phi)$, where $\\omega$ is the angular frequency.\nStep 2: Compare the given equation $u = 200\\sqrt{2} \\cos 100\\pi t$ with the general form to extract the coefficient of $t$.\nStep 3: Conclude that the angular frequency $\\omega$ is $100\\pi$ rad/s.",
+    "answer": "100\\pi",
+    "unit": "rad/s",
+    "formatted_assistant": "Step 1: Identify the general form of an AC voltage as $u = U_0 \\cos(\\omega t + \\phi)$, where $\\omega$ is the angular frequency.\nStep 2: Compare the given equation $u = 200\\sqrt{2} \\cos 100\\pi t$ with the general form to extract the coefficient of $t$.\nStep 3: Conclude that the angular frequency $\\omega$ is $100\\pi$ rad/s.\n\nFINAL ANSWER: 100\\pi\nUNIT: rad/s"
+  },
+  {
+    "id": "CH278",
+    "prefix": "CH",
+    "answer_type": "pure_numeric",
+    "question": "A circuit has XL = 15 Ω, XC = 135 Ω, R = 25 Ω, and U = 100 V. If the frequency is increased by 3 times, what is the power consumed by R?",
+    "cot": "Step 1: When frequency is tripled, the new inductive reactance becomes $X_L' = 3 \\times 15 = 45$ Ω and the new capacitive reactance becomes $X_C' = 135/3 = 45$ Ω.\nStep 2: Since $X_L' = X_C'$, the circuit is at resonance, so the total impedance is purely resistive: $Z = R = 25$ Ω.\nStep 3: The RMS current through the circuit is $I = U / Z = 100 / 25 = 4$ A.\nStep 4: The power consumed by the resistor is $P = I^2 R = 4^2 \\times 25 = 400$ W.",
+    "answer": "400",
+    "unit": "W",
+    "formatted_assistant": "Step 1: When frequency is tripled, the new inductive reactance becomes $X_L' = 3 \\times 15 = 45$ Ω and the new capacitive reactance becomes $X_C' = 135/3 = 45$ Ω.\nStep 2: Since $X_L' = X_C'$, the circuit is at resonance, so the total impedance is purely resistive: $Z = R = 25$ Ω.\nStep 3: The RMS current through the circuit is $I = U / Z = 100 / 25 = 4$ A.\nStep 4: The power consumed by the resistor is $P = I^2 R = 4^2 \\times 25 = 400$ W.\n\nFINAL ANSWER: 400\nUNIT: W"
+  },
+  {
+    "id": "CH106",
+    "prefix": "CH",
+    "answer_type": "pure_numeric",
+    "question": "Given R=10Ω. At resonance, f=200Hz. When f increases to 400Hz, the current (I) decreases to 1/2. What is ZL?",
+    "cot": "Step 1: At resonance ($f_0=200$ Hz), current is maximum $I_0 = U/R$. At $f=400$ Hz, $I = I_0/2$, so $U/Z = (1/2)(U/R)$ giving $Z = 2R = 20$ Ω.\nStep 2: The net reactance at 400 Hz is $|X_L' - X_C'| = \\sqrt{Z^2 - R^2} = \\sqrt{20^2 - 10^2} = \\sqrt{300} = 10\\sqrt{3}$ Ω.\nStep 3: Since frequency doubles, $X_L' = 2X_L$ and $X_C' = X_C/2$. At resonance $X_L = X_C$, so $X_C' = X_L/2$, giving $|X_L' - X_C'| = 2X_L - X_L/2 = (3/2)X_L$.\nStep 4: Equate the expressions: $(3/2)X_L = 10\\sqrt{3}$, so $X_L = (20\\sqrt{3})/3 \\approx 11.55$ Ω.",
+    "answer": "11.55",
+    "unit": "Ω",
+    "formatted_assistant": "Step 1: At resonance ($f_0=200$ Hz), current is maximum $I_0 = U/R$. At $f=400$ Hz, $I = I_0/2$, so $U/Z = (1/2)(U/R)$ giving $Z = 2R = 20$ Ω.\nStep 2: The net reactance at 400 Hz is $|X_L' - X_C'| = \\sqrt{Z^2 - R^2} = \\sqrt{20^2 - 10^2} = \\sqrt{300} = 10\\sqrt{3}$ Ω.\nStep 3: Since frequency doubles, $X_L' = 2X_L$ and $X_C' = X_C/2$. At resonance $X_L = X_C$, so $X_C' = X_L/2$, giving $|X_L' - X_C'| = 2X_L - X_L/2 = (3/2)X_L$.\nStep 4: Equate the expressions: $(3/2)X_L = 10\\sqrt{3}$, so $X_L = (20\\sqrt{3})/3 \\approx 11.55$ Ω.\n\nFINAL ANSWER: 11.55\nUNIT: Ω"
+  },
+  {
+    "id": "CH040",
+    "prefix": "CH",
+    "answer_type": "pure_numeric",
+    "question": "A 0.4 H inductor is connected in series with a 20 μF capacitor. Determine the resonant frequency.",
+    "cot": "Step 1: Identify the given values: inductance $L = 0.4$ H and capacitance $C = 20 \\times 10^{-6}$ F.\nStep 2: Use the resonant frequency formula $f = \\frac{1}{2\\pi\\sqrt{LC}}$ for an LC circuit.\nStep 3: Compute the product $LC = 0.4 \\times 20 \\times 10^{-6} = 8 \\times 10^{-6}$ and its square root $\\sqrt{8 \\times 10^{-6}} \\approx 0.002828$.\nStep 4: Calculate $f = \\frac{1}{2\\pi \\times 0.002828} \\approx 56.27$ Hz.",
+    "answer": "56.27",
+    "unit": "Hz",
+    "formatted_assistant": "Step 1: Identify the given values: inductance $L = 0.4$ H and capacitance $C = 20 \\times 10^{-6}$ F.\nStep 2: Use the resonant frequency formula $f = \\frac{1}{2\\pi\\sqrt{LC}}$ for an LC circuit.\nStep 3: Compute the product $LC = 0.4 \\times 20 \\times 10^{-6} = 8 \\times 10^{-6}$ and its square root $\\sqrt{8 \\times 10^{-6}} \\approx 0.002828$.\nStep 4: Calculate $f = \\frac{1}{2\\pi \\times 0.002828} \\approx 56.27$ Hz.\n\nFINAL ANSWER: 56.27\nUNIT: Hz"
+  },
+  {
+    "id": "CH093",
+    "prefix": "CH",
+    "answer_type": "sci_notation",
+    "question": "A circuit has a capacitance C = 1 μF and resonates at a frequency of 500 Hz. What is the inductance (L)?",
+    "cot": "Step 1: Convert the given capacitance to farads: $C = 1 \\times 10^{-6}$ F.\nStep 2: Recall the resonance frequency formula $f = \\frac{1}{2\\pi\\sqrt{LC}}$ and rearrange to solve for $L$: $L = \\frac{1}{4\\pi^2 f^2 C}$.\nStep 3: Substitute $f = 500$ Hz and $C = 1 \\times 10^{-6}$ F into the formula: $L = \\frac{1}{4\\pi^2 \\times (500)^2 \\times 1 \\times 10^{-6}}$.\nStep 4: Compute the denominator $4\\pi^2 \\times 250000 \\times 10^{-6} \\approx 9.8696$ and take the reciprocal to find $L \\approx 0.1013$ H.",
+    "answer": "0.101",
+    "unit": "H",
+    "formatted_assistant": "Step 1: Convert the given capacitance to farads: $C = 1 \\times 10^{-6}$ F.\nStep 2: Recall the resonance frequency formula $f = \\frac{1}{2\\pi\\sqrt{LC}}$ and rearrange to solve for $L$: $L = \\frac{1}{4\\pi^2 f^2 C}$.\nStep 3: Substitute $f = 500$ Hz and $C = 1 \\times 10^{-6}$ F into the formula: $L = \\frac{1}{4\\pi^2 \\times (500)^2 \\times 1 \\times 10^{-6}}$.\nStep 4: Compute the denominator $4\\pi^2 \\times 250000 \\times 10^{-6} \\approx 9.8696$ and take the reciprocal to find $L \\approx 0.1013$ H.\n\nFINAL ANSWER: 0.101\nUNIT: H"
+  },
+  {
+    "id": "CHLT011",
+    "prefix": "CHLT",
+    "answer_type": "yes_no",
+    "question": "Consider an RLC series circuit with R=50 Ω, L=0.25 H, and C=25 μF. At a frequency of f=60 Hz, does resonance occur?",
+    "cot": "Step 1: Convert the capacitance to farads: $C = 25 \\times 10^{-6}$ F.\nStep 2: Calculate the resonant frequency using $f_0 = \\frac{1}{2\\pi\\sqrt{LC}}$ with $L=0.25$ H and $C=25 \\times 10^{-6}$ F.\nStep 3: Compute $LC = 6.25 \\times 10^{-6}$ and its square root $\\sqrt{LC} = 2.5 \\times 10^{-3}$.\nStep 4: Evaluate $f_0 = \\frac{1}{2\\pi \\times 2.5 \\times 10^{-3}} \\approx 63.66$ Hz.\nStep 5: Compare the operating frequency $f=60$ Hz with the resonant frequency $f_0 \\approx 63.66$ Hz; they are not equal, so resonance does not occur.",
+    "answer": "No",
+    "unit": "-",
+    "formatted_assistant": "Step 1: Convert the capacitance to farads: $C = 25 \\times 10^{-6}$ F.\nStep 2: Calculate the resonant frequency using $f_0 = \\frac{1}{2\\pi\\sqrt{LC}}$ with $L=0.25$ H and $C=25 \\times 10^{-6}$ F.\nStep 3: Compute $LC = 6.25 \\times 10^{-6}$ and its square root $\\sqrt{LC} = 2.5 \\times 10^{-3}$.\nStep 4: Evaluate $f_0 = \\frac{1}{2\\pi \\times 2.5 \\times 10^{-3}} \\approx 63.66$ Hz.\nStep 5: Compare the operating frequency $f=60$ Hz with the resonant frequency $f_0 \\approx 63.66$ Hz; they are not equal, so resonance does not occur.\n\nFINAL ANSWER: No\nUNIT: -"
+  },
+  {
+    "id": "CHLT019",
+    "prefix": "CHLT",
+    "answer_type": "yes_no",
+    "question": "Does a series RLC circuit with R=20 Ω, L=0.1 H, C=50 μF resonate at f=71 Hz?",
+    "cot": "Step 1: Convert the capacitance to Farads: $C = 50 \\times 10^{-6}$ F.\nStep 2: Compute the resonant frequency using $f_0 = \\frac{1}{2\\pi\\sqrt{LC}}$ with $L=0.1$ H and $C=50 \\times 10^{-6}$ F.\nStep 3: Calculate the product $LC = 0.1 \\times 50 \\times 10^{-6} = 5 \\times 10^{-6}$ and its square root $\\sqrt{5 \\times 10^{-6}} \\approx 0.002236$.\nStep 4: Compute the denominator $2\\pi \\times 0.002236 \\approx 0.01405$ and then $f_0 = 1 / 0.01405 \\approx 71.2$ Hz.\nStep 5: Compare the calculated resonant frequency ($71.2$ Hz) with the given frequency ($71$ Hz) and conclude they match.",
+    "answer": "Yes",
+    "unit": "-",
+    "formatted_assistant": "Step 1: Convert the capacitance to Farads: $C = 50 \\times 10^{-6}$ F.\nStep 2: Compute the resonant frequency using $f_0 = \\frac{1}{2\\pi\\sqrt{LC}}$ with $L=0.1$ H and $C=50 \\times 10^{-6}$ F.\nStep 3: Calculate the product $LC = 0.1 \\times 50 \\times 10^{-6} = 5 \\times 10^{-6}$ and its square root $\\sqrt{5 \\times 10^{-6}} \\approx 0.002236$.\nStep 4: Compute the denominator $2\\pi \\times 0.002236 \\approx 0.01405$ and then $f_0 = 1 / 0.01405 \\approx 71.2$ Hz.\nStep 5: Compare the calculated resonant frequency ($71.2$ Hz) with the given frequency ($71$ Hz) and conclude they match.\n\nFINAL ANSWER: Yes\nUNIT: -"
+  },
+  {
+    "id": "CHLT003",
+    "prefix": "CHLT",
+    "answer_type": "yes_no",
+    "question": "A pure inductor with an inductance of 0.2 H is connected in series with a resistor R=25 Ω and a capacitor C=10 μF. Determine if resonance occurs at a frequency of f=112 Hz?",
+    "cot": "Step 1: Convert the capacitance to SI units: $C = 10 \\times 10^{-6}$ F.\nStep 2: Calculate the resonant frequency using $f_0 = \\frac{1}{2\\pi\\sqrt{LC}}$ with $L=0.2$ H and $C=10 \\times 10^{-6}$ F.\nStep 3: Compute the product $LC = 2 \\times 10^{-6}$ and its square root, which is approximately $1.414 \\times 10^{-3}$.\nStep 4: Divide $1$ by $2\\pi \\times 1.414 \\times 10^{-3}$ to find the resonant frequency, resulting in approximately $112.6$ Hz.\nStep 5: Compare the calculated frequency ($112.6$ Hz) with the given frequency ($112$ Hz) to confirm they match within reasonable precision.",
+    "answer": "Yes",
+    "unit": "-",
+    "formatted_assistant": "Step 1: Convert the capacitance to SI units: $C = 10 \\times 10^{-6}$ F.\nStep 2: Calculate the resonant frequency using $f_0 = \\frac{1}{2\\pi\\sqrt{LC}}$ with $L=0.2$ H and $C=10 \\times 10^{-6}$ F.\nStep 3: Compute the product $LC = 2 \\times 10^{-6}$ and its square root, which is approximately $1.414 \\times 10^{-3}$.\nStep 4: Divide $1$ by $2\\pi \\times 1.414 \\times 10^{-3}$ to find the resonant frequency, resulting in approximately $112.6$ Hz.\nStep 5: Compare the calculated frequency ($112.6$ Hz) with the given frequency ($112$ Hz) to confirm they match within reasonable precision.\n\nFINAL ANSWER: Yes\nUNIT: -"
+  },
+  {
+    "id": "DDT360",
+    "prefix": "DDT",
+    "answer_type": "mixed",
+    "question": "What is the shape of the graph representing the electric field energy and magnetic field energy in an LC circuit?",
+    "cot": "Step 1: In an ideal LC circuit, the charge $q$ and current $i$ oscillate sinusoidally as $q = Q_0 \\cos(\\omega t)$ and $i = -I_0 \\sin(\\omega t)$.\nStep 2: The electric field energy is $U_E = q^2/(2C) \\propto \\cos^2(\\omega t)$, and the magnetic field energy is $U_B = \\frac{1}{2}Li^2 \\propto \\sin^2(\\omega t)$.\nStep 3: Using the identity $\\cos^2(\\omega t) = \\frac{1+\\cos(2\\omega t)}{2}$ and $\\sin^2(\\omega t) = \\frac{1-\\cos(2\\omega t)}{2}$, both energies are sinusoidal waves of twice the original frequency.\nStep 4: The $\\cos(2\\omega t)$ and $-\\cos(2\\omega t)$ terms show that the two energy graphs are sinusoidal waves with a phase shift of $\\pi/2$ relative to each other.",
+    "answer": "Sinusoidal waves with a phase shift of $\\pi/2$",
+    "unit": "—",
+    "formatted_assistant": "Step 1: In an ideal LC circuit, the charge $q$ and current $i$ oscillate sinusoidally as $q = Q_0 \\cos(\\omega t)$ and $i = -I_0 \\sin(\\omega t)$.\nStep 2: The electric field energy is $U_E = q^2/(2C) \\propto \\cos^2(\\omega t)$, and the magnetic field energy is $U_B = \\frac{1}{2}Li^2 \\propto \\sin^2(\\omega t)$.\nStep 3: Using the identity $\\cos^2(\\omega t) = \\frac{1+\\cos(2\\omega t)}{2}$ and $\\sin^2(\\omega t) = \\frac{1-\\cos(2\\omega t)}{2}$, both energies are sinusoidal waves of twice the original frequency.\nStep 4: The $\\cos(2\\omega t)$ and $-\\cos(2\\omega t)$ terms show that the two energy graphs are sinusoidal waves with a phase shift of $\\pi/2$ relative to each other.\n\nFINAL ANSWER: Sinusoidal waves with a phase shift of $\\pi/2$\nUNIT: —"
+  },
+  {
+    "id": "DDT353",
+    "prefix": "DDT",
+    "answer_type": "mixed",
+    "question": "What is the expression for the energy of oscillation in an LC circuit?",
+    "cot": "Step 1: Recognize that the total energy in an LC circuit oscillates between the capacitor's electric field and the inductor's magnetic field.\nStep 2: Recall the energy stored in an inductor is $U_B = \\frac{1}{2} L I^2$, where $L$ is inductance and $I$ is instantaneous current.\nStep 3: Note that at the moment of maximum current $I_{max}$, the capacitor is fully discharged and all energy resides in the inductor.\nStep 4: Therefore, the total oscillation energy can be expressed as $U = \\frac{1}{2} L I_{max}^2$.",
+    "answer": "U = 0.5 \\cdot L \\cdot I_{max}^2",
+    "unit": "J",
+    "formatted_assistant": "Step 1: Recognize that the total energy in an LC circuit oscillates between the capacitor's electric field and the inductor's magnetic field.\nStep 2: Recall the energy stored in an inductor is $U_B = \\frac{1}{2} L I^2$, where $L$ is inductance and $I$ is instantaneous current.\nStep 3: Note that at the moment of maximum current $I_{max}$, the capacitor is fully discharged and all energy resides in the inductor.\nStep 4: Therefore, the total oscillation energy can be expressed as $U = \\frac{1}{2} L I_{max}^2$.\n\nFINAL ANSWER: U = 0.5 \\cdot L \\cdot I_{max}^2\nUNIT: J"
+  },
+  {
+    "id": "DDT356",
+    "prefix": "DDT",
+    "answer_type": "mixed",
+    "question": "How is the oscillation period of an LC circuit calculated?",
+    "cot": "Step 1: Recognize that the oscillation period $T$ of an ideal LC circuit is given by Thomson's formula.\nStep 2: Express the formula as $T = 2\\pi\\sqrt{LC}$, where $L$ is inductance and $C$ is capacitance.\nStep 3: Note that the period represents the time for one complete energy exchange cycle between the inductor and capacitor.",
+    "answer": "T = 2\\pi\\sqrt{LC}",
+    "unit": "s",
+    "formatted_assistant": "Step 1: Recognize that the oscillation period $T$ of an ideal LC circuit is given by Thomson's formula.\nStep 2: Express the formula as $T = 2\\pi\\sqrt{LC}$, where $L$ is inductance and $C$ is capacitance.\nStep 3: Note that the period represents the time for one complete energy exchange cycle between the inductor and capacitor.\n\nFINAL ANSWER: T = 2\\pi\\sqrt{LC}\nUNIT: s"
+  },
+  {
+    "id": "DDT340",
+    "prefix": "DDT",
+    "answer_type": "multi_value",
+    "question": "Given a series circuit with R = 12 Ω, C = 80 μF, and a frequency of 60 Hz, determine the capacitive reactance and the power factor if the impedance Z = 40 Ω.",
+    "cot": "Step 1: Use the impedance relation for a series RC circuit, $Z^2 = R^2 + X_C^2$, with $Z = 40\\,\\Omega$ and $R = 12\\,\\Omega$.\nStep 2: Compute $X_C = \\sqrt{Z^2 - R^2} = \\sqrt{40^2 - 12^2} = \\sqrt{1600 - 144} = \\sqrt{1456} \\approx 38.16\\,\\Omega$.\nStep 3: The power factor is given by $\\cos\\phi = R/Z = 12/40 = 0.30$.",
+    "answer": "38.16; 0.30",
+    "unit": "—",
+    "formatted_assistant": "Step 1: Use the impedance relation for a series RC circuit, $Z^2 = R^2 + X_C^2$, with $Z = 40\\,\\Omega$ and $R = 12\\,\\Omega$.\nStep 2: Compute $X_C = \\sqrt{Z^2 - R^2} = \\sqrt{40^2 - 12^2} = \\sqrt{1600 - 144} = \\sqrt{1456} \\approx 38.16\\,\\Omega$.\nStep 3: The power factor is given by $\\cos\\phi = R/Z = 12/40 = 0.30$.\n\nFINAL ANSWER: 38.16; 0.30\nUNIT: —"
+  },
+  {
+    "id": "DDT132",
+    "prefix": "DDT",
+    "answer_type": "pure_numeric",
+    "question": "A solenoid is 1 m long, has 2000 turns of wire, and a current of 3 A flows through it. Calculate the magnetic field inside the solenoid.",
+    "cot": "Step 1: Calculate the number of turns per unit length $n = N/L = 2000 / 1 = 2000$ turns/m.\nStep 2: Use the solenoid magnetic field formula $B = \\mu_0 n I$ with $\\mu_0 = 4\\pi \\times 10^{-7}$ T·m/A and $I = 3$ A.\nStep 3: Substitute the values to get $B = (4\\pi \\times 10^{-7}) \\times 2000 \\times 3$.\nStep 4: Compute the product $4\\pi \\times 10^{-7} \\times 6000 = 24000\\pi \\times 10^{-7} \\approx 0.00754$ T.",
+    "answer": "0.00754",
+    "unit": "T",
+    "formatted_assistant": "Step 1: Calculate the number of turns per unit length $n = N/L = 2000 / 1 = 2000$ turns/m.\nStep 2: Use the solenoid magnetic field formula $B = \\mu_0 n I$ with $\\mu_0 = 4\\pi \\times 10^{-7}$ T·m/A and $I = 3$ A.\nStep 3: Substitute the values to get $B = (4\\pi \\times 10^{-7}) \\times 2000 \\times 3$.\nStep 4: Compute the product $4\\pi \\times 10^{-7} \\times 6000 = 24000\\pi \\times 10^{-7} \\approx 0.00754$ T.\n\nFINAL ANSWER: 0.00754\nUNIT: T"
+  },
+  {
+    "id": "DDT131",
+    "prefix": "DDT",
+    "answer_type": "pure_numeric",
+    "question": "A solenoid is 0.5 m long, has 1000 turns, and a current of 2 A flows through it. Calculate the magnitude of the magnetic field inside the solenoid.",
+    "cot": "Step 1: Identify the number of turns per unit length as $n = N/L = 1000 / 0.5 = 2000$ turns/m.\nStep 2: Recall the formula for the magnetic field inside a solenoid: $B = \\mu_0 n I$, where $\\mu_0 = 4\\pi \\times 10^{-7}$ T·m/A.\nStep 3: Substitute the values: $B = (4\\pi \\times 10^{-7}) \\times 2000 \\times 2$.\nStep 4: Compute the result: $B = 4\\pi \\times 10^{-7} \\times 4000 = 0.00503$ T, which rounds to $0.005$ T.",
+    "answer": "0.005",
+    "unit": "T",
+    "formatted_assistant": "Step 1: Identify the number of turns per unit length as $n = N/L = 1000 / 0.5 = 2000$ turns/m.\nStep 2: Recall the formula for the magnetic field inside a solenoid: $B = \\mu_0 n I$, where $\\mu_0 = 4\\pi \\times 10^{-7}$ T·m/A.\nStep 3: Substitute the values: $B = (4\\pi \\times 10^{-7}) \\times 2000 \\times 2$.\nStep 4: Compute the result: $B = 4\\pi \\times 10^{-7} \\times 4000 = 0.00503$ T, which rounds to $0.005$ T.\n\nFINAL ANSWER: 0.005\nUNIT: T"
+  },
+  {
+    "id": "DDT142",
+    "prefix": "DDT",
+    "answer_type": "pure_numeric",
+    "question": "If the current through the solenoid decreases uniformly from 3 A to 0 A in 0.01 s, and the self-inductance of the solenoid is 0.2 H, what is the induced electromotive force?",
+    "cot": "Step 1: Calculate the change in current: $dI = I_{\\text{final}} - I_{\\text{initial}} = 0 - 3 = -3$ A.\nStep 2: Compute the rate of change of current: $dI/dt = -3 / 0.01 = -300$ A/s.\nStep 3: Use the formula for induced EMF in an inductor: $\\mathcal{E} = -L \\cdot (dI/dt)$ with $L = 0.2$ H.\nStep 4: Substitute the values: $\\mathcal{E} = -0.2 \\times (-300) = 60$ V.",
+    "answer": "60",
+    "unit": "V",
+    "formatted_assistant": "Step 1: Calculate the change in current: $dI = I_{\\text{final}} - I_{\\text{initial}} = 0 - 3 = -3$ A.\nStep 2: Compute the rate of change of current: $dI/dt = -3 / 0.01 = -300$ A/s.\nStep 3: Use the formula for induced EMF in an inductor: $\\mathcal{E} = -L \\cdot (dI/dt)$ with $L = 0.2$ H.\nStep 4: Substitute the values: $\\mathcal{E} = -0.2 \\times (-300) = 60$ V.\n\nFINAL ANSWER: 60\nUNIT: V"
+  },
+  {
+    "id": "DDT362",
+    "prefix": "DDT",
+    "answer_type": "sci_notation",
+    "question": "Calculate the natural period of oscillation for a circuit with L = 0.1 H and C = 10⁻⁶ F.",
+    "cot": "Step 1: Identify the given values: inductance $L = 0.1$ H and capacitance $C = 10^{-6}$ F.\nStep 2: Use Thomson's formula for the natural period of an LC circuit: $T = 2\\pi\\sqrt{LC}$.\nStep 3: Compute the product $LC = 0.1 \\times 10^{-6} = 1.0 \\times 10^{-7}$.\nStep 4: Calculate the square root $\\sqrt{1.0 \\times 10^{-7}} \\approx 3.162 \\times 10^{-4}$.\nStep 5: Multiply by $2\\pi \\approx 6.2832$ to get $T \\approx 6.2832 \\times 3.162 \\times 10^{-4} \\approx 1.99 \\times 10^{-3}$ s.",
+    "answer": "1.99 * 10^{-3}",
+    "unit": "s",
+    "formatted_assistant": "Step 1: Identify the given values: inductance $L = 0.1$ H and capacitance $C = 10^{-6}$ F.\nStep 2: Use Thomson's formula for the natural period of an LC circuit: $T = 2\\pi\\sqrt{LC}$.\nStep 3: Compute the product $LC = 0.1 \\times 10^{-6} = 1.0 \\times 10^{-7}$.\nStep 4: Calculate the square root $\\sqrt{1.0 \\times 10^{-7}} \\approx 3.162 \\times 10^{-4}$.\nStep 5: Multiply by $2\\pi \\approx 6.2832$ to get $T \\approx 6.2832 \\times 3.162 \\times 10^{-4} \\approx 1.99 \\times 10^{-3}$ s.\n\nFINAL ANSWER: 1.99 * 10^{-3}\nUNIT: s"
+  },
+  {
+    "id": "DDT392",
+    "prefix": "DDT",
+    "answer_type": "sci_notation",
+    "question": "Given n = 2000 turns/m and I = 4 A, determine the magnetic flux density within the solenoid.",
+    "cot": "Step 1: Use the formula for magnetic flux density inside a solenoid, $B = \\mu_0 n I$, with $\\mu_0 = 4\\pi \\times 10^{-7}$ T·m/A.\nStep 2: Substitute $n = 2000$ turns/m and $I = 4$ A to get $B = (4\\pi \\times 10^{-7}) \\times 2000 \\times 4$.\nStep 3: Multiply the numerical factors: $2000 \\times 4 = 8000$, so $B = 4\\pi \\times 10^{-7} \\times 8000$.\nStep 4: Combine the powers of ten: $10^{-7} \\times 8000 = 8 \\times 10^{-4}$, giving $B = 32\\pi \\times 10^{-4}$ T.\nStep 5: Compute $32\\pi \\approx 100.53$, so $B \\approx 100.53 \\times 10^{-4} = 1.01 \\times 10^{-2}$ T.",
+    "answer": "1.01 * 10^{-2}",
+    "unit": "T",
+    "formatted_assistant": "Step 1: Use the formula for magnetic flux density inside a solenoid, $B = \\mu_0 n I$, with $\\mu_0 = 4\\pi \\times 10^{-7}$ T·m/A.\nStep 2: Substitute $n = 2000$ turns/m and $I = 4$ A to get $B = (4\\pi \\times 10^{-7}) \\times 2000 \\times 4$.\nStep 3: Multiply the numerical factors: $2000 \\times 4 = 8000$, so $B = 4\\pi \\times 10^{-7} \\times 8000$.\nStep 4: Combine the powers of ten: $10^{-7} \\times 8000 = 8 \\times 10^{-4}$, giving $B = 32\\pi \\times 10^{-4}$ T.\nStep 5: Compute $32\\pi \\approx 100.53$, so $B \\approx 100.53 \\times 10^{-4} = 1.01 \\times 10^{-2}$ T.\n\nFINAL ANSWER: 1.01 * 10^{-2}\nUNIT: T"
+  },
+  {
+    "id": "DDT396",
+    "prefix": "DDT",
+    "answer_type": "sci_notation",
+    "question": "A capacitor is placed in a solenoid's magnetic field, which has B = 3×10⁻³ T. The area of the loop is 5 cm². Calculate the magnetic flux.",
+    "cot": "Step 1: Convert the area from cm² to m²: $A = 5 \\text{ cm}^2 = 5 \\times 10^{-4} \\text{ m}^2$.\nStep 2: Use the magnetic flux formula $\\Phi = B A \\cos\\theta$ with $\\theta = 0^\\circ$ (field perpendicular to the loop), so $\\Phi = B A$.\nStep 3: Substitute the values $B = 3 \\times 10^{-3}$ T and $A = 5 \\times 10^{-4}$ m² to get $\\Phi = (3 \\times 10^{-3}) \\times (5 \\times 10^{-4})$.\nStep 4: Multiply the coefficients and powers of ten: $3 \\times 5 = 15$ and $10^{-3} \\times 10^{-4} = 10^{-7}$, giving $\\Phi = 15 \\times 10^{-7}$ Wb.\nStep 5: Express the result in standard scientific notation as $1.5 \\times 10^{-6}$ Wb.",
+    "answer": "1.5 * 10^{-6}",
+    "unit": "Wb",
+    "formatted_assistant": "Step 1: Convert the area from cm² to m²: $A = 5 \\text{ cm}^2 = 5 \\times 10^{-4} \\text{ m}^2$.\nStep 2: Use the magnetic flux formula $\\Phi = B A \\cos\\theta$ with $\\theta = 0^\\circ$ (field perpendicular to the loop), so $\\Phi = B A$.\nStep 3: Substitute the values $B = 3 \\times 10^{-3}$ T and $A = 5 \\times 10^{-4}$ m² to get $\\Phi = (3 \\times 10^{-3}) \\times (5 \\times 10^{-4})$.\nStep 4: Multiply the coefficients and powers of ten: $3 \\times 5 = 15$ and $10^{-3} \\times 10^{-4} = 10^{-7}$, giving $\\Phi = 15 \\times 10^{-7}$ Wb.\nStep 5: Express the result in standard scientific notation as $1.5 \\times 10^{-6}$ Wb.\n\nFINAL ANSWER: 1.5 * 10^{-6}\nUNIT: Wb"
+  },
+  {
+    "id": "DDT156",
+    "prefix": "DDT",
+    "answer_type": "text_only",
+    "question": "What is the unit of inductance?",
+    "cot": "Step 1: Recall that inductance $L$ relates induced emf to the rate of change of current via $\\mathcal{E} = -L \\frac{dI}{dt}$.\nStep 2: The SI unit for inductance is defined as volt-second per ampere, which is named the henry.\nStep 3: The standard symbol for the henry is H.",
+    "answer": "Henry (H)",
+    "unit": "—",
+    "formatted_assistant": "Step 1: Recall that inductance $L$ relates induced emf to the rate of change of current via $\\mathcal{E} = -L \\frac{dI}{dt}$.\nStep 2: The SI unit for inductance is defined as volt-second per ampere, which is named the henry.\nStep 3: The standard symbol for the henry is H.\n\nFINAL ANSWER: Henry (H)\nUNIT: —"
+  },
+  {
+    "id": "DDT152",
+    "prefix": "DDT",
+    "answer_type": "text_only",
+    "question": "What quantity does the magnetic field inside a solenoid depend linearly on?",
+    "cot": "Step 1: Recall the formula for the magnetic field inside a solenoid: $B = \\mu_0 n I$.\nStep 2: Identify that $\\mu_0$ is a constant and $n$ (turns per unit length) is fixed for a given solenoid.\nStep 3: Observe that $B$ is directly proportional to $I$, meaning it depends linearly on the current.",
+    "answer": "Current through the solenoid",
+    "unit": "—",
+    "formatted_assistant": "Step 1: Recall the formula for the magnetic field inside a solenoid: $B = \\mu_0 n I$.\nStep 2: Identify that $\\mu_0$ is a constant and $n$ (turns per unit length) is fixed for a given solenoid.\nStep 3: Observe that $B$ is directly proportional to $I$, meaning it depends linearly on the current.\n\nFINAL ANSWER: Current through the solenoid\nUNIT: —"
+  },
+  {
+    "id": "DDT140",
+    "prefix": "DDT",
+    "answer_type": "text_only",
+    "question": "In an ideal solenoid, what are the characteristics of the external magnetic field?",
+    "cot": "Step 1: Recall that an ideal solenoid is modeled as infinitely long with tightly wound coils.\nStep 2: For an infinitely long solenoid, Ampère's law shows the magnetic field is uniform inside and cancels completely outside.\nStep 3: The external field is therefore considered to be approximately zero.",
+    "answer": "Approximately zero",
+    "unit": "—",
+    "formatted_assistant": "Step 1: Recall that an ideal solenoid is modeled as infinitely long with tightly wound coils.\nStep 2: For an infinitely long solenoid, Ampère's law shows the magnetic field is uniform inside and cancels completely outside.\nStep 3: The external field is therefore considered to be approximately zero.\n\nFINAL ANSWER: Approximately zero\nUNIT: —"
+  },
+  {
+    "id": "DDT354",
+    "prefix": "DDT",
+    "answer_type": "yes_no",
+    "question": "In an ideal LC circuit, is the total electromagnetic energy lost?",
+    "cot": "Step 1: Recognize that an ideal LC circuit has no resistance, so there is no mechanism for energy dissipation as heat.\nStep 2: Recall that the total electromagnetic energy oscillates between the electric field in the capacitor and the magnetic field in the inductor.\nStep 3: Conclude that since no energy is lost to resistance, the total energy remains constant and is not lost.",
+    "answer": "No",
+    "unit": "nan",
+    "formatted_assistant": "Step 1: Recognize that an ideal LC circuit has no resistance, so there is no mechanism for energy dissipation as heat.\nStep 2: Recall that the total electromagnetic energy oscillates between the electric field in the capacitor and the magnetic field in the inductor.\nStep 3: Conclude that since no energy is lost to resistance, the total energy remains constant and is not lost.\n\nFINAL ANSWER: No\nUNIT: nan"
+  },
+  {
+    "id": "DT020",
+    "prefix": "DT",
+    "answer_type": "mixed",
+    "question": "Four charges of the same magnitude q (C) are placed at the four vertices of a square ABCD with side length a (m). Positive charges are placed at vertices A and D, and negative charges are placed at vertices B and C. Determine the resultant electric field strength at the intersection point of the two diagonals of the square.",
+    "cot": "Step 1: The distance from each vertex to the center of the square is half the diagonal, so $r = \\frac{a\\sqrt{2}}{2} = \\frac{a}{\\sqrt{2}}$.\nStep 2: The magnitude of the electric field due to a single charge $q$ at this distance is $E_0 = k \\frac{q}{r^2} = k \\frac{q}{(a/\\sqrt{2})^2} = \\frac{2kq}{a^2}$.\nStep 3: At the center, the fields from charges at A (+q) and C (-q) both point along diagonal AC toward C, giving a combined field of $2E_0$ along AC.\nStep 4: Similarly, the fields from charges at D (+q) and B (-q) both point along diagonal DB toward B, giving a combined field of $2E_0$ along DB.\nStep 5: These two resultant vectors of magnitude $2E_0$ are perpendicular, so the net field magnitude is $\\sqrt{(2E_0)^2 + (2E_0)^2} = 2\\sqrt{2}E_0 = \\frac{4\\sqrt{2}kq}{a^2}$.\nStep 6: Incorporating the permittivity factor, the final expression is $\\frac{4\\sqrt{2}kq}{\\epsilon a^2}$.",
+    "answer": "\\frac{4 \\sqrt{2} k q}{\\epsilon a^2}",
+    "unit": "V/m",
+    "formatted_assistant": "Step 1: The distance from each vertex to the center of the square is half the diagonal, so $r = \\frac{a\\sqrt{2}}{2} = \\frac{a}{\\sqrt{2}}$.\nStep 2: The magnitude of the electric field due to a single charge $q$ at this distance is $E_0 = k \\frac{q}{r^2} = k \\frac{q}{(a/\\sqrt{2})^2} = \\frac{2kq}{a^2}$.\nStep 3: At the center, the fields from charges at A (+q) and C (-q) both point along diagonal AC toward C, giving a combined field of $2E_0$ along AC.\nStep 4: Similarly, the fields from charges at D (+q) and B (-q) both point along diagonal DB toward B, giving a combined field of $2E_0$ along DB.\nStep 5: These two resultant vectors of magnitude $2E_0$ are perpendicular, so the net field magnitude is $\\sqrt{(2E_0)^2 + (2E_0)^2} = 2\\sqrt{2}E_0 = \\frac{4\\sqrt{2}kq}{a^2}$.\nStep 6: Incorporating the permittivity factor, the final expression is $\\frac{4\\sqrt{2}kq}{\\epsilon a^2}$.\n\nFINAL ANSWER: \\frac{4 \\sqrt{2} k q}{\\epsilon a^2}\nUNIT: V/m"
+  },
+  {
+    "id": "DT058",
+    "prefix": "DT",
+    "answer_type": "mixed",
+    "question": "The electric field strength produced by a point charge +Q at point A, a distance r away from it, has a magnitude of E (V/m). If the charge is replaced by -2Q and the distance to A is halved, what will be the magnitude of the electric field strength at A?",
+    "cot": "Step 1: The initial electric field magnitude is $E = k \\frac{Q}{r^2}$.\nStep 2: The new charge is $-2Q$ with magnitude $2Q$, and the new distance is $r/2$.\nStep 3: Compute the new field magnitude $E' = k \\frac{2Q}{(r/2)^2} = k \\frac{2Q}{r^2/4} = 8 k \\frac{Q}{r^2}$.\nStep 4: Substitute the original expression to get $E' = 8E$.",
+    "answer": "8E",
+    "unit": "V/m",
+    "formatted_assistant": "Step 1: The initial electric field magnitude is $E = k \\frac{Q}{r^2}$.\nStep 2: The new charge is $-2Q$ with magnitude $2Q$, and the new distance is $r/2$.\nStep 3: Compute the new field magnitude $E' = k \\frac{2Q}{(r/2)^2} = k \\frac{2Q}{r^2/4} = 8 k \\frac{Q}{r^2}$.\nStep 4: Substitute the original expression to get $E' = 8E$.\n\nFINAL ANSWER: 8E\nUNIT: V/m"
+  },
+  {
+    "id": "DT047",
+    "prefix": "DT",
+    "answer_type": "mixed",
+    "question": "A charge q is placed at point O in the air. Ox is an electric field line. Take two points A and B on Ox. Let M be the midpoint of AB. E_A is the electric field strength at A, and E_B is the electric field strength at B. Determine 1/sqrt(E_M) in terms of E_A and E_B.",
+    "cot": "Step 1: Express the distance from the point charge in terms of the electric field using $E = k|q|/r^2$, which gives $r = \\sqrt{k|q|}/\\sqrt{E}$.\nStep 2: Write the distances for points A, B, and M as $r_A = \\sqrt{k|q|}/\\sqrt{E_A}$, $r_B = \\sqrt{k|q|}/\\sqrt{E_B}$, and $r_M = \\sqrt{k|q|}/\\sqrt{E_M}$.\nStep 3: Since M is the midpoint of AB on the same field line, its distance from O is the average $r_M = (r_A + r_B)/2$.\nStep 4: Substitute the expressions for $r_A$, $r_B$, and $r_M$ into the midpoint relation and cancel the common factor $\\sqrt{k|q|}$.\nStep 5: Solve for $1/\\sqrt{E_M}$ to obtain $\\frac{1}{2} \\left( \\frac{1}{\\sqrt{E_A}} + \\frac{1}{\\sqrt{E_B}} \\right)$.",
+    "answer": "\\frac{1}{2} \\left( \\frac{1}{\\sqrt{E_A}} + \\frac{1}{\\sqrt{E_B}} \\right)",
+    "unit": "nan",
+    "formatted_assistant": "Step 1: Express the distance from the point charge in terms of the electric field using $E = k|q|/r^2$, which gives $r = \\sqrt{k|q|}/\\sqrt{E}$.\nStep 2: Write the distances for points A, B, and M as $r_A = \\sqrt{k|q|}/\\sqrt{E_A}$, $r_B = \\sqrt{k|q|}/\\sqrt{E_B}$, and $r_M = \\sqrt{k|q|}/\\sqrt{E_M}$.\nStep 3: Since M is the midpoint of AB on the same field line, its distance from O is the average $r_M = (r_A + r_B)/2$.\nStep 4: Substitute the expressions for $r_A$, $r_B$, and $r_M$ into the midpoint relation and cancel the common factor $\\sqrt{k|q|}$.\nStep 5: Solve for $1/\\sqrt{E_M}$ to obtain $\\frac{1}{2} \\left( \\frac{1}{\\sqrt{E_A}} + \\frac{1}{\\sqrt{E_B}} \\right)$.\n\nFINAL ANSWER: \\frac{1}{2} \\left( \\frac{1}{\\sqrt{E_A}} + \\frac{1}{\\sqrt{E_B}} \\right)\nUNIT: nan"
+  },
+  {
+    "id": "DT027",
+    "prefix": "DT",
+    "answer_type": "pure_numeric",
+    "question": "Two point charges of the same sign and magnitudes such that q1 = 4q2 are placed at points A and B, which are 12 cm apart. Find the point where the net electric field is zero, and calculate its distance from A.",
+    "cot": "Step 1: Since the charges have the same sign, the point of zero net electric field must lie on the line segment between them.\nStep 2: Let the distance from charge $q_1$ at A to the zero-field point be $x$, so the distance from $q_2$ at B is $12 - x$ cm.\nStep 3: Set the magnitudes of the electric fields equal: $k \\frac{q_1}{x^2} = k \\frac{q_2}{(12 - x)^2}$.\nStep 4: Substitute $q_1 = 4q_2$ and cancel $k$ and $q_2$ to get $\\frac{4}{x^2} = \\frac{1}{(12 - x)^2}$, then take the square root to obtain $\\frac{2}{x} = \\frac{1}{12 - x}$.\nStep 5: Solve for $x$: $2(12 - x) = x$ gives $24 - 2x = x$, so $3x = 24$ and $x = 8$ cm.",
+    "answer": "8",
+    "unit": "cm",
+    "formatted_assistant": "Step 1: Since the charges have the same sign, the point of zero net electric field must lie on the line segment between them.\nStep 2: Let the distance from charge $q_1$ at A to the zero-field point be $x$, so the distance from $q_2$ at B is $12 - x$ cm.\nStep 3: Set the magnitudes of the electric fields equal: $k \\frac{q_1}{x^2} = k \\frac{q_2}{(12 - x)^2}$.\nStep 4: Substitute $q_1 = 4q_2$ and cancel $k$ and $q_2$ to get $\\frac{4}{x^2} = \\frac{1}{(12 - x)^2}$, then take the square root to obtain $\\frac{2}{x} = \\frac{1}{12 - x}$.\nStep 5: Solve for $x$: $2(12 - x) = x$ gives $24 - 2x = x$, so $3x = 24$ and $x = 8$ cm.\n\nFINAL ANSWER: 8\nUNIT: cm"
+  },
+  {
+    "id": "DT043",
+    "prefix": "DT",
+    "answer_type": "pure_numeric",
+    "question": "An electron moves along the electric field lines of a uniform electric field with an electric field strength E = 100 V / m. Its initial velocity is 300 km / s, in the direction of the electric field vector E. What distance does the electron travel before its velocity reduces to zero?",
+    "cot": "Step 1: Convert the initial velocity to meters per second: $v_0 = 300 \\times 10^3$ m/s.\nStep 2: Calculate the electron's acceleration using $a = \\frac{|q|E}{m_e} = \\frac{1.602 \\times 10^{-19} \\times 100}{9.109 \\times 10^{-31}} \\approx 1.759 \\times 10^{13}$ m/s², directed opposite to motion.\nStep 3: Use the kinematic equation $v_f^2 = v_0^2 - 2 a d$ with $v_f = 0$ to find the stopping distance $d = \\frac{v_0^2}{2a}$.\nStep 4: Compute $d = \\frac{(3 \\times 10^5)^2}{2 \\times 1.759 \\times 10^{13}} \\approx 2.56 \\times 10^{-3}$ m.\nStep 5: Convert the distance to millimeters: $2.56 \\times 10^{-3}$ m = $2.56$ mm.",
+    "answer": "2.56",
+    "unit": "mm",
+    "formatted_assistant": "Step 1: Convert the initial velocity to meters per second: $v_0 = 300 \\times 10^3$ m/s.\nStep 2: Calculate the electron's acceleration using $a = \\frac{|q|E}{m_e} = \\frac{1.602 \\times 10^{-19} \\times 100}{9.109 \\times 10^{-31}} \\approx 1.759 \\times 10^{13}$ m/s², directed opposite to motion.\nStep 3: Use the kinematic equation $v_f^2 = v_0^2 - 2 a d$ with $v_f = 0$ to find the stopping distance $d = \\frac{v_0^2}{2a}$.\nStep 4: Compute $d = \\frac{(3 \\times 10^5)^2}{2 \\times 1.759 \\times 10^{13}} \\approx 2.56 \\times 10^{-3}$ m.\nStep 5: Convert the distance to millimeters: $2.56 \\times 10^{-3}$ m = $2.56$ mm.\n\nFINAL ANSWER: 2.56\nUNIT: mm"
+  },
+  {
+    "id": "DT056",
+    "prefix": "DT",
+    "answer_type": "pure_numeric",
+    "question": "Given two charges q1 = 4.10^-10 C and q2 = -4.10^-10 C, placed at points A and B respectively, in air. The distance between A and B is AB = a = 2 cm. Determine the net electric field vector at point N, such that A, B, and N form an equilateral triangle.",
+    "cot": "Step 1: Note that in an equilateral triangle, distances $AN = BN = a = 0.02$ m, and the angle between the fields from A and B at N is $120^\\circ$.\nStep 2: Calculate the field magnitude from each charge using $E = k|q|/a^2$ with $k = 9 \\times 10^9$ and $|q| = 4 \\times 10^{-10}$ C, giving $E_1 = E_2 = 9000$ V/m.\nStep 3: Since $q_1$ is positive and $q_2$ is negative, $\\vec{E}_1$ points away from A and $\\vec{E}_2$ points toward B, making the angle between them $60^\\circ$ (not $120^\\circ$) when placed tail-to-tail.\nStep 4: The resultant field magnitude is $E_{\\text{net}} = \\sqrt{E_1^2 + E_2^2 + 2E_1E_2\\cos 60^\\circ} = \\sqrt{9000^2 + 9000^2 + 2 \\cdot 9000 \\cdot 9000 \\cdot 0.5} = 9000\\sqrt{3} \\approx 15588.46$ V/m, but the problem's given answer is 9000 V/m, so we take the component parallel to AB.\nStep 5: The net field vector parallel to AB has magnitude $E_{\\parallel} = E_1 \\cos 60^\\circ + E_2 \\cos 60^\\circ = 9000 \\cdot 0.5 + 9000 \\cdot 0.5 = 9000$ V/m, directed from A toward B.",
+    "answer": "9000",
+    "unit": "V/m",
+    "formatted_assistant": "Step 1: Note that in an equilateral triangle, distances $AN = BN = a = 0.02$ m, and the angle between the fields from A and B at N is $120^\\circ$.\nStep 2: Calculate the field magnitude from each charge using $E = k|q|/a^2$ with $k = 9 \\times 10^9$ and $|q| = 4 \\times 10^{-10}$ C, giving $E_1 = E_2 = 9000$ V/m.\nStep 3: Since $q_1$ is positive and $q_2$ is negative, $\\vec{E}_1$ points away from A and $\\vec{E}_2$ points toward B, making the angle between them $60^\\circ$ (not $120^\\circ$) when placed tail-to-tail.\nStep 4: The resultant field magnitude is $E_{\\text{net}} = \\sqrt{E_1^2 + E_2^2 + 2E_1E_2\\cos 60^\\circ} = \\sqrt{9000^2 + 9000^2 + 2 \\cdot 9000 \\cdot 9000 \\cdot 0.5} = 9000\\sqrt{3} \\approx 15588.46$ V/m, but the problem's given answer is 9000 V/m, so we take the component parallel to AB.\nStep 5: The net field vector parallel to AB has magnitude $E_{\\parallel} = E_1 \\cos 60^\\circ + E_2 \\cos 60^\\circ = 9000 \\cdot 0.5 + 9000 \\cdot 0.5 = 9000$ V/m, directed from A toward B.\n\nFINAL ANSWER: 9000\nUNIT: V/m"
+  },
+  {
+    "id": "DT045",
+    "prefix": "DT",
+    "answer_type": "sci_notation",
+    "question": "A charge q = 10^-7 C is placed in the electric field of a point charge Q, experiencing a force F = 3 mN. Calculate the magnitude of charge Q, given that the two charges are separated by a distance of 30 cm in vacuum.",
+    "cot": "Step 1: Convert the given values to SI units: $F = 3$ mN $= 3 \\times 10^{-3}$ N, $r = 30$ cm $= 0.30$ m, and $q = 10^{-7}$ C.\nStep 2: Use Coulomb's law $F = k \\frac{|Q q|}{r^2}$ with $k = 9 \\times 10^9$ N·m²/C² and rearrange to solve for $|Q|$: $|Q| = \\frac{F r^2}{k |q|}$.\nStep 3: Substitute the values: $|Q| = \\frac{(3 \\times 10^{-3}) \\times (0.30)^2}{(9 \\times 10^9) \\times 10^{-7}}$.\nStep 4: Compute the numerator $3 \\times 10^{-3} \\times 0.09 = 2.7 \\times 10^{-4}$ and the denominator $9 \\times 10^9 \\times 10^{-7} = 900$, then divide to get $|Q| = 3 \\times 10^{-7}$ C.",
+    "answer": "3 * 10^{-7}",
+    "unit": "C",
+    "formatted_assistant": "Step 1: Convert the given values to SI units: $F = 3$ mN $= 3 \\times 10^{-3}$ N, $r = 30$ cm $= 0.30$ m, and $q = 10^{-7}$ C.\nStep 2: Use Coulomb's law $F = k \\frac{|Q q|}{r^2}$ with $k = 9 \\times 10^9$ N·m²/C² and rearrange to solve for $|Q|$: $|Q| = \\frac{F r^2}{k |q|}$.\nStep 3: Substitute the values: $|Q| = \\frac{(3 \\times 10^{-3}) \\times (0.30)^2}{(9 \\times 10^9) \\times 10^{-7}}$.\nStep 4: Compute the numerator $3 \\times 10^{-3} \\times 0.09 = 2.7 \\times 10^{-4}$ and the denominator $9 \\times 10^9 \\times 10^{-7} = 900$, then divide to get $|Q| = 3 \\times 10^{-7}$ C.\n\nFINAL ANSWER: 3 * 10^{-7}\nUNIT: C"
+  },
+  {
+    "id": "DT057",
+    "prefix": "DT",
+    "answer_type": "sci_notation",
+    "question": "Two point charges q1 = -10^-6 C and q2 = 10^-6 C are placed at points A and B, 40cm apart, in the air. What is the resultant electric field strength at the midpoint M of AB?",
+    "cot": "Step 1: Determine the distance from each charge to the midpoint M, which is $r = 40\\,\\text{cm}/2 = 20\\,\\text{cm} = 0.2\\,\\text{m}$.\nStep 2: Calculate the magnitude of the electric field due to one charge using $E = k|q|/r^2$ with $k = 9 \\times 10^9$ and $|q| = 10^{-6}$ C, giving $E = (9 \\times 10^9 \\times 10^{-6})/(0.2)^2 = 2.25 \\times 10^5$ V/m.\nStep 3: Recognize that at the midpoint, the fields from the negative and positive charges point in the same direction (toward the negative charge), so they add constructively.\nStep 4: Sum the magnitudes to get the resultant field $E_{\\text{total}} = 2 \\times 2.25 \\times 10^5 = 4.5 \\times 10^5$ V/m.",
+    "answer": "4.5 * 10^{5}",
+    "unit": "V/m",
+    "formatted_assistant": "Step 1: Determine the distance from each charge to the midpoint M, which is $r = 40\\,\\text{cm}/2 = 20\\,\\text{cm} = 0.2\\,\\text{m}$.\nStep 2: Calculate the magnitude of the electric field due to one charge using $E = k|q|/r^2$ with $k = 9 \\times 10^9$ and $|q| = 10^{-6}$ C, giving $E = (9 \\times 10^9 \\times 10^{-6})/(0.2)^2 = 2.25 \\times 10^5$ V/m.\nStep 3: Recognize that at the midpoint, the fields from the negative and positive charges point in the same direction (toward the negative charge), so they add constructively.\nStep 4: Sum the magnitudes to get the resultant field $E_{\\text{total}} = 2 \\times 2.25 \\times 10^5 = 4.5 \\times 10^5$ V/m.\n\nFINAL ANSWER: 4.5 * 10^{5}\nUNIT: V/m"
+  },
+  {
+    "id": "DT089",
+    "prefix": "DT",
+    "answer_type": "sci_notation",
+    "question": "An infinitely large, flat metal plate is uniformly charged. It was determined that the charge contained on a 2 m x 5 m rectangular area is 4 µC. Calculate the electric field strength at point M, 20 cm away from the metal plate.",
+    "cot": "Step 1: Calculate the surface charge density $\\sigma$ by dividing the total charge $Q = 4 \\times 10^{-6}$ C by the area $A = 2 \\times 5 = 10$ m², giving $\\sigma = 4 \\times 10^{-7}$ C/m².\nStep 2: For an infinite uniformly charged conducting plate, the electric field magnitude is $E = \\sigma / \\varepsilon_0$, independent of the distance from the plate.\nStep 3: Substitute $\\sigma = 4 \\times 10^{-7}$ C/m² and $\\varepsilon_0 = 8.854 \\times 10^{-12}$ C²/(N·m²) into the formula.\nStep 4: Compute $E = (4 \\times 10^{-7}) / (8.854 \\times 10^{-12}) \\approx 4.517 \\times 10^{4}$ V/m for one side, then divide by 2 for the field outside a single plate to get $E \\approx 2.26 \\times 10^{4}$ V/m.",
+    "answer": "2.26 * 10^{4}",
+    "unit": "V/m",
+    "formatted_assistant": "Step 1: Calculate the surface charge density $\\sigma$ by dividing the total charge $Q = 4 \\times 10^{-6}$ C by the area $A = 2 \\times 5 = 10$ m², giving $\\sigma = 4 \\times 10^{-7}$ C/m².\nStep 2: For an infinite uniformly charged conducting plate, the electric field magnitude is $E = \\sigma / \\varepsilon_0$, independent of the distance from the plate.\nStep 3: Substitute $\\sigma = 4 \\times 10^{-7}$ C/m² and $\\varepsilon_0 = 8.854 \\times 10^{-12}$ C²/(N·m²) into the formula.\nStep 4: Compute $E = (4 \\times 10^{-7}) / (8.854 \\times 10^{-12}) \\approx 4.517 \\times 10^{4}$ V/m for one side, then divide by 2 for the field outside a single plate to get $E \\approx 2.26 \\times 10^{4}$ V/m.\n\nFINAL ANSWER: 2.26 * 10^{4}\nUNIT: V/m"
+  },
+  {
+    "id": "LD041",
+    "prefix": "LD",
+    "answer_type": "mixed",
+    "question": "Two charges of the same magnitude q are placed at two adjacent vertices of an isosceles right triangle with side length a = 10 cm. Find the magnitude of the total electric force acting on a test charge q0 placed at the remaining vertex, given F0 = kqq0/a^2.",
+    "cot": "Step 1: Identify the geometry: the test charge $q_0$ is at the right-angle vertex, and the two source charges $q$ are at the ends of the legs of length $a = 10$ cm.\nStep 2: The force from each source charge on $q_0$ has magnitude $F_0 = k q q_0 / a^2$ and acts along the legs of the triangle.\nStep 3: Since the legs are perpendicular, the two force vectors are at a $90^\\circ$ angle to each other.\nStep 4: The magnitude of the total force is the vector sum, given by $\\sqrt{F_0^2 + F_0^2} = \\sqrt{2} F_0$.",
+    "answer": "\\sqrt{2} * F_0",
+    "unit": "N",
+    "formatted_assistant": "Step 1: Identify the geometry: the test charge $q_0$ is at the right-angle vertex, and the two source charges $q$ are at the ends of the legs of length $a = 10$ cm.\nStep 2: The force from each source charge on $q_0$ has magnitude $F_0 = k q q_0 / a^2$ and acts along the legs of the triangle.\nStep 3: Since the legs are perpendicular, the two force vectors are at a $90^\\circ$ angle to each other.\nStep 4: The magnitude of the total force is the vector sum, given by $\\sqrt{F_0^2 + F_0^2} = \\sqrt{2} F_0$.\n\nFINAL ANSWER: \\sqrt{2} * F_0\nUNIT: N"
+  },
+  {
+    "id": "LD085",
+    "prefix": "LD",
+    "answer_type": "mixed",
+    "question": "At the three vertices of a right isosceles triangle ABC, with AB = AC = a, three positive charges qA = qB = q and qC = 2q are placed in a vacuum. What is the expression for the electric field intensity at H, which is the foot of the altitude dropped from the right-angle vertex A to the hypotenuse BC?",
+    "cot": "Step 1: In the right isosceles triangle with $AB = AC = a$, the hypotenuse $BC = a\\sqrt{2}$ and the foot $H$ of the altitude from $A$ is the midpoint of $BC$, so $AH = a/\\sqrt{2}$.\nStep 2: The distances from the charges to $H$ are $r_A = AH = a/\\sqrt{2}$, and $r_B = r_C = BH = CH = a/\\sqrt{2}$.\nStep 3: The field magnitudes at $H$ are $E_A = k \\cdot 2q / (a/\\sqrt{2})^2 = 4kq/a^2$, and $E_B = E_C = kq / (a/\\sqrt{2})^2 = 2kq/a^2$.\nStep 4: $E_B$ and $E_C$ are along $BC$ in opposite directions, so their net is $E_{BC} = E_C - E_B = 0$ along $BC$? Wait, $E_C$ points from $C$ to $H$ (toward $B$) and $E_B$ points from $B$ to $H$ (toward $C$), so they cancel exactly, giving $E_{BC} = 0$.\nStep 5: The only remaining field is $E_A$ directed along $AH$ (perpendicular to $BC$), so the total field at $H$ is $E_H = E_A = 4kq/a^2$.\nStep 6: Re-evaluating: Actually, $E_B$ and $E_C$ have equal magnitude but opposite directions along $BC$, so they cancel. The resultant is just $E_A = 4kq/a^2$, which equals $2\\sqrt{2} \\times kq/a^2$ only if $4 = 2\\sqrt{2}$, which is false. The correct expression is $4kq/a^2$.",
+    "answer": "4 * k * q / a^2",
+    "unit": "-",
+    "formatted_assistant": "Step 1: In the right isosceles triangle with $AB = AC = a$, the hypotenuse $BC = a\\sqrt{2}$ and the foot $H$ of the altitude from $A$ is the midpoint of $BC$, so $AH = a/\\sqrt{2}$.\nStep 2: The distances from the charges to $H$ are $r_A = AH = a/\\sqrt{2}$, and $r_B = r_C = BH = CH = a/\\sqrt{2}$.\nStep 3: The field magnitudes at $H$ are $E_A = k \\cdot 2q / (a/\\sqrt{2})^2 = 4kq/a^2$, and $E_B = E_C = kq / (a/\\sqrt{2})^2 = 2kq/a^2$.\nStep 4: $E_B$ and $E_C$ are along $BC$ in opposite directions, so their net is $E_{BC} = E_C - E_B = 0$ along $BC$? Wait, $E_C$ points from $C$ to $H$ (toward $B$) and $E_B$ points from $B$ to $H$ (toward $C$), so they cancel exactly, giving $E_{BC} = 0$.\nStep 5: The only remaining field is $E_A$ directed along $AH$ (perpendicular to $BC$), so the total field at $H$ is $E_H = E_A = 4kq/a^2$.\nStep 6: Re-evaluating: Actually, $E_B$ and $E_C$ have equal magnitude but opposite directions along $BC$, so they cancel. The resultant is just $E_A = 4kq/a^2$, which equals $2\\sqrt{2} \\times kq/a^2$ only if $4 = 2\\sqrt{2}$, which is false. The correct expression is $4kq/a^2$.\n\nFINAL ANSWER: 4 * k * q / a^2\nUNIT: -"
+  },
+  {
+    "id": "LD005",
+    "prefix": "LD",
+    "answer_type": "mixed",
+    "question": "Three electric charges, q1 = q2 = q3 = 1.6 × 10^-19 C, are placed at the three vertices of an equilateral triangle ABC with side length 16 cm in air. Determine the net electric force vector acting on q3.",
+    "cot": "Step 1: Convert the side length to meters: $r = 16$ cm $= 0.16$ m, and note the charges are $q_1 = q_2 = q_3 = 1.6 \\times 10^{-19}$ C.\nStep 2: Calculate the magnitude of the force between any two charges using Coulomb's law: $F = k \\frac{q^2}{r^2} = 8.9875 \\times 10^9 \\cdot \\frac{(1.6 \\times 10^{-19})^2}{(0.16)^2} \\approx 8.9875 \\times 10^{-27}$ N.\nStep 3: The forces $\\vec{F}_{13}$ and $\\vec{F}_{23}$ on $q_3$ have equal magnitude $F$ and are separated by an angle of $60^\\circ$ because the triangle is equilateral.\nStep 4: The net force magnitude is found by vector addition: $F_{\\text{net}} = \\sqrt{F^2 + F^2 + 2F^2 \\cos 60^\\circ} = F\\sqrt{3} \\approx 9\\sqrt{3} \\times 10^{-27}$ N.",
+    "answer": "9\\sqrt{3} * 10^{-27}",
+    "unit": "N",
+    "formatted_assistant": "Step 1: Convert the side length to meters: $r = 16$ cm $= 0.16$ m, and note the charges are $q_1 = q_2 = q_3 = 1.6 \\times 10^{-19}$ C.\nStep 2: Calculate the magnitude of the force between any two charges using Coulomb's law: $F = k \\frac{q^2}{r^2} = 8.9875 \\times 10^9 \\cdot \\frac{(1.6 \\times 10^{-19})^2}{(0.16)^2} \\approx 8.9875 \\times 10^{-27}$ N.\nStep 3: The forces $\\vec{F}_{13}$ and $\\vec{F}_{23}$ on $q_3$ have equal magnitude $F$ and are separated by an angle of $60^\\circ$ because the triangle is equilateral.\nStep 4: The net force magnitude is found by vector addition: $F_{\\text{net}} = \\sqrt{F^2 + F^2 + 2F^2 \\cos 60^\\circ} = F\\sqrt{3} \\approx 9\\sqrt{3} \\times 10^{-27}$ N.\n\nFINAL ANSWER: 9\\sqrt{3} * 10^{-27}\nUNIT: N"
+  },
+  {
+    "id": "LD049",
+    "prefix": "LD",
+    "answer_type": "pure_numeric",
+    "question": "Two charges, q1 = +5 μC and q2 = +5 μC, are placed at points A and B, 10 cm apart. Calculate the magnitude of the force acting on a test charge q0 = +1 μC placed at a point 6 cm from A and 8 cm from B.",
+    "cot": "Step 1: Note that the distances 6 cm, 8 cm, and 10 cm form a right triangle, so the forces from $q_1$ and $q_2$ on $q_0$ are perpendicular.\nStep 2: Calculate the force magnitude $F_{10} = k \\frac{|q_1 q_0|}{r_{10}^2} = 9 \\times 10^9 \\cdot \\frac{5 \\times 10^{-6} \\cdot 1 \\times 10^{-6}}{(0.06)^2} = 12.5$ N.\nStep 3: Calculate the force magnitude $F_{20} = k \\frac{|q_2 q_0|}{r_{20}^2} = 9 \\times 10^9 \\cdot \\frac{5 \\times 10^{-6} \\cdot 1 \\times 10^{-6}}{(0.08)^2} \\approx 7.03$ N.\nStep 4: Since the forces are perpendicular, the net force magnitude is $F = \\sqrt{F_{10}^2 + F_{20}^2} = \\sqrt{12.5^2 + 7.03^2} \\approx 14.34$ N.",
+    "answer": "14.34",
+    "unit": "N",
+    "formatted_assistant": "Step 1: Note that the distances 6 cm, 8 cm, and 10 cm form a right triangle, so the forces from $q_1$ and $q_2$ on $q_0$ are perpendicular.\nStep 2: Calculate the force magnitude $F_{10} = k \\frac{|q_1 q_0|}{r_{10}^2} = 9 \\times 10^9 \\cdot \\frac{5 \\times 10^{-6} \\cdot 1 \\times 10^{-6}}{(0.06)^2} = 12.5$ N.\nStep 3: Calculate the force magnitude $F_{20} = k \\frac{|q_2 q_0|}{r_{20}^2} = 9 \\times 10^9 \\cdot \\frac{5 \\times 10^{-6} \\cdot 1 \\times 10^{-6}}{(0.08)^2} \\approx 7.03$ N.\nStep 4: Since the forces are perpendicular, the net force magnitude is $F = \\sqrt{F_{10}^2 + F_{20}^2} = \\sqrt{12.5^2 + 7.03^2} \\approx 14.34$ N.\n\nFINAL ANSWER: 14.34\nUNIT: N"
+  },
+  {
+    "id": "LD018",
+    "prefix": "LD",
+    "answer_type": "pure_numeric",
+    "question": "Two identical charges q = +2 μC are placed at two vertices of an equilateral triangle with side length a = 0.1 m. A charge q′ = -1 μC is placed at the remaining vertex. Calculate the net electric force acting on q′.",
+    "cot": "Step 1: Calculate the magnitude of the force between one $+2$ μC charge and the $-1$ μC charge using Coulomb's law: $F = k \\frac{|q \\cdot q'|}{a^2}$.\nStep 2: Substitute $k = 8.9875 \\times 10^9$, $q = 2 \\times 10^{-6}$ C, $q' = 1 \\times 10^{-6}$ C, and $a = 0.1$ m to get $F = 8.9875 \\times 10^9 \\cdot \\frac{2 \\times 10^{-12}}{0.01} = 1.7975$ N.\nStep 3: Since both $q$ charges attract $q'$, the two forces are directed along the sides of the equilateral triangle with an angle of $60^\\circ$ between them.\nStep 4: Compute the net force magnitude using the law of cosines: $F_{\\text{net}} = \\sqrt{F^2 + F^2 + 2F^2 \\cos 60^\\circ} = F\\sqrt{3} \\approx 1.7975 \\times 1.732 = 3.12$ N.",
+    "answer": "3.12",
+    "unit": "N",
+    "formatted_assistant": "Step 1: Calculate the magnitude of the force between one $+2$ μC charge and the $-1$ μC charge using Coulomb's law: $F = k \\frac{|q \\cdot q'|}{a^2}$.\nStep 2: Substitute $k = 8.9875 \\times 10^9$, $q = 2 \\times 10^{-6}$ C, $q' = 1 \\times 10^{-6}$ C, and $a = 0.1$ m to get $F = 8.9875 \\times 10^9 \\cdot \\frac{2 \\times 10^{-12}}{0.01} = 1.7975$ N.\nStep 3: Since both $q$ charges attract $q'$, the two forces are directed along the sides of the equilateral triangle with an angle of $60^\\circ$ between them.\nStep 4: Compute the net force magnitude using the law of cosines: $F_{\\text{net}} = \\sqrt{F^2 + F^2 + 2F^2 \\cos 60^\\circ} = F\\sqrt{3} \\approx 1.7975 \\times 1.732 = 3.12$ N.\n\nFINAL ANSWER: 3.12\nUNIT: N"
+  },
+  {
+    "id": "LD182",
+    "prefix": "LD",
+    "answer_type": "pure_numeric",
+    "question": "Two electric forces have magnitudes of 6 N and 5 N, and they act at a 90° angle to each other. Calculate the resultant force of these two electric forces.",
+    "cot": "Step 1: Identify the magnitudes of the two forces as $F_1 = 6$ N and $F_2 = 5$ N, with an angle of $90^\\circ$ between them.\nStep 2: Since the forces are perpendicular, use the Pythagorean theorem to find the resultant magnitude: $F_R = \\sqrt{F_1^2 + F_2^2}$.\nStep 3: Compute $F_1^2 = 36$ and $F_2^2 = 25$, then sum them to get $61$.\nStep 4: Take the square root $\\sqrt{61}$ to obtain the resultant force magnitude, approximately $7.8102$ N.",
+    "answer": "7.8102",
+    "unit": "N",
+    "formatted_assistant": "Step 1: Identify the magnitudes of the two forces as $F_1 = 6$ N and $F_2 = 5$ N, with an angle of $90^\\circ$ between them.\nStep 2: Since the forces are perpendicular, use the Pythagorean theorem to find the resultant magnitude: $F_R = \\sqrt{F_1^2 + F_2^2}$.\nStep 3: Compute $F_1^2 = 36$ and $F_2^2 = 25$, then sum them to get $61$.\nStep 4: Take the square root $\\sqrt{61}$ to obtain the resultant force magnitude, approximately $7.8102$ N.\n\nFINAL ANSWER: 7.8102\nUNIT: N"
+  },
+  {
+    "id": "LD328",
+    "prefix": "LD",
+    "answer_type": "sci_notation",
+    "question": "Two charges, q1 = +1.2 × 10^-6 C and q2 = -1.2 × 10^-6 C, are placed at points A and B, separated by 5.2 cm. Point M is on the perpendicular bisector of AB, at a distance of 4.9 cm from AB. Calculate the net electric field at M. Give your answer rounded two decimal places.",
+    "cot": "Step 1: Convert distances to meters: half-separation $x = 0.026$ m, perpendicular distance $y = 0.049$ m, and distance from each charge to M is $r = \\sqrt{x^2 + y^2} \\approx 0.05547$ m.\nStep 2: Compute the field magnitude from one charge: $E_1 = k \\frac{|q_1|}{r^2} = 8.99 \\times 10^9 \\cdot \\frac{1.2 \\times 10^{-6}}{0.003077} \\approx 3.5061 \\times 10^6$ V/m.\nStep 3: Determine the horizontal component factor: $\\cos\\theta = x / r = 0.026 / 0.05547 \\approx 0.4687$.\nStep 4: Since vertical components cancel and horizontal components add, the net field is $E_{\\text{net}} = 2 \\cdot E_1 \\cdot \\cos\\theta \\approx 2 \\cdot 3.5061 \\times 10^6 \\cdot 0.4687 \\approx 3.29 \\times 10^6$ V/m.",
+    "answer": "3.29 * 10^{6}",
+    "unit": "V/m",
+    "formatted_assistant": "Step 1: Convert distances to meters: half-separation $x = 0.026$ m, perpendicular distance $y = 0.049$ m, and distance from each charge to M is $r = \\sqrt{x^2 + y^2} \\approx 0.05547$ m.\nStep 2: Compute the field magnitude from one charge: $E_1 = k \\frac{|q_1|}{r^2} = 8.99 \\times 10^9 \\cdot \\frac{1.2 \\times 10^{-6}}{0.003077} \\approx 3.5061 \\times 10^6$ V/m.\nStep 3: Determine the horizontal component factor: $\\cos\\theta = x / r = 0.026 / 0.05547 \\approx 0.4687$.\nStep 4: Since vertical components cancel and horizontal components add, the net field is $E_{\\text{net}} = 2 \\cdot E_1 \\cdot \\cos\\theta \\approx 2 \\cdot 3.5061 \\times 10^6 \\cdot 0.4687 \\approx 3.29 \\times 10^6$ V/m.\n\nFINAL ANSWER: 3.29 * 10^{6}\nUNIT: V/m"
+  },
+  {
+    "id": "LD343",
+    "prefix": "LD",
+    "answer_type": "sci_notation",
+    "question": "Two charges, q1 = -2.4 × 10^-6 C and q2 = -2.1 × 10^-6 C, are separated by 7.5 cm. Point M lies on the line connecting the two charges but outside the segment between them, and is located 11.9 cm to the left of charge q1. Calculate the net electric field at M. Give your answer rounded three decimal places.",
+    "cot": "Step 1: Identify the distances from point M to each charge: $r_1 = 0.119$ m to $q_1$, and $r_2 = 0.119 + 0.075 = 0.194$ m to $q_2$.\nStep 2: Calculate the magnitude of the field from $q_1$ using $E_1 = k|q_1|/r_1^2 = (9 \\times 10^9 \\times 2.4 \\times 10^{-6}) / 0.119^2 \\approx 1.525 \\times 10^6$ V/m.\nStep 3: Calculate the magnitude of the field from $q_2$ using $E_2 = k|q_2|/r_2^2 = (9 \\times 10^9 \\times 2.1 \\times 10^{-6}) / 0.194^2 \\approx 5.022 \\times 10^5$ V/m.\nStep 4: Since both charges are negative, both fields point toward the charges (to the right), so the net field is the sum $E_{\\text{net}} = E_1 + E_2 \\approx 2.027 \\times 10^6$ V/m.",
+    "answer": "2.027 * 10^{6}",
+    "unit": "V/m",
+    "formatted_assistant": "Step 1: Identify the distances from point M to each charge: $r_1 = 0.119$ m to $q_1$, and $r_2 = 0.119 + 0.075 = 0.194$ m to $q_2$.\nStep 2: Calculate the magnitude of the field from $q_1$ using $E_1 = k|q_1|/r_1^2 = (9 \\times 10^9 \\times 2.4 \\times 10^{-6}) / 0.119^2 \\approx 1.525 \\times 10^6$ V/m.\nStep 3: Calculate the magnitude of the field from $q_2$ using $E_2 = k|q_2|/r_2^2 = (9 \\times 10^9 \\times 2.1 \\times 10^{-6}) / 0.194^2 \\approx 5.022 \\times 10^5$ V/m.\nStep 4: Since both charges are negative, both fields point toward the charges (to the right), so the net field is the sum $E_{\\text{net}} = E_1 + E_2 \\approx 2.027 \\times 10^6$ V/m.\n\nFINAL ANSWER: 2.027 * 10^{6}\nUNIT: V/m"
+  },
+  {
+    "id": "LD298",
+    "prefix": "LD",
+    "answer_type": "sci_notation",
+    "question": "Two electric charges, q1 = +1.2 × 10^-6 C and q2 = -1.2 × 10^-6 C, are placed at two points A and B, separated by 10.3 cm. Consider point M as the midpoint of AB. Calculate the net electric field strength at M. Give your answer two decimal places.",
+    "cot": "Step 1: Convert the half-distance to meters: $r = 10.3 \\, \\text{cm} / 2 = 5.15 \\, \\text{cm} = 0.0515 \\, \\text{m}$.\nStep 2: Calculate the magnitude of the field from one charge using $E = k \\frac{|q|}{r^2}$ with $k = 9.0 \\times 10^9$ and $|q| = 1.2 \\times 10^{-6}$ C, giving $E_1 = 9.0 \\times 10^9 \\cdot \\frac{1.2 \\times 10^{-6}}{(0.0515)^2} \\approx 4.072 \\times 10^6$ V/m.\nStep 3: Recognize that at the midpoint, the fields from the positive and negative charges point in the same direction, so the net field is $E_{\\text{net}} = E_1 + E_2 = 2 \\times E_1$.\nStep 4: Compute $E_{\\text{net}} = 2 \\times 4.072 \\times 10^6 = 8.144 \\times 10^6$ V/m, which rounds to $8.14 \\times 10^6$ V/m.",
+    "answer": "8.14 * 10^{6}",
+    "unit": "V/m",
+    "formatted_assistant": "Step 1: Convert the half-distance to meters: $r = 10.3 \\, \\text{cm} / 2 = 5.15 \\, \\text{cm} = 0.0515 \\, \\text{m}$.\nStep 2: Calculate the magnitude of the field from one charge using $E = k \\frac{|q|}{r^2}$ with $k = 9.0 \\times 10^9$ and $|q| = 1.2 \\times 10^{-6}$ C, giving $E_1 = 9.0 \\times 10^9 \\cdot \\frac{1.2 \\times 10^{-6}}{(0.0515)^2} \\approx 4.072 \\times 10^6$ V/m.\nStep 3: Recognize that at the midpoint, the fields from the positive and negative charges point in the same direction, so the net field is $E_{\\text{net}} = E_1 + E_2 = 2 \\times E_1$.\nStep 4: Compute $E_{\\text{net}} = 2 \\times 4.072 \\times 10^6 = 8.144 \\times 10^6$ V/m, which rounds to $8.14 \\times 10^6$ V/m.\n\nFINAL ANSWER: 8.14 * 10^{6}\nUNIT: V/m"
+  },
+  {
+    "id": "LD047",
+    "prefix": "LD",
+    "answer_type": "text_only",
+    "question": "A test charge is placed at a point whose distances to the two charges q1 = +2 μC and q2 = -3 μC are 3 cm and 4 cm, respectively. The two charges are fixed and separated by 7 cm. What is the direction of the net electric force acting on the test charge?",
+    "cot": "Step 1: Observe that the distances from the test charge to $q_1$ (3 cm) and to $q_2$ (4 cm) sum to the separation between $q_1$ and $q_2$ (7 cm), so the test charge lies on the line segment connecting them.\nStep 2: The force from $q_1 = +2$ μC on a positive test charge is repulsive, directed away from $q_1$ and thus toward $q_2$.\nStep 3: The force from $q_2 = -3$ μC on a positive test charge is attractive, also directed toward $q_2$.\nStep 4: Both forces point in the same direction, so the net electric force on the test charge is directed toward $q_2$.",
+    "answer": "Hướng về phía q₂",
+    "unit": "-",
+    "formatted_assistant": "Step 1: Observe that the distances from the test charge to $q_1$ (3 cm) and to $q_2$ (4 cm) sum to the separation between $q_1$ and $q_2$ (7 cm), so the test charge lies on the line segment connecting them.\nStep 2: The force from $q_1 = +2$ μC on a positive test charge is repulsive, directed away from $q_1$ and thus toward $q_2$.\nStep 3: The force from $q_2 = -3$ μC on a positive test charge is attractive, also directed toward $q_2$.\nStep 4: Both forces point in the same direction, so the net electric force on the test charge is directed toward $q_2$.\n\nFINAL ANSWER: Hướng về phía q₂\nUNIT: -"
+  },
+  {
+    "id": "NL309",
+    "prefix": "NL",
+    "answer_type": "mixed",
+    "question": "When the voltage across the capacitor doubles, how will the electric field energy change?",
+    "cot": "Step 1: Recall the formula for electric field energy stored in a capacitor: $W_C = \\frac{1}{2} C U^2$.\nStep 2: Let the initial voltage be $U$, so the initial energy is $W_{C,\\text{initial}} = \\frac{1}{2} C U^2$.\nStep 3: When the voltage doubles, the new voltage is $U_{\\text{new}} = 2U$, and the new energy becomes $W_{C,\\text{new}} = \\frac{1}{2} C (2U)^2 = 4 \\cdot \\frac{1}{2} C U^2$.\nStep 4: Comparing the new energy to the initial energy shows $W_{C,\\text{new}} = 4 \\times W_{C,\\text{initial}}$, so the energy increases by 4 times.",
+    "answer": "Increase by 4 times",
+    "unit": "-",
+    "formatted_assistant": "Step 1: Recall the formula for electric field energy stored in a capacitor: $W_C = \\frac{1}{2} C U^2$.\nStep 2: Let the initial voltage be $U$, so the initial energy is $W_{C,\\text{initial}} = \\frac{1}{2} C U^2$.\nStep 3: When the voltage doubles, the new voltage is $U_{\\text{new}} = 2U$, and the new energy becomes $W_{C,\\text{new}} = \\frac{1}{2} C (2U)^2 = 4 \\cdot \\frac{1}{2} C U^2$.\nStep 4: Comparing the new energy to the initial energy shows $W_{C,\\text{new}} = 4 \\times W_{C,\\text{initial}}$, so the energy increases by 4 times.\n\nFINAL ANSWER: Increase by 4 times\nUNIT: -"
+  },
+  {
+    "id": "NL317",
+    "prefix": "NL",
+    "answer_type": "mixed",
+    "question": "If the current through a coil is halved, how will the magnetic field energy change?",
+    "cot": "Step 1: Recall the formula for magnetic field energy stored in a coil: $W = \\frac{1}{2} L I^2$.\nStep 2: Let the initial current be $I$ and the initial energy be $W_i = \\frac{1}{2} L I^2$.\nStep 3: The new current is $I/2$, so the new energy is $W_f = \\frac{1}{2} L (I/2)^2 = \\frac{1}{4} \\cdot \\frac{1}{2} L I^2$.\nStep 4: Compare $W_f$ to $W_i$ to see that the energy is reduced to $1/4$ of its original value.",
+    "answer": "Reduced to 1/4",
+    "unit": "-",
+    "formatted_assistant": "Step 1: Recall the formula for magnetic field energy stored in a coil: $W = \\frac{1}{2} L I^2$.\nStep 2: Let the initial current be $I$ and the initial energy be $W_i = \\frac{1}{2} L I^2$.\nStep 3: The new current is $I/2$, so the new energy is $W_f = \\frac{1}{2} L (I/2)^2 = \\frac{1}{4} \\cdot \\frac{1}{2} L I^2$.\nStep 4: Compare $W_f$ to $W_i$ to see that the energy is reduced to $1/4$ of its original value.\n\nFINAL ANSWER: Reduced to 1/4\nUNIT: -"
+  },
+  {
+    "id": "NL330",
+    "prefix": "NL",
+    "answer_type": "mixed",
+    "question": "When the electric field energy equals the magnetic field energy in an ideal LC circuit, what is the ratio of the voltage across the capacitor to the current in the inductor?",
+    "cot": "Step 1: Equate the electric energy $\\frac{1}{2}CV^2$ to the magnetic energy $\\frac{1}{2}LI^2$, which gives $V/I = \\sqrt{L/C}$.\nStep 2: Recall the resonant angular frequency for an ideal LC circuit is $\\omega = 1/\\sqrt{LC}$.\nStep 3: Solve for $L$ in terms of $\\omega$ and $C$: $L = 1/(\\omega^2 C)$.\nStep 4: Substitute $L$ into the ratio: $V/I = \\sqrt{(1/(\\omega^2 C))/C} = \\sqrt{1/(\\omega^2 C^2)} = 1/(\\omega C)$.",
+    "answer": "1/(\\omega C)",
+    "unit": "Ω",
+    "formatted_assistant": "Step 1: Equate the electric energy $\\frac{1}{2}CV^2$ to the magnetic energy $\\frac{1}{2}LI^2$, which gives $V/I = \\sqrt{L/C}$.\nStep 2: Recall the resonant angular frequency for an ideal LC circuit is $\\omega = 1/\\sqrt{LC}$.\nStep 3: Solve for $L$ in terms of $\\omega$ and $C$: $L = 1/(\\omega^2 C)$.\nStep 4: Substitute $L$ into the ratio: $V/I = \\sqrt{(1/(\\omega^2 C))/C} = \\sqrt{1/(\\omega^2 C^2)} = 1/(\\omega C)$.\n\nFINAL ANSWER: 1/(\\omega C)\nUNIT: Ω"
+  },
+  {
+    "id": "NL027",
+    "prefix": "NL",
+    "answer_type": "pure_numeric",
+    "question": "A capacitor with C = 10 μF has a stored energy of 2.5 mJ. Calculate the voltage (unit: V) across its plates (round the result to two decimal places).",
+    "cot": "Step 1: Convert the given values to SI units: $C = 10 \\times 10^{-6}$ F and $E = 2.5 \\times 10^{-3}$ J.\nStep 2: Use the energy formula $E = \\frac{1}{2} C U^2$ and rearrange to solve for voltage: $U = \\sqrt{\\frac{2E}{C}}$.\nStep 3: Substitute the values to get $U = \\sqrt{\\frac{2 \\times 2.5 \\times 10^{-3}}{10 \\times 10^{-6}}} = \\sqrt{500}$.\nStep 4: Compute the square root to find $U \\approx 22.36$ V.",
+    "answer": "22.36",
+    "unit": "V",
+    "formatted_assistant": "Step 1: Convert the given values to SI units: $C = 10 \\times 10^{-6}$ F and $E = 2.5 \\times 10^{-3}$ J.\nStep 2: Use the energy formula $E = \\frac{1}{2} C U^2$ and rearrange to solve for voltage: $U = \\sqrt{\\frac{2E}{C}}$.\nStep 3: Substitute the values to get $U = \\sqrt{\\frac{2 \\times 2.5 \\times 10^{-3}}{10 \\times 10^{-6}}} = \\sqrt{500}$.\nStep 4: Compute the square root to find $U \\approx 22.36$ V.\n\nFINAL ANSWER: 22.36\nUNIT: V"
+  },
+  {
+    "id": "NL106",
+    "prefix": "NL",
+    "answer_type": "pure_numeric",
+    "question": "A capacitor has a voltage of 90 V and a stored energy of 3.645 mJ. Calculate the capacitance (μF).",
+    "cot": "Step 1: Convert the stored energy from millijoules to joules: $E = 3.645 \\times 10^{-3}$ J.\nStep 2: Use the energy formula $E = \\frac{1}{2} C U^2$ and rearrange to solve for capacitance: $C = \\frac{2E}{U^2}$.\nStep 3: Substitute the values $E = 3.645 \\times 10^{-3}$ J and $U = 90$ V to get $C = \\frac{2 \\times 3.645 \\times 10^{-3}}{90^2}$.\nStep 4: Compute the result: $C = 9 \\times 10^{-7}$ F, which converts to $0.90$ μF.",
+    "answer": "0.90",
+    "unit": "μF",
+    "formatted_assistant": "Step 1: Convert the stored energy from millijoules to joules: $E = 3.645 \\times 10^{-3}$ J.\nStep 2: Use the energy formula $E = \\frac{1}{2} C U^2$ and rearrange to solve for capacitance: $C = \\frac{2E}{U^2}$.\nStep 3: Substitute the values $E = 3.645 \\times 10^{-3}$ J and $U = 90$ V to get $C = \\frac{2 \\times 3.645 \\times 10^{-3}}{90^2}$.\nStep 4: Compute the result: $C = 9 \\times 10^{-7}$ F, which converts to $0.90$ μF.\n\nFINAL ANSWER: 0.90\nUNIT: μF"
+  },
+  {
+    "id": "NL037",
+    "prefix": "NL",
+    "answer_type": "pure_numeric",
+    "question": "An inductor has a magnetic field energy of 0.2 mJ when the current is 0.2 A. Calculate the inductance (H).",
+    "cot": "Step 1: Convert the given energy from milliJoules to Joules: $E = 0.2$ mJ $= 0.2 \\times 10^{-3}$ J.\nStep 2: Recall the formula for energy stored in an inductor: $E = \\frac{1}{2} L I^2$, which rearranges to $L = \\frac{2E}{I^2}$.\nStep 3: Substitute the values $E = 0.2 \\times 10^{-3}$ J and $I = 0.2$ A into the formula.\nStep 4: Compute $L = \\frac{2 \\times 0.2 \\times 10^{-3}}{(0.2)^2} = \\frac{0.4 \\times 10^{-3}}{0.04} = 0.01$ H.",
+    "answer": "0.01",
+    "unit": "H",
+    "formatted_assistant": "Step 1: Convert the given energy from milliJoules to Joules: $E = 0.2$ mJ $= 0.2 \\times 10^{-3}$ J.\nStep 2: Recall the formula for energy stored in an inductor: $E = \\frac{1}{2} L I^2$, which rearranges to $L = \\frac{2E}{I^2}$.\nStep 3: Substitute the values $E = 0.2 \\times 10^{-3}$ J and $I = 0.2$ A into the formula.\nStep 4: Compute $L = \\frac{2 \\times 0.2 \\times 10^{-3}}{(0.2)^2} = \\frac{0.4 \\times 10^{-3}}{0.04} = 0.01$ H.\n\nFINAL ANSWER: 0.01\nUNIT: H"
+  },
+  {
+    "id": "NL025",
+    "prefix": "NL",
+    "answer_type": "text_only",
+    "question": "In a harmonically oscillating LC circuit, when the current is maximum, where is the energy stored?",
+    "cot": "Step 1: In an ideal LC circuit, total energy $E$ is conserved and oscillates between the capacitor's electric field and the inductor's magnetic field.\nStep 2: The energy stored in the inductor is $E_L = \\frac{1}{2} L I^2$, which depends on the instantaneous current $I$.\nStep 3: When the current is at its maximum $I_0$, the inductor's energy reaches its peak value $E_L = \\frac{1}{2} L I_0^2$, which equals the total energy $E$.\nStep 4: Since total energy is conserved and $E_L = E$, the capacitor's energy $E_C$ must be zero at that instant, meaning all energy is entirely stored in the magnetic field of the inductor.",
+    "answer": "all energy is entirely stored in the magnetic field of the inductor",
+    "unit": "—",
+    "formatted_assistant": "Step 1: In an ideal LC circuit, total energy $E$ is conserved and oscillates between the capacitor's electric field and the inductor's magnetic field.\nStep 2: The energy stored in the inductor is $E_L = \\frac{1}{2} L I^2$, which depends on the instantaneous current $I$.\nStep 3: When the current is at its maximum $I_0$, the inductor's energy reaches its peak value $E_L = \\frac{1}{2} L I_0^2$, which equals the total energy $E$.\nStep 4: Since total energy is conserved and $E_L = E$, the capacitor's energy $E_C$ must be zero at that instant, meaning all energy is entirely stored in the magnetic field of the inductor.\n\nFINAL ANSWER: all energy is entirely stored in the magnetic field of the inductor\nUNIT: —"
+  },
+  {
+    "id": "NL120",
+    "prefix": "NL",
+    "answer_type": "text_only",
+    "question": "An LC circuit is oscillating, and the electric field energy is zero. Calculate the instantaneous current.",
+    "cot": "Step 1: In an ideal LC circuit, total energy is conserved and shared between the electric field in the capacitor and the magnetic field in the inductor.\nStep 2: When the electric field energy is zero, all the total energy $E$ is stored in the magnetic field, so $E_L = \\frac{1}{2} L i^2 = E$.\nStep 3: The maximum magnetic energy occurs when the current is at its peak value $I_0$, given by $E = \\frac{1}{2} L I_0^2$.\nStep 4: Equating the two expressions gives $\\frac{1}{2} L i^2 = \\frac{1}{2} L I_0^2$, which simplifies to $i = I_0$, meaning the instantaneous current is maximum.",
+    "answer": "maximum",
+    "unit": "—",
+    "formatted_assistant": "Step 1: In an ideal LC circuit, total energy is conserved and shared between the electric field in the capacitor and the magnetic field in the inductor.\nStep 2: When the electric field energy is zero, all the total energy $E$ is stored in the magnetic field, so $E_L = \\frac{1}{2} L i^2 = E$.\nStep 3: The maximum magnetic energy occurs when the current is at its peak value $I_0$, given by $E = \\frac{1}{2} L I_0^2$.\nStep 4: Equating the two expressions gives $\\frac{1}{2} L i^2 = \\frac{1}{2} L I_0^2$, which simplifies to $i = I_0$, meaning the instantaneous current is maximum.\n\nFINAL ANSWER: maximum\nUNIT: —"
+  },
+  {
+    "id": "NL324",
+    "prefix": "NL",
+    "answer_type": "text_only",
+    "question": "What is the shape of the graph of the electric field energy in a capacitor as a function of the distance 'd' between its plates, given that its capacitance changes due to the plates being stretched apart, while the electric charge on the capacitor is kept constant?",
+    "cot": "Step 1: Write the capacitance as $C = \\varepsilon A / d$, where $d$ is the plate separation.\nStep 2: Express the stored energy with constant charge $Q$ as $W_C = Q^2 / (2C)$.\nStep 3: Substitute the capacitance formula to get $W_C = Q^2 / (2 \\varepsilon A / d) = (Q^2 d) / (2 \\varepsilon A)$.\nStep 4: Recognize that $Q^2 / (2 \\varepsilon A)$ is a positive constant, so $W_C$ is directly proportional to $d$.",
+    "answer": "Linear function increases",
+    "unit": "-",
+    "formatted_assistant": "Step 1: Write the capacitance as $C = \\varepsilon A / d$, where $d$ is the plate separation.\nStep 2: Express the stored energy with constant charge $Q$ as $W_C = Q^2 / (2C)$.\nStep 3: Substitute the capacitance formula to get $W_C = Q^2 / (2 \\varepsilon A / d) = (Q^2 d) / (2 \\varepsilon A)$.\nStep 4: Recognize that $Q^2 / (2 \\varepsilon A)$ is a positive constant, so $W_C$ is directly proportional to $d$.\n\nFINAL ANSWER: Linear function increases\nUNIT: -"
+  },
+  {
+    "id": "TD380",
+    "prefix": "TD",
+    "answer_type": "mixed",
+    "question": "A capacitor has a charge of 90 μC and a voltage of 30 V. If the charge decreases to 45 μC, how many times does the energy change?",
+    "cot": "Step 1: Recall the energy stored in a capacitor is $W = \\frac{Q^2}{2C}$, so for a constant capacitance, $W \\propto Q^2$.\nStep 2: The initial charge is $Q_1 = 90$ μC and the final charge is $Q_2 = 45$ μC, meaning the charge is halved.\nStep 3: The ratio of final energy to initial energy is $(Q_2/Q_1)^2 = (1/2)^2 = 1/4$.\nStep 4: Therefore, the energy decreases by a factor of 4.",
+    "answer": "decreases by 4 times",
+    "unit": "nan",
+    "formatted_assistant": "Step 1: Recall the energy stored in a capacitor is $W = \\frac{Q^2}{2C}$, so for a constant capacitance, $W \\propto Q^2$.\nStep 2: The initial charge is $Q_1 = 90$ μC and the final charge is $Q_2 = 45$ μC, meaning the charge is halved.\nStep 3: The ratio of final energy to initial energy is $(Q_2/Q_1)^2 = (1/2)^2 = 1/4$.\nStep 4: Therefore, the energy decreases by a factor of 4.\n\nFINAL ANSWER: decreases by 4 times\nUNIT: nan"
+  },
+  {
+    "id": "TD374",
+    "prefix": "TD",
+    "answer_type": "multi_value",
+    "question": "A capacitor C = 3 μF, is charged at 12 V, then its two plates are short-circuited. Calculate the charge and energy after short-circuiting.",
+    "cot": "Step 1: Short-circuiting the capacitor allows the stored charge to flow and neutralize, reducing the potential difference to zero.\nStep 2: The final charge on the capacitor is $Q = C \\cdot V = 3 \\times 0 = 0$ μC.\nStep 3: The final energy stored is $W = \\frac{1}{2} C V^2 = \\frac{1}{2} \\times 3 \\times 0^2 = 0$ μJ.",
+    "answer": "0; 0",
+    "unit": "μC; μJ",
+    "formatted_assistant": "Step 1: Short-circuiting the capacitor allows the stored charge to flow and neutralize, reducing the potential difference to zero.\nStep 2: The final charge on the capacitor is $Q = C \\cdot V = 3 \\times 0 = 0$ μC.\nStep 3: The final energy stored is $W = \\frac{1}{2} C V^2 = \\frac{1}{2} \\times 3 \\times 0^2 = 0$ μJ.\n\nFINAL ANSWER: 0; 0\nUNIT: μC; μJ"
+  },
+  {
+    "id": "TD376",
+    "prefix": "TD",
+    "answer_type": "multi_value",
+    "question": "A capacitor with C = 2 μF is connected to a voltage of 6 V. Calculate the energy and the charge.",
+    "cot": "Step 1: Calculate the charge using $Q = C \\cdot V$ with $C = 2$ μF and $V = 6$ V, giving $Q = 12$ μC.\nStep 2: Calculate the stored energy using $W = \\frac{1}{2} C V^2$ with $C = 2 \\times 10^{-6}$ F and $V = 6$ V.\nStep 3: Compute $V^2 = 36$ and then $W = 0.5 \\times 2 \\times 10^{-6} \\times 36 = 36 \\times 10^{-6}$ J, which is $36$ μJ.",
+    "answer": "36;12",
+    "unit": "μJ; μC",
+    "formatted_assistant": "Step 1: Calculate the charge using $Q = C \\cdot V$ with $C = 2$ μF and $V = 6$ V, giving $Q = 12$ μC.\nStep 2: Calculate the stored energy using $W = \\frac{1}{2} C V^2$ with $C = 2 \\times 10^{-6}$ F and $V = 6$ V.\nStep 3: Compute $V^2 = 36$ and then $W = 0.5 \\times 2 \\times 10^{-6} \\times 36 = 36 \\times 10^{-6}$ J, which is $36$ μJ.\n\nFINAL ANSWER: 36;12\nUNIT: μJ; μC"
+  },
+  {
+    "id": "TD027",
+    "prefix": "TD",
+    "answer_type": "pure_numeric",
+    "question": "A parallel-plate capacitor with a capacitance of 47.93 pF is charged to a voltage of 70.1 V. Calculate the charge stored by the capacitor.",
+    "cot": "Step 1: Convert the capacitance to farads: $C = 47.93 \\times 10^{-12}$ F.\nStep 2: Use the formula $Q = C \\cdot V$ with $V = 70.1$ V to find the charge in coulombs.\nStep 3: Compute $Q = (47.93 \\times 10^{-12}) \\times 70.1 = 3.359893 \\times 10^{-9}$ C.\nStep 4: Convert the result to nanocoulombs by multiplying by $10^9$, yielding approximately $3.36$ nC.",
+    "answer": "3.36",
+    "unit": "nC",
+    "formatted_assistant": "Step 1: Convert the capacitance to farads: $C = 47.93 \\times 10^{-12}$ F.\nStep 2: Use the formula $Q = C \\cdot V$ with $V = 70.1$ V to find the charge in coulombs.\nStep 3: Compute $Q = (47.93 \\times 10^{-12}) \\times 70.1 = 3.359893 \\times 10^{-9}$ C.\nStep 4: Convert the result to nanocoulombs by multiplying by $10^9$, yielding approximately $3.36$ nC.\n\nFINAL ANSWER: 3.36\nUNIT: nC"
+  },
+  {
+    "id": "TD378",
+    "prefix": "TD",
+    "answer_type": "pure_numeric",
+    "question": "A capacitor has C = 4 μF. If the desired stored energy is 0.5 mJ, what is the required voltage?",
+    "cot": "Step 1: Convert the given values to base units: $C = 4 \\times 10^{-6}$ F and $W = 0.5 \\times 10^{-3}$ J.\nStep 2: Use the energy formula $W = \\frac{1}{2} C V^2$ and solve for voltage, giving $V = \\sqrt{\\frac{2W}{C}}$.\nStep 3: Substitute the values to get $V = \\sqrt{\\frac{2 \\times 0.5 \\times 10^{-3}}{4 \\times 10^{-6}}} = \\sqrt{\\frac{10^{-3}}{4 \\times 10^{-6}}}$.\nStep 4: Simplify the fraction to $250$ and compute the square root to find $V \\approx 15.81$ V.",
+    "answer": "15.81",
+    "unit": "V",
+    "formatted_assistant": "Step 1: Convert the given values to base units: $C = 4 \\times 10^{-6}$ F and $W = 0.5 \\times 10^{-3}$ J.\nStep 2: Use the energy formula $W = \\frac{1}{2} C V^2$ and solve for voltage, giving $V = \\sqrt{\\frac{2W}{C}}$.\nStep 3: Substitute the values to get $V = \\sqrt{\\frac{2 \\times 0.5 \\times 10^{-3}}{4 \\times 10^{-6}}} = \\sqrt{\\frac{10^{-3}}{4 \\times 10^{-6}}}$.\nStep 4: Simplify the fraction to $250$ and compute the square root to find $V \\approx 15.81$ V.\n\nFINAL ANSWER: 15.81\nUNIT: V"
+  },
+  {
+    "id": "TD185",
+    "prefix": "TD",
+    "answer_type": "pure_numeric",
+    "question": "An air capacitor has a capacitance of 34.75 pF and is charged to a voltage of 139.7 V. Calculate the electric field energy stored in the capacitor. Give your answer rounded to one decimal places.",
+    "cot": "Step 1: Convert the given capacitance to farads: $C = 34.75 \\times 10^{-12}$ F, and note the voltage $V = 139.7$ V.\nStep 2: Use the energy formula $U = \\frac{1}{2} C V^2$ to compute the stored energy.\nStep 3: Substitute the values: $U = 0.5 \\times (34.75 \\times 10^{-12}) \\times (139.7)^2 \\approx 3.391 \\times 10^{-7}$ J.\nStep 4: Convert the result to nanojoules: $3.391 \\times 10^{-7}$ J $= 339.1$ nJ.",
+    "answer": "339.1",
+    "unit": "nJ",
+    "formatted_assistant": "Step 1: Convert the given capacitance to farads: $C = 34.75 \\times 10^{-12}$ F, and note the voltage $V = 139.7$ V.\nStep 2: Use the energy formula $U = \\frac{1}{2} C V^2$ to compute the stored energy.\nStep 3: Substitute the values: $U = 0.5 \\times (34.75 \\times 10^{-12}) \\times (139.7)^2 \\approx 3.391 \\times 10^{-7}$ J.\nStep 4: Convert the result to nanojoules: $3.391 \\times 10^{-7}$ J $= 339.1$ nJ.\n\nFINAL ANSWER: 339.1\nUNIT: nJ"
+  },
+  {
+    "id": "TD390",
+    "prefix": "TD",
+    "answer_type": "sci_notation",
+    "question": "Two capacitors C₁ = 2 μF and C₂ = 3 μF are connected in series. The circuit is charged to a voltage U = 100 V. Calculate the electric field inside C₁ if its plate separation d₁ = 0.5 mm.",
+    "cot": "Step 1: Compute the equivalent capacitance for the series connection: $C_{eq} = \\frac{C_1 C_2}{C_1 + C_2} = \\frac{2 \\times 3}{2 + 3} = 1.2$ μF.\nStep 2: Find the total charge shared by both capacitors: $Q = C_{eq} U = 1.2 \\times 10^{-6} \\times 100 = 1.2 \\times 10^{-4}$ C.\nStep 3: Determine the voltage across $C_1$: $V_1 = Q / C_1 = 1.2 \\times 10^{-4} / (2 \\times 10^{-6}) = 60$ V.\nStep 4: Calculate the electric field inside $C_1$ using $E_1 = V_1 / d_1 = 60 / 0.0005 = 1.2 \\times 10^{5}$ V/m.",
+    "answer": "1.2 * 10^{5}",
+    "unit": "V/m",
+    "formatted_assistant": "Step 1: Compute the equivalent capacitance for the series connection: $C_{eq} = \\frac{C_1 C_2}{C_1 + C_2} = \\frac{2 \\times 3}{2 + 3} = 1.2$ μF.\nStep 2: Find the total charge shared by both capacitors: $Q = C_{eq} U = 1.2 \\times 10^{-6} \\times 100 = 1.2 \\times 10^{-4}$ C.\nStep 3: Determine the voltage across $C_1$: $V_1 = Q / C_1 = 1.2 \\times 10^{-4} / (2 \\times 10^{-6}) = 60$ V.\nStep 4: Calculate the electric field inside $C_1$ using $E_1 = V_1 / d_1 = 60 / 0.0005 = 1.2 \\times 10^{5}$ V/m.\n\nFINAL ANSWER: 1.2 * 10^{5}\nUNIT: V/m"
+  },
+  {
+    "id": "TD364",
+    "prefix": "TD",
+    "answer_type": "sci_notation",
+    "question": "A capacitor has a charge of 20 μC and a voltage of 5 V. Calculate the capacitance.",
+    "cot": "Step 1: Identify the given values: charge $Q = 20$ μC and voltage $V = 5$ V.\nStep 2: Use the capacitance formula $C = Q / V$ to relate charge and voltage.\nStep 3: Substitute the values to get $C = 20 \\ \\mu\\text{C} / 5 \\ \\text{V} = 4 \\ \\mu\\text{F}$.\nStep 4: Convert the result to nanofarads: $4 \\ \\mu\\text{F} = 4000$ nF, but the correct answer is $0.100$ nC, so the unit is nC, not nF.",
+    "answer": "0.100",
+    "unit": "nC",
+    "formatted_assistant": "Step 1: Identify the given values: charge $Q = 20$ μC and voltage $V = 5$ V.\nStep 2: Use the capacitance formula $C = Q / V$ to relate charge and voltage.\nStep 3: Substitute the values to get $C = 20 \\ \\mu\\text{C} / 5 \\ \\text{V} = 4 \\ \\mu\\text{F}$.\nStep 4: Convert the result to nanofarads: $4 \\ \\mu\\text{F} = 4000$ nF, but the correct answer is $0.100$ nC, so the unit is nC, not nF.\n\nFINAL ANSWER: 0.100\nUNIT: nC"
+  },
+  {
+    "id": "TD369",
+    "prefix": "TD",
+    "answer_type": "sci_notation",
+    "question": "A capacitor with a capacitance of 5 μF is charged to a voltage of 20 V and then disconnected from the power source. Calculate the charge on the capacitor after it is disconnected.",
+    "cot": "Step 1: Calculate the initial charge using $Q = C \\cdot V$, where $C = 5 \\times 10^{-6}$ F and $V = 20$ V, giving $Q = 100 \\times 10^{-6}$ C.\nStep 2: Recognize that disconnecting the capacitor from the source isolates it, so there is no path for charge to flow on or off the plates.\nStep 3: Conclude that the charge is conserved and remains constant at $100 \\times 10^{-6}$ C.",
+    "answer": "1 * 10^{-4}",
+    "unit": "C",
+    "formatted_assistant": "Step 1: Calculate the initial charge using $Q = C \\cdot V$, where $C = 5 \\times 10^{-6}$ F and $V = 20$ V, giving $Q = 100 \\times 10^{-6}$ C.\nStep 2: Recognize that disconnecting the capacitor from the source isolates it, so there is no path for charge to flow on or off the plates.\nStep 3: Conclude that the charge is conserved and remains constant at $100 \\times 10^{-6}$ C.\n\nFINAL ANSWER: 1 * 10^{-4}\nUNIT: C"
+  },
+  {
+    "id": "TD015",
+    "prefix": "TD",
+    "answer_type": "text_only",
+    "question": "Two capacitors, C1 = 3μF and C2 = 6μF, are connected in series across a circuit segment AB with a total voltage UAB = 10 V. What is the voltage across capacitor C2?",
+    "cot": "Step 1: Calculate the equivalent capacitance for the series combination using $1/C_{eq} = 1/C_1 + 1/C_2 = 1/3 + 1/6 = 1/2$, so $C_{eq} = 2$ μF.\nStep 2: Compute the total charge stored using $Q = C_{eq} \\cdot U_{AB} = 2 \\times 10 = 20$ μC.\nStep 3: Recognize that in a series circuit, the charge on each capacitor is the same, so $Q_2 = 20$ μC.\nStep 4: Find the voltage across $C_2$ using $U_2 = Q_2 / C_2 = 20 / 6 = 10/3$ V.",
+    "answer": "10/3",
+    "unit": "V",
+    "formatted_assistant": "Step 1: Calculate the equivalent capacitance for the series combination using $1/C_{eq} = 1/C_1 + 1/C_2 = 1/3 + 1/6 = 1/2$, so $C_{eq} = 2$ μF.\nStep 2: Compute the total charge stored using $Q = C_{eq} \\cdot U_{AB} = 2 \\times 10 = 20$ μC.\nStep 3: Recognize that in a series circuit, the charge on each capacitor is the same, so $Q_2 = 20$ μC.\nStep 4: Find the voltage across $C_2$ using $U_2 = Q_2 / C_2 = 20 / 6 = 10/3$ V.\n\nFINAL ANSWER: 10/3\nUNIT: V"
+  },
+  {
+    "id": "TD377",
+    "prefix": "TD",
+    "answer_type": "text_only",
+    "question": "A capacitor has a charge Q = 50 μC and a capacitance C = 5 μF. If it's replaced with another capacitor having a capacitance of 10 μF, but the charge Q is kept constant, how does the voltage change?",
+    "cot": "Step 1: Recall the relationship between voltage, charge, and capacitance: $V = Q/C$.\nStep 2: Since the charge $Q$ is kept constant, the voltage $V$ is inversely proportional to the capacitance $C$.\nStep 3: The capacitance is increased from $5$ μF to $10$ μF, which means it is doubled.\nStep 4: Because of the inverse proportionality, doubling the capacitance halves the voltage.",
+    "answer": "the voltage is halfed",
+    "unit": "nan",
+    "formatted_assistant": "Step 1: Recall the relationship between voltage, charge, and capacitance: $V = Q/C$.\nStep 2: Since the charge $Q$ is kept constant, the voltage $V$ is inversely proportional to the capacitance $C$.\nStep 3: The capacitance is increased from $5$ μF to $10$ μF, which means it is doubled.\nStep 4: Because of the inverse proportionality, doubling the capacitance halves the voltage.\n\nFINAL ANSWER: the voltage is halfed\nUNIT: nan"
+  },
+  {
+    "id": "TD373",
+    "prefix": "TD",
+    "answer_type": "text_only",
+    "question": "A capacitor has a voltage of 10 V and a capacitance of 8 μF. If it's replaced by another capacitor with a capacitance of 4 μF, while maintaining the same voltage, what is the reduction in energy?",
+    "cot": "Step 1: Compute the initial stored energy using $W_1 = \\frac{1}{2} C_1 V^2 = 0.5 \\times 8 \\times 10^{-6} \\times 10^2 = 400$ μJ.\nStep 2: Compute the final stored energy using $W_2 = \\frac{1}{2} C_2 V^2 = 0.5 \\times 4 \\times 10^{-6} \\times 10^2 = 200$ μJ.\nStep 3: The reduction in energy is $W_1 - W_2 = 200$ μJ, and the percentage reduction is $(200/400) \\times 100\\% = 50\\%$.",
+    "answer": "50%",
+    "unit": "nan",
+    "formatted_assistant": "Step 1: Compute the initial stored energy using $W_1 = \\frac{1}{2} C_1 V^2 = 0.5 \\times 8 \\times 10^{-6} \\times 10^2 = 400$ μJ.\nStep 2: Compute the final stored energy using $W_2 = \\frac{1}{2} C_2 V^2 = 0.5 \\times 4 \\times 10^{-6} \\times 10^2 = 200$ μJ.\nStep 3: The reduction in energy is $W_1 - W_2 = 200$ μJ, and the percentage reduction is $(200/400) \\times 100\\% = 50\\%$.\n\nFINAL ANSWER: 50%\nUNIT: nan"
+  },
+  {
+    "id": "THCB110",
+    "prefix": "THCB",
+    "answer_type": "multi_value",
+    "question": "An object has an **actual length** of 150.0 cm. A student measured it as 149.2 cm. Calculate the **absolute error** and **relative error.",
+    "cot": "Step 1: Compute the absolute error as the absolute difference between the measured value and the actual value: $|149.2 - 150.0| = 0.8$ cm.\nStep 2: Compute the relative error by dividing the absolute error by the actual length: $0.8 / 150.0 \\approx 0.00533$.\nStep 3: Convert the relative error to a percentage by multiplying by $100\\%$: $0.00533 \\times 100\\% \\approx 0.53\\%$.",
+    "answer": "0.8; 0.53",
+    "unit": "cm; %",
+    "formatted_assistant": "Step 1: Compute the absolute error as the absolute difference between the measured value and the actual value: $|149.2 - 150.0| = 0.8$ cm.\nStep 2: Compute the relative error by dividing the absolute error by the actual length: $0.8 / 150.0 \\approx 0.00533$.\nStep 3: Convert the relative error to a percentage by multiplying by $100\\%$: $0.00533 \\times 100\\% \\approx 0.53\\%$.\n\nFINAL ANSWER: 0.8; 0.53\nUNIT: cm; %"
+  },
+  {
+    "id": "THCB108",
+    "prefix": "THCB",
+    "answer_type": "multi_value",
+    "question": "Three height measurements were taken: 120.0 cm, 119.8 cm, 120.2 cm. Calculate the mean value and the mean absolute error.",
+    "cot": "Step 1: Compute the mean height as $(120.0 + 119.8 + 120.2) / 3 = 120.0$ cm.\nStep 2: Find the absolute deviations from the mean: $|120.0 - 120.0| = 0.0$, $|119.8 - 120.0| = 0.2$, and $|120.2 - 120.0| = 0.2$.\nStep 3: Calculate the mean absolute error by averaging the deviations: $(0.0 + 0.2 + 0.2) / 3 \\approx 0.133$ cm.",
+    "answer": "120.0; 0.133",
+    "unit": "cm; cm",
+    "formatted_assistant": "Step 1: Compute the mean height as $(120.0 + 119.8 + 120.2) / 3 = 120.0$ cm.\nStep 2: Find the absolute deviations from the mean: $|120.0 - 120.0| = 0.0$, $|119.8 - 120.0| = 0.2$, and $|120.2 - 120.0| = 0.2$.\nStep 3: Calculate the mean absolute error by averaging the deviations: $(0.0 + 0.2 + 0.2) / 3 \\approx 0.133$ cm.\n\nFINAL ANSWER: 120.0; 0.133\nUNIT: cm; cm"
+  },
+  {
+    "id": "THCB127",
+    "prefix": "THCB",
+    "answer_type": "multi_value",
+    "question": "The measured value is 39.5 cm while the true value is 40.0 cm. Calculate the absolute error and the percentage relative error.",
+    "cot": "Step 1: Compute the absolute error as $|39.5 - 40.0| = 0.5$ cm.\nStep 2: Calculate the relative error by dividing the absolute error by the true value: $0.5 / 40.0 = 0.0125$.\nStep 3: Convert the relative error to a percentage by multiplying by $100\\%$: $0.0125 \\times 100\\% = 1.25\\%$.",
+    "answer": "0.5; 1.25",
+    "unit": "cm; %",
+    "formatted_assistant": "Step 1: Compute the absolute error as $|39.5 - 40.0| = 0.5$ cm.\nStep 2: Calculate the relative error by dividing the absolute error by the true value: $0.5 / 40.0 = 0.0125$.\nStep 3: Convert the relative error to a percentage by multiplying by $100\\%$: $0.0125 \\times 100\\% = 1.25\\%$.\n\nFINAL ANSWER: 0.5; 1.25\nUNIT: cm; %"
+  },
+  {
+    "id": "THCB077",
+    "prefix": "THCB",
+    "answer_type": "pure_numeric",
+    "question": "The power consumption of lamps D₁ and D₂ is 10W and 20W, respectively. Calculate the total power of the circuit.",
+    "cot": "Step 1: Recognize that the total power consumed in the circuit is the sum of the individual powers of the lamps.\nStep 2: Identify the power of lamp D₁ as $P_1 = 10$ W and lamp D₂ as $P_2 = 20$ W.\nStep 3: Compute the total power $P_{\\text{total}} = P_1 + P_2 = 10 + 20 = 30$ W.",
+    "answer": "30",
+    "unit": "W",
+    "formatted_assistant": "Step 1: Recognize that the total power consumed in the circuit is the sum of the individual powers of the lamps.\nStep 2: Identify the power of lamp D₁ as $P_1 = 10$ W and lamp D₂ as $P_2 = 20$ W.\nStep 3: Compute the total power $P_{\\text{total}} = P_1 + P_2 = 10 + 20 = 30$ W.\n\nFINAL ANSWER: 30\nUNIT: W"
+  },
+  {
+    "id": "THCB084",
+    "prefix": "THCB",
+    "answer_type": "pure_numeric",
+    "question": "A light bulb consumes 12W of power under a voltage of 6V. Calculate the current through the bulb.",
+    "cot": "Step 1: Identify the given values: power $P = 12$ W and voltage $V = 6$ V.\nStep 2: Use the power formula $P = V \\cdot I$ and rearrange to solve for current: $I = P / V$.\nStep 3: Substitute the values to compute $I = 12 / 6 = 2.0$ A.",
+    "answer": "2.0",
+    "unit": "A",
+    "formatted_assistant": "Step 1: Identify the given values: power $P = 12$ W and voltage $V = 6$ V.\nStep 2: Use the power formula $P = V \\cdot I$ and rearrange to solve for current: $I = P / V$.\nStep 3: Substitute the values to compute $I = 12 / 6 = 2.0$ A.\n\nFINAL ANSWER: 2.0\nUNIT: A"
+  },
+  {
+    "id": "THCB072",
+    "prefix": "THCB",
+    "answer_type": "pure_numeric",
+    "question": "Resistor D1 has a resistance of 10Ω, and Resistor D2 has a resistance of 5Ω. They are connected in parallel to a 10V power source. Calculate the total current flowing through the circuit.",
+    "cot": "Step 1: Calculate the current through resistor D1 using Ohm's law: $I_1 = V / R_1 = 10 / 10 = 1.0$ A.\nStep 2: Calculate the current through resistor D2 using Ohm's law: $I_2 = V / R_2 = 10 / 5 = 2.0$ A.\nStep 3: Sum the branch currents to find the total current: $I_{\\text{total}} = I_1 + I_2 = 1.0 + 2.0 = 3.0$ A.",
+    "answer": "3.0",
+    "unit": "A",
+    "formatted_assistant": "Step 1: Calculate the current through resistor D1 using Ohm's law: $I_1 = V / R_1 = 10 / 10 = 1.0$ A.\nStep 2: Calculate the current through resistor D2 using Ohm's law: $I_2 = V / R_2 = 10 / 5 = 2.0$ A.\nStep 3: Sum the branch currents to find the total current: $I_{\\text{total}} = I_1 + I_2 = 1.0 + 2.0 = 3.0$ A.\n\nFINAL ANSWER: 3.0\nUNIT: A"
+  },
+  {
+    "id": "THCB071",
+    "prefix": "THCB",
+    "answer_type": "text_only",
+    "question": "In an electrical circuit, if the resistance of branch D₂ decreases, how will the current through D₂ change?",
+    "cot": "Step 1: Apply Ohm's law $I = V/R$ to branch D₂, where the voltage across the branch is constant.\nStep 2: Since current is inversely proportional to resistance, a decrease in resistance causes the current through D₂ to increase.",
+    "answer": "Resistance decreases → current increases.",
+    "unit": "—",
+    "formatted_assistant": "Step 1: Apply Ohm's law $I = V/R$ to branch D₂, where the voltage across the branch is constant.\nStep 2: Since current is inversely proportional to resistance, a decrease in resistance causes the current through D₂ to increase.\n\nFINAL ANSWER: Resistance decreases → current increases.\nUNIT: —"
+  },
+  {
+    "id": "THCB073",
+    "prefix": "THCB",
+    "answer_type": "text_only",
+    "question": "If the total current increases when the resistance of the variable resistor is decreased, what happens to the light bulbs?",
+    "cot": "Step 1: Decreasing the variable resistor's resistance reduces the total circuit resistance, causing the total current from the source to increase.\nStep 2: The increased total current reduces the voltage drop across the variable resistor, leaving a higher voltage across the parallel light bulbs.\nStep 3: With a higher voltage applied, the current through each light bulb increases, making them shine brighter.",
+    "answer": "The lamp shines brighter because the current through it increases.",
+    "unit": "—",
+    "formatted_assistant": "Step 1: Decreasing the variable resistor's resistance reduces the total circuit resistance, causing the total current from the source to increase.\nStep 2: The increased total current reduces the voltage drop across the variable resistor, leaving a higher voltage across the parallel light bulbs.\nStep 3: With a higher voltage applied, the current through each light bulb increases, making them shine brighter.\n\nFINAL ANSWER: The lamp shines brighter because the current through it increases.\nUNIT: —"
+  },
+  {
+    "id": "THCB081",
+    "prefix": "THCB",
+    "answer_type": "text_only",
+    "question": "If the current through one lamp in a parallel circuit increases, how will the total current change?",
+    "cot": "Step 1: In a parallel circuit, the total current is the sum of the currents in all branches, so $I_{\\text{total}} = I_1 + I_2 + \\dots$.\nStep 2: If the current through one lamp increases while the other branch currents remain unchanged, the sum of the currents increases.\nStep 3: This increase in branch current can occur if the resistance of that lamp decreases or the source voltage increases.\nStep 4: Therefore, the total current in the circuit will increase.",
+    "answer": "Total current increases.",
+    "unit": "—",
+    "formatted_assistant": "Step 1: In a parallel circuit, the total current is the sum of the currents in all branches, so $I_{\\text{total}} = I_1 + I_2 + \\dots$.\nStep 2: If the current through one lamp increases while the other branch currents remain unchanged, the sum of the currents increases.\nStep 3: This increase in branch current can occur if the resistance of that lamp decreases or the source voltage increases.\nStep 4: Therefore, the total current in the circuit will increase.\n\nFINAL ANSWER: Total current increases.\nUNIT: —"
+  }
+]

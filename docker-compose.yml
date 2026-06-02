@@ -1,25 +1,28 @@
 services:
-  ollama:
-    build: .
-    container_name: ollama
-    volumes:
-      - ollama_data:/root/.ollama
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: vllm
+    runtime: nvidia          # requires nvidia-container-toolkit on the host
     environment:
-      - OLLAMA_MODEL=${OLLAMA_MODEL:-}
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN:-}
+      - VLLM_USE_MODELSCOPE=False
+      - FLASHINFER_WORKSPACE_DIR=/tmp/flashinfer
+    command:
+      - "--model"
+      - "${VLLM_MODEL:-Qwen/Qwen2.5-Math-7B-Instruct}"
+      - "--dtype"
+      - "auto"
+      - "--max-model-len"
+      - "4096"
+    volumes:
+      - vllm_cache:/root/.cache/huggingface
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]
-      interval: 10s
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/v1/models"]
+      interval: 15s
       timeout: 5s
-      retries: 12
-      start_period: 60s
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
+      retries: 20
+      start_period: 120s
 
   redis:
     image: redis:7-alpine
@@ -42,15 +45,15 @@ services:
       - "8000:8000"
     env_file: .env
     environment:
-      - OLLAMA_BASE_URL=http://ollama:11434
+      - VLLM_BASE_URL=http://vllm:8000/v1
       - REDIS_URL=redis://redis:6379
     depends_on:
-      ollama:
+      vllm:
         condition: service_healthy
       redis:
         condition: service_healthy
     restart: unless-stopped
 
 volumes:
-  ollama_data:
+  vllm_cache:
   redis_data:
