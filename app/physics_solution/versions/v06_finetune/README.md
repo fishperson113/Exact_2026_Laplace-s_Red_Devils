@@ -49,9 +49,12 @@ v06_finetune/
 │   ├── extract_golden60.py  # -> data/golden/golden_60.csv                        [Phase 0 ✓]
 │   ├── filter.py            # Step-0: drop figure/underspecified (DeepSeek)       [Phase 1]
 │   ├── vietjack_normalize.py# domain-filter -> VN->EN -> answer/unit extract      [Phase 1]
-│   ├── selfgen.py           # Route-1: Qwen via vLLM, multi-temp, exec-verified   [Phase 2]
-│   ├── teacher.py           # Route-2/3: DeepSeek residual                        [Phase 2]
-│   ├── guards.py            # spurious-correct reject, dedup, cap, oversample     [Phase 2]
+│   ├── vllm_client.py       # async vLLM client (n-sampling, thinking off)        [Phase 2 ✓]
+│   ├── pot_common.py        # execution gate: verify/make_trajectory/checkpoint   [Phase 2 ✓]
+│   ├── selfgen.py           # Route-1: Qwen via vLLM, multi-temp, exec-verified   [Phase 2 ✓]
+│   ├── teacher.py           # Route-2/3: DeepSeek-pro residual                    [Phase 2 ✓]
+│   ├── guards.py            # spurious-correct reject, dedup, cap                 [Phase 2 ✓]
+│   ├── pot_smoke.py         # local GPU-free harness test                         [Phase 2 ✓]
 │   └── build_sft.py         # stratified split + Qwen chat-template JSONL         [Phase 3]
 ├── train/
 │   ├── sft_unsloth.py       # SFT QLoRA (Vast AI)                                 [Phase 4]
@@ -67,7 +70,7 @@ v06_finetune/
 |---|---|---|---|
 | **0. Scaffolding** | folders, `schema.py`, `taxonomy.py`, `golden_60.csv` | Local | **done** |
 | **1. Filter + Normalize** | Step-0 filter; Vietjack domain-filter + VN→EN + answer/unit; one unified format | Local + DeepSeek | **done** |
-| **2. Trajectories** | Route-1 self-gen (Qwen vLLM, multi-temp) → exec-verify → Route-2/3 teacher residual → guards | Vast AI + Local | todo |
+| **2. Trajectories** | Route-1 self-gen (Qwen vLLM, multi-temp) → exec-verify → Route-2/3 teacher residual → guards | Vast AI + Local | code ready; run pending |
 | **3. Build SFT set** | stratified split (val ⊇ 60 golden + multi-domain slice) → JSONL | Local | todo |
 | **4. Train SFT** | Unsloth QLoRA; eval vs v05_best on `golden_60` + broad val | Vast AI | todo |
 | **5. Inference** | `pipeline.py` + `run.py`, register in `cli/inference.py` | Vast AI | todo |
@@ -121,3 +124,53 @@ PYTHONPATH=. .venv/bin/python -m app.physics_solution.versions.v06_finetune.data
 PYTHONPATH=. .venv/bin/python -m app.physics_solution.versions.v06_finetune.data_pipeline.vietjack_normalize --grades 10 11 12 --concurrency 12
 PYTHONPATH=. .venv/bin/python -m app.physics_solution.versions.v06_finetune.data_pipeline.combine
 ```
+
+## Phase 2 — trajectory generation (Run)
+
+Pipeline modules (`data_pipeline/`): `vllm_client` (async vLLM, `n`-sampling, thinking
+off), `pot_common` (the execution gate — `verify`/`make_trajectory`/checkpoint, GPU-free
+and reused by both routes), `selfgen` (Route 1), `teacher` (Route 2/3), `guards`
+(spurious-reject + dedup + cap), `pot_smoke` (local harness test). Every stage
+**auto-saves every 50 and resumes** by skipping ids already in its output (re-run without
+`--fresh`) — interrupt-safe.
+
+**0. Local pre-flight (no GPU):**
+```bash
+PYTHONPATH=. .venv/bin/python -m app.physics_solution.versions.v06_finetune.data_pipeline.pot_smoke
+PYTHONPATH=. .venv/bin/python -m ...selfgen --stub --limit 30   # exercises loop/checkpoint/resume; clean up output/ after
+```
+
+**1. On Vast** (pull `main`; `scp app/physics_solution/.env` over for `DEEPSEEK_API_KEY`).
+vLLM template serves Qwen on `:18000`; code execution needs scipy/sympy:
+```bash
+uv pip install --system scipy sympy   # numpy/pyyaml/openai/tqdm already in the template
+curl -s http://localhost:18000/v1/models   # confirm the model id
+
+# Route 1 — self-gen (GPU). Executes generated code on this box; never sees gold.
+PYTHONPATH=. python -m ...selfgen --limit 20 --concurrency 32        # smoke first
+PYTHONPATH=. python -m ...selfgen --concurrency 48                   # full run
+#   -> output/trajectories_selfgen.jsonl  +  output/selfgen_residual.jsonl
+
+# Route 2/3 — DeepSeek-pro teacher on the residual (API; runs here since .env is here)
+PYTHONPATH=. python -m ...teacher --concurrency 8
+#   -> output/trajectories_teacher.jsonl  +  output/teacher_failed.jsonl
+
+# Step 4 — guards -> the final SFT set (+ audit + distribution report)
+PYTHONPATH=. python -m ...guards --cap 4
+#   -> output/trajectories_sft.jsonl  +  output/guards_rejected.jsonl
+```
+
+**2. Back to local** (Vast has no git → rsync the results):
+```bash
+rsync -avz -e "ssh -p <PORT>" \
+  root@<HOST>:/root/project/app/physics_solution/versions/v06_finetune/output/ \
+  app/physics_solution/versions/v06_finetune/output/
+```
+
+Notes: `selfgen` samples K=8 over temps `[0.2,0.5,0.8,1.0]`, retries **once on execution
+error**, dedups by normalized-code hash, and stores all distinct correct samples (guards
+does the per-problem cap). Qwen never sees gold; the teacher does (as a self-check target)
+but `guards` rejects hardcoded/echoed answers. The gate is **value-level** (units are not
+gated — too noisy). `teacher` uses `deepseek-v4-pro` (NOT flash). Vietjack's unverified
+gold is validated here by construction (its trajectory only survives if executed code
+matches the extracted gold).
