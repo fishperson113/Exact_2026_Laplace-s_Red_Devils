@@ -9,7 +9,7 @@
 #   hoac trong notebook: from models.fol_model.pretrain import run_pretrain
 
 model:
-  name: Qwen/Qwen2.5-3B-Instruct
+  name: Qwen/Qwen3.5-4B
   trust_remote_code: true
   max_seq_length: 3500
   gen_max_new_tokens: 512
@@ -54,5 +54,5 @@ paths:
 hub:
   # Sau pretrain: merge LoRA + push len Hub de Stage 2 load lam base model
   push_to_hub: true
-  repo_id: Laplaces-Red-Devils/fol-pretrain-malls-qwen2.5-3
+  repo_id: Laplaces-Red-Devils/fol-pretrain-malls-qwen3.5-4b
   private: false

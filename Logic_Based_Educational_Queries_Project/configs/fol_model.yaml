@@ -3,7 +3,7 @@
 # Tùy chọn ghi đè khi chạy CI hoặc notebook: biến `FOL_*` / `LOGIC_SFT_PROCESSED_DIR` trên shell.
 
 model:
-  name: Laplaces-Red-Devils/fol-pretrain-malls-qwen2.5-3
+  name: #Laplaces-Red-Devils/fol-pretrain-malls-qwen2.5-3
   trust_remote_code: true
   max_seq_length: 3500
   gen_max_new_tokens: 650
