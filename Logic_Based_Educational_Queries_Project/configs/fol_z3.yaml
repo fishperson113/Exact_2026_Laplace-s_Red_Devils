@@ -8,13 +8,13 @@
 
 fol_model:
   # HF repo chua LoRA/merged model FOL da train
-  hub_repo_id: Laplaces-Red-Devils/fol-v05-cot-augmented-fol-pretrain-malls-qwen2.5-3
+  hub_repo_id: Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4
   # Base model (phai trung voi model da train FOL)
-  base_model: Qwen/Qwen2.5-3B-Instruct
+  base_model: Qwen/Qwen3.5-4B
   max_new_tokens: 650            # premises FOL output (gold max=684, 768 covers 100%)
 qa_model:
   # Model dung de tra loi + giai thich (mac dinh = cung base voi FOL)
-  model_name: Qwen/Qwen2.5-3B-Instruct
+  model_name: Qwen/Qwen3.5-4B
   max_new_tokens: 650            # QA JSON output
   type: cot                      # cot = CoT prompt (SYSTEM_PROMPT_QA_COT) | z3 = Z3 report prompt (SYSTEM_PROMPT_QA)
 
