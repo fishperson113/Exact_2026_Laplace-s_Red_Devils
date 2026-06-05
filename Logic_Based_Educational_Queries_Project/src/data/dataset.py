@@ -8,7 +8,6 @@ import pandas as pd
 from datasets import Dataset, DatasetDict
 
 from data.ingestion import discover_processed_splits_dir, project_root
-from data.nl_to_fol import fol_block_from_lists, premises_fol_for_training
 from data.prompts import (
     ASSISTANT_TEMPLATE_SFT,
     PREMISES_FOL_HEADER,
@@ -96,12 +95,10 @@ def _numbered_lines(items: list[str], header: str) -> str:
 
 
 def build_user_content(row: dict, cfg: LogicSFTConfig) -> str:
-    fol_used = premises_fol_for_training(
-        row["premises_nl"], row["premises_fol"], backend=None
-    )
+    fol_used = list(row["premises_fol"])
     blocks = []
     if cfg.include_fol_in_user and fol_used:
-        blocks.append(fol_block_from_lists(fol_used, PREMISES_FOL_HEADER))
+        blocks.append(_numbered_lines(fol_used, PREMISES_FOL_HEADER))
     if row.get("premises_nl"):
         blocks.append(_numbered_lines(row["premises_nl"], PREMISES_NL_HEADER))
     return USER_TEMPLATE_SFT.format(

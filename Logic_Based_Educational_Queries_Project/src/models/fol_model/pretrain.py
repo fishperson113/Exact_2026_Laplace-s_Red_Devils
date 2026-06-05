@@ -241,7 +241,7 @@ def run_pretrain():
         print(f"[Pretrain] Limited train to {max_train_samples} samples (random)", flush=True)
 
     print(
-        f"[Pretrain] Dataset: train={len(dataset_dict['train'])}, dev={len(dataset_dict['dev'])}",
+        f"[Pretrain] Dataset: train={len(dataset_dict['train'])} (khong tach dev)",
         flush=True,
     )
 
@@ -250,15 +250,14 @@ def run_pretrain():
     scrub_sft_config_eos_pad_args(sft_config, tokenizer)
     sft_config.eos_token = None
     sft_config.pad_token = None
-    # Pretrain: eval moi epoch de theo doi loss, khong early stopping
-    sft_config.eval_strategy = "epoch"
+    # Pretrain: tat eval — chi tap trung train (se finetune lai tren data chinh thuc).
+    sft_config.eval_strategy = "no"
     sft_config.save_strategy = "epoch"
 
     trainer_kwargs = dict(
         model=model,
         args=sft_config,
         train_dataset=dataset_dict["train"],
-        eval_dataset=dataset_dict["dev"],
     )
     if "processing_class" in inspect.signature(SFTTrainer.__init__).parameters:
         trainer_kwargs["processing_class"] = tokenizer

@@ -184,13 +184,12 @@ def build_fol_dataset_dict(cfg: FolSFTConfig, tokenizer) -> tuple[DatasetDict, d
 def build_malls_pretrain_dataset(
     malls_json_path: str | Path,
     tokenizer,
-    val_ratio: float = 0.02,
-    seed: int = 42,
 ) -> DatasetDict:
-    """Load MALLS JSON → HF DatasetDict {train, dev} cho Stage 1 pretrain.
+    """Load MALLS JSON → HF DatasetDict {train} cho Stage 1 pretrain.
 
+    Khong tach dev — don toan bo MALLS vao train (pretrain chi la warmup, eval da tat;
+    gioi han so mau train do `max_train_samples` xu ly o pretrain.py).
     malls_json_path: duong dan toi malls_v01_normalized.json
-    val_ratio: ty le tach dev tu MALLS (mac dinh 2% ~ 565 mau)
     """
     malls_path = Path(malls_json_path).resolve()
     with open(malls_path, "r", encoding="utf-8") as f:
@@ -217,16 +216,14 @@ def build_malls_pretrain_dataset(
         })
 
     ds = Dataset.from_list(rows)
-    split = ds.train_test_split(test_size=val_ratio, seed=seed)
 
     def _map(example):
         return attach_fol_chat_text_and_eval_prompt(example, tokenizer)
 
-    train_ds = split["train"].map(_map, remove_columns=["messages"])
-    dev_ds = split["test"].map(_map, remove_columns=["messages"])
+    train_ds = ds.map(_map, remove_columns=["messages"])
 
-    _LOG.info("MALLS pretrain: train=%d, dev=%d", len(train_ds), len(dev_ds))
-    return DatasetDict({"train": train_ds, "dev": dev_ds})
+    _LOG.info("MALLS pretrain: train=%d (khong tach dev)", len(train_ds))
+    return DatasetDict({"train": train_ds})
 
 
 def export_filtered_fol_csvs(
