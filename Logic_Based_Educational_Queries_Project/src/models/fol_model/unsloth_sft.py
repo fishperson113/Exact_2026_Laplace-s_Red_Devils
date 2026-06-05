@@ -59,7 +59,7 @@ def load_unsloth_model_and_tokenizer(cfg: "FolSFTConfig") -> tuple[Any, Any, boo
 
     from services.config_fol import fol_should_load_in_8bit
 
-    from .tokenizer_fix import sync_eos_token_string_with_id
+    from .tokenizer_fix import inner_tokenizer, sync_eos_token_string_with_id
 
     print(
         "[FOL train][Unsloth] Nạp model + tokenizer (gradient checkpointing kiểu unsloth nếu bật).",
@@ -121,12 +121,14 @@ def load_unsloth_model_and_tokenizer(cfg: "FolSFTConfig") -> tuple[Any, Any, boo
         model.config._attn_implementation = "sdpa"
 
     sync_eos_token_string_with_id(tokenizer)
-    if tokenizer.pad_token is None or tokenizer.pad_token in (
+    # Qwen3-VL trả Qwen3VLProcessor; thao tác trực tiếp trên tokenizer thật bên trong.
+    _tok = inner_tokenizer(tokenizer)
+    if _tok.pad_token is None or _tok.pad_token in (
         "<EOS_TOKEN>",
         "<PAD_TOKEN>",
     ):
-        tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.padding_side = "left"
+        _tok.pad_token = _tok.eos_token
+    _tok.padding_side = "left"
 
     gc_mode: str | bool = "unsloth" if cfg.gradient_checkpointing else False
     model = FastLanguageModel.get_peft_model(

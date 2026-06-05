@@ -74,7 +74,7 @@ class FOLInference:
             {"role": "user", "content": user_msg},
         ]
         text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
         inputs = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=3500
@@ -112,7 +112,7 @@ class FOLInference:
             {"role": "user", "content": user_msg},
         ]
         text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
         inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
 
@@ -151,7 +151,7 @@ class FOLInference:
             {"role": "user", "content": user_msg},
         ]
         text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
         inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
 
@@ -216,7 +216,7 @@ class FOLInference:
             {"role": "user", "content": user_msg},
         ]
         text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
         inputs = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=3500

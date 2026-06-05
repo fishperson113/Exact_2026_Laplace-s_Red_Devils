@@ -115,11 +115,13 @@ def attach_fol_chat_text_and_eval_prompt(example: dict, tokenizer) -> dict:
         example["messages"],
         tokenize=False,
         add_generation_prompt=False,
+        enable_thinking=False,
     )
     prompt = tokenizer.apply_chat_template(
         example["messages"][:2],
         tokenize=False,
         add_generation_prompt=True,
+        enable_thinking=False,
     )
     return {
         "text": text,
