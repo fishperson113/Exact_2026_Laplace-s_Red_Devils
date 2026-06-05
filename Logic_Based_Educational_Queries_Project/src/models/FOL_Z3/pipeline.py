@@ -207,7 +207,7 @@ class FOLz3Pipeline:
 
         # Stage 2: FOL -> Z3 + entailment check
         t0 = time.perf_counter()
-        z3_result = self.z3.solve_safe(premises_fol, question_fol)
+        z3_result = self.z3.solve_safe(premises_fol, question_fol, options_fol)
         timing.z3_sec = time.perf_counter() - t0
 
         # Stage 3
