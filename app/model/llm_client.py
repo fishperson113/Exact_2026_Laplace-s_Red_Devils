@@ -4,17 +4,22 @@ from app.core.config import settings
 
 
 class VLLMClient:
-    def __init__(self):
+    """Async OpenAI-compatible client bound to ONE vLLM endpoint + model."""
+
+    def __init__(self, base_url: str, model: str, api_key: str | None = None):
+        self._base_url = base_url
+        self._model = model
+        self._api_key = api_key or settings.vllm_api_key
         self._client: AsyncOpenAI | None = None
-        self._model = settings.vllm_model
 
     def _get_client(self) -> AsyncOpenAI:
         if self._client is None:
-            self._client = AsyncOpenAI(
-                base_url=settings.vllm_base_url,
-                api_key=settings.vllm_api_key,
-            )
+            self._client = AsyncOpenAI(base_url=self._base_url, api_key=self._api_key)
         return self._client
+
+    @property
+    def model(self) -> str:
+        return self._model
 
     async def chat(
         self,
@@ -55,4 +60,10 @@ class VLLMClient:
             return False
 
 
-llm = VLLMClient()
+# Physics (Task Type 2). `llm` is the canonical name used by the v05 pipeline.
+llm = VLLMClient(settings.vllm_base_url, settings.vllm_model)
+physics_llm = llm
+
+# Logic (Task Type 1) — two-stage FOL -> QA, each on its own vLLM server.
+fol_llm = VLLMClient(settings.fol_base_url, settings.fol_model)
+qa_llm = VLLMClient(settings.qa_base_url, settings.qa_model)
