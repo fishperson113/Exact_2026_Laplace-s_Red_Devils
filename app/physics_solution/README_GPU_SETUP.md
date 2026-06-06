@@ -4,7 +4,96 @@
 
 ---
 
-## Quick Start — Vast AI vLLM Template (khuyen dung)
+## Quick Start — SUBMISSION STACK (1 endpoint /ask, ca 2 task type, Qwen3.5-4B)
+
+> **MOT** endpoint `POST /ask` cho ca 2 task type, route theo shape request:
+> co `premises-NL` -> Type 1 (logic FOL+QA); chi co `question` -> Type 2
+> (physics code-exec). Dung template **"NVIDIA CUDA Development Environment"**
+> (bare, tu cai vLLM). **BAT BUOC** driver host CUDA 13 (>=580) — xem ben duoi.
+
+Kien truc hien tai (**shared mode**): ca 3 role tro vao **1 vLLM** chay
+**Qwen3.5-4B** (vi 2 model logic Qwen3.5-4B that chua upload — tam dung
+`physics-v04` lam placeholder cho ca 2 track logic):
+
+| Thanh phan | Port | Ghi chu |
+|---|---|---|
+| vLLM (Qwen3.5-4B) | 18000 | GDN-hybrid; vLLM co kernel GDN/conv1d **san** -> KHONG can fla/conv1d/transformers de serve |
+| gateway (FastAPI) | 9000 | `POST /ask` — BTC goi cai nay |
+
+> **Vi sao BAT BUOC CUDA 13 / driver >=580:** model la `Qwen3_5ForConditionalGeneration`,
+> chi vLLM moi (>=0.21) nhan dien, ma ban do build tren **torch CUDA 13** (can driver
+> >=580). Driver 565/535 -> `torch.cuda.is_available()=False`. Khi rent Vast, chon host
+> hien **CUDA Version 13.x**. (Da test OK: RTX 3090, driver 595/CUDA13.2, vLLM 0.22.1.)
+
+### Cach 1 (KHUYEN DUNG): Custom template + On-start curl `setup_env.sh`
+
+1. Tao **custom template** tu "NVIDIA CUDA Development Environment".
+2. Them **Environment Variable**: `HF_TOKEN=hf_...` (de tai model gated).
+3. O o **On-start Script**, dan 3 dong:
+
+```bash
+curl -fsSL -o setup_env.sh \
+  https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/submition_v1/setup_env.sh
+chmod +x setup_env.sh
+bash setup_env.sh
+```
+
+`setup_env.sh` (idempotent) se: cai vLLM cu13 + deps (qua `uv`, ben net yeu) ->
+clone repo -> chay `serve_all.sh` -> in **PUBLIC URL** `https://xxx.trycloudflare.com/ask`
+cho BTC. Doi gi trong setup chi can sua file tren GitHub, may moi tu keo ban moi nhat.
+
+### Cach 2: Chay tay (da SSH vao box CUDA-13)
+
+```bash
+ssh -o StrictHostKeyChecking=no -i ~/.ssh/vastai_key -p <PORT> root@<HOST>
+export HF_TOKEN=hf_...
+curl -fsSL -o setup_env.sh https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/submition_v1/setup_env.sh
+bash setup_env.sh
+```
+
+Quan ly stack (sau khi da co code o `/workspace/project`):
+```bash
+cd /workspace/project
+bash scripts/serve_all.sh status                 # health vllm + gateway
+bash scripts/serve_all.sh stop                   # tat het (gom cloudflared)
+SKIP_TUNNEL=1 bash scripts/serve_all.sh start    # bat lai, khong mo tunnel
+```
+
+### Test
+
+```bash
+# tren box (hoac SSH -L 9000:localhost:9000 roi mo tu laptop):
+curl -s localhost:9000/health     # {"status":"ok",...}
+# Type 2 (physics):
+curl -s -X POST localhost:9000/ask -H "Content-Type: application/json" \
+  -d '{"question":"A 2 uF capacitor charged to 12 V stores how much energy?"}'
+# Type 1 (logic):
+curl -s -X POST localhost:9000/ask -H "Content-Type: application/json" \
+  -d '{"premises-NL":["All men are mortal.","Socrates is a man."],"question":"Is Socrates mortal? Yes or No."}'
+```
+
+### Ghi chu quan trong
+
+- **Luc serve, model nam o VRAM** (khong phai /dev/shm). HF cache mac dinh `/dev/shm`
+  (RAM) cho load nhanh; de disk cung chay y het, chi cham lan load dau. shm bi cap =
+  container_RAM/2 — muon to hon thi set `--shm-size` trong custom template.
+- **Hien chi 1 model** (shared mode): 1 con Qwen3.5-4B ~19GB VRAM, vua 24GB.
+- **Tuong lai 3 model (fol+qa+physics) rieng:** 3x ~9.3GB > 24GB -> KHONG co-resident.
+  Dung **vLLM sleep-mode swap**: `--enable-sleep-mode` + `VLLM_SERVER_DEV_MODE=1`;
+  gateway `wake_up` server can dung va `sleep` may con lai. Weights luc ngu nam o **RAM
+  process binh thuong** (full container RAM, KHONG phai /dev/shm). Khi co model that:
+  doi `SERVE_MODE` + cac model-id qua env (xem dau `serve_all.sh`).
+- **Expose BTC:** `setup_env.sh` tu bat cloudflared -> in public `/ask` URL. URL **doi**
+  moi lan tunnel restart. Neu IP host (xai chung) bi cloudflared rate-limit, fallback
+  reverse-SSH cong FastAPI sang VPS rieng:
+  ```bash
+  ssh -fN -R <VPS_PORT>:localhost:9000 <user>@<vps_ip>
+  # BTC goi: http://<vps_ip>:<VPS_PORT>/ask   (mo <VPS_PORT> tren firewall VPS)
+  ```
+
+---
+
+## Quick Start — Vast AI vLLM Template (LEGACY: single physics model)
 
 ### Buoc 1: Tao instance Vast AI
 
