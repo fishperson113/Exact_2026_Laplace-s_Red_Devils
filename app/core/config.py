@@ -33,5 +33,12 @@ class Settings(BaseSettings):
     pipeline_version: str = "v05_best_vLLM"   # physics batch/serving version
     question_timeout_s: float = 60.0
 
+    # ---- Sleep-mode swap (SERVE_MODE=triple) ----
+    # When 3 DISTINCT Qwen3.5-4B models can't co-reside on one 24GB GPU, each
+    # vLLM runs with --enable-sleep-mode and the gateway wakes the server(s) a
+    # request needs and sleeps the rest. OFF in shared mode (one server serves
+    # all roles -> nothing to swap).
+    sleep_swap_enabled: bool = False
+
 
 settings = Settings()

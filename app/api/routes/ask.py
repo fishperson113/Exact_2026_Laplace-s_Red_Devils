@@ -19,6 +19,7 @@ from fastapi import APIRouter
 
 from app.api.schemas import UnifiedAskRequest
 from app.core.config import settings
+from app.core.model_swap import ensure_awake
 from app.core.pipeline import solve_physics
 from app.core.pipeline_logic import run_logic_pipeline
 
@@ -35,9 +36,11 @@ async def ask(request: UnifiedAskRequest) -> dict:
     is_logic = bool(request.premises_nl)
     try:
         if is_logic:
+            await ensure_awake("logic")    # no-op unless sleep-swap is enabled
             return await run_logic_pipeline(
                 request.premises_nl, request.question, deadline
             )
+        await ensure_awake("physics")
         return await solve_physics(request.question, deadline)
     except Exception as exc:  # noqa: BLE001 — never 500 the grader
         traceback.print_exc()
