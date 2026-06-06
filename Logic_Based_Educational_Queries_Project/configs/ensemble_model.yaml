@@ -5,7 +5,7 @@
 
 fol_model:
   # HF Hub repo chứa FOL model đã merge
-  hub_repo_id: Laplaces-Red-Devils/fol-v05-cot-augmented-fol-pretrain-malls-qwen2.5-3
+  hub_repo_id: Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4
   max_new_tokens: 400
 
 qa_model:
