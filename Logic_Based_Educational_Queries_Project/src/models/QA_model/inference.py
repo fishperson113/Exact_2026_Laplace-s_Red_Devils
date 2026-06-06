@@ -91,21 +91,31 @@ class QACOTInference:
             {"role": "user", "content": user_content},
         ]
 
-        text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
+        # enable_thinking=False: đầu ra cuối phải là JSON thuần, không có <think>.
+        try:
+            text = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+            )
+        except TypeError:
+            text = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True
+            )
         inputs = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=4096
         ).to(self.model.device)
 
+        gen_kwargs = dict(
+            **inputs,
+            max_new_tokens=self.max_new_tokens,
+            do_sample=False,
+            repetition_penalty=1.1,
+        )
         t0 = time.perf_counter()
         with torch.no_grad():
-            out = self.model.generate(
-                **inputs,
-                max_new_tokens=self.max_new_tokens,
-                do_sample=False,
-                repetition_penalty=1.1,
-            )
+            try:
+                out = self.model.generate(**gen_kwargs, tokenizer=self.tokenizer, stop_strings=["}"])
+            except TypeError:
+                out = self.model.generate(**gen_kwargs)
         latency = time.perf_counter() - t0
 
         generated = self.tokenizer.decode(
@@ -123,6 +133,7 @@ class QACOTInference:
     @staticmethod
     def _parse_output(text: str) -> dict[str, str]:
         """Parse JSON {"answer": "...", "explanation": "..."} from model output."""
+        # 1. JSON object đầy đủ
         match = re.search(r"\{.*\}", text, re.DOTALL)
         if match:
             try:
@@ -135,11 +146,28 @@ class QACOTInference:
             except json.JSONDecodeError:
                 pass
 
-        for label in ("A", "B", "C", "D", "Yes", "No", "Unknown"):
-            if label in text:
-                return {"answer": label, "explanation": text}
+        # 2. JSON cụt/lỗi: moi "answer": "..." (và explanation nếu có)
+        m = re.search(r'"answer"\s*:\s*"([^"]+)"', text)
+        if m:
+            answer = m.group(1).strip()
+            em = re.search(r'"explanation"\s*:\s*"(.*)', text, re.DOTALL)
+            explanation = em.group(1).strip().rstrip('"}').strip() if em else ""
+            return {"answer": answer, "explanation": explanation}
 
-        return {"answer": "Unknown", "explanation": text}
+        # 3. Last-resort (KHÔNG dump text thô, KHÔNG đoán bừa chữ "A" trong văn xuôi):
+        #    a) label đi kèm cue "answer/đáp án/conclusion"
+        m2 = re.search(
+            r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
+            text, re.I,
+        )
+        if m2:
+            return {"answer": m2.group(1), "explanation": ""}
+        #    b) Yes/No/Unknown đứng độc lập
+        for label in ("Unknown", "Yes", "No"):
+            if re.search(rf"\b{label}\b", text):
+                return {"answer": label, "explanation": ""}
+        #    c) Không rõ → Unknown (không gán bừa A/B/C/D)
+        return {"answer": "Unknown", "explanation": ""}
 
 
 # ─── Evaluation ──────────────────────────────────────────────────────────────

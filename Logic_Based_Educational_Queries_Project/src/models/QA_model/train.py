@@ -170,7 +170,8 @@ def _parse_user_content(user_content: str) -> dict[str, Any]:
 
 
 def _parse_full_output(text: str) -> dict[str, str]:
-    """Extract answer + explanation từ model output."""
+    """Extract answer + explanation từ model output (robust với JSON cụt/lỗi)."""
+    # 1. JSON object đầy đủ
     match = re.search(r"\{.*\}", text, re.DOTALL)
     if match:
         try:
@@ -181,12 +182,51 @@ def _parse_full_output(text: str) -> dict[str, str]:
             }
         except json.JSONDecodeError:
             pass
-    answer = "Unknown"
-    for label in ("A", "B", "C", "D", "Yes", "No", "Unknown"):
-        if label in text:
-            answer = label
-            break
-    return {"answer": answer, "explanation": text}
+
+    # 2. JSON cụt/lỗi: vẫn moi được "answer": "..." (và explanation nếu có)
+    m = re.search(r'"answer"\s*:\s*"([^"]+)"', text)
+    if m:
+        answer = m.group(1).strip()
+        em = re.search(r'"explanation"\s*:\s*"(.*)', text, re.DOTALL)
+        explanation = em.group(1).strip().rstrip('"}').strip() if em else ""
+        return {"answer": answer, "explanation": explanation}
+
+    # 3. Last-resort (KHÔNG dump text thô, KHÔNG đoán bừa chữ "A" trong văn xuôi):
+    #    a) label đi kèm cue "answer/đáp án/conclusion" — đáng tin nhất
+    m2 = re.search(
+        r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
+        text, re.I,
+    )
+    if m2:
+        return {"answer": m2.group(1), "explanation": ""}
+    #    b) Yes/No/Unknown đứng độc lập (an toàn với word-boundary)
+    for label in ("Unknown", "Yes", "No"):
+        if re.search(rf"\b{label}\b", text):
+            return {"answer": label, "explanation": ""}
+    #    c) Không có cứ liệu rõ ràng → Unknown (không gán bừa A/B/C/D)
+    return {"answer": "Unknown", "explanation": ""}
+
+
+def _apply_chat_template_no_think(
+    tokenizer, messages: list[dict], add_generation_prompt: bool = True
+) -> str:
+    """Render chat template with thinking DISABLED — consistent train & eval.
+
+    Mirror cách FOL làm (data/fol_dataset.py): `enable_thinking=False` ở CẢ
+    training (`add_generation_prompt=False`, render full conversation) lẫn
+    eval/inference (`add_generation_prompt=True`, render prompt). Nhất quán
+    prompt 2 phía + đầu ra cuối luôn là JSON thuần, không có <think>.
+    `enable_thinking` là flag Qwen3; tokenizer không hỗ trợ sẽ bỏ qua kwarg.
+    """
+    try:
+        return tokenizer.apply_chat_template(
+            messages, tokenize=False,
+            add_generation_prompt=add_generation_prompt, enable_thinking=False,
+        )
+    except TypeError:
+        return tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=add_generation_prompt,
+        )
 
 
 def _detect_stop_strings_support(model, tokenizer) -> bool:
@@ -215,7 +255,7 @@ def _generate_batch(model, tokenizer, texts: list[str], max_new_tokens: int, use
 
     if use_stop_strings:
         try:
-            outputs = model.generate(**gen_kwargs, tokenizer=tokenizer, stop_strings=["}\n", "\n\n"])
+            outputs = model.generate(**gen_kwargs, tokenizer=tokenizer, stop_strings=["}"])
         except TypeError:
             outputs = model.generate(**gen_kwargs)
     else:
@@ -267,9 +307,7 @@ def compute_accuracy_on_split(
         all_gold.append(_parse_full_output(gold_text))
 
         input_messages = messages[:2]
-        text = tokenizer.apply_chat_template(
-            input_messages, tokenize=False, add_generation_prompt=True
-        )
+        text = _apply_chat_template_no_think(tokenizer, input_messages)
         all_texts.append(text)
 
     # Batched generation
@@ -453,9 +491,7 @@ def benchmark_latency(model, tokenizer, dataset, cfg: dict):
 
     for i, item in enumerate(subset):
         messages = item["messages"][:2]
-        text = tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
+        text = _apply_chat_template_no_think(tokenizer, messages)
         inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=4096).to(model.device)
 
         t0 = time.perf_counter()
@@ -550,6 +586,32 @@ def train(cfg: dict, debug_max_samples: int | None = None):
     # 2. Model
     model, tokenizer = load_model_and_tokenizer(cfg)
 
+    # 2b. Dataset cho trainer ở định dạng prompt–completion, thinking TẮT
+    #     (nhất quán train & eval, giống FOL data/fol_dataset.py):
+    #       - prompt     = system+user + generation prompt (add_generation_prompt=True)
+    #       - completion = assistant JSON đáp án
+    #     Kết hợp completion_only_loss=True → loss CHỈ trên completion (mask prompt).
+    #     Giữ nguyên ds_dict (có "messages") cho accuracy callback + final eval.
+    def _to_prompt_completion(example):
+        msgs = example["messages"]
+        return {
+            "prompt": _apply_chat_template_no_think(
+                tokenizer, msgs[:2], add_generation_prompt=True
+            ),
+            "completion": msgs[2]["content"],
+        }
+
+    train_ds_pc = ds_dict["train"].map(
+        _to_prompt_completion,
+        remove_columns=ds_dict["train"].column_names,
+        desc="Build prompt-completion (train)",
+    )
+    dev_ds_pc = ds_dict["dev"].map(
+        _to_prompt_completion,
+        remove_columns=ds_dict["dev"].column_names,
+        desc="Build prompt-completion (dev)",
+    )
+
     # 3. Output dir
     version = hub_cfg.get("repo_version", "v01")
     model_type = hub_cfg.get("type", "QA")
@@ -583,6 +645,8 @@ def train(cfg: dict, debug_max_samples: int | None = None):
         report_to="none",
         max_length=max_seq_len,
         packing=False,
+        # Loss CHỈ trên completion (assistant JSON), mask toàn bộ prompt system+user.
+        completion_only_loss=train_cfg.get("completion_only_loss", True),
     )
     # TRL version compat: một số version dùng max_seq_length thay vì max_length
     if "max_seq_length" in inspect.signature(SFTConfig.__init__).parameters:
@@ -603,12 +667,15 @@ def train(cfg: dict, debug_max_samples: int | None = None):
     if patience > 0:
         callbacks.append(EarlyStoppingCallback(early_stopping_patience=patience))
 
-    # 6. Trainer
+    if sft_kw.get("completion_only_loss", True):
+        print("[Train] Completion-only loss BẬT — loss chỉ trên assistant JSON, mask prompt system+user")
+
+    # 6. Trainer (train/eval trên dataset prompt–completion đã dựng ở bước 2b)
     trainer = SFTTrainer(
         model=model,
         args=sft_config,
-        train_dataset=ds_dict["train"],
-        eval_dataset=ds_dict["dev"],
+        train_dataset=train_ds_pc,
+        eval_dataset=dev_ds_pc,
         processing_class=tokenizer,
         callbacks=callbacks,
     )
