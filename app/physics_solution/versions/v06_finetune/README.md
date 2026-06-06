@@ -14,7 +14,7 @@ pipelines.** See [V06_HANDOFF_PROMPT.md](V06_HANDOFF_PROMPT.md) for full backgro
 |---|---|---|
 | **PoT shape** | **1 code block + short reason, retry once on error** (same as v05_best — NOT multi-turn tool-use) | 60s budget + the proven "short prompts win for 4B" lesson. Reuses `v05_best/code_executor.py` as-is. |
 | **Val scope** | Keep the exact **60 LDDT golden** (v05_best parity) **and** a broader stratified multi-domain val; report both | The committed 60-golden set is 100% electrostatics — narrow target can hide regressions in other domains. |
-| **Build order** | **SFT first** (full SFT→eval cycle), CPT only as an A/B experiment afterward | SFT is the proven lever; don't block on CPT corpus processing. |
+| **Build order** | **SFT only** (full SFT→eval cycle); CPT dropped from v06 scope | SFT is the proven lever; the `pretrain_corpus` CPT corpus is parked for a possible future experiment. |
 | **Vietjack scope** | Filter to the **6 competition domains only** (LDDT/CH/NL/TD/DDT/THCB) | Vietjack lop-10..12 has off-domain physics (pendulum, nuclear, optics) that would shift the distribution. |
 
 Self-gen runs on **vLLM** (fast), not HF. Every self-gen sample is
@@ -57,8 +57,7 @@ v06_finetune/
 │   ├── pot_smoke.py         # local GPU-free harness test                         [Phase 2 ✓]
 │   └── build_sft.py         # stratified split + Qwen chat-template JSONL         [Phase 3]
 ├── train/
-│   ├── sft_unsloth.py       # SFT QLoRA (Vast AI)                                 [Phase 4]
-│   └── cpt_unsloth.py       # optional CPT warm-up (Vast AI, A/B)                 [Phase 6]
+│   └── sft_unsloth.py       # SFT QLoRA (Vast AI)                                 [Phase 4]
 ├── prompts.py               # shortened CODEGEN system (no inline example)        [Phase 5]
 ├── pipeline.py              # solve() — vLLM serving                              [Phase 5]
 └── run.py                   # run(args) — batch eval; register in cli/inference   [Phase 5]
@@ -74,7 +73,6 @@ v06_finetune/
 | **3. Build SFT set** | stratified split (val ⊇ 60 golden + multi-domain slice) → JSONL | Local | todo |
 | **4. Train SFT** | Unsloth QLoRA; eval vs v05_best on `golden_60` + broad val | Vast AI | todo |
 | **5. Inference** | `pipeline.py` + `run.py`, register in `cli/inference.py` | Vast AI | todo |
-| **6. CPT (A/B)** | concat/pack `pretrain_corpus` → CPT warm-up → compare | Vast AI | optional |
 
 ## Trajectory schema (the cross-stage contract)
 

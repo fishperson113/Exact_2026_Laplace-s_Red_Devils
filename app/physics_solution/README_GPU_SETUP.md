@@ -24,9 +24,7 @@
 ### Cach 1 (KHUYEN DUNG): Custom template + On-start curl `setup_env.sh`
 
 1. Tao **custom template** tu "NVIDIA CUDA Development Environment".
-2. Them **Environment Variable**: `HF_TOKEN=hf_...` (de tai model gated). Day la env
-   **DUY NHAT bat buoc** — KHONG can `VLLM_MODEL`/`VLLM_ARGS`/`PIP_PACKAGES` (do la cua
-   template "vLLM" cu). Cac "num" khac (`SERVE_MODE`, `SKIP_TUNNEL`, `FOL_REPO`...) cung
+2. Them **Environment Variable**: `HF_TOKEN=hf_...` (de tai model gated). Cac "num" khac (`SERVE_MODE`, `SKIP_TUNNEL`, `FOL_REPO`...) cung
    set qua env Vast duoc — `setup_env.sh`/`serve_all.sh` deu doc.
 3. O o **On-start Script**, dan 3 dong:
 
