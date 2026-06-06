@@ -647,6 +647,8 @@ def train(cfg: dict, debug_max_samples: int | None = None):
         packing=False,
         # Loss CHỈ trên completion (assistant JSON), mask toàn bộ prompt system+user.
         completion_only_loss=train_cfg.get("completion_only_loss", True),
+        # Liger fused CE: giảm mạnh VRAM ở bước loss (cần `pip install liger-kernel`).
+        use_liger_kernel=train_cfg.get("use_liger_kernel", False),
     )
     # TRL version compat: một số version dùng max_seq_length thay vì max_length
     if "max_seq_length" in inspect.signature(SFTConfig.__init__).parameters:

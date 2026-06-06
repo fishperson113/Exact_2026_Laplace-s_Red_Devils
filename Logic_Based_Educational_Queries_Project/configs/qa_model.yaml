@@ -15,9 +15,11 @@ lora:
 
 training:
   num_train_epochs: 15
-  per_device_train_batch_size: 4
+  # OOM fix: logits tensor = [batch, seq_len, vocab~152k] là chỗ ngốn VRAM nhất.
+  # Hạ batch → giữ effective batch = 1×8 = 8 (bằng 4×2 cũ) qua grad accumulation.
+  per_device_train_batch_size: 2
   per_device_eval_batch_size: 10
-  gradient_accumulation_steps: 2
+  gradient_accumulation_steps: 4
   learning_rate: 2e-5
   warmup_ratio: 0.05
   weight_decay: 0.01
@@ -26,6 +28,9 @@ training:
   gradient_checkpointing: true
   train_seed: 42
   load_in_8bit: true
+  # Liger kernel: fused cross-entropy KHÔNG materialize full logits → tiết kiệm
+  # VRAM lớn nhất cho vocab to. Bật sau khi: pip install liger-kernel
+  use_liger_kernel: false
   # Completion-only loss: chỉ tính loss trên phần assistant (JSON đáp án),
   # mask system+user. Khớp FOL train_on_responses_only.
   completion_only_loss: true
