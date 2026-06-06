@@ -8,13 +8,13 @@ model:
   gen_max_new_tokens: 200
 
 lora:
-  r: 8
-  alpha: 16
+  r: 4
+  alpha: 8
   dropout: 0.05
   target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
 
 training:
-  num_train_epochs: 30
+  num_train_epochs: 20
   per_device_train_batch_size: 1
   per_device_eval_batch_size: 2
   gradient_accumulation_steps: 8
@@ -35,11 +35,11 @@ training:
 
 eval:
   # Số mẫu dev tối đa để tính accuracy mỗi epoch (null = cả dev, chậm)
-  eval_accuracy_max_samples: 40
+  eval_accuracy_max_samples: null
   # Số mẫu random in full JSON mỗi epoch (NL, FOL, question, gold, prediction)
   eval_print_samples: 6
   # Latency benchmark sau training
-  inference_latency_benchmark_n: 40
+  inference_latency_benchmark_n: 50
   inference_latency_warmup: 2
   inference_latency_benchmark_split: test
 
@@ -51,7 +51,7 @@ inference:
 
 hub:
   org: Laplaces-Red-Devils
-  repo_version: v01
+  repo_version: v02
   type: QA
   method: CoT
   push_to_hub: true
