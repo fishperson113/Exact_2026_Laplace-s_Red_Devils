@@ -1,0 +1,958 @@
+[
+ {
+  "id": 360,
+  "question": "Based on the premises, which statement can be inferred?\nA. If someone is eligible for the seminar, they have completed registration requirements.\nB. Everyone who submits a report has both certifications.\nC. Someone eligible for the seminar has both certifications.\nD. Not registering for the seminar means you have certifications.",
+  "premises_nl": [
+   "There exists someone who has obtained both MOS certifications in Word and Excel.",
+   "If x did not register for the seminar, then x is not allowed to submit the report.",
+   "If x registered for the seminar, then x has completed all requirements to register for the seminar.",
+   "If x did not submit the required report, then x is not allowed to submit the report for the seminar.",
+   "If x is eligible to attend the seminar, then x has the required certifications."
+  ],
+  "answer": "C",
+  "explanation": "Premise 5 states that eligibility for the seminar requires having both certifications, and premise 1 confirms someone has both certifications, so someone eligible has both certifications, supporting option C. Option A is false because eligibility doesn’t ensure registration requirements are met. Option B is false because submitting a report doesn’t imply having certifications. Option D is false because not registering doesn’t imply having certifications."
+ },
+ {
+  "id": 361,
+  "question": "Is it true that registering for the seminar does not imply completing all requirements to register, according to the premises?",
+  "premises_nl": [
+   "There exists someone who has obtained both MOS certifications in Word and Excel.",
+   "If x did not register for the seminar, then x is not allowed to submit the report.",
+   "If x registered for the seminar, then x has completed all requirements to register for the seminar.",
+   "If x did not submit the required report, then x is not allowed to submit the report for the seminar.",
+   "If x is eligible to attend the seminar, then x has the required certifications."
+  ],
+  "answer": "No",
+  "explanation": "Premise 3 states that registering for the seminar implies completing all requirements, so it is not true that registering does not imply completing requirements, and the answer is No."
+ },
+ {
+  "id": 362,
+  "question": "Which of the following can be inferred about student eligibility?\nA. All students are eligible to register.\nB. Some students are not eligible to register.\nC. No students are eligible to register.\nD. Eligibility to register depends on year level.",
+  "premises_nl": [
+   "If x does not attend the orientation, then x is not eligible to register for the next academic year",
+   "All students are required to attend the orientation",
+   "If all students are required to attend the orientation, then if x does not attend, then x is not eligible to register",
+   "If (all students required to attend implies non-attendance leads to ineligibility), then non-attendance leads to ineligibility",
+   "If a student is not required to attend the orientation, then they are not eligible to register"
+  ],
+  "answer": "A",
+  "explanation": "Premise 2 states that all students are required to attend the orientation, and premise 1 says that not attending implies ineligibility to register. Assuming all students attend as required, all are eligible to register, making A the correct inference."
+ },
+ {
+  "id": 363,
+  "question": "Are there any students who are not required to attend the orientation?",
+  "premises_nl": [
+   "If x does not attend the orientation, then x is not eligible to register for the next academic year",
+   "All students are required to attend the orientation",
+   "If all students are required to attend the orientation, then if x does not attend, then x is not eligible to register",
+   "If (all students required to attend implies non-attendance leads to ineligibility), then non-attendance leads to ineligibility",
+   "If a student is not required to attend the orientation, then they are not eligible to register"
+  ],
+  "answer": "No",
+  "explanation": "Premise 2 states that all students are required to attend, and premise 3 supports that this requirement ensures ineligibility for non-attendees. Thus, no students are exempt from the requirement, so the answer is No."
+ },
+ {
+  "id": 364,
+  "question": "Which of the following can be inferred about healthcare eligibility?\nA. All individuals are eligible for healthcare services.\nB. Some individuals are not eligible for healthcare services.\nC. No individuals are eligible for healthcare services.\nD. Eligibility depends on attending the appointment.",
+  "premises_nl": [
+   "If x is not required to attend the healthcare appointment, then x does not attend the appointment",
+   "If x is not eligible for healthcare services, then x is not registered for healthcare services",
+   "All individuals are required to attend the healthcare appointment",
+   "If (not required to attend the appointment implies not attending), then all individuals are required to attend the appointment",
+   "If (not required to attend implies not attending) then all individuals must attend the appointment",
+   "If x is required to attend the appointment, then x is eligible for healthcare services",
+   "Everyone is registered for healthcare services"
+  ],
+  "answer": "A",
+  "explanation": "Premise 2 states that all individuals are required to attend the healthcare appointment, and premise 5 says that being required to attend implies eligibility for healthcare services. Thus, all individuals are eligible, making A the correct inference."
+ },
+ {
+  "id": 365,
+  "question": "Are all individuals attending the healthcare appointment?",
+  "premises_nl": [
+   "If x is not required to attend the healthcare appointment, then x does not attend the appointment",
+   "If x is not eligible for healthcare services, then x is not registered for healthcare services",
+   "All individuals are required to attend the healthcare appointment",
+   "If (not required to attend the appointment implies not attending), then all individuals are required to attend the appointment",
+   "If (not required to attend implies not attending) then all individuals must attend the appointment",
+   "If x is required to attend the appointment, then x is eligible for healthcare services",
+   "Everyone is registered for healthcare services"
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 2 states that all individuals are required to attend, and premise 0 says that not being required implies not attending. Since all are required, all must attend, as reinforced by premise 4’s implication."
+ },
+ {
+  "id": 366,
+  "question": "Which of the following can be inferred about students and the subject?\nA. If a student is enrolled, they complete the subject successfully.\nB. If a student attends the lab, they are not enrolled.\nC. All students are required to attend the lab.\nD. No student completes the subject successfully.",
+  "premises_nl": [
+   "If x attends the lab for the subject, then x is required to attend the lab for the subject.",
+   "There exists a student who is enrolled in the subject.",
+   "If (being enrolled in the subject implies attending the lab), then (not being enrolled implies not attending the lab).",
+   "If x attends the lab, then x completes the subject successfully.",
+   "If x attends the lab, then x is enrolled in the subject."
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student enrolled in the subject (premise 2). If a student is enrolled, attending the lab implies they are enrolled (premise 5) and that they complete the subject successfully (premise 4). Assuming possible attendance (not directly stated), enrollment leads to completion via attendance, requiring multiple inference steps."
+ },
+ {
+  "id": 367,
+  "question": "Is the statement true?\nStatement: It is not true that: if a student is enrolled in the subject, then attending the lab is a requirement.",
+  "premises_nl": [
+   "If x attends the lab for the subject, then x is required to attend the lab for the subject.",
+   "There exists a student who is enrolled in the subject.",
+   "If (being enrolled in the subject implies attending the lab), then (not being enrolled implies not attending the lab).",
+   "If x attends the lab, then x completes the subject successfully.",
+   "If x attends the lab, then x is enrolled in the subject."
+  ],
+  "answer": "Unknown",
+  "explanation": "An enrolled student exists (premise 2). The statement claims that enrollment does not always imply a requirement to attend the lab. Since attending implies enrollment (premise 5), an enrolled student who does not attend is not required to attend (premise 1 doesn’t apply without attendance). Thus, it’s possible for an enrolled student to not be required to attend, making the statement true."
+ },
+ {
+  "id": 368,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. If a student attends classes regularly, they successfully find lectures.\nB. If a student is engaged in studying, they improve their understanding.\nC. All students actively search for lectures.\nD. No student finds lectures to help in studying.",
+  "premises_nl": [
+   "There exists a student who actively searches for lectures to help in studying.",
+   "All students are actively engaged in studying.",
+   "There exists a student who successfully finds lectures to help in studying.",
+   "If a student actively searches for lectures, then they successfully find them.",
+   "If x attends classes regularly, then x improves their understanding by finding lectures.",
+   "If x does not improve their understanding, then x has not found lectures to help in studying."
+  ],
+  "answer": "Unknown",
+  "explanation": "If a student attends classes regularly, they find lectures and improve their understanding (premise 5). Additionally, some students search for lectures (premise 1) and find them (premise 4), indicating that finding lectures is achievable. Regular attendance alone ensures finding lectures, derived through reasoning about student actions across premises."
+ },
+ {
+  "id": 369,
+  "question": "Is it true that all students who improve their understanding have actively searched for lectures?",
+  "premises_nl": [
+   "There exists a student who actively searches for lectures to help in studying.",
+   "All students are actively engaged in studying.",
+   "There exists a student who successfully finds lectures to help in studying.",
+   "If a student actively searches for lectures, then they successfully find them.",
+   "If x attends classes regularly, then x improves their understanding by finding lectures.",
+   "If x does not improve their understanding, then x has not found lectures to help in studying."
+  ],
+  "answer": "No",
+  "explanation": "Improvement in understanding requires finding lectures (premise 6). Finding can result from searching (premise 4) or attending classes (premise 5). A student who attends regularly improves their understanding without necessarily searching, so not all students who improve have searched, making the statement false."
+ },
+ {
+  "id": 370,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. If a student has feedback, they completed the internship requirements.\nB. If a student has the stamp, they have feedback.\nC. All students have the company stamp.\nD. No student has feedback.",
+  "premises_nl": [
+   "There exists a student who has received the company stamp for their internship.",
+   "There exists a student who has received feedback from the company for their internship.",
+   "If x completes the necessary internship requirements, then x has received the company stamp for their internship.",
+   "If x completes the necessary internship requirements, then x has received feedback from the company.",
+   "If x has received the company stamp, then x has received feedback from the company."
+  ],
+  "answer": "Unknown",
+  "explanation": "If a student has the company stamp, they have received feedback (premise 5). Some students have stamps (premise 1), ensuring the implication applies. This requires reasoning about the existence of students with stamps and the relationship between stamps and feedback."
+ },
+ {
+  "id": 371,
+  "question": "Is it true that all students with feedback have the company stamp?",
+  "premises_nl": [
+   "There exists a student who has received the company stamp for their internship.",
+   "There exists a student who has received feedback from the company for their internship.",
+   "If x completes the necessary internship requirements, then x has received the company stamp for their internship.",
+   "If x completes the necessary internship requirements, then x has received feedback from the company.",
+   "If x has received the company stamp, then x has received feedback from the company."
+  ],
+  "answer": "No",
+  "explanation": "Having feedback does not guarantee a stamp. While completing requirements gives both a stamp (premise 3) and feedback (premise 4), and stamps imply feedback (premise 5), a student may have feedback without completing requirements, thus lacking a stamp, making the statement false."
+ },
+ {
+  "id": 372,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. All students are eligible for training.\nB. All students raised issues about paying fees.\nC. No students received confirmation of payment.\nD. All students are not eligible for training.",
+  "premises_nl": [
+   "If x has not paid the fees, then x raised an issue about paying fees.",
+   "All students have paid the fees.",
+   "All students are required to pay the fees.",
+   "If x completed the payment, then x received confirmation of payment.",
+   "If x did not pay the fees, then x is not eligible for training."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students have paid the fees (premise 2). If a student did not pay, they would not be eligible for training (premise 5), but since all paid, all are eligible, requiring reasoning about payment and eligibility."
+ },
+ {
+  "id": 373,
+  "question": "Is it true that all students who did not raise an issue have paid the fees?",
+  "premises_nl": [
+   "If x has not paid the fees, then x raised an issue about paying fees.",
+   "All students have paid the fees.",
+   "All students are required to pay the fees.",
+   "If x completed the payment, then x received confirmation of payment.",
+   "If x did not pay the fees, then x is not eligible for training."
+  ],
+  "answer": "No",
+  "explanation": "Not raising an issue about paying fees implies payment (premise 1). Since all students have paid the fees (premise 2), any student who did not raise an issue has paid, confirmed through logical implication and universal payment."
+ },
+ {
+  "id": 374,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. All students have passed the course.\nB. All students complete exercises but not assignments.\nC. No students complete assignments.\nD. No students have passed the course.",
+  "premises_nl": [
+   "All students complete exercises.",
+   "All students complete assignments.",
+   "If x has completed all course activities, then x has passed the course."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students complete exercises (premise 1) and assignments (premise 2). If completing all course activities, which may include exercises and assignments, leads to passing the course (premise 3), then all students have passed, requiring reasoning across activities and outcomes."
+ },
+ {
+  "id": 375,
+  "question": "Is it true that all students who complete exercises have passed the course?",
+  "premises_nl": [
+   "All students complete exercises.",
+   "All students complete assignments.",
+   "If x has completed all course activities, then x has passed the course."
+  ],
+  "answer": "No",
+  "explanation": "Since all students complete exercises (premise 1) and assignments (premise 2), and completing all course activities implies passing the course (premise 3), students who complete exercises have passed, derived through multiple steps of combining activities and course outcomes."
+ },
+ {
+  "id": 376,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. All students receive social work points.\nB. All students are eligible for social work points.\nC. No students are involved in social work.\nD. No students donate blood.",
+  "premises_nl": [
+   "If x does not donate blood on the university campus, then x does not receive social work points for graduation.",
+   "If x is not involved in social work, then x does not donate blood on the university campus.",
+   "If x is eligible for receiving social work points, then x is involved in social work activities.",
+   "All students donate blood on the university campus.",
+   "If x participates in university activities, then x earns graduation points."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students donate blood on the university campus (premise 4). If a student does not donate blood, they do not receive social work points, so donating implies receiving points (premise 1). Thus, all students receive social work points, derived through reasoning about donation and points."
+ },
+ {
+  "id": 377,
+  "question": "Is it true that all students are involved in social work activities?",
+  "premises_nl": [
+   "If x does not donate blood on the university campus, then x does not receive social work points for graduation.",
+   "If x is not involved in social work, then x does not donate blood on the university campus.",
+   "If x is eligible for receiving social work points, then x is involved in social work activities.",
+   "All students donate blood on the university campus.",
+   "If x participates in university activities, then x earns graduation points."
+  ],
+  "answer": "No",
+  "explanation": "All students donate blood on the university campus (premise 4), and donating blood implies involvement in social work activities (premise 2). Therefore, all students are involved in social work, requiring multiple steps to connect donation to social work involvement."
+ },
+ {
+  "id": 378,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. All students are allowed to continue studying.\nB. All students do not pay the required fees.\nC. No students are allowed to continue studying.\nD. Some students pay the fees but cannot continue studying.",
+  "premises_nl": [
+   "All students pay the required fees within the specified period.",
+   "If x does not pay the required fees, then x is not allowed to continue studies at the university.",
+   "If x is not allowed to continue studying, then x has not paid the fees."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students pay the required fees (premise 1). Paying the fees implies being allowed to continue studying (premise 3). Therefore, all students are allowed to continue, derived through reasoning about payment and continuation."
+ },
+ {
+  "id": 379,
+  "question": "Is it true that all students who pay the required fees are allowed to continue studying?",
+  "premises_nl": [
+   "All students pay the required fees within the specified period.",
+   "If x does not pay the required fees, then x is not allowed to continue studies at the university.",
+   "If x is not allowed to continue studying, then x has not paid the fees."
+  ],
+  "answer": "No",
+  "explanation": "All students pay the required fees (premise 1), and paying the fees implies being allowed to continue studying (premise 3). Thus, all students who pay are allowed to continue, confirmed through multiple steps linking payment to continuation."
+ },
+ {
+  "id": 380,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. All students are eligible for the final exam.\nB. All students have not completed course requirements.\nC. No students are eligible for the final exam.\nD. Some students complete quizzes but are not eligible.",
+  "premises_nl": [
+   "All students have completed all quizzes.",
+   "If x finishes all quizzes, then x is eligible for the final exam.",
+   "If x completes all course requirements, then x is eligible for the final exam.",
+   "If x has not completed all course requirements, then x has not completed all quizzes.",
+   "If x has not finished all quizzes, then x is not eligible for the final exam."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students have completed all quizzes (premise 1), and finishing all quizzes implies eligibility for the final exam (premise 2). Therefore, all students are eligible, derived through reasoning about quiz completion and eligibility."
+ },
+ {
+  "id": 381,
+  "question": "Is it true that all students have completed all course requirements?",
+  "premises_nl": [
+   "All students have completed all quizzes.",
+   "If x finishes all quizzes, then x is eligible for the final exam.",
+   "If x completes all course requirements, then x is eligible for the final exam.",
+   "If x has not completed all course requirements, then x has not completed all quizzes.",
+   "If x has not finished all quizzes, then x is not eligible for the final exam."
+  ],
+  "answer": "No",
+  "explanation": "All students have completed all quizzes (premise 1), and completing all quizzes implies completing all course requirements (premise 4). Thus, all students have completed course requirements, requiring multiple steps to link quizzes to requirements."
+ },
+ {
+  "id": 382,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. All students have met the safety requirements for the lab.\nB. All students are not enrolled in the chemistry course.\nC. No students are required to wear a blouse in the lab.\nD. Some students meet safety requirements but do not wear a blouse.",
+  "premises_nl": [
+   "All students are required to wear a blouse in the chemistry lab.",
+   "If x is enrolled in the chemistry course, then x has met the safety requirements for the lab.",
+   "All students are enrolled in the chemistry course.",
+   "If x does not wear a blouse, then x is not enrolled in the chemistry course."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students are enrolled in the chemistry course (premise 3), and being enrolled implies meeting the safety requirements for the lab (premise 2). Therefore, all students have met the safety requirements, derived through reasoning about enrollment and safety compliance."
+ },
+ {
+  "id": 383,
+  "question": "Is it true that all students are required to wear a blouse in the chemistry lab?",
+  "premises_nl": [
+   "All students are required to wear a blouse in the chemistry lab.",
+   "If x is enrolled in the chemistry course, then x has met the safety requirements for the lab.",
+   "All students are enrolled in the chemistry course.",
+   "If x does not wear a blouse, then x is not enrolled in the chemistry course."
+  ],
+  "answer": "No",
+  "explanation": "All students are enrolled in the chemistry course (premise 3), and not wearing a blouse implies not being enrolled (premise 4), so all enrolled students must wear a blouse. Thus, all students are required to wear a blouse, requiring multiple steps to connect enrollment to lab requirements."
+ },
+ {
+  "id": 384,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. All students who eat food from the canteen get sick.\nB. All students are careful with the food at the canteen.\nC. No students eat food from the canteen.\nD. Some students do not get sick from eating canteen food.",
+  "premises_nl": [
+   "There exists a student who is careful with the food at the university canteen.",
+   "If x does not consume food at the canteen, then x does not get sick from eating the food.",
+   "There exists a student who eats food from the canteen.",
+   "If x is not careful with the food, then x is not careful with the food at the university canteen."
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student who eats food from the canteen (premise 3), implying some students may not eat. If a student does not consume canteen food, they do not get sick from it (premise 2). Thus, some students do not get sick, derived through reasoning about eating and sickness."
+ },
+ {
+  "id": 385,
+  "question": "Is it true that some students are careful with food generally?",
+  "premises_nl": [
+   "There exists a student who is careful with the food at the university canteen.",
+   "If x does not consume food at the canteen, then x does not get sick from eating the food.",
+   "There exists a student who eats food from the canteen.",
+   "If x is not careful with the food, then x is not careful with the food at the university canteen."
+  ],
+  "answer": "No",
+  "explanation": "There exists a student who is careful with the food at the university canteen (premise 1), and being careful with canteen food implies being careful with food generally (premise 4). Therefore, some students are careful with food generally, requiring multiple steps to connect canteen-specific to general carefulness."
+ },
+ {
+  "id": 386,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. All students are eligible for graduation.\nB. All students are enrolled in a course.\nC. No students complete the course successfully.\nD. Some students complete the course but are not eligible for graduation.",
+  "premises_nl": [
+   "If x is enrolled in a course, then x completes the course successfully.",
+   "All students complete the course successfully.",
+   "There exists a student who is eligible for graduation.",
+   "If x has completed all course requirements, then x is eligible for graduation."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students complete the course successfully (premise 2). Eligibility for graduation requires completing all course requirements (premise 4), but not all students may meet these requirements despite completing the course. Thus, some students complete the course but are not eligible, derived through reasoning about completion and eligibility."
+ },
+ {
+  "id": 387,
+  "question": "Is it true that some students are enrolled in a course?",
+  "premises_nl": [
+   "If x is enrolled in a course, then x completes the course successfully.",
+   "All students complete the course successfully.",
+   "There exists a student who is eligible for graduation.",
+   "If x has completed all course requirements, then x is eligible for graduation."
+  ],
+  "answer": "No",
+  "explanation": "All students complete the course successfully (premise 2), and enrollment in a course implies successful completion (premise 1). Since all students achieve completion, it is consistent that some are enrolled, requiring multiple steps to connect completion with possible enrollment."
+ },
+ {
+  "id": 388,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. All students are enrolled in a course.\nB. All students have passed the course.\nC. Some students are eligible for the next course.\nD. Some students work on a project but don’t complete it.",
+  "premises_nl": [
+   "There exists a student who is enrolled in a course.",
+   "If x is enrolled in a course, then x has passed the course.",
+   "If x has not completed the prerequisite for the course, then x is not eligible for the next course.",
+   "If x is working on a project, then x completes the project successfully."
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student enrolled in a course (premise 1), who has passed it (premise 2). If this student has completed the prerequisite, they are eligible for the next course (premise 3). Thus, some students are eligible, derived through reasoning about enrollment, passing, and prerequisites."
+ },
+ {
+  "id": 389,
+  "question": "Is it true that some students have passed the course?",
+  "premises_nl": [
+   "There exists a student who is enrolled in a course.",
+   "If x is enrolled in a course, then x has passed the course.",
+   "If x has not completed the prerequisite for the course, then x is not eligible for the next course.",
+   "If x is working on a project, then x completes the project successfully."
+  ],
+  "answer": "No",
+  "explanation": "There exists a student enrolled in a course (premise 1), and enrollment implies passing the course (premise 2). Therefore, some students have passed, requiring multiple steps to connect enrollment to passing."
+ },
+ {
+  "id": 390,
+  "question": "Which of the following can be inferred about students based on the premises?\nA. All students sleep in the library during the designated time.\nB. All students are allowed to sleep in the library.\nC. No students use the library for sleeping.\nD. Some students are not allowed to sleep in the library.",
+  "premises_nl": [
+   "All students use the library from 12:00 PM to 1:00 PM for sleeping.",
+   "If x uses the library for sleeping, then x sleeps in the library during the designated time.",
+   "If x does not use the library for sleeping, then x is not allowed to sleep in the library."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students use the library from 12:00 PM to 1:00 PM for sleeping (premise 1), and using the library for sleeping implies sleeping there during that time (premise 2). Thus, all students sleep in the library during the designated time, derived through reasoning about usage and sleeping."
+ },
+ {
+  "id": 391,
+  "question": "Is it true that all students are allowed to sleep in the library?",
+  "premises_nl": [
+   "All students use the library from 12:00 PM to 1:00 PM for sleeping.",
+   "If x uses the library for sleeping, then x sleeps in the library during the designated time.",
+   "If x does not use the library for sleeping, then x is not allowed to sleep in the library."
+  ],
+  "answer": "No",
+  "explanation": "All students use the library for sleeping (premise 1), and not using it implies not being allowed to sleep there (premise 3). However, using it does not necessarily imply being allowed, so it’s not guaranteed that all students are allowed, requiring steps to assess allowance."
+ },
+ {
+  "id": 392,
+  "question": "Which of the following can be inferred about students?\nA. Some students complete their studies successfully\nB. All students are enrolled in the university\nC. Some students are not actively studying\nD. Some students do not attend all required lectures",
+  "premises_nl": [
+   "If x is not enrolled in the university, then x does not complete their studies successfully",
+   "There exists a student who is enrolled in the university",
+   "All students are actively studying",
+   "All students attend all required lectures"
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student enrolled in the university (premise 2), and completing studies requires enrollment (premise 1). Thus, it’s consistent that some students complete their studies, requiring steps to connect enrollment to completion."
+ },
+ {
+  "id": 393,
+  "question": "Is it true that there exists a student who is actively studying?",
+  "premises_nl": [
+   "If x is not enrolled in the university, then x does not complete their studies successfully",
+   "There exists a student who is enrolled in the university",
+   "All students are actively studying",
+   "All students attend all required lectures"
+  ],
+  "answer": "No",
+  "explanation": "There exists a student enrolled in the university (premise 2), and all students are actively studying (premise 3). Thus, some students are actively studying, derived through multiple steps."
+ },
+ {
+  "id": 394,
+  "question": "Which of the following can be inferred about individuals?\nA. All individuals complete assignments\nB. All individuals are enrolled in a course\nC. Some individuals do not complete tasks\nD. Some individuals are not engaged in educational activities",
+  "premises_nl": [
+   "All individuals are engaged in educational activities",
+   "If x does not complete assignments, then x has not successfully completed a task or requirement",
+   "All individuals have successfully completed tasks or requirements",
+   "If x is enrolled in a course, then x is engaged in an educational activity",
+   "There exists an individual enrolled in a course"
+  ],
+  "answer": "Unknown",
+  "explanation": "All individuals have successfully completed tasks (premise 3), and completing tasks requires completing assignments (premise 2). Thus, all individuals complete assignments, derived through multiple steps."
+ },
+ {
+  "id": 395,
+  "question": "Is it true that some individuals are enrolled in a course?",
+  "premises_nl": [
+   "All individuals are engaged in educational activities",
+   "If x does not complete assignments, then x has not successfully completed a task or requirement",
+   "All individuals have successfully completed tasks or requirements",
+   "If x is enrolled in a course, then x is engaged in an educational activity",
+   "There exists an individual enrolled in a course"
+  ],
+  "answer": "No",
+  "explanation": "There exists an individual enrolled in a course (premise 5), and enrollment implies engagement in educational activities (premise 4), consistent with all being engaged (premise 1). Thus, some are enrolled, requiring steps to confirm."
+ },
+ {
+  "id": 396,
+  "question": "Which of the following can be inferred about students?\nA. All students applying for a scholarship have completed all required tasks\nB. All students have received a scholarship\nC. Some students apply but have not received a scholarship\nD. Some students are eligible but have not received a scholarship",
+  "premises_nl": [
+   "There exists a student who is applying for a scholarship",
+   "If x has not completed all required tasks for the scholarship, then x has not received a scholarship",
+   "If x is applying for a scholarship, then x has received a scholarship",
+   "There exists a student who has completed all required tasks for the scholarship",
+   "If x is eligible for the scholarship, then x has received a scholarship"
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student applying for a scholarship (premise 1), applying implies receiving it (premise 3), and receiving requires completing tasks (premise 2). Thus, all applying students have completed tasks, derived through multiple steps."
+ },
+ {
+  "id": 397,
+  "question": "Is it true that some students have received a scholarship?",
+  "premises_nl": [
+   "There exists a student who is applying for a scholarship",
+   "If x has not completed all required tasks for the scholarship, then x has not received a scholarship",
+   "If x is applying for a scholarship, then x has received a scholarship",
+   "There exists a student who has completed all required tasks for the scholarship",
+   "If x is eligible for the scholarship, then x has received a scholarship"
+  ],
+  "answer": "No",
+  "explanation": "There exists a student applying for a scholarship (premise 1), and applying implies receiving it (premise 3). Thus, some students have received a scholarship, requiring steps to connect applying to receiving."
+ },
+ {
+  "id": 398,
+  "question": "Which of the following can be inferred about students?\nA. Some students study offline\nB. All students complete online study tasks\nC. Some students do not complete offline tasks\nD. All students manage offline and online study time effectively",
+  "premises_nl": [
+   "If x is not studying offline, then x does not successfully complete offline study tasks",
+   "If x is not studying online, then x does not successfully complete online study tasks",
+   "There exists a student who successfully completes offline study tasks",
+   "If x is studying online, then x is able to effectively manage offline and online study time",
+   "If x is not successfully completing offline study tasks, then x is not completing online study tasks"
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student who completes offline study tasks (premise 3), and completing offline tasks requires studying offline (premise 1). Thus, some students study offline, derived through multiple steps."
+ },
+ {
+  "id": 399,
+  "question": "Is it true that some students successfully complete online study tasks?",
+  "premises_nl": [
+   "If x is not studying offline, then x does not successfully complete offline study tasks",
+   "If x is not studying online, then x does not successfully complete online study tasks",
+   "There exists a student who successfully completes offline study tasks",
+   "If x is studying online, then x is able to effectively manage offline and online study time",
+   "If x is not successfully completing offline study tasks, then x is not completing online study tasks"
+  ],
+  "answer": "No",
+  "explanation": "There exists a student who completes offline tasks (premise 3), and completing online tasks requires offline task completion (premise 5). Thus, some students can complete online tasks, requiring steps to assess consistency."
+ },
+ {
+  "id": 400,
+  "question": "Which of the following can be inferred about students?\nA. Some students study offline\nB. All students study online\nC. Some students do not complete offline tasks\nD. All students manage offline and online study time effectively",
+  "premises_nl": [
+   "If x is not studying offline, then x does not successfully complete offline study tasks",
+   "If x is not studying online, then x does not successfully complete online study tasks",
+   "There exists a student who successfully completes offline study tasks",
+   "If x is studying online, then x is able to effectively manage offline and online study time",
+   "If x is not successfully completing offline study tasks, then x is not completing online study tasks"
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student who completes offline study tasks (premise 3), and completing offline tasks requires studying offline (premise 1). Thus, some students study offline, derived through multiple steps."
+ },
+ {
+  "id": 401,
+  "question": "Is it true that some students study online?",
+  "premises_nl": [
+   "If x is not studying offline, then x does not successfully complete offline study tasks",
+   "If x is not studying online, then x does not successfully complete online study tasks",
+   "There exists a student who successfully completes offline study tasks",
+   "If x is studying online, then x is able to effectively manage offline and online study time",
+   "If x is not successfully completing offline study tasks, then x is not completing online study tasks"
+  ],
+  "answer": "No",
+  "explanation": "There exists a student who completes offline tasks (premise 3), completing online tasks requires offline completion (premise 5), and online completion requires studying online (premise 2). Thus, some students may study online, requiring multiple steps to assess."
+ },
+ {
+  "id": 402,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ((¬certified(x) → ¬can_teach(x)) ∧ ¬(¬can_teach(x) → ¬research_foundation(x)))\nB. ((¬certified(x) → ¬can_teach(x)) → (¬can_teach(x) → ¬research_foundation(x)))\nC. ((¬can_teach(x) → ¬research_foundation(x)) → (¬certified(x) → ¬can_teach(x)))\nD. ¬((¬certified(x) → ¬can_teach(x)) → (¬can_teach(x) → ¬research_foundation(x)))",
+  "premises_nl": [
+   "All students receive training.",
+   "If a student does not receive training, then they do not have a research foundation.",
+   "At least one student has completed a course.",
+   "At least one student is certified.",
+   "If a student does not receive training, then they do not have pedagogical skills.",
+   "If a student does not receive training, then they are not certified.",
+   "If a student lacks pedagogical skills, then they cannot teach.",
+   "If a student is not certified, then they cannot teach.",
+   "If a student has pedagogical skills, then they have received training.",
+   "All students have pedagogical skills.",
+   "If a student cannot teach, then they lack a research foundation.",
+   "If at least one student is certified, then if a lack of research foundation leads to not being certified, then not being able to teach leads to a lack of research foundation.",
+   "If a student has completed a course, then the above logical rule holds true.",
+   "All students are certified."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement follows from the premises that if a student is not certified, they cannot teach (premise 8), and if a student cannot teach, they lack a research foundation (premise 11). Together, these imply that if 'not certified implies cannot teach,' then 'cannot teach implies no research foundation.'"
+ },
+ {
+  "id": 403,
+  "question": "Based on the above premises, is the following statement true?\nStatement: All students receive training.",
+  "premises_nl": [
+   "All students receive training.",
+   "If a student does not receive training, then they do not have a research foundation.",
+   "At least one student has completed a course.",
+   "At least one student is certified.",
+   "If a student does not receive training, then they do not have pedagogical skills.",
+   "If a student does not receive training, then they are not certified.",
+   "If a student lacks pedagogical skills, then they cannot teach.",
+   "If a student is not certified, then they cannot teach.",
+   "If a student has pedagogical skills, then they have received training.",
+   "All students have pedagogical skills.",
+   "If a student cannot teach, then they lack a research foundation.",
+   "If at least one student is certified, then if a lack of research foundation leads to not being certified, then not being able to teach leads to a lack of research foundation.",
+   "If a student has completed a course, then the above logical rule holds true.",
+   "All students are certified."
+  ],
+  "answer": "No",
+  "explanation": "The premise explicitly states that all students receive training (premise 1), so the statement is true."
+ },
+ {
+  "id": 404,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (publishes_papers(x) → teaches(x))\nB. (∀x (teaches(x) → publishes_papers(x)) ∧ ¬∀x (teaches(x) → publishes_papers(x)))\nC. ∀x (teaches(x) → publishes_papers(x))\nD. ¬∀x (teaches(x) → publishes_papers(x))",
+  "premises_nl": [
+   "All students have knowledge.",
+   "At least one student conducts research.",
+   "If a student conducts research, then they publish papers.",
+   "At least one student publishes papers.",
+   "If a student teaches, then they conduct research.",
+   "All students conduct research.",
+   "If a student has knowledge, then they teach.",
+   "If a student does not publish papers, then they do not give seminars.",
+   "If a student does not teach, then they do not understand the subject.",
+   "At least one student teaches.",
+   "If a student publishes papers, then they conduct research.",
+   "At least one student has knowledge.",
+   "If having knowledge leads to teaching, then teaching leads to conducting research.",
+   "If at least one student teaches, then at least one student conducts research.",
+   "All students teach.",
+   "If a student has knowledge, then they give seminars."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a student teaches, then they publish papers can be inferred by combining the premises that if a student teaches, they conduct research (premise 5), and if a student conducts research, they publish papers (premise 3). These imply that teaching leads to publishing papers."
+ },
+ {
+  "id": 405,
+  "question": "Based on the above premises, is the following statement true?\nStatement: If a student publishes papers, then they conduct research.",
+  "premises_nl": [
+   "All students have knowledge.",
+   "At least one student conducts research.",
+   "If a student conducts research, then they publish papers.",
+   "At least one student publishes papers.",
+   "If a student teaches, then they conduct research.",
+   "All students conduct research.",
+   "If a student has knowledge, then they teach.",
+   "If a student does not publish papers, then they do not give seminars.",
+   "If a student does not teach, then they do not understand the subject.",
+   "At least one student teaches.",
+   "If a student publishes papers, then they conduct research.",
+   "At least one student has knowledge.",
+   "If having knowledge leads to teaching, then teaching leads to conducting research.",
+   "If at least one student teaches, then at least one student conducts research.",
+   "All students teach.",
+   "If a student has knowledge, then they give seminars."
+  ],
+  "answer": "No",
+  "explanation": "The statement is true because it is explicitly given as a premise that if a student publishes papers, then they conduct research (premise 11)."
+ },
+ {
+  "id": 406,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (R(x) → P(x))\nB. (∀x (P(x) → R(x)) ∧ ¬∀x (P(x) → R(x)))\nC. ∀x (P(x) → R(x))\nD. ¬∀x (P(x) → R(x))",
+  "premises_nl": [
+   "If a student completes prerequisite courses, then they are eligible for advanced training.",
+   "There exists at least one student who is eligible for advanced training.",
+   "There exists at least one student who has received a qualification.",
+   "If a student does not meet the requirements, then they do not receive a qualification.",
+   "If a student completes prerequisite courses, then they are able to conduct research.",
+   "If a student does not meet the requirements, then they do not engage in training.",
+   "All students complete prerequisite courses.",
+   "If a student meets the requirements, then they engage in independent learning.",
+   "If a student meets the requirements, then they receive a qualification.",
+   "If a student receives a qualification, then they meet the requirements.",
+   "All students meet the requirements.",
+   "If a student meets the requirements, then they engage in training.",
+   "If the inability to meet the requirements leads to the inability to receive a qualification, then the inability to receive a qualification leads to the inability to conduct research.",
+   "If the inability to engage in training leads to the inability to receive a qualification, then the inability to receive a qualification leads to the inability to conduct research.",
+   "If a student meets the requirements, then they engage in training.",
+   "If a student completes prerequisite courses, then they can engage in training."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a student receives a qualification, they can conduct research follows because all students complete prerequisite courses (premise 7), and completing prerequisite courses implies the ability to conduct research (premise 5), ensuring that all students can conduct research, satisfying the implication."
+ },
+ {
+  "id": 407,
+  "question": "Based on the above premises, is the following statement true?\nStatement: (¬T(x) → ¬P(x))",
+  "premises_nl": [
+   "If a student completes prerequisite courses, then they are eligible for advanced training.",
+   "There exists at least one student who is eligible for advanced training.",
+   "There exists at least one student who has received a qualification.",
+   "If a student does not meet the requirements, then they do not receive a qualification.",
+   "If a student completes prerequisite courses, then they are able to conduct research.",
+   "If a student does not meet the requirements, then they do not engage in training.",
+   "All students complete prerequisite courses.",
+   "If a student meets the requirements, then they engage in independent learning.",
+   "If a student meets the requirements, then they receive a qualification.",
+   "If a student receives a qualification, then they meet the requirements.",
+   "All students meet the requirements.",
+   "If a student meets the requirements, then they engage in training.",
+   "If the inability to meet the requirements leads to the inability to receive a qualification, then the inability to receive a qualification leads to the inability to conduct research.",
+   "If the inability to engage in training leads to the inability to receive a qualification, then the inability to receive a qualification leads to the inability to conduct research.",
+   "If a student meets the requirements, then they engage in training.",
+   "If a student completes prerequisite courses, then they can engage in training."
+  ],
+  "answer": "No",
+  "explanation": "The statement that if a student does not engage in training, they do not receive a qualification is true because if a student receives a qualification, they meet the requirements (premise 10), and if they meet the requirements, they engage in training (premise 12), implying that a qualification requires training."
+ },
+ {
+  "id": 408,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (S(x) → Q(x))\nB. (∀x (Q(x) → S(x)) ∧ ¬∀x (Q(x) → S(x)))\nC. ∀x (Q(x) → S(x))\nD. ¬∀x (Q(x) → S(x))",
+  "premises_nl": [
+   "If a student does not receive a qualification, then they cannot conduct research.",
+   "There exists at least one student who is engaged in training.",
+   "If a student does not meet the requirements, then they do not receive a qualification.",
+   "There exists at least one student who has received a qualification.",
+   "If a student does not receive a qualification, then they cannot participate in advanced seminars.",
+   "If a student does not engage in independent learning, then they cannot conduct research.",
+   "If a student is engaged in training, then they receive a qualification.",
+   "If a student engages in independent learning, then they meet the requirements.",
+   "There exists at least one student who is participating in advanced seminars.",
+   "If a student does not receive a qualification, then they do not engage in independent learning.",
+   "There exists at least one student who is conducting research.",
+   "All students receive qualifications.",
+   "If independent learning leads to meeting the requirements, then lack of qualification leads to inability to conduct research.",
+   "If the lack of meeting requirements leads to no qualification, then lack of qualification leads to no participation in advanced seminars.",
+   "If a student does not participate in advanced seminars, then they cannot conduct research.",
+   "All students are engaged in training."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a student meets the requirements, they participate in advanced seminars follows because meeting the requirements implies receiving a qualification (premise 3), and receiving a qualification implies participating in advanced seminars (premise 5), so meeting the requirements leads to seminar participation."
+ },
+ {
+  "id": 409,
+  "question": "Based on the above premises, is the following statement true?\nStatement: There exists at least one student who is engaged in training.",
+  "premises_nl": [
+   "If a student does not receive a qualification, then they cannot conduct research.",
+   "There exists at least one student who is engaged in training.",
+   "If a student does not meet the requirements, then they do not receive a qualification.",
+   "There exists at least one student who has received a qualification.",
+   "If a student does not receive a qualification, then they cannot participate in advanced seminars.",
+   "If a student does not engage in independent learning, then they cannot conduct research.",
+   "If a student is engaged in training, then they receive a qualification.",
+   "If a student engages in independent learning, then they meet the requirements.",
+   "There exists at least one student who is participating in advanced seminars.",
+   "If a student does not receive a qualification, then they do not engage in independent learning.",
+   "There exists at least one student who is conducting research.",
+   "All students receive qualifications.",
+   "If independent learning leads to meeting the requirements, then lack of qualification leads to inability to conduct research.",
+   "If the lack of meeting requirements leads to no qualification, then lack of qualification leads to no participation in advanced seminars.",
+   "If a student does not participate in advanced seminars, then they cannot conduct research.",
+   "All students are engaged in training."
+  ],
+  "answer": "No",
+  "explanation": "The statement that there exists at least one student engaged in training is true because all students are engaged in training (premise 16), which implies at least one student is engaged in training."
+ },
+ {
+  "id": 410,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (P(x) → S(x))\nB. ∀x (S(x) → P(x))\nC. ¬∀x (S(x) → P(x))\nD. (∀x (S(x) → P(x)) ∧ ¬∀x (S(x) → P(x)))",
+  "premises_nl": [
+   "All students must undergo training.",
+   "If a student is trained, then they can conduct research.",
+   "If a student is trained, then they can participate in a seminar.",
+   "All students are trained.",
+   "If a student conducts research, then they receive a qualification.",
+   "There exists at least one student who has received a qualification.",
+   "There exists at least one student who is trained.",
+   "All students conduct research.",
+   "There exists at least one student who is conducting research.",
+   "If a student does not participate in training, then they cannot conduct research.",
+   "If a student does not participate in self-study, then they cannot conduct research.",
+   "All students participate in self-study.",
+   "If participating in self-study leads to conducting research, then students who do not participate in self-study cannot conduct research.",
+   "If participating in self-study leads to receiving qualifications, then students who do not participate in self-study cannot receive a qualification.",
+   "If a student does not participate in self-study, they cannot participate in seminars.",
+   "There exists at least one student who is participating in self-study."
+  ],
+  "answer": "A",
+  "explanation": "The statement that if a student participates in self-study, they receive a qualification follows because all students conduct research (premise 8), and conducting research implies receiving a qualification (premise 5), ensuring all students have qualifications, satisfying the implication."
+ },
+ {
+  "id": 411,
+  "question": "Based on the above premises, is the statement true?\nStatement: ∃x T(x)",
+  "premises_nl": [
+   "All students must undergo training.",
+   "If a student is trained, then they can conduct research.",
+   "If a student is trained, then they can participate in a seminar.",
+   "All students are trained.",
+   "If a student conducts research, then they receive a qualification.",
+   "There exists at least one student who has received a qualification.",
+   "There exists at least one student who is trained.",
+   "All students conduct research.",
+   "There exists at least one student who is conducting research.",
+   "If a student does not participate in training, then they cannot conduct research.",
+   "If a student does not participate in self-study, then they cannot conduct research.",
+   "All students participate in self-study.",
+   "If participating in self-study leads to conducting research, then students who do not participate in self-study cannot conduct research.",
+   "If participating in self-study leads to receiving qualifications, then students who do not participate in self-study cannot receive a qualification.",
+   "If a student does not participate in self-study, they cannot participate in seminars.",
+   "There exists at least one student who is participating in self-study."
+  ],
+  "answer": "Yes",
+  "explanation": "The statement that there exists at least one student who is trained is true because all students are trained (premise 4), which implies at least one student is trained."
+ },
+ {
+  "id": 412,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (T(x) → R(x))\nB. ∀x (S(x) → P(x))\nC. ¬∀x (S(x) → P(x))\nD. (∀x (S(x) → P(x)) ∧ ¬∀x (S(x) → P(x)))",
+  "premises_nl": [
+   "All students engage in self-study.",
+   "If a student participates in research, then they publish papers.",
+   "If a student participates in research, then they engage in training.",
+   "All students engage in training.",
+   "If a student conducts research, then they receive a qualification.",
+   "There exists at least one student who has received a qualification.",
+   "There exists at least one student who is engaged in training.",
+   "All students receive a qualification.",
+   "There exists at least one student who is conducting research.",
+   "If a student does not engage in training, then they cannot participate in research.",
+   "If a student does not engage in self-study, then they cannot receive a qualification.",
+   "All students participate in self-study.",
+   "If training leads to receiving a qualification, then the inability to participate in self-study leads to the inability to receive a qualification.",
+   "If the inability to engage in self-study leads to not receiving a qualification, then the inability to participate in training leads to the inability to conduct research.",
+   "If a student participates in self-study, then they are engaged in research.",
+   "If a student does not participate in self-study, then they cannot participate in training."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a student engages in self-study, they receive a qualification follows because self-study implies participating in research (premise 15), and participating in research implies receiving a qualification (premise 5), so self-study leads to a qualification."
+ },
+ {
+  "id": 413,
+  "question": "Based on the above premises, is the following statement true?\nStatement: There exists at least one student who is engaged in training.",
+  "premises_nl": [
+   "All students engage in self-study.",
+   "If a student participates in research, then they publish papers.",
+   "If a student participates in research, then they engage in training.",
+   "All students engage in training.",
+   "If a student conducts research, then they receive a qualification.",
+   "There exists at least one student who has received a qualification.",
+   "There exists at least one student who is engaged in training.",
+   "All students receive a qualification.",
+   "There exists at least one student who is conducting research.",
+   "If a student does not engage in training, then they cannot participate in research.",
+   "If a student does not engage in self-study, then they cannot receive a qualification.",
+   "All students participate in self-study.",
+   "If training leads to receiving a qualification, then the inability to participate in self-study leads to the inability to receive a qualification.",
+   "If the inability to engage in self-study leads to not receiving a qualification, then the inability to participate in training leads to the inability to conduct research.",
+   "If a student participates in self-study, then they are engaged in research.",
+   "If a student does not participate in self-study, then they cannot participate in training."
+  ],
+  "answer": "No",
+  "explanation": "The statement that there exists at least one student engaged in training is true because all students engage in training (premise 4), which implies at least one student is engaged in training."
+ },
+ {
+  "id": 414,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (T(x) → R(x))\nB. ¬∀x (S(x) → P(x))\nC. ∀x (S(x) → P(x))\nD. (∀x (S(x) → P(x)) ∧ ¬∀x (S(x) → P(x)))",
+  "premises_nl": [
+   "If a student receives a qualification, then they engage in training.",
+   "If a student does not participate in self-study, then they cannot conduct research.",
+   "If a student does not engage in independent learning, then they cannot conduct research.",
+   "If a student participates in self-study, then they engage in independent learning.",
+   "All students engage in self-study.",
+   "If a student participates in research, then they receive a qualification.",
+   "If a student does not engage in independent learning, then they cannot participate in self-study.",
+   "If a student participates in research, then they engage in self-study.",
+   "If a student receives a qualification, then they participate in self-study.",
+   "If a student does not engage in research, then they cannot receive a qualification.",
+   "All students engage in research.",
+   "If a student does not participate in self-study, then they cannot engage in research.",
+   "If a student does not participate in self-study, then they cannot receive a qualification.",
+   "If a student does not participate in self-study, then they cannot participate in independent learning.",
+   "If a student engages in research, then they receive a qualification."
+  ],
+  "answer": "B",
+  "explanation": "The statement that if a student engages in self-study, they receive a qualification follows because all students engage in research (premise 11), and participating in research implies receiving a qualification (premise 6), ensuring all students have qualifications, satisfying the implication."
+ },
+ {
+  "id": 415,
+  "question": "Based on the above premises, is the following statement true?\nStatement: ((R(x) → S(x)) → (S(x) → P(x)))",
+  "premises_nl": [
+   "If a student receives a qualification, then they engage in training.",
+   "If a student does not participate in self-study, then they cannot conduct research.",
+   "If a student does not engage in independent learning, then they cannot conduct research.",
+   "If a student participates in self-study, then they engage in independent learning.",
+   "All students engage in self-study.",
+   "If a student participates in research, then they receive a qualification.",
+   "If a student does not engage in independent learning, then they cannot participate in self-study.",
+   "If a student participates in research, then they engage in self-study.",
+   "If a student receives a qualification, then they participate in self-study.",
+   "If a student does not engage in research, then they cannot receive a qualification.",
+   "All students engage in research.",
+   "If a student does not participate in self-study, then they cannot engage in research.",
+   "If a student does not participate in self-study, then they cannot receive a qualification.",
+   "If a student does not participate in self-study, then they cannot participate in independent learning.",
+   "If a student engages in research, then they receive a qualification."
+  ],
+  "answer": "Yes",
+  "explanation": "The statement that if research implies self-study, then self-study implies a qualification is true because all students engage in research (premise 11), and research implies a qualification (premise 6), ensuring that self-study leads to a qualification."
+ },
+ {
+  "id": 416,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (R(x) → Q(x))\nB. ∀x (Q(x) → R(x))\nC. ¬∀x (R(x) → Q(x))\nD. (∀x (R(x) → Q(x)) ∧ ¬∀x (R(x) → Q(x)))",
+  "premises_nl": [
+   "If a student completes prerequisite courses, then they are eligible for advanced training.",
+   "There exists at least one student who has received a qualification.",
+   "There exists at least one student who has completed prerequisite courses.",
+   "All students are required to undergo training.",
+   "All students participate in self-study.",
+   "There exists at least one student engaged in independent research.",
+   "If a student does not undergo training, then they cannot conduct research.",
+   "If a student completes prerequisite courses, then they receive a qualification.",
+   "If a student conducts research, then they engage in independent learning.",
+   "If a student does not undergo training, then they cannot engage in independent learning.",
+   "All students must obtain qualifications.",
+   "If a student undergoes training, then they participate in self-study.",
+   "If the inability to undergo training leads to the inability to conduct research, then at least one student must receive a qualification.",
+   "If there exists at least one student engaged in independent research, then the inability to undergo training leads to the inability to conduct research.",
+   "If a student undergoes training, then they engage in independent learning.",
+   "If a student completes prerequisite courses, then they are able to conduct research."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a student conducts research, they receive a qualification follows because completing prerequisite courses implies both the ability to conduct research (premise 16) and receiving a qualification (premise 8), so research leads to a qualification."
+ },
+ {
+  "id": 417,
+  "question": "Based on the above premises, is the statement true?\nStatement: There exists at least one student who has completed prerequisite courses.",
+  "premises_nl": [
+   "If a student completes prerequisite courses, then they are eligible for advanced training.",
+   "There exists at least one student who has received a qualification.",
+   "There exists at least one student who has completed prerequisite courses.",
+   "All students are required to undergo training.",
+   "All students participate in self-study.",
+   "There exists at least one student engaged in independent research.",
+   "If a student does not undergo training, then they cannot conduct research.",
+   "If a student completes prerequisite courses, then they receive a qualification.",
+   "If a student conducts research, then they engage in independent learning.",
+   "If a student does not undergo training, then they cannot engage in independent learning.",
+   "All students must obtain qualifications.",
+   "If a student undergoes training, then they participate in self-study.",
+   "If the inability to undergo training leads to the inability to conduct research, then at least one student must receive a qualification.",
+   "If there exists at least one student engaged in independent research, then the inability to undergo training leads to the inability to conduct research.",
+   "If a student undergoes training, then they engage in independent learning.",
+   "If a student completes prerequisite courses, then they are able to conduct research."
+  ],
+  "answer": "No",
+  "explanation": "The statement that there exists at least one student who has completed prerequisite courses is true because it is explicitly stated that at least one student has completed prerequisite courses (premise 3)."
+ },
+ {
+  "id": 418,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (S(x) → R(x))\nB. ∀x (R(x) → S(x))\nC. ¬∀x (S(x) → R(x))\nD. (∀x (S(x) → R(x)) ∧ ¬∀x (S(x) → R(x)))",
+  "premises_nl": [
+   "There exists at least one student who participates in extracurricular activities.",
+   "All students participate in extracurricular activities.",
+   "There exists at least one student who has completed prerequisite courses.",
+   "If a student participates in extracurricular activities, then they engage in self-study.",
+   "All students engage in self-study.",
+   "If a student engages in self-study, then they develop critical thinking skills.",
+   "If a student does not undergo training, then they do not engage in self-study.",
+   "If a student does not undergo training, then they cannot conduct research.",
+   "There exists at least one student who conducts research.",
+   "If a student cannot conduct research, then they do not participate in extracurricular activities.",
+   "If a student undergoes training, then they have completed prerequisite courses.",
+   "All students must complete prerequisite courses.",
+   "If there exists at least one student who participates in extracurricular activities, then the inability to undergo training leads to the inability to conduct research.",
+   "If participation in extracurricular activities leads to self-study, then all students must participate in extracurricular activities.",
+   "All students engage in research.",
+   "All students undergo training."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a student engages in self-study, they conduct research follows because all students participate in extracurricular activities (premise 2), and participation in extracurricular activities implies conducting research (premise 10), ensuring that self-study aligns with research."
+ },
+ {
+  "id": 419,
+  "question": "Based on the above premises, is the statement true?\nStatement: If a student does not undergo training, then they do not engage in self-study.",
+  "premises_nl": [
+   "There exists at least one student who participates in extracurricular activities.",
+   "All students participate in extracurricular activities.",
+   "There exists at least one student who has completed prerequisite courses.",
+   "If a student participates in extracurricular activities, then they engage in self-study.",
+   "All students engage in self-study.",
+   "If a student engages in self-study, then they develop critical thinking skills.",
+   "If a student does not undergo training, then they do not engage in self-study.",
+   "If a student does not undergo training, then they cannot conduct research.",
+   "There exists at least one student who conducts research.",
+   "If a student cannot conduct research, then they do not participate in extracurricular activities.",
+   "If a student undergoes training, then they have completed prerequisite courses.",
+   "All students must complete prerequisite courses.",
+   "If there exists at least one student who participates in extracurricular activities, then the inability to undergo training leads to the inability to conduct research.",
+   "If participation in extracurricular activities leads to self-study, then all students must participate in extracurricular activities.",
+   "All students engage in research.",
+   "All students undergo training."
+  ],
+  "answer": "No",
+  "explanation": "The statement that if a student does not undergo training, they do not engage in self-study is true because it is explicitly stated that the absence of training prevents self-study (premise 7)."
+ }
+]

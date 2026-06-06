@@ -1,0 +1,1070 @@
+[
+ {
+  "id": 120,
+  "question": "Does every AI application receive notable academic recognition?",
+  "premises_nl": [
+   "If an AI application has undergone rigorous testing, then it meets the highest quality standards.",
+   "If an AI application is highly successful, then it is widely adopted in educational institutions.",
+   "If an AI application shows great potential, then it has undergone rigorous testing.",
+   "If an AI application is widely adopted in educational institutions, then it is highly successful.",
+   "If an AI application is widely adopted in educational institutions, then it receives notable academic recognition.",
+   "Every AI application meets the highest quality standards.",
+   "If it is true that widespread adoption implies high success, then any AI application that shows great potential must have undergone rigorous testing.",
+   "If the implication that promising applications are rigorously tested (given that widespread adoption implies success) holds, then it follows that widespread adoption indeed implies high success.",
+   "Every AI application is widely adopted in educational institutions."
+  ],
+  "answer": "No",
+  "explanation": "From premise 9 ('Every AI application is widely adopted in educational institutions') and premise 5 ('If an AI application is widely adopted in educational institutions, then it receives notable academic recognition'), it follows that every AI application receives academic recognition. For any x, WidelyAdoptedInEducation(x) holds, and premise 5 implies ReceivesAcademicRecognition(x) via modus ponens."
+ },
+ {
+  "id": 121,
+  "question": "Are all AI applications rigorously tested?",
+  "premises_nl": [
+   "If an AI application has undergone rigorous testing, then it meets the highest quality standards.",
+   "If an AI application is highly successful, then it is widely adopted in educational institutions.",
+   "If an AI application shows great potential, then it has undergone rigorous testing.",
+   "If an AI application is widely adopted in educational institutions, then it is highly successful.",
+   "If an AI application is widely adopted in educational institutions, then it receives notable academic recognition.",
+   "Every AI application meets the highest quality standards.",
+   "If it is true that widespread adoption implies high success, then any AI application that shows great potential must have undergone rigorous testing.",
+   "If the implication that promising applications are rigorously tested (given that widespread adoption implies success) holds, then it follows that widespread adoption indeed implies high success.",
+   "Every AI application is widely adopted in educational institutions."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 6 states all applications meet quality standards, and premise 1 links this to rigorous testing if tested, while premise 3 ties testing to showing great potential. However, no premise ensures all applications show great potential, so it’s uncertain whether all are rigorously tested without that universal condition."
+ },
+ {
+  "id": 122,
+  "question": "Are all cloud services reliable?",
+  "premises_nl": [
+   "If a cloud service is not scalable, then it is not reliable.",
+   "All cloud services are scalable.",
+   "If a cloud service does not meet performance standards, then it does not adhere to security protocols.",
+   "All cloud services are thoroughly tested.",
+   "If a cloud service meets performance standards, then it is cost-effective.",
+   "If a cloud service is not thoroughly tested, then it does not meet performance standards.",
+   "If not being thoroughly tested implies that a cloud service does not meet performance standards, then there exists at least one cloud service that is reliable.",
+   "If all cloud services are scalable, then all cloud services are thoroughly tested.",
+   "If a cloud service is thoroughly tested, then it is reliable.",
+   "All cloud services meet performance standards.",
+   "If a cloud service meets performance standards, then it is thoroughly tested.",
+   "If a cloud service does not meet performance standards, then it is not cost-effective."
+  ],
+  "answer": "Yes",
+  "explanation": "From premise 4 ('All cloud services are thoroughly tested') and premise 9 ('If a cloud service is thoroughly tested, then it is reliable'), it follows that all cloud services are reliable. For any service x, ThoroughlyTested(x) holds, and premise 9 implies Reliable(x) via modus ponens, universally."
+ },
+ {
+  "id": 123,
+  "question": "Are all cloud services cost-effective?",
+  "premises_nl": [
+   "If a cloud service is not scalable, then it is not reliable.",
+   "All cloud services are scalable.",
+   "If a cloud service does not meet performance standards, then it does not adhere to security protocols.",
+   "All cloud services are thoroughly tested.",
+   "If a cloud service meets performance standards, then it is cost-effective.",
+   "If a cloud service is not thoroughly tested, then it does not meet performance standards.",
+   "If not being thoroughly tested implies that a cloud service does not meet performance standards, then there exists at least one cloud service that is reliable.",
+   "If all cloud services are scalable, then all cloud services are thoroughly tested.",
+   "If a cloud service is thoroughly tested, then it is reliable.",
+   "All cloud services meet performance standards.",
+   "If a cloud service meets performance standards, then it is thoroughly tested.",
+   "If a cloud service does not meet performance standards, then it is not cost-effective."
+  ],
+  "answer": "No",
+  "explanation": "From premise 10 ('All cloud services meet performance standards') and premise 5 ('If a cloud service meets performance standards, then it is cost-effective'), it follows that all cloud services are cost-effective. For any service x, MeetsPerformanceStandards(x) holds, and premise 5 implies CostEffective(x) via modus ponens, universally."
+ },
+ {
+  "id": 124,
+  "question": "Are there any energy-efficient smart home devices?",
+  "premises_nl": [
+   "There exists at least one smart home device that is user-friendly.",
+   "If a smart home device is not secure, then it is not necessarily energy efficient.",
+   "There exists at least one smart home device that is compatible with the smart home ecosystem.",
+   "There does not necessarily exist a smart home device that is energy efficient.",
+   "If a smart home device is energy efficient, then it is user-friendly.",
+   "Every smart home device is not necessarily energy efficient.",
+   "If the lack of security in a smart home device implies that it is not energy efficient, then it does not necessarily follow that there exists at least one energy-efficient device.",
+   "If there exists at least one smart home device that is compatible with the smart home ecosystem, then it does not necessarily follow that there exists at least one user-friendly device.",
+   "If a smart home device is not compatible with the smart home ecosystem, then it is not necessarily user-friendly.",
+   "There exists at least one smart home device that supports voice control.",
+   "Every smart home device is not necessarily compatible with the smart home ecosystem."
+  ],
+  "answer": "No",
+  "explanation": "Premise 4 states there does not exist any smart home device that is energy efficient, and premise 5 implies that if any were energy-efficient, they’d be user-friendly. Since no such devices exist, the answer is no."
+ },
+ {
+  "id": 125,
+  "question": "Are all smart home devices user-friendly?",
+  "premises_nl": [
+   "There exists at least one smart home device that is user-friendly.",
+   "If a smart home device is not secure, then it is not necessarily energy efficient.",
+   "There exists at least one smart home device that is compatible with the smart home ecosystem.",
+   "There does not necessarily exist a smart home device that is energy efficient.",
+   "If a smart home device is energy efficient, then it is user-friendly.",
+   "Every smart home device is not necessarily energy efficient.",
+   "If the lack of security in a smart home device implies that it is not energy efficient, then it does not necessarily follow that there exists at least one energy-efficient device.",
+   "If there exists at least one smart home device that is compatible with the smart home ecosystem, then it does not necessarily follow that there exists at least one user-friendly device.",
+   "If a smart home device is not compatible with the smart home ecosystem, then it is not necessarily user-friendly.",
+   "There exists at least one smart home device that supports voice control.",
+   "Every smart home device is not necessarily compatible with the smart home ecosystem."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 1 guarantees at least one device is user-friendly. Premise 4 states no devices are energy-efficient, and premise 5 links energy efficiency to user-friendliness, but with no energy-efficient devices, user-friendliness isn’t required for all. No premise ensures all devices are user-friendly, leaving it uncertain."
+ },
+ {
+  "id": 126,
+  "question": "Are all smartphones highly efficient?",
+  "premises_nl": [
+   "If a smartphone has a high-resolution display, then it has superior screen quality.",
+   "If a smartphone does not have long battery life, then it does not have superior screen quality.",
+   "There exists at least one smartphone that supports advanced camera features.",
+   "Every smartphone is equipped with the latest processor.",
+   "If a smartphone is equipped with the latest processor, then it is highly efficient.",
+   "If there exists at least one smartphone with the latest processor, then any smartphone with a high-resolution display has superior screen quality.",
+   "If there exists at least one smartphone that supports advanced camera features, then, provided there is at least one smartphone with the latest processor, any smartphone with a high-resolution display has superior screen quality.",
+   "If a smartphone has superior screen quality, then it supports advanced camera features.",
+   "There exists at least one smartphone with a high-resolution display.",
+   "If a smartphone has superior screen quality, then it is equipped with the latest processor."
+  ],
+  "answer": "No",
+  "explanation": "From premise 4 ('Every smartphone is equipped with the latest processor') and premise 5 ('If a smartphone is equipped with the latest processor, then it is highly efficient'), it follows that all smartphones are highly efficient. For any x, LatestProcessor(x) holds, and premise 5 implies HighlyEfficient(x) via modus ponens, universally."
+ },
+ {
+  "id": 127,
+  "question": "Do all smartphones support advanced camera features?",
+  "premises_nl": [
+   "If a smartphone has a high-resolution display, then it has superior screen quality.",
+   "If a smartphone does not have long battery life, then it does not have superior screen quality.",
+   "There exists at least one smartphone that supports advanced camera features.",
+   "Every smartphone is equipped with the latest processor.",
+   "If a smartphone is equipped with the latest processor, then it is highly efficient.",
+   "If there exists at least one smartphone with the latest processor, then any smartphone with a high-resolution display has superior screen quality.",
+   "If there exists at least one smartphone that supports advanced camera features, then, provided there is at least one smartphone with the latest processor, any smartphone with a high-resolution display has superior screen quality.",
+   "If a smartphone has superior screen quality, then it supports advanced camera features.",
+   "There exists at least one smartphone with a high-resolution display.",
+   "If a smartphone has superior screen quality, then it is equipped with the latest processor."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 9 states there exists at least one smartphone with a high-resolution display, which by premise 1 has superior screen quality, and by premise 8 supports advanced camera features. However, no premise ensures all smartphones have high-resolution displays, so it’s uncertain if all support advanced camera features."
+ },
+ {
+  "id": 128,
+  "question": "Do all courses meet curriculum standards?",
+  "premises_nl": [
+   "If a course is offered online, then it is engaging.",
+   "If a course is not engaging, then it does not meet curriculum standards.",
+   "There does not exist any course that is engaging.",
+   "Not every course is offered online.",
+   "If a course is well-structured, then it does not meet curriculum standards.",
+   "Not every course has sufficient resources.",
+   "If offering a course online implies that it is engaging, then a well-structured course does not meet curriculum standards.",
+   "If a well-structured course meets curriculum standards, then offering a course online does not imply that it is engaging.",
+   "If a course has sufficient resources, then it is not well-structured.",
+   "Not every course meets curriculum standards.",
+   "If a course is engaging, then it does not receive positive reviews."
+  ],
+  "answer": "No",
+  "explanation": "Premise 3 states no course is engaging, and premise 2 says if a course is not engaging, it does not meet curriculum standards. Thus, for every course x, ¬Engaging(x) holds, and premise 2 implies ¬MeetsStandards(x), so no course meets curriculum standards."
+ },
+ {
+  "id": 129,
+  "question": "Are there any courses offered online?",
+  "premises_nl": [
+   "If a course is offered online, then it is engaging.",
+   "If a course is not engaging, then it does not meet curriculum standards.",
+   "There does not exist any course that is engaging.",
+   "Not every course is offered online.",
+   "If a course is well-structured, then it does not meet curriculum standards.",
+   "Not every course has sufficient resources.",
+   "If offering a course online implies that it is engaging, then a well-structured course does not meet curriculum standards.",
+   "If a well-structured course meets curriculum standards, then offering a course online does not imply that it is engaging.",
+   "If a course has sufficient resources, then it is not well-structured.",
+   "Not every course meets curriculum standards.",
+   "If a course is engaging, then it does not receive positive reviews."
+  ],
+  "answer": "No",
+  "explanation": "Premise 3 states no course is engaging, and premise 1 says if a course is offered online, it must be engaging. Since no course can be engaging, no course can be offered online, implying there are no online courses."
+ },
+ {
+  "id": 130,
+  "question": "Are all research projects successful?",
+  "premises_nl": [
+   "Every research project is recognized as innovative.",
+   "Every research project is well-funded.",
+   "Every research project is thoroughly tested.",
+   "If a research project is not well-funded, then it does not meet academic standards.",
+   "If a research project does not meet academic standards, then it is not well-funded.",
+   "If a research project is not successful, then it does not meet academic standards.",
+   "Every research project is published.",
+   "If every research project is published, then every research project is thoroughly tested.",
+   "If the fact that a research project not being successful implies it does not meet academic standards, then not meeting academic standards implies that it is not well-funded.",
+   "If a research project is thoroughly tested, then it is recognized as innovative.",
+   "There exists at least one research project that is successful.",
+   "If a research project meets academic standards, then it is published."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 2 states all projects are well-funded. Premise 5 implies that if a project is well-funded, it meets academic standards (via contrapositive). Premise 6 implies that if a project meets academic standards, it is successful (via contrapositive). Thus, all projects are successful."
+ },
+ {
+  "id": 131,
+  "question": "Are all research projects highly cited?",
+  "premises_nl": [
+   "Every research project is recognized as innovative.",
+   "Every research project is well-funded.",
+   "Every research project is thoroughly tested.",
+   "If a research project is not well-funded, then it does not meet academic standards.",
+   "If a research project does not meet academic standards, then it is not well-funded.",
+   "If a research project is not successful, then it does not meet academic standards.",
+   "Every research project is published.",
+   "If every research project is published, then every research project is thoroughly tested.",
+   "If the fact that a research project not being successful implies it does not meet academic standards, then not meeting academic standards implies that it is not well-funded.",
+   "If a research project is thoroughly tested, then it is recognized as innovative.",
+   "There exists at least one research project that is successful.",
+   "If a research project meets academic standards, then it is published."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 7 states all projects are published, and premise 12 links meeting academic standards to publication. However, no premise addresses whether all projects are highly cited, leaving it uncertain whether all research projects receive high citation counts."
+ },
+ {
+  "id": 132,
+  "question": "Are all academic works current?",
+  "premises_nl": [
+   "Every academic work is rigorously researched.",
+   "If an academic work is thoroughly tested, then it is scientifically sound.",
+   "If an academic work is rigorously researched, then it is thoroughly tested.",
+   "If an academic work meets quality standards, then it is scientifically sound.",
+   "There exists at least one academic work that meets quality standards.",
+   "Every academic work is thoroughly tested.",
+   "Every academic work is published.",
+   "If an academic work is not current, then it is not accepted for publication.",
+   "If an academic work is not current, then it does not meet quality standards.",
+   "If there exists at least one academic work that is thoroughly tested, then there exists at least one academic work that meets quality standards.",
+   "If every academic work that is thoroughly tested is scientifically sound, then there exists at least one academic work that meets quality standards.",
+   "Every academic work is scientifically sound.",
+   "If an academic work does not meet quality standards, then it is not rigorously researched.",
+   "If an academic work is not current, then it is not rigorously researched.",
+   "If an academic work is not scientifically sound, then it does not meet quality standards.",
+   "If an academic work does not meet quality standards, then it is not thoroughly tested."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 7 states all academic works are published, and premise 8 says if a work is not current, it is not published. Since all works are published, the contrapositive of premise 8 implies all must be current."
+ },
+ {
+  "id": 133,
+  "question": "Do all academic works meet quality standards?",
+  "premises_nl": [
+   "Every academic work is rigorously researched.",
+   "If an academic work is thoroughly tested, then it is scientifically sound.",
+   "If an academic work is rigorously researched, then it is thoroughly tested.",
+   "If an academic work meets quality standards, then it is scientifically sound.",
+   "There exists at least one academic work that meets quality standards.",
+   "Every academic work is thoroughly tested.",
+   "Every academic work is published.",
+   "If an academic work is not current, then it is not accepted for publication.",
+   "If an academic work is not current, then it does not meet quality standards.",
+   "If there exists at least one academic work that is thoroughly tested, then there exists at least one academic work that meets quality standards.",
+   "If every academic work that is thoroughly tested is scientifically sound, then there exists at least one academic work that meets quality standards.",
+   "Every academic work is scientifically sound.",
+   "If an academic work does not meet quality standards, then it is not rigorously researched.",
+   "If an academic work is not current, then it is not rigorously researched.",
+   "If an academic work is not scientifically sound, then it does not meet quality standards.",
+   "If an academic work does not meet quality standards, then it is not thoroughly tested."
+  ],
+  "answer": "No",
+  "explanation": "Premise 12 states all academic works are scientifically sound, and premise 15 says if a work is not scientifically sound, it does not meet quality standards. Since all are scientifically sound, all must meet quality standards to avoid contradiction."
+ },
+ {
+  "id": 134,
+  "question": "Do all C++ projects adhere to modern C++ standards?",
+  "premises_nl": [
+   "Every C++ project is thoroughly tested.",
+   "If a C++ project is thoroughly tested, then it is highly efficient.",
+   "If a C++ project is well-designed and maintainable, then it is robust.",
+   "If a C++ project is well-designed and maintainable, then it adheres to modern C++ standards.",
+   "Every C++ project is well-designed and maintainable.",
+   "If a C++ project is portable, then it is well-designed and maintainable.",
+   "If a C++ project is highly efficient, then it is well-designed and maintainable.",
+   "Every C++ project is robust.",
+   "If every well-designed C++ project is robust, then every C++ project is robust.",
+   "If well-designed C++ projects adhere to modern C++ standards, then any C++ project that is highly efficient is well-designed and maintainable.",
+   "There exists at least one C++ project that is portable.",
+   "If a C++ project is thoroughly tested, then it is portable.",
+   "If a C++ project is highly efficient, then it is thoroughly tested.",
+   "If a C++ project is thoroughly tested, then it is well-designed and maintainable.",
+   "If a C++ project is not thoroughly tested, then it does not adhere to modern C++ standards.",
+   "If a C++ project is not highly efficient, then it is not portable.",
+   "Every C++ project is highly efficient."
+  ],
+  "answer": "No",
+  "explanation": "Premise 5 states every C++ project is well-designed and maintainable, and premise 4 says if a project is well-designed and maintainable, it adheres to modern C++ standards. Thus, for any x, WellDesignedMaintainable(x) holds, and premise 4 implies ModernCppStandards(x), so all projects adhere to modern standards."
+ },
+ {
+  "id": 135,
+  "question": "Are all C++ projects portable?",
+  "premises_nl": [
+   "Every C++ project is thoroughly tested.",
+   "If a C++ project is thoroughly tested, then it is highly efficient.",
+   "If a C++ project is well-designed and maintainable, then it is robust.",
+   "If a C++ project is well-designed and maintainable, then it adheres to modern C++ standards.",
+   "Every C++ project is well-designed and maintainable.",
+   "If a C++ project is portable, then it is well-designed and maintainable.",
+   "If a C++ project is highly efficient, then it is well-designed and maintainable.",
+   "Every C++ project is robust.",
+   "If every well-designed C++ project is robust, then every C++ project is robust.",
+   "If well-designed C++ projects adhere to modern C++ standards, then any C++ project that is highly efficient is well-designed and maintainable.",
+   "There exists at least one C++ project that is portable.",
+   "If a C++ project is thoroughly tested, then it is portable.",
+   "If a C++ project is highly efficient, then it is thoroughly tested.",
+   "If a C++ project is thoroughly tested, then it is well-designed and maintainable.",
+   "If a C++ project is not thoroughly tested, then it does not adhere to modern C++ standards.",
+   "If a C++ project is not highly efficient, then it is not portable.",
+   "Every C++ project is highly efficient."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 1 states every C++ project is thoroughly tested, and premise 12 says if a project is thoroughly tested, it is portable. Thus, for any x, ThoroughlyTested(x) holds, and premise 12 implies Portable(x), so all projects are portable."
+ },
+ {
+  "id": 136,
+  "question": "Are all biometric systems secure?",
+  "premises_nl": [
+   "If a biometric system can detect presentation attacks, then it is secure.",
+   "If a biometric system is not secure, then it cannot detect presentation attacks.",
+   "There exists at least one biometric system that cannot detect presentation attacks.",
+   "Every biometric system has a machine learning algorithm.",
+   "If a biometric system has a machine learning algorithm, then it can detect presentation attacks.",
+   "If a biometric system has a machine learning algorithm, then it is not necessarily secure.",
+   "If a biometric system has a machine learning algorithm but cannot detect presentation attacks, then it is not secure.",
+   "If a biometric system has a machine learning algorithm and can detect presentation attacks, then it is secure."
+  ],
+  "answer": "No",
+  "explanation": "Premise 4 states all biometric systems have a machine learning algorithm, and premise 5 implies all can detect presentation attacks, suggesting all are secure via premise 1. However, premise 6 guarantees at least one system is not secure despite having machine learning, indicating not all systems are secure."
+ },
+ {
+  "id": 137,
+  "question": "Are all biometric systems portable?",
+  "premises_nl": [
+   "If a biometric system can detect presentation attacks, then it is secure.",
+   "If a biometric system is not secure, then it cannot detect presentation attacks.",
+   "There exists at least one biometric system that cannot detect presentation attacks.",
+   "Every biometric system has a machine learning algorithm.",
+   "If a biometric system has a machine learning algorithm, then it can detect presentation attacks.",
+   "If a biometric system has a machine learning algorithm, then it is not necessarily secure.",
+   "If a biometric system has a machine learning algorithm but cannot detect presentation attacks, then it is not secure.",
+   "If a biometric system has a machine learning algorithm and can detect presentation attacks, then it is secure."
+  ],
+  "answer": "Unknown",
+  "explanation": "No premises provide information about whether biometric systems are portable, so it cannot be determined if all are portable, making the answer uncertain."
+ },
+ {
+  "id": 138,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If a student receives a scholarship, they must be excellent.\nB. If a student does not participate in extracurricular activities, then they receive a scholarship.\nC. If a student does not submit their research paper, then they are excellent.\nD. If all enrolled students are excellent, then no student without excellence can receive a scholarship.",
+  "premises_nl": [
+   "There is at least one excellent student.",
+   "If a student is not excellent, then that student does not receive a scholarship.",
+   "If a student does not participate in extracurricular activities, then that student does not receive a scholarship.",
+   "If there is at least one excellent student, then if a student is not excellent, that student does not receive a scholarship.",
+   "There is at least one student who fully participates in conduct training.",
+   "If x is enrolled in the university, then x is an excellent student.",
+   "All students must complete the foundational courses.",
+   "Every student must submit their research paper.",
+   "There is at least one student participating in extracurricular activities.",
+   "If a student does not participate in extracurricular activities, they will not develop leadership skills.",
+   "If a student does not complete the foundational courses, they will not be eligible for graduation.",
+   "If a student enrolls in the honors program, they gain access to advanced research materials.",
+   "All students in the honors program must maintain a high GPA.",
+   "If a student does not participate in extracurricular activities, they cannot join the student council.",
+   "If failing to complete foundational courses leads to ineligibility for graduation, then students in the honors program must gain access to advanced materials.",
+   "If students who do not complete foundational courses cannot graduate, then all students in the honors program must maintain a high GPA.",
+   "If students who do not participate in extracurricular activities cannot develop leadership skills, then if students who do not complete foundational courses cannot graduate, all students in the honors program must maintain a high GPA.",
+   "If (if students who do not participate in extracurricular activities lack leadership skills then if students who do not complete foundational courses cannot graduate, all students in the honors program must maintain a high GPA), then students in the honors program must gain access to advanced materials.",
+   "If (if students who do not complete foundational courses cannot graduate then students in the honors program gain access to advanced materials), then all students must complete the foundational courses.",
+   "If a student enrolls in the honors program, they must also complete foundational courses.",
+   "All students must participate in group projects.",
+   "If a student does not submit their research paper, they will not receive a passing grade."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 2: if not excellent then not scholarship, we can contrapose to get: if scholarship then excellent. Premise 6 says all enrolled students are excellent, so combining we get the conclusion in A."
+ },
+ {
+  "id": 139,
+  "question": "Based on the above premises, is the statement true?\nStatement: If a student receives a scholarship, they must be excellent.",
+  "premises_nl": [
+   "There is at least one excellent student.",
+   "If a student is not excellent, then that student does not receive a scholarship.",
+   "If a student does not participate in extracurricular activities, then that student does not receive a scholarship.",
+   "If there is at least one excellent student, then if a student is not excellent, that student does not receive a scholarship.",
+   "There is at least one student who fully participates in conduct training.",
+   "If x is enrolled in the university, then x is an excellent student.",
+   "All students must complete the foundational courses.",
+   "Every student must submit their research paper.",
+   "There is at least one student participating in extracurricular activities.",
+   "If a student does not participate in extracurricular activities, they will not develop leadership skills.",
+   "If a student does not complete the foundational courses, they will not be eligible for graduation.",
+   "If a student enrolls in the honors program, they gain access to advanced research materials.",
+   "All students in the honors program must maintain a high GPA.",
+   "If a student does not participate in extracurricular activities, they cannot join the student council.",
+   "If failing to complete foundational courses leads to ineligibility for graduation, then students in the honors program must gain access to advanced materials.",
+   "If students who do not complete foundational courses cannot graduate, then all students in the honors program must maintain a high GPA.",
+   "If students who do not participate in extracurricular activities cannot develop leadership skills, then if students who do not complete foundational courses cannot graduate, all students in the honors program must maintain a high GPA.",
+   "If (if students who do not participate in extracurricular activities lack leadership skills then if students who do not complete foundational courses cannot graduate, all students in the honors program must maintain a high GPA), then students in the honors program must gain access to advanced materials.",
+   "If (if students who do not complete foundational courses cannot graduate then students in the honors program gain access to advanced materials), then all students must complete the foundational courses.",
+   "If a student enrolls in the honors program, they must also complete foundational courses.",
+   "All students must participate in group projects.",
+   "If a student does not submit their research paper, they will not receive a passing grade."
+  ],
+  "answer": "No",
+  "explanation": "The statement is logically equivalent to premise 2 by contraposition: if not excellent → not scholarship implies if scholarship → excellent."
+ },
+ {
+  "id": 140,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If a school does not have a principal, then it cannot have students.\nB. If a school has students, then it must also have staff and teachers.\nC. If a school has staff, then it must have a principal.\nD. Every school has both students and teachers.",
+  "premises_nl": [
+   "There is at least one school that has students.",
+   "There is at least one school that has a principal.",
+   "If there is at least one school that has a principal, then there is at least one school that has teachers.",
+   "There is at least one school that has staff.",
+   "Every school has a principal.",
+   "Every school has staff.",
+   "There is at least one school that has both students and teachers.",
+   "If there is at least one school that has students, then there is at least one school that has staff.",
+   "If a school does not have teachers, then it does not have students.",
+   "If (if there is at least one school that has a principal, then there is at least one school that has teachers), then every school has a principal.",
+   "If there is at least one school that has staff, then there is at least one school that has teachers.",
+   "If (if there is at least one school that has students, then there is at least one school that has teachers), then there is at least one school that has a principal."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 8, we know that if a school has students, it has staff. From premise 13, if a school has staff, then it has teachers. So, if a school has students, it must have staff and then teachers."
+ },
+ {
+  "id": 141,
+  "question": "Based on the above premises, is the statement true?\nStatement: If a school has students, then it has teachers.",
+  "premises_nl": [
+   "There is at least one school that has students.",
+   "There is at least one school that has a principal.",
+   "If there is at least one school that has a principal, then there is at least one school that has teachers.",
+   "There is at least one school that has staff.",
+   "Every school has a principal.",
+   "Every school has staff.",
+   "There is at least one school that has both students and teachers.",
+   "If there is at least one school that has students, then there is at least one school that has staff.",
+   "If a school does not have teachers, then it does not have students.",
+   "If (if there is at least one school that has a principal, then there is at least one school that has teachers), then every school has a principal.",
+   "If there is at least one school that has staff, then there is at least one school that has teachers.",
+   "If (if there is at least one school that has students, then there is at least one school that has teachers), then there is at least one school that has a principal."
+  ],
+  "answer": "No",
+  "explanation": "This is the contrapositive of premise 11: 'If a school does not have teachers, then it does not have students' implies that 'If a school has students, then it has teachers'."
+ },
+ {
+  "id": 142,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If everyone is a student, and if someone not being a student implies they are not a teacher, then everyone is a university staff member.\nB. If there is at least one researcher, then there is no university staff member.\nC. If everyone is a teacher, then there is no researcher.\nD. If someone is not a student, then they are a researcher.",
+  "premises_nl": [
+   "There is at least one researcher.",
+   "Everyone is a teacher.",
+   "If everyone is a teacher, then there is at least one researcher.",
+   "Everyone is a student.",
+   "If someone is not a student, then they are not a teacher.",
+   "There is at least one person who is both a teacher and a university staff member.",
+   "If everyone is a university staff member, then there is at least one teacher.",
+   "If there is at least one researcher, then everyone is a university staff member.",
+   "If someone is not a university staff member, then they are not a researcher.",
+   "If (if everyone is a student, then everyone is a teacher), then there is at least one researcher.",
+   "If everyone is a teacher, then everyone is a student.",
+   "If (if someone is not a student, then they are not a teacher), then everyone is a university staff member."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 4, if someone is not a student, then they are not a teacher. From premise 3, everyone is a student. So, the antecedent of premise 12 is satisfied, which concludes that everyone is a university staff member."
+ },
+ {
+  "id": 143,
+  "question": "Based on the above premises, is the statement true?\nStatement: If everyone is a teacher, then there is at least one researcher.",
+  "premises_nl": [
+   "There is at least one researcher.",
+   "Everyone is a teacher.",
+   "If everyone is a teacher, then there is at least one researcher.",
+   "Everyone is a student.",
+   "If someone is not a student, then they are not a teacher.",
+   "There is at least one person who is both a teacher and a university staff member.",
+   "If everyone is a university staff member, then there is at least one teacher.",
+   "If there is at least one researcher, then everyone is a university staff member.",
+   "If someone is not a university staff member, then they are not a researcher.",
+   "If (if everyone is a student, then everyone is a teacher), then there is at least one researcher.",
+   "If everyone is a teacher, then everyone is a student.",
+   "If (if someone is not a student, then they are not a teacher), then everyone is a university staff member."
+  ],
+  "answer": "No",
+  "explanation": "Premise 2 states directly that if everyone is a teacher, then there is at least one researcher, so the statement is true."
+ },
+ {
+  "id": 144,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If someone does not fully participate in conduct training, then they are not eligible for graduation.\nB. If someone does not fully participate in social work, then everyone is a student.\nC. If everyone in the university is a student, then there is at least one student eligible for graduation.\nD. If there exists a student eligible for graduation, then no student fully participates in conduct training.",
+  "premises_nl": [
+   "Everyone in the university is a student.",
+   "Every student fully participates in conduct training.",
+   "If x fully participates in conduct training, then x is a student.",
+   "If every student fully participates in conduct training, then if x fully participates in conduct training, x is a student.",
+   "If x does not fully participate in social work, then x is not eligible for graduation.",
+   "There is at least one student eligible for graduation.",
+   "There is at least one student who fully participates in conduct training.",
+   "If everyone in the university is a student, then there is at least one student eligible for graduation.",
+   "If there is at least one student who fully participates in social work, then everyone is a student.",
+   "If x does not fully participate in conduct training, then x is not eligible for graduation.",
+   "If (if every student fully participates in conduct training, then everyone is a student), then there is at least one student who fully participates in social work.",
+   "If everyone in the university is a student, then everyone fully participates in social work.",
+   "If (if x does not fully participate in social work, then x is not eligible for graduation), then every student fully participates in conduct training."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 0, everyone is a student. From premise 8, if everyone is a student, then there is at least one student eligible for graduation. So the conclusion in C follows."
+ },
+ {
+  "id": 145,
+  "question": "Based on the above premises, is the statement true?\nStatement: If someone does not fully participate in social work, then everyone fully participates in conduct training.",
+  "premises_nl": [
+   "Everyone in the university is a student.",
+   "Every student fully participates in conduct training.",
+   "If x fully participates in conduct training, then x is a student.",
+   "If every student fully participates in conduct training, then if x fully participates in conduct training, x is a student.",
+   "If x does not fully participate in social work, then x is not eligible for graduation.",
+   "There is at least one student eligible for graduation.",
+   "There is at least one student who fully participates in conduct training.",
+   "If everyone in the university is a student, then there is at least one student eligible for graduation.",
+   "If there is at least one student who fully participates in social work, then everyone is a student.",
+   "If x does not fully participate in conduct training, then x is not eligible for graduation.",
+   "If (if every student fully participates in conduct training, then everyone is a student), then there is at least one student who fully participates in social work.",
+   "If everyone in the university is a student, then everyone fully participates in social work.",
+   "If (if x does not fully participate in social work, then x is not eligible for graduation), then every student fully participates in conduct training."
+  ],
+  "answer": "No",
+  "explanation": "Premise 5 says if someone doesn't do social work, they're not eligible to graduate. Premise 13 says if that implication holds, then every student fully participates in conduct training. Since the antecedent of premise 13 is satisfied, the conclusion must be true."
+ },
+ {
+  "id": 146,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If a student participates in social work, then they meet academic requirements.\nB. If someone participates in social work, then they meet extracurricular requirements.\nC. If someone meets academic requirements, then they are not a student.\nD. If a student meets academic requirements, they are not eligible for graduation.",
+  "premises_nl": [
+   "If x participates in social work, then x meets extracurricular requirements.",
+   "If x meets academic requirements, then x is a student.",
+   "If (if x meets academic requirements then x is a student), then (if x fully participates in conduct training then x is eligible for graduation).",
+   "There is at least one student who participates in social work.",
+   "Every student fully participates in conduct training."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 0, if x participates in social work then x meets extracurricular requirements. Premise 3 says there is at least one student who participates in social work, so for that person the implication applies and they meet extracurricular requirements."
+ },
+ {
+  "id": 147,
+  "question": "Based on the above premises, is the statement true?\nStatement: If someone meets academic requirements, then if they fully participate in conduct training, they are eligible for graduation.",
+  "premises_nl": [
+   "If x participates in social work, then x meets extracurricular requirements.",
+   "If x meets academic requirements, then x is a student.",
+   "If (if x meets academic requirements then x is a student), then (if x fully participates in conduct training then x is eligible for graduation).",
+   "There is at least one student who participates in social work.",
+   "Every student fully participates in conduct training."
+  ],
+  "answer": "No",
+  "explanation": "From premise 1 (if x meets academic requirements then x is a student), and premise 2 (this implication implies that conduct training leads to graduation), we can deduce that if someone meets academic requirements and does conduct training, they are eligible for graduation."
+ },
+ {
+  "id": 148,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If a student does not attend review sessions, then they do not earn extra credit.\nB. If a student does not participate in study groups, they will fail.\nC. If a student submits assignments on time, they do not achieve good grades.\nD. If a student does not complete fundamental courses, then they did not attend review sessions.",
+  "premises_nl": [
+   "Every student completes the fundamental courses.",
+   "If a student submits their assignments on time, then they achieve good grades.",
+   "If submitting assignments on time implies achieving good grades, then not attending review sessions implies not completing the fundamental courses.",
+   "If a student does not attend review sessions, then they do not earn extra credit.",
+   "If a student participates in study groups, then they achieve good grades."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 5 clearly states that if a student does not attend review sessions, then they do not earn extra credit. So A is directly supported."
+ },
+ {
+  "id": 149,
+  "question": "Based on the above premises, is the statement true?\nStatement: If submitting assignments on time implies achieving good grades, then not attending review sessions implies not completing the fundamental courses.",
+  "premises_nl": [
+   "Every student completes the fundamental courses.",
+   "If a student submits their assignments on time, then they achieve good grades.",
+   "If submitting assignments on time implies achieving good grades, then not attending review sessions implies not completing the fundamental courses.",
+   "If a student does not attend review sessions, then they do not earn extra credit.",
+   "If a student participates in study groups, then they achieve good grades."
+  ],
+  "answer": "No",
+  "explanation": "From Premise 1, we have that submitting assignments on time implies good grades. Premise 3 tells us that if this implication holds, then not attending review sessions leads to not completing fundamental courses. Hence, the statement follows."
+ },
+ {
+  "id": 150,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If a student attends classes, then they receive extra credit.\nB. If a student receives extra credit, then they do not study regularly.\nC. If a student studies regularly, then they do not achieve good grades.\nD. If a student submits assignments on time, then they do not receive extra credit.",
+  "premises_nl": [
+   "If a student attends classes, then they receive extra credit.",
+   "If a student achieves good grades, then they study regularly.",
+   "If not receiving extra credit implies not submitting assignments on time, then if a student achieves good grades, they study regularly.",
+   "If achieving good grades implies studying regularly, then not receiving extra credit implies that the student does not submit assignments on time.",
+   "There exists at least one student who submits assignments on time.",
+   "There exists at least one student who attends classes."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 0 directly states that if a student attends classes, then they receive extra credit. This supports option A."
+ },
+ {
+  "id": 151,
+  "question": "Based on the above premises, is the statement true?\nStatement: If achieving good grades implies studying regularly, then not receiving extra credit implies that the student does not submit assignments on time.",
+  "premises_nl": [
+   "If a student attends classes, then they receive extra credit.",
+   "If a student achieves good grades, then they study regularly.",
+   "If not receiving extra credit implies not submitting assignments on time, then if a student achieves good grades, they study regularly.",
+   "If achieving good grades implies studying regularly, then not receiving extra credit implies that the student does not submit assignments on time.",
+   "There exists at least one student who submits assignments on time.",
+   "There exists at least one student who attends classes."
+  ],
+  "answer": "No",
+  "explanation": "From premise 1, if achieving good grades implies studying regularly, and premise 3 says that this implication implies that not receiving extra credit implies not submitting assignments on time, then the statement is valid."
+ },
+ {
+  "id": 152,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If a student does not complete their assignments, then they do not achieve high scores.\nB. If a student submits homework on time, then they receive bonus points.\nC. If a student does not attend class, they will achieve high scores.\nD. If a student achieves high scores, then they did not study regularly.",
+  "premises_nl": [
+   "Every student attends classes.",
+   "If a student does not study regularly, then they do not achieve high scores.",
+   "If every student completes their assignments, then if a student does not study regularly, they do not achieve high scores.",
+   "If not studying regularly implies not achieving high scores, then every student attends classes.",
+   "If a student studies regularly, then they complete their assignments.",
+   "If a student does not submit their homework on time, then they do not receive bonus points."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 5, if a student studies regularly, they complete their assignments. From premise 2, if they don't study regularly, they don't achieve high scores. By contraposition and chaining, if a student does not complete assignments, they likely didn't study regularly and thus do not achieve high scores."
+ },
+ {
+  "id": 153,
+  "question": "Based on the above premises, is the statement true?\nStatement: If a student studies regularly, then they complete their assignments.",
+  "premises_nl": [
+   "Every student attends classes.",
+   "If a student does not study regularly, then they do not achieve high scores.",
+   "If every student completes their assignments, then if a student does not study regularly, they do not achieve high scores.",
+   "If not studying regularly implies not achieving high scores, then every student attends classes.",
+   "If a student studies regularly, then they complete their assignments.",
+   "If a student does not submit their homework on time, then they do not receive bonus points."
+  ],
+  "answer": "No",
+  "explanation": "Premise 5 directly states that studying regularly implies completing assignments, so the statement is true."
+ },
+ {
+  "id": 154,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If a student submits assignments on time, then they receive extra credit.\nB. If a student receives extra credit, then they study regularly.\nC. If a student achieves good grades, then they do not receive extra credit.\nD. If a student does not submit assignments on time, then they study regularly.",
+  "premises_nl": [
+   "If a student studies regularly, then they achieve good grades.",
+   "There exists at least one student who submits assignments on time.",
+   "If at least one student submits assignments on time, then for any student, not receiving extra credit implies not submitting assignments on time.",
+   "There exists at least one student who studies regularly.",
+   "If a student submits assignments on time, then they receive extra credit."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 6 directly states that if a student submits assignments on time, then they receive extra credit. This supports option A."
+ },
+ {
+  "id": 155,
+  "question": "Based on the above premises, is the statement true?\nStatement: If a student submits assignments on time, then they receive extra credit.",
+  "premises_nl": [
+   "If a student studies regularly, then they achieve good grades.",
+   "There exists at least one student who submits assignments on time.",
+   "If at least one student submits assignments on time, then for any student, not receiving extra credit implies not submitting assignments on time.",
+   "There exists at least one student who studies regularly.",
+   "If a student submits assignments on time, then they receive extra credit."
+  ],
+  "answer": "No",
+  "explanation": "This is exactly what is stated in premise 6: submitting assignments on time leads to receiving extra credit."
+ },
+ {
+  "id": 156,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If a student does not achieve good grades, then they do not receive extra credit.\nB. If a student receives extra credit, then they achieve good grades.\nC. If a student does not attend class, they receive extra credit.\nD. If a student submits assignments on time, then they do not receive extra credit.",
+  "premises_nl": [
+   "Every student receives extra credit.",
+   "Every student attends classes.",
+   "If a student does not submit assignments on time, then they do not attend classes.",
+   "If not submitting assignments on time implies not attending classes, then every student attends classes.",
+   "If a student attends classes, then they receive extra credit.",
+   "If a student does not achieve good grades, then they do not submit assignments on time."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 6: if a student does not achieve good grades, then they do not submit on time. From premise 2: not submitting on time implies not attending class. From premise 5: attending class implies extra credit. By contraposing the chain, we get: if a student receives extra credit, then they achieve good grades."
+ },
+ {
+  "id": 157,
+  "question": "Based on the above premises, is the statement true?\nStatement: If a student attends classes, then they receive extra credit.",
+  "premises_nl": [
+   "Every student receives extra credit.",
+   "Every student attends classes.",
+   "If a student does not submit assignments on time, then they do not attend classes.",
+   "If not submitting assignments on time implies not attending classes, then every student attends classes.",
+   "If a student attends classes, then they receive extra credit.",
+   "If a student does not achieve good grades, then they do not submit assignments on time."
+  ],
+  "answer": "No",
+  "explanation": "Premise 5 directly states that if a student attends class, then they receive extra credit, so the statement is true."
+ },
+ {
+  "id": 158,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If every student participates in research, then every student takes advanced courses.\nB. If a student does not participate in research, then they do not win a scholarship.\nC. If a student takes advanced courses, then they participate in research.\nD. If every student wins a scholarship, then no student participates in research.",
+  "premises_nl": [
+   "If a student does not take advanced courses, then they do not participate in research.",
+   "Every student takes advanced courses.",
+   "If at least one student wins a scholarship, then every student takes advanced courses.",
+   "If every student takes advanced courses, then at least one student wins a scholarship.",
+   "Every student wins a scholarship.",
+   "Every student participates in research."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 0 states that if a student does not take advanced courses, then they do not participate in research. Taking the contrapositive gives: if a student participates in research, they must have taken advanced courses. Premise 6 states that every student participates in research, so it follows that every student takes advanced courses."
+ },
+ {
+  "id": 159,
+  "question": "Based on the above premises, is the statement true?\nStatement: If every student wins a scholarship, then at least one student wins a scholarship.",
+  "premises_nl": [
+   "If a student does not take advanced courses, then they do not participate in research.",
+   "Every student takes advanced courses.",
+   "If at least one student wins a scholarship, then every student takes advanced courses.",
+   "If every student takes advanced courses, then at least one student wins a scholarship.",
+   "Every student wins a scholarship.",
+   "Every student participates in research."
+  ],
+  "answer": "No",
+  "explanation": "If every student wins a scholarship (Premise 5), then by logical necessity, at least one student wins a scholarship. The universal statement implies the existential."
+ },
+ {
+  "id": 160,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If a student wins a scholarship, then they publish research.\nB. If a student publishes research, then they take advanced courses.\nC. If a student is not a student, then they do not win a scholarship.\nD. If someone does not take advanced courses, then they cannot publish research.",
+  "premises_nl": [
+   "If x is a student, then x takes advanced courses.",
+   "If x takes advanced courses, then x wins a scholarship.",
+   "If all students take advanced courses, then everyone takes advanced courses.",
+   "If x wins a scholarship, then x publishes research.",
+   "At least one person publishes research."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 0, a student takes advanced courses. From premise 1, this leads to winning a scholarship. From premise 5, winning a scholarship leads to publishing research. So, if a student wins a scholarship, they will publish research."
+ },
+ {
+  "id": 161,
+  "question": "Based on the above premises, is the statement true?\nStatement: There exists someone who wins a scholarship.",
+  "premises_nl": [
+   "If x is a student, then x takes advanced courses.",
+   "If x takes advanced courses, then x wins a scholarship.",
+   "If all students take advanced courses, then everyone takes advanced courses.",
+   "If x wins a scholarship, then x publishes research.",
+   "At least one person publishes research."
+  ],
+  "answer": "No",
+  "explanation": "Premise 6 says someone publishes research. Premise 5 states that publishing research is only possible if the person has won a scholarship. So, at least one person must have won a scholarship."
+ },
+ {
+  "id": 162,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If someone is a researcher, then they are qualified.\nB. If someone is a professor, then they are not qualified.\nC. If someone is qualified, then they are a student.\nD. If someone takes courses, then they are a professor.",
+  "premises_nl": [
+   "There exists at least one student.",
+   "Everyone takes courses.",
+   "If x is a student, then x is a researcher.",
+   "If x is not qualified, then x is not a researcher.",
+   "If x is a professor, then x teaches."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 5, if someone is not qualified, then they are not a researcher. The contrapositive gives us: if someone is a researcher, then they are qualified."
+ },
+ {
+  "id": 163,
+  "question": "Based on the above premises, is the statement true?\nStatement: There exists someone who is qualified.",
+  "premises_nl": [
+   "There exists at least one student.",
+   "Everyone takes courses.",
+   "If x is a student, then x is a researcher.",
+   "If x is not qualified, then x is not a researcher.",
+   "If x is a professor, then x teaches."
+  ],
+  "answer": "No",
+  "explanation": "Premise 0 says there exists at least one student. Premise 2 tells us that students are researchers. From premise 5 (¬Qualified → ¬Researcher), we derive that researchers must be qualified. So at least one qualified person exists."
+ },
+ {
+  "id": 164,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If someone passes the exam, they are qualified.\nB. If someone takes courses, then they are qualified.\nC. If someone is not a student, they take courses.\nD. If someone understands the lecture, then they are not a student.",
+  "premises_nl": [
+   "Everyone takes courses.",
+   "If x is not qualified, then x does not pass the exam.",
+   "If 'not being a student implies not taking courses' is true, then everyone takes courses.",
+   "Everyone understands the lectures.",
+   "If x is not a student, then x does not understand the lectures."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 2, if someone is not qualified, then they do not pass the exam. The contrapositive of this is: if someone passes the exam, they must be qualified."
+ },
+ {
+  "id": 165,
+  "question": "Based on the above premises, is the statement true?\nStatement: Everyone is a student.",
+  "premises_nl": [
+   "Everyone takes courses.",
+   "If x is not qualified, then x does not pass the exam.",
+   "If 'not being a student implies not taking courses' is true, then everyone takes courses.",
+   "Everyone understands the lectures.",
+   "If x is not a student, then x does not understand the lectures."
+  ],
+  "answer": "No",
+  "explanation": "Premise 5 says everyone understands lectures, and premise 6 says that if someone is not a student, they do not understand lectures. Using contraposition, we conclude that all who understand lectures are students. Since everyone understands, everyone must be a student."
+ },
+ {
+  "id": 166,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If someone takes the course, then they are a student.\nB. If someone is a student, then they understand the lecture.\nC. If someone is not registered for the course, they pass the exam.\nD. If someone understands the lecture, then they are not a student.",
+  "premises_nl": [
+   "If x understands the lecture, then x passes the exam.",
+   "There exists at least one student.",
+   "If 'understanding the lecture implies taking the course' is true, then 'understanding the lecture implies passing the exam' is also true.",
+   "If x is not registered for the course, then x does not take the course.",
+   "If x is registered for the course, then x is a student."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 5, if someone is not registered, they do not take the course. Contraposing gives: if someone takes the course, they are registered. From premise 6, if they are registered, they are a student. So, if someone takes the course, they are a student."
+ },
+ {
+  "id": 167,
+  "question": "Based on the above premises, is the following statement true?\nStatement: If someone understands the lecture, then they pass the exam.",
+  "premises_nl": [
+   "If x understands the lecture, then x passes the exam.",
+   "There exists at least one student.",
+   "If 'understanding the lecture implies taking the course' is true, then 'understanding the lecture implies passing the exam' is also true.",
+   "If x is not registered for the course, then x does not take the course.",
+   "If x is registered for the course, then x is a student."
+  ],
+  "answer": "No",
+  "explanation": "Premise 1 directly states that if someone understands the lecture, they pass the exam. So the statement is true."
+ },
+ {
+  "id": 168,
+  "question": "Based on the above premises, which statement can be inferred?\nA. A person is qualified if and only if they are registered.\nB. A person is qualified only if they are not registered.\nC. A person is registered only if they do not study.\nD. A person is qualified only if they do not train.",
+  "premises_nl": [
+   "If a person is not registered, then they are not qualified.",
+   "If a person studies, then they are qualified.",
+   "If a person trains, then they are qualified.",
+   "If training makes someone qualified, then studying should also make them qualified.",
+   "If a person is not registered, then they do not study.",
+   "If a person is not qualified, then they are not registered."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 0 states that if a person is not registered, then they are not qualified. Premise 6 states that if a person is not qualified, then they are not registered. Together, these give us the logical equivalence: a person is qualified if and only if they are registered."
+ },
+ {
+  "id": 169,
+  "question": "Based on the above premises, is the following statement true?\nStatement: If someone studies, then they are registered.",
+  "premises_nl": [
+   "If a person is not registered, then they are not qualified.",
+   "If a person studies, then they are qualified.",
+   "If a person trains, then they are qualified.",
+   "If training makes someone qualified, then studying should also make them qualified.",
+   "If a person is not registered, then they do not study.",
+   "If a person is not qualified, then they are not registered."
+  ],
+  "answer": "No",
+  "explanation": "From premise 1, we know that if someone studies, they are qualified. From premise 6, we know that if someone is not qualified, they are not registered. Contrapositive gives us: if someone is qualified, they are registered. So studying implies registration."
+ },
+ {
+  "id": 170,
+  "question": "Based on the above premises, which statement can be inferred?\nA. Everyone studies.\nB. Everyone is not registered.\nC. If someone is registered, then they are not an undergraduate.\nD. No one is qualified.",
+  "premises_nl": [
+   "If a person is an undergraduate, then they must be registered.",
+   "Everyone is registered.",
+   "If undergraduates are required to register, then everyone must register.",
+   "If a person does not study, then they are not registered.",
+   "Everyone is an undergraduate."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 2, we know everyone is registered. Premise 3 states that if someone is not studying, then they are not registered. The contrapositive of that is: if someone is registered, then they are studying. Since everyone is registered, everyone must be studying."
+ },
+ {
+  "id": 171,
+  "question": "Based on the above premises, is the following statement true?\nStatement: If someone is an undergraduate, then they are registered.",
+  "premises_nl": [
+   "If a person is an undergraduate, then they must be registered.",
+   "Everyone is registered.",
+   "If undergraduates are required to register, then everyone must register.",
+   "If a person does not study, then they are not registered.",
+   "Everyone is an undergraduate."
+  ],
+  "answer": "No",
+  "explanation": "Premise 0 directly states that if someone is an undergraduate, then they must be registered. So the statement is true."
+ },
+ {
+  "id": 172,
+  "question": "Based on the above premises, which statement can be inferred?\nA. 'If a student does not attend all lectures and does not participate in class discussions, they will fail the final exam and receive a low participation grade.'\nB. 'If a student attends a tutoring session and completes at least 80% of the assignments, they are more likely to improve their grades and pass the course.'\nC. 'Every teacher in the school has at least a doctoral degree in their subject area and provides detailed feedback on assignments.'\nD. 'If a student does not complete at least 80% of the assignments and does not submit their research paper, they will fail the course and be placed on academic probation.'",
+  "premises_nl": [
+   "At least one student has submitted their final project before the deadline.",
+   "Every student enrolled in the course is required to complete at least 80% of the assignments.",
+   "If a student attends all lectures, then they have a higher chance of passing the final exam.",
+   "If a student does not participate in class discussions, then they are less likely to receive a high participation grade.",
+   "Every teacher in the school has at least a master's degree in their subject area.",
+   "At least one student has received a scholarship based on academic excellence.",
+   "If all students complete their homework regularly, then the overall class performance improves.",
+   "If a student fails two or more courses in a semester, then they are placed on academic probation.",
+   "If a student attends a tutoring session, then they are more likely to improve their grades.",
+   "If a student does not submit their research paper, then they automatically fail the course.",
+   "If a teacher provides detailed feedback on assignments, then students are more likely to improve their writing skills.",
+   "Every university student is required to complete an internship before graduation."
+  ],
+  "answer": "B",
+  "explanation": "From premise 9, we know that if a student attends a tutoring session, they are more likely to improve their grades. From premise 2, we know that every student enrolled in the course is required to complete at least 80% of the assignments. Therefore, if a student attends a tutoring session and completes at least 80% of the assignments, they are more likely to improve their grades (from premise 9) and pass the course (from premise 2), making option B correct."
+ },
+ {
+  "id": 173,
+  "question": "Based on the above premises, is the statement true?\nStatement: 'If a student does not submit their research paper and fails two or more courses in a semester, they automatically fail the course and are placed on academic probation.'",
+  "premises_nl": [
+   "At least one student has submitted their final project before the deadline.",
+   "Every student enrolled in the course is required to complete at least 80% of the assignments.",
+   "If a student attends all lectures, then they have a higher chance of passing the final exam.",
+   "If a student does not participate in class discussions, then they are less likely to receive a high participation grade.",
+   "Every teacher in the school has at least a master's degree in their subject area.",
+   "At least one student has received a scholarship based on academic excellence.",
+   "If all students complete their homework regularly, then the overall class performance improves.",
+   "If a student fails two or more courses in a semester, then they are placed on academic probation.",
+   "If a student attends a tutoring session, then they are more likely to improve their grades.",
+   "If a student does not submit their research paper, then they automatically fail the course.",
+   "If a teacher provides detailed feedback on assignments, then students are more likely to improve their writing skills.",
+   "Every university student is required to complete an internship before graduation."
+  ],
+  "answer": "No",
+  "explanation": "From premise 10, we know that if a student does not submit their research paper, they automatically fail the course. From premise 8, we know that if a student fails two or more courses in a semester, they are placed on academic probation. Therefore, if a student does not submit their research paper and fails two or more courses in a semester, they automatically fail the course (from premise 10) and are placed on academic probation (from premise 8), making the statement true."
+ },
+ {
+  "id": 174,
+  "question": "Based on the above premises, which conclusion is correct?\nA. If students who do not complete foundational courses cannot graduate, then all students must complete the foundational courses.\nB. If failing to complete foundational courses leads to ineligibility for graduation, then all students must complete the foundational courses.\nC. If students who do not submit their research papers cannot receive a passing grade, then all students must participate in group projects.\nD. If a student does not participate in extracurricular activities, they will develop leadership skills.",
+  "premises_nl": [
+   "All students must complete the foundational courses.",
+   "Every student must submit their research paper.",
+   "There is at least one student participating in extracurricular activities.",
+   "If a student does not participate in extracurricular activities, they will not develop leadership skills.",
+   "If a student does not complete the foundational courses, they will not be eligible for graduation.",
+   "If a student enrolls in the honors program, they gain access to advanced research materials.",
+   "All students in the honors program must maintain a high GPA.",
+   "If a student does not participate in extracurricular activities, they cannot join the student council.",
+   "If failing to complete foundational courses leads to ineligibility for graduation, then students in the honors program must maintain a high GPA.",
+   "If students who do not complete foundational courses cannot graduate, then all students in the honors program must maintain a high GPA.",
+   "If students who do not participate in extracurricular activities cannot develop leadership skills, then students who do not complete foundational courses will also not meet requirements.",
+   "If students who do not participate in extracurricular activities lack leadership skills, then all students in the honors program must complete additional coursework.",
+   "If students who do not complete foundational courses cannot graduate, then all students must complete the foundational courses.",
+   "If a student enrolls in the honors program, they must also complete additional coursework.",
+   "All students must participate in group projects.",
+   "If a student does not submit their research paper, they will not receive a passing grade."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 5 (If a student does not complete the foundational courses, they will not be eligible for graduation) and premise 13 (If students who do not complete foundational courses cannot graduate, then all students must complete the foundational courses), we can infer that all students must complete the foundational courses. This is because if not completing the foundational courses leads to ineligibility for graduation, and this leads to the requirement that all students must complete the foundational courses, then it follows that all students must complete the foundational courses."
+ },
+ {
+  "id": 175,
+  "question": "According to the above premises, is the following statement true?\nStatement: If students who do not complete foundational courses cannot graduate, then all students must complete the foundational courses.",
+  "premises_nl": [
+   "All students must complete the foundational courses.",
+   "Every student must submit their research paper.",
+   "There is at least one student participating in extracurricular activities.",
+   "If a student does not participate in extracurricular activities, they will not develop leadership skills.",
+   "If a student does not complete the foundational courses, they will not be eligible for graduation.",
+   "If a student enrolls in the honors program, they gain access to advanced research materials.",
+   "All students in the honors program must maintain a high GPA.",
+   "If a student does not participate in extracurricular activities, they cannot join the student council.",
+   "If failing to complete foundational courses leads to ineligibility for graduation, then students in the honors program must maintain a high GPA.",
+   "If students who do not complete foundational courses cannot graduate, then all students in the honors program must maintain a high GPA.",
+   "If students who do not participate in extracurricular activities cannot develop leadership skills, then students who do not complete foundational courses will also not meet requirements.",
+   "If students who do not participate in extracurricular activities lack leadership skills, then all students in the honors program must complete additional coursework.",
+   "If students who do not complete foundational courses cannot graduate, then all students must complete the foundational courses.",
+   "If a student enrolls in the honors program, they must also complete additional coursework.",
+   "All students must participate in group projects.",
+   "If a student does not submit their research paper, they will not receive a passing grade."
+  ],
+  "answer": "No",
+  "explanation": "From premise 5 (If a student does not complete the foundational courses, they will not be eligible for graduation) and premise 13 (If students who do not complete foundational courses cannot graduate, then all students must complete the foundational courses), we can infer that all students must complete the foundational courses. This is because if not completing the foundational courses leads to ineligibility for graduation, and this leads to the requirement that all students must complete the foundational courses, then it follows that all students must complete the foundational courses."
+ },
+ {
+  "id": 176,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If attending academic conferences leads to gaining knowledge, then maintaining a high GPA leads to eligibility for scholarships.\nB. If attending academic conferences leads to gaining knowledge, then students who do not maintain a high GPA will not be eligible for scholarships.\nC. If attending academic conferences leads to gaining knowledge, then all students must complete their coursework.\nD. If attending academic conferences leads to gaining knowledge, then students who do not receive academic recognition will not be selected for advanced research programs.",
+  "premises_nl": [
+   "All students must complete their coursework.",
+   "If a student participates in research projects, they gain academic recognition.",
+   "If a student does not maintain a high GPA, they will not be eligible for scholarships.",
+   "If a student attends academic conferences, they gain knowledge in their field.",
+   "If a student does not receive academic recognition, they will not be selected for advanced research programs.",
+   "If a student maintains a high GPA, they will be eligible for scholarships.",
+   "All students must follow the university's academic regulations.",
+   "If students who do not receive academic recognition are not selected for advanced research programs, then students who do not maintain a high GPA will not be eligible for scholarships.",
+   "If attending academic conferences leads to gaining knowledge, then students who do not maintain a high GPA will not be eligible for scholarships.",
+   "If maintaining a high GPA leads to eligibility for scholarships, then attending academic conferences leads to gaining knowledge.",
+   "If all students must complete their coursework, then students who do not receive academic recognition will not be selected for advanced research programs.",
+   "If attending academic conferences leads to gaining knowledge, then maintaining a high GPA leads to eligibility for scholarships.",
+   "If a student follows the university's academic regulations, they will gain academic recognition.",
+   "All students must participate in at least one extracurricular activity."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 4 (If a student attends academic conferences, they gain knowledge in their field) and premise 9 (If attending academic conferences leads to gaining knowledge, then students who do not maintain a high GPA will not be eligible for scholarships), we can infer that if attending academic conferences leads to gaining knowledge, then students who do not maintain a high GPA will not be eligible for scholarships. This is because if attending academic conferences leads to gaining knowledge, then according to premise 9, students who do not maintain a high GPA will not be eligible for scholarships."
+ },
+ {
+  "id": 177,
+  "question": "Based on the above premises, is the statement true?\nStatement: If all students must complete their coursework, then students who do not receive academic recognition will not be selected for advanced research programs.",
+  "premises_nl": [
+   "All students must complete their coursework.",
+   "If a student participates in research projects, they gain academic recognition.",
+   "If a student does not maintain a high GPA, they will not be eligible for scholarships.",
+   "If a student attends academic conferences, they gain knowledge in their field.",
+   "If a student does not receive academic recognition, they will not be selected for advanced research programs.",
+   "If a student maintains a high GPA, they will be eligible for scholarships.",
+   "All students must follow the university's academic regulations.",
+   "If students who do not receive academic recognition are not selected for advanced research programs, then students who do not maintain a high GPA will not be eligible for scholarships.",
+   "If attending academic conferences leads to gaining knowledge, then students who do not maintain a high GPA will not be eligible for scholarships.",
+   "If maintaining a high GPA leads to eligibility for scholarships, then attending academic conferences leads to gaining knowledge.",
+   "If all students must complete their coursework, then students who do not receive academic recognition will not be selected for advanced research programs.",
+   "If attending academic conferences leads to gaining knowledge, then maintaining a high GPA leads to eligibility for scholarships.",
+   "If a student follows the university's academic regulations, they will gain academic recognition.",
+   "All students must participate in at least one extracurricular activity."
+  ],
+  "answer": "No",
+  "explanation": "From premise 1 (All students must complete their coursework) and premise 11 (If all students must complete their coursework, then students who do not receive academic recognition will not be selected for advanced research programs), we can infer that if all students must complete their coursework, then students who do not receive academic recognition will not be selected for advanced research programs. This is because if all students must complete their coursework, then according to premise 11, students who do not receive academic recognition will not be selected for advanced research programs."
+ },
+ {
+  "id": 178,
+  "question": "Based on the premises, which statement can be logically inferred?\nA. If all students must complete assignments and if a student does not attend classes, they will not complete assignments, then students who do not attend classes will not pass the exams.\nB. If all students must complete assignments and if a student does not attend classes, they will not complete assignments, then students who do not attend classes will pass the exams.\nC. If all students must complete assignments and if a student does not attend classes, they will not complete assignments, then all students will not pass the exams.\nD. If all students must complete assignments and if a student does not attend classes, they will not complete assignments, then some students will not pass the exams.",
+  "premises_nl": [
+   "If a student does not attend classes, they will not pass the exams.",
+   "If a student does not attend classes, they will not complete assignments.",
+   "All students must complete assignments.",
+   "If a student completes assignments, they will pass the exams.",
+   "If a student conducts research, they will receive academic recognition.",
+   "If a student completes assignments, they will conduct research.",
+   "If a student passes the exams, they will conduct research.",
+   "There exists at least one student who attends classes.",
+   "There exists at least one student who passes the exams.",
+   "If conducting research leads to academic recognition, then students who do not attend classes will not pass the exams.",
+   "If students who do not attend classes do not pass exams, then completing assignments ensures passing exams.",
+   "If at least one student passes the exams, then students who do not attend classes will not pass the exams.",
+   "If all students must complete assignments, then students who do not attend classes will not pass the exams.",
+   "All students attend classes.",
+   "All students pass the exams.",
+   "If a student attends classes, they will pass the exams.",
+   "If a student passes the exams, they will complete assignments."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 2 (If a student does not attend classes, they will not complete assignments), premise 3 (All students must complete assignments), and premise 13 (If all students must complete assignments, then students who do not attend classes will not pass the exams), we can infer that if all students must complete assignments and if a student does not attend classes, they will not complete assignments, then students who do not attend classes will not pass the exams. This is because if all students must complete assignments, and not attending classes leads to not completing assignments, then according to premise 13, students who do not attend classes will not pass the exams."
+ },
+ {
+  "id": 179,
+  "question": "According to the premises, is the following statement true?\nStatement: If all students must complete assignments and if a student completes assignments, they will pass the exams, then all students will pass the exams.",
+  "premises_nl": [
+   "If a student does not attend classes, they will not pass the exams.",
+   "If a student does not attend classes, they will not complete assignments.",
+   "All students must complete assignments.",
+   "If a student completes assignments, they will pass the exams.",
+   "If a student conducts research, they will receive academic recognition.",
+   "If a student completes assignments, they will conduct research.",
+   "If a student passes the exams, they will conduct research.",
+   "There exists at least one student who attends classes.",
+   "There exists at least one student who passes the exams.",
+   "If conducting research leads to academic recognition, then students who do not attend classes will not pass the exams.",
+   "If students who do not attend classes do not pass exams, then completing assignments ensures passing exams.",
+   "If at least one student passes the exams, then students who do not attend classes will not pass the exams.",
+   "If all students must complete assignments, then students who do not attend classes will not pass the exams.",
+   "All students attend classes.",
+   "All students pass the exams.",
+   "If a student attends classes, they will pass the exams.",
+   "If a student passes the exams, they will complete assignments."
+  ],
+  "answer": "No",
+  "explanation": "From premise 3 (All students must complete assignments), premise 4 (If a student completes assignments, they will pass the exams), and premise 15 (All students pass the exams), we can infer that if all students must complete assignments and if a student completes assignments, they will pass the exams, then all students will pass the exams. This is because if all students must complete assignments, and completing assignments leads to passing exams, then according to premise 15, all students will pass the exams."
+ }
+]
