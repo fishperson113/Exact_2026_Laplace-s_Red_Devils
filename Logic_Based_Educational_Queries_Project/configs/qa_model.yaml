@@ -5,7 +5,7 @@ model:
   name: Qwen/Qwen3.5-4B
   trust_remote_code: true
   max_seq_length: 3500
-  gen_max_new_tokens: 200
+  gen_max_new_tokens: 256
 
 lora:
   r: 8
@@ -14,10 +14,10 @@ lora:
   target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
 
 training:
-  num_train_epochs: 20
-  per_device_train_batch_size: 2
+  num_train_epochs: 15
+  per_device_train_batch_size: 4
   per_device_eval_batch_size: 8
-  gradient_accumulation_steps: 4
+  gradient_accumulation_steps: 2
   learning_rate: 2e-5
   warmup_ratio: 0.05
   weight_decay: 0.01
@@ -27,15 +27,15 @@ training:
   train_seed: 42
   load_in_8bit: true
   # Early stopping
-  early_stopping_patience: 7
+  early_stopping_patience: 4
   load_best_model_at_end: true
-  metric_for_best_model: eval_loss
-  greater_is_better: false
+  metric_for_best_model: eval_accuracy
+  greater_is_better: true
   save_total_limit: 2
 
 eval:
   # Số mẫu dev tối đa để tính accuracy mỗi epoch (null = cả dev, chậm)
-  eval_accuracy_max_samples: null
+  eval_accuracy_max_samples: 50
   # Số mẫu random in full JSON mỗi epoch (NL, FOL, question, gold, prediction)
   eval_print_samples: 6
   # Latency benchmark sau training
