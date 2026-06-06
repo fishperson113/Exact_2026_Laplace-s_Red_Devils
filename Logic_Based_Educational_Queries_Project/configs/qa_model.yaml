@@ -2,7 +2,7 @@
 # Usage: python -m models.QA_model.train --config configs/qa_model.yaml
 
 model:
-  name: Qwen/Qwen2.5-3B-Instruct
+  name: Qwen/Qwen3.5-4B
   trust_remote_code: true
   max_seq_length: 3500
   gen_max_new_tokens: 200
