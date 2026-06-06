@@ -14,7 +14,7 @@ lora:
   target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
 
 training:
-  num_train_epochs: 15
+  num_train_epochs: 20
   # OOM fix: logits tensor = [batch, seq_len, vocab~152k] là chỗ ngốn VRAM nhất.
   # Hạ batch → giữ effective batch = 1×8 = 8 (bằng 4×2 cũ) qua grad accumulation.
   per_device_train_batch_size: 2

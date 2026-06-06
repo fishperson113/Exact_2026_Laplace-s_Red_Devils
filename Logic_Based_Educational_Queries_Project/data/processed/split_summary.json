@@ -1,7 +1,7 @@
 {
   "train": {
     "n_records": 328,
-    "n_questions": 647
+    "n_questions": 620
   },
   "dev": {
     "n_records": 41,
@@ -9,6 +9,6 @@
   },
   "test": {
     "n_records": 41,
-    "n_questions": 81
+    "n_questions": 77
   }
 }
