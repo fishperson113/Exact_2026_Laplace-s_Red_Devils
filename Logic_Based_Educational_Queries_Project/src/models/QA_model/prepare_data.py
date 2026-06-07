@@ -45,6 +45,59 @@ step-by-step through the logical structure and answer the question.
 Output ONLY a JSON object:
 {"answer": "<label>", "explanation": "<your step-by-step reasoning citing premises>"}
 
+### Few-shot Examples
+#### Example 1 — Yes/No
+Premises (NL):
+1. If a student completes Course A, they can enroll in Course B.
+2. If a student enrolls in Course B and passes it, they can enroll in Course C.
+3. Enrollment in Course C makes a student eligible for the internship program.
+4. David has completed Course A.
+5. David has enrolled in and passed Course B.
+
+Premises (FOL):
+1. ∀x (complete(x, A) → enroll(x, B))
+2. ∀x ((enroll(x, B) ∧ pass(x, B)) → enroll(x, C))
+3. ∀x (enroll(x, C) → eligible_internship(x))
+4. complete(david, A)
+5. enroll(david, B) ∧ pass(david, B)
+
+Question:
+Does the logical progression demonstrate that David meets all requirements for the internship?
+
+Output:
+{"answer": "Yes", "explanation": "The requirements for the internship per premise 3 involve enrolling in Course C, which per premise 2 requires enrolling in and passing Course B. Premise 5 confirms David enrolled in and passed Course B, enabling Course C enrollment and thus internship eligibility."}
+
+#### Example 2 — Multiple Choice
+Premises (NL):
+1. If a driver has passed vehicle inspection and has the appropriate license, they can transport standard goods.
+2. If a driver can transport standard goods and has completed hazmat training and received a safety endorsement, they can transport hazardous materials.
+3. If a driver can transport hazardous materials and has an interstate permit, they can cross state lines with hazardous cargo.
+4. John has passed vehicle inspection.
+5. John has the appropriate license.
+6. John has completed hazmat training.
+7. John has not received a safety endorsement.
+8. John has an interstate permit.
+
+Premises (FOL):
+1. ∀x ((passed_vehicle_inspection(x) ∧ has_appropriate_license(x)) → can_transport_standard_goods(x))
+2. ∀x ((can_transport_standard_goods(x) ∧ completed_hazmat_training(x) ∧ received_safety_endorsement(x)) → can_transport_hazardous_materials(x))
+3. ∀x ((can_transport_hazardous_materials(x) ∧ has_interstate_permit(x)) → can_cross_state_lines(x))
+4. passed_vehicle_inspection(John)
+5. has_appropriate_license(John)
+6. completed_hazmat_training(John)
+7. ¬received_safety_endorsement(John)
+8. has_interstate_permit(John)
+
+Question:
+Based on the premises, which conclusion about John is justified?
+A. John can transport standard goods.
+B. John can transport hazardous materials.
+C. John can cross state lines with hazardous cargo.
+D. John cannot transport standard goods.
+
+Output:
+{"answer": "A", "explanation": "Premises 4 and 5 confirm John passed vehicle inspection and has the appropriate license, so premise 1 derives that he can transport standard goods — option A is justified. Option B requires a safety endorsement (antecedent of premise 2), but premise 7 states John has NOT received one, so premise 2 never fires and we cannot derive that he can transport hazardous materials. This makes B unknown: the premises provide no rule proving he cannot, they merely fail to prove he can, so the claim is unsupported rather than false. Option C depends on first being able to transport hazardous materials (premise 3), so it inherits the same unknown status as B and has no basis for conclusion. Option D directly contradicts the derivation establishing A. Therefore the only justified answer is A, while B and C remain undeterminable from the given premises."}
+
 No markdown fences, no text outside the JSON.
 """
 

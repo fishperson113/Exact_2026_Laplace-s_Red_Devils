@@ -45,7 +45,6 @@ Logic_Based_Educational_Queries_Project/          # Gốc repo: cấu hình, d�
     │   ├── dataset.py        # đọc processed → DatasetDict chat (MCQ)
     │   ├── fol_dataset.py    # CSV → DatasetDict chat (premises NL → premises FOL)
     │   ├── merge_malls_augmentation.py   # Gộp/augment từ nguồn ngoài (vd. MALLS) → processed
-    │   ├── nl_to_fol.py      # Khối FOL trong prompt logic (tuỳ cấu hình)
     │   ├── prompts.py        # System / user template cho SFT
     │   └── validation.py     # Kiểm tra số câu raw + đủ file split processed
     ├── evaluation/           # Nhãn chuẩn, metric accuracy, đọc log JSON sau train

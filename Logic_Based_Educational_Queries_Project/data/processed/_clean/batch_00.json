@@ -1,0 +1,1014 @@
+[
+ {
+  "id": 0,
+  "question": "Which conclusion follows with the fewest premises?\nA. If a Python project is not optimized, then it is not well-tested\nB. If all Python projects are optimized, then all Python projects are well-structured\nC. If a Python project is well-tested, then it must be clean and readable\nD. If a Python project is not optimized, then it does not follow PEP 8 standards",
+  "premises_nl": [
+   "If a Python code is well-tested, then the project is optimized.",
+   "If a Python code does not follow PEP 8 standards, then it is not well-tested.",
+   "All Python projects are easy to maintain.",
+   "All Python code is well-tested.",
+   "If a Python code follows PEP 8 standards, then it is easy to maintain.",
+   "If a Python code is well-tested, then it follows PEP 8 standards.",
+   "If a Python project is well-structured, then it is optimized.",
+   "If a Python project is easy to maintain, then it is well-tested.",
+   "If a Python project is optimized, then it has clean and readable code.",
+   "All Python projects are well-structured.",
+   "All Python projects have clean and readable code.",
+   "There exists at least one Python project that follows best practices.",
+   "There exists at least one Python project that is optimized.",
+   "If a Python project is not well-structured, then it does not follow PEP 8 standards."
+  ],
+  "answer": "A",
+  "explanation": "Premise 1 states that if a Python project is well-tested, it is optimized. By logical contraposition, if a project is not optimized, it is not well-tested, supporting option A with the fewest premises. Option B is false because optimization does not imply well-structured projects. Option C follows from premises 4, 1, and 9 but requires more steps. Option D follows from premises 1 and 6 but is less direct than A."
+ },
+ {
+  "id": 1,
+  "question": "Does it follow that if all Python projects are well-structured, then all Python projects are optimized, according to the premises?",
+  "premises_nl": [
+   "If a Python code is well-tested, then the project is optimized.",
+   "If a Python code does not follow PEP 8 standards, then it is not well-tested.",
+   "All Python projects are easy to maintain.",
+   "All Python code is well-tested.",
+   "If a Python code follows PEP 8 standards, then it is easy to maintain.",
+   "If a Python code is well-tested, then it follows PEP 8 standards.",
+   "If a Python project is well-structured, then it is optimized.",
+   "If a Python project is easy to maintain, then it is well-tested.",
+   "If a Python project is optimized, then it has clean and readable code.",
+   "All Python projects are well-structured.",
+   "All Python projects have clean and readable code.",
+   "There exists at least one Python project that follows best practices.",
+   "There exists at least one Python project that is optimized.",
+   "If a Python project is not well-structured, then it does not follow PEP 8 standards."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 10 confirms all Python projects are well-structured. Premise 7 states that well-structured projects are optimized, implying all projects are optimized, so the statement that well-structured projects imply optimized projects holds."
+ },
+ {
+  "id": 2,
+  "question": "Based on the above premises, which is the strongest conclusion?\nA. Sophia qualifies for the university scholarship\nB. Sophia needs a faculty recommendation to qualify for the scholarship\nC. Sophia is eligible for the international program\nD. Sophia needs to pass the language proficiency exam to get an honors diploma",
+  "premises_nl": [
+   "Students who have completed the core curriculum and passed the science assessment are qualified for advanced courses.",
+   "Students who are qualified for advanced courses and have completed research methodology are eligible for the international program.",
+   "Students who have passed the language proficiency exam are eligible for the international program.",
+   "Students who are eligible for the international program and have completed a capstone project are awarded an honors diploma.",
+   "Students who have been awarded an honors diploma and have completed community service qualify for the university scholarship.",
+   "Students who have been awarded an honors diploma and have received a faculty recommendation qualify for the university scholarship.",
+   "Sophia has completed the core curriculum.",
+   "Sophia has passed the science assessment.",
+   "Sophia has completed the research methodology course.",
+   "Sophia has completed her capstone project.",
+   "Sophia has completed the required community service hours."
+  ],
+  "answer": "C",
+  "explanation": "Premises 7 and 8 confirm Sophia completed the core curriculum and passed the science assessment, satisfying premise 1 for advanced courses. Premise 9’s research methodology and premise 2 make her eligible for the international program. Premise 10’s capstone project and premise 4 award her an honors diploma. Premise 11’s community service and premise 5 qualify her for the university scholarship, making A the strongest conclusion. Option B is false because community service suffices without a recommendation. Option C is true but weaker, as scholarship implies international program eligibility. Option D is false because language proficiency is not required via premise 2’s path."
+ },
+ {
+  "id": 3,
+  "question": "Does Sophia qualify for the university scholarship, according to the premises?",
+  "premises_nl": [
+   "Students who have completed the core curriculum and passed the science assessment are qualified for advanced courses.",
+   "Students who are qualified for advanced courses and have completed research methodology are eligible for the international program.",
+   "Students who have passed the language proficiency exam are eligible for the international program.",
+   "Students who are eligible for the international program and have completed a capstone project are awarded an honors diploma.",
+   "Students who have been awarded an honors diploma and have completed community service qualify for the university scholarship.",
+   "Students who have been awarded an honors diploma and have received a faculty recommendation qualify for the university scholarship.",
+   "Sophia has completed the core curriculum.",
+   "Sophia has passed the science assessment.",
+   "Sophia has completed the research methodology course.",
+   "Sophia has completed her capstone project.",
+   "Sophia has completed the required community service hours."
+  ],
+  "answer": "Yes",
+  "explanation": "The university scholarship per premise 5 requires an honors diploma and community service. Premise 4 requires international program eligibility and a capstone project, premise 2 requires advanced course qualification and research methodology, and premise 1 requires core curriculum and science assessment. Premises 7–11 confirm Sophia’s curriculum, assessment, methodology, capstone, and service, satisfying all conditions for the scholarship."
+ },
+ {
+  "id": 4,
+  "question": "Based on the above premises, which conclusion is correct?\nA. Sophia qualifies for the university scholarship\nB. Sophia needs a faculty recommendation to qualify for the scholarship\nC. Sophia is eligible for the international program\nD. Sophia needs to pass the language proficiency exam to get an honors diploma",
+  "premises_nl": [
+   "Students who have completed the core curriculum and passed the science assessment are qualified for advanced courses.",
+   "Students who are qualified for advanced courses and have completed research methodology are eligible for the international program.",
+   "Students who have passed the language proficiency exam are eligible for the international program.",
+   "Students who are eligible for the international program and have completed a capstone project are awarded an honors diploma.",
+   "Students who have been awarded an honors diploma and have completed community service qualify for the university scholarship.",
+   "Students who have been awarded an honors diploma and have received a faculty recommendation qualify for the university scholarship.",
+   "Sophia has completed the core curriculum.",
+   "Sophia has passed the science assessment.",
+   "Sophia has completed the research methodology course.",
+   "Sophia has completed her capstone project.",
+   "Sophia has completed the required community service hours."
+  ],
+  "answer": "C",
+  "explanation": "Premises 7 and 8 confirm Sophia completed the core curriculum and passed the science assessment, satisfying premise 1 for advanced courses. Premise 9’s research methodology and premise 2 make her eligible for the international program. Premise 10’s capstone project and premise 4 award her an honors diploma. Premise 11’s community service and premise 5 qualify her for the university scholarship, supporting option A. Option B is false because community service suffices without a recommendation. Option C is true but weaker than A, as scholarship implies prior eligibility. Option D is false because language proficiency is not required via premise 2’s path."
+ },
+ {
+  "id": 5,
+  "question": "Does Sophia qualify for the university scholarship, according to the premises?",
+  "premises_nl": [
+   "Students who have completed the core curriculum and passed the science assessment are qualified for advanced courses.",
+   "Students who are qualified for advanced courses and have completed research methodology are eligible for the international program.",
+   "Students who have passed the language proficiency exam are eligible for the international program.",
+   "Students who are eligible for the international program and have completed a capstone project are awarded an honors diploma.",
+   "Students who have been awarded an honors diploma and have completed community service qualify for the university scholarship.",
+   "Students who have been awarded an honors diploma and have received a faculty recommendation qualify for the university scholarship.",
+   "Sophia has completed the core curriculum.",
+   "Sophia has passed the science assessment.",
+   "Sophia has completed the research methodology course.",
+   "Sophia has completed her capstone project.",
+   "Sophia has completed the required community service hours."
+  ],
+  "answer": "Yes",
+  "explanation": "The university scholarship per premise 5 requires an honors diploma and community service. Premise 4 requires international program eligibility and a capstone project, premise 2 requires advanced course qualification and research methodology, and premise 1 requires core curriculum and science assessment. Premises 7–11 confirm Sophia’s curriculum, assessment, methodology, capstone, and service, satisfying all conditions for the scholarship."
+ },
+ {
+  "id": 6,
+  "question": "Based on the above premises, which conclusion logically follows?\nA. John qualifies for the graduate fellowship program\nB. John needs faculty recommendation for the fellowship\nC. John must complete an internship to qualify\nD. John’s GPA is insufficient for honors",
+  "premises_nl": [
+   "If a student completes all required courses, they are eligible for graduation.",
+   "If a student is eligible for graduation and maintains a GPA above 3.5, they graduate with honors.",
+   "If a student graduates with honors and completes a thesis, they receive academic distinction.",
+   "If a student receives academic distinction, they qualify for the graduate fellowship program.",
+   "John has completed all required courses.",
+   "John maintains a GPA of 3.8.",
+   "John has completed a thesis."
+  ],
+  "answer": "A",
+  "explanation": "Premise 5 and premise 1 confirm John is eligible for graduation by completing required courses. Premise 6’s GPA of 3.8 and premise 2 qualify him for honors. Premise 7’s thesis and premise 3 grant academic distinction. Premise 4 confirms distinction qualifies him for the graduate fellowship program, supporting option A. Option B is false because no recommendation is required. Option C is false because no internship is mentioned. Option D is false because his GPA exceeds 3.5."
+ },
+ {
+  "id": 7,
+  "question": "Does John receive academic distinction, according to the premises?",
+  "premises_nl": [
+   "If a student completes all required courses, they are eligible for graduation.",
+   "If a student is eligible for graduation and maintains a GPA above 3.5, they graduate with honors.",
+   "If a student graduates with honors and completes a thesis, they receive academic distinction.",
+   "If a student receives academic distinction, they qualify for the graduate fellowship program.",
+   "John has completed all required courses.",
+   "John maintains a GPA of 3.8.",
+   "John has completed a thesis."
+  ],
+  "answer": "Yes",
+  "explanation": "Academic distinction per premise 3 requires graduating with honors and completing a thesis. Premise 2 requires graduation eligibility and a GPA above 3.5, and premise 1 requires course completion. Premises 5–7 confirm John’s course completion, GPA of 3.8, and thesis, satisfying all conditions for academic distinction."
+ },
+ {
+  "id": 8,
+  "question": "Based on the premises, what is the correct conclusion about Professor John?\nA. He can teach undergraduate courses but cannot supervise graduates\nB. He can serve on curriculum committees but cannot propose courses\nC. He can propose new courses\nD. He needs more publications to serve on committees",
+  "premises_nl": [
+   "If a faculty member has completed training, they can teach undergraduate courses.",
+   "If a faculty member can teach undergraduate courses and holds a PhD, they can supervise graduate students.",
+   "If a faculty member can supervise graduate students and has at least 3 publications, they can serve on curriculum committees.",
+   "If a faculty member can serve on curriculum committees and has a positive teaching evaluation, they can propose new courses.",
+   "Professor John has completed pedagogical training.",
+   "Professor John holds a PhD.",
+   "Professor John has published at least 3 academic papers.",
+   "Professor John has received a positive teaching evaluation."
+  ],
+  "answer": "C",
+  "explanation": "Premise 5 and premise 1 confirm Professor John can teach undergraduate courses due to pedagogical training. Premise 6’s PhD and premise 2 allow him to supervise graduate students. Premise 7’s three or more publications and premise 3 qualify him for curriculum committees. Premise 8’s positive evaluation and premise 4 confirm he can propose new courses, supporting option C. Option A is false because he can supervise graduates. Option B is false because he can propose courses. Option D is false because he has sufficient publications."
+ },
+ {
+  "id": 9,
+  "question": "Does Professor John meet all requirements to propose new courses, according to the premises?",
+  "premises_nl": [
+   "If a faculty member has completed training, they can teach undergraduate courses.",
+   "If a faculty member can teach undergraduate courses and holds a PhD, they can supervise graduate students.",
+   "If a faculty member can supervise graduate students and has at least 3 publications, they can serve on curriculum committees.",
+   "If a faculty member can serve on curriculum committees and has a positive teaching evaluation, they can propose new courses.",
+   "Professor John has completed pedagogical training.",
+   "Professor John holds a PhD.",
+   "Professor John has published at least 3 academic papers.",
+   "Professor John has received a positive teaching evaluation."
+  ],
+  "answer": "Yes",
+  "explanation": "Proposing new courses per premise 4 requires serving on curriculum committees and a positive evaluation. Premise 3 requires graduate supervision and at least three publications, premise 2 requires undergraduate teaching and a PhD, and premise 1 requires training. Premises 5–8 confirm John’s training, PhD, publications, and evaluation, satisfying all conditions, so he meets the requirements."
+ },
+ {
+  "id": 10,
+  "question": "Based on the premises, what is the correct conclusion about Professor John?\nA. He can access restricted archives but cannot submit proposals\nB. He can apply for collaborative research projects\nC. He needs more publications to access archives\nD. He is eligible for extended library access but cannot apply for projects",
+  "premises_nl": [
+   "If a faculty member has taught for at least 5 years, they are eligible for extended library access.",
+   "If someone has extended library access and has published at least one academic paper, they can access restricted archives.",
+   "If someone can access restricted archives and has completed research ethics training, they can submit research proposals.",
+   "If someone can submit research proposals and has a departmental endorsement, they can apply for collaborative research projects.",
+   "Professor John has taught for at least 5 years.",
+   "Professor John has published at least one academic paper.",
+   "Professor John has completed research ethics training.",
+   "Professor John has a departmental endorsement."
+  ],
+  "answer": "B",
+  "explanation": "Professor John has taught for at least 5 years (Premise 5), so he is eligible for extended library access (by Premise 1). Because he has at least one publication (Premise 6), he can access restricted archives (Premise 2). With completed ethics training (Premise 7), he can submit research proposals (Premise 3), and with departmental endorsement (Premise 8), he can apply for collaborative research projects (Premise 4). Hence, option B is logically valid."
+ },
+ {
+  "id": 11,
+  "question": "Does the logical chain demonstrate that Professor John meets all requirements for collaborative research projects?",
+  "premises_nl": [
+   "If a faculty member has taught for at least 5 years, they are eligible for extended library access.",
+   "If someone has extended library access and has published at least one academic paper, they can access restricted archives.",
+   "If someone can access restricted archives and has completed research ethics training, they can submit research proposals.",
+   "If someone can submit research proposals and has a departmental endorsement, they can apply for collaborative research projects.",
+   "Professor John has taught for at least 5 years.",
+   "Professor John has published at least one academic paper.",
+   "Professor John has completed research ethics training.",
+   "Professor John has a departmental endorsement."
+  ],
+  "answer": "Yes",
+  "explanation": "Yes, all conditions in the logical sequence are fulfilled in order: teaching experience leads to extended access, which, with a publication, allows access to archives. Adding ethics training enables proposal submission, and endorsement completes the criteria for collaborative project application. The reasoning is valid and consistent."
+ },
+ {
+  "id": 12,
+  "question": "Based on the premises, what can we conclude about John’s qualifications?\nA. John can transport hazardous materials but cannot cross state lines\nB. John can cross state lines with hazardous cargo\nC. John cannot transport hazardous materials\nD. John is not qualified to transport any kind of goods",
+  "premises_nl": [
+   "If a driver has passed vehicle inspection and has the appropriate license, they can transport standard goods.",
+   "If a driver can transport standard goods and has completed hazmat training and received a safety endorsement, they can transport hazardous materials.",
+   "If a driver can transport hazardous materials and has an interstate permit, they can cross state lines with hazardous cargo.",
+   "John has passed vehicle inspection.",
+   "John has the appropriate license.",
+   "John has completed hazmat training.",
+   "John has not received a safety endorsement.",
+   "John has an interstate permit."
+  ],
+  "answer": "C",
+  "explanation": "Premises 4 and 5 confirm John passed vehicle inspection and has a license, satisfying premise 1 for transporting standard goods. However, premise 6 confirms hazmat training, but premise 7 states he lacks a safety endorsement, so premise 2 prevents him from transporting hazardous materials, supporting option C. Option A is false because he cannot transport hazardous materials. Option B is false because he cannot cross state lines without hazardous material capability. Option D is false because he can transport standard goods."
+ },
+ {
+  "id": 13,
+  "question": "Does John meet all requirements to cross state lines with hazardous cargo, according to the premises?",
+  "premises_nl": [
+   "If a driver has passed vehicle inspection and has the appropriate license, they can transport standard goods.",
+   "If a driver can transport standard goods and has completed hazmat training and received a safety endorsement, they can transport hazardous materials.",
+   "If a driver can transport hazardous materials and has an interstate permit, they can cross state lines with hazardous cargo.",
+   "John has passed vehicle inspection.",
+   "John has the appropriate license.",
+   "John has completed hazmat training.",
+   "John has not received a safety endorsement.",
+   "John has an interstate permit."
+  ],
+  "answer": "No",
+  "explanation": "Crossing state lines with hazardous cargo per premise 3 requires the ability to transport hazardous materials and an interstate permit. Premise 2 requires standard goods capability, hazmat training, and a safety endorsement for hazardous materials. Premises 1, 4, 5, and 6 confirm standard goods and training, and premise 8 confirms the permit, but premise 7’s lack of endorsement prevents hazardous material transport, so John does not meet all requirements."
+ },
+ {
+  "id": 14,
+  "question": "Based on the premises, which capabilities does Dr. John have?\nA. Can teach undergraduate courses only\nB. Can be a research mentor\nC. Cannot teach graduate courses\nD. Needs additional certification to mentor",
+  "premises_nl": [
+   "Faculty members with a degree higher than BA can teach undergraduate courses.",
+   "Faculty members with a degree higher than MSc can teach graduate courses.",
+   "Anyone who teaches graduate courses can be a research mentor.",
+   "If degree A is higher than B, and B is higher than C, then A is higher than C.",
+   "MSc is higher than BA.",
+   "PhD is higher than MSc.",
+   "Dr. John is a faculty member.",
+   "Dr. John has a PhD."
+  ],
+  "answer": "B",
+  "explanation": "Premises 7 and 8 confirm Dr. John is a faculty member with a PhD. Premise 6 states PhD is higher than MSc, so premise 2 allows him to teach graduate courses. Premise 3 confirms that teaching graduate courses qualifies him as a research mentor, supporting option B. Option A is false because he can teach graduate courses. Option C is false because he can teach graduate courses. Option D is false because no additional certification is required."
+ },
+ {
+  "id": 15,
+  "question": "Does Dr. John’s PhD qualification make him eligible to be a research mentor, according to the premises?",
+  "premises_nl": [
+   "Faculty members with a degree higher than BA can teach undergraduate courses.",
+   "Faculty members with a degree higher than MSc can teach graduate courses.",
+   "Anyone who teaches graduate courses can be a research mentor.",
+   "If degree A is higher than B, and B is higher than C, then A is higher than C.",
+   "MSc is higher than BA.",
+   "PhD is higher than MSc.",
+   "Dr. John is a faculty member.",
+   "Dr. John has a PhD."
+  ],
+  "answer": "No",
+  "explanation": "Premise 8 confirms Dr. John’s PhD, and premise 7 confirms his faculty status. Premise 6 establishes PhD is higher than MSc, so premise 2 qualifies him to teach graduate courses. Premise 3 confirms that graduate teaching implies research mentorship eligibility, so his PhD qualification entails mentorship eligibility."
+ },
+ {
+  "id": 16,
+  "question": "Based on the premises, what can we conclude about the curriculum?\nA. It enhances student engagement but not critical thinking\nB. It enhances critical thinking\nC. It needs more resources to enhance critical thinking\nD. It is well-structured but lacks exercises",
+  "premises_nl": [
+   "If a curriculum is well-structured and has exercises, it enhances student engagement.",
+   "If a curriculum enhances student engagement and provides access to advanced resources, it enhances critical thinking.",
+   "If a faculty prioritizes pedagogical training and curriculum development, the curriculum is well-structured.",
+   "The faculty prioritizes pedagogical training and curriculum development.",
+   "The curriculum has practical exercises.",
+   "The curriculum provides access to advanced resources."
+  ],
+  "answer": "B",
+  "explanation": "Premise 4 and premise 3 confirm the curriculum is well-structured due to faculty priorities in pedagogical training and curriculum development. Premise 5 provides exercises, so premise 1 implies the curriculum enhances student engagement. Premise 6 adds advanced resources, and premise 2 confirms the curriculum enhances critical thinking, supporting option B. Option A is false because it enhances critical thinking. Option C is false because resources are sufficient. Option D is false because the curriculum has exercises."
+ },
+ {
+  "id": 17,
+  "question": "Does the combination of faculty priorities and curriculum features lead to enhanced critical thinking, according to the premises?",
+  "premises_nl": [
+   "If a curriculum is well-structured and has exercises, it enhances student engagement.",
+   "If a curriculum enhances student engagement and provides access to advanced resources, it enhances critical thinking.",
+   "If a faculty prioritizes pedagogical training and curriculum development, the curriculum is well-structured.",
+   "The faculty prioritizes pedagogical training and curriculum development.",
+   "The curriculum has practical exercises.",
+   "The curriculum provides access to advanced resources."
+  ],
+  "answer": "Yes",
+  "explanation": "Faculty priorities in premise 4 (pedagogical training and curriculum development) satisfy premise 3, making the curriculum well-structured. Curriculum features in premise 5 (exercises) and premise 1 lead to enhanced engagement, and with premise 6 (advanced resources), premise 2 confirms enhanced critical thinking, supporting the statement."
+ },
+ {
+  "id": 18,
+  "question": "Based on the premises, what can we conclude about the curriculum?\nA. It enhances student engagement but not critical thinking\nB. It enhances critical thinking\nC. It needs more resources to enhance critical thinking\nD. It is well-structured but lacks exercises",
+  "premises_nl": [
+   "If a curriculum is well-structured and has exercises, it enhances student engagement.",
+   "If a curriculum enhances student engagement and provides access to advanced resources, it enhances critical thinking.",
+   "If a faculty prioritizes pedagogical training and curriculum development, the curriculum is well-structured.",
+   "The faculty prioritizes pedagogical training and curriculum development.",
+   "The curriculum has practical exercises.",
+   "The curriculum provides access to advanced resources."
+  ],
+  "answer": "B",
+  "explanation": "Premise 4 and premise 3 confirm the curriculum is well-structured due to faculty priorities in pedagogical training and curriculum development. Premise 5 provides exercises, so premise 1 implies the curriculum enhances student engagement. Premise 6 adds advanced resources, and premise 2 confirms the curriculum enhances critical thinking, supporting option B. Option A is false because it enhances critical thinking. Option C is false because resources are sufficient. Option D is false because the curriculum has exercises."
+ },
+ {
+  "id": 19,
+  "question": "Does the combination of faculty priorities and curriculum features lead to enhanced critical thinking, according to the premises?",
+  "premises_nl": [
+   "If a curriculum is well-structured and has exercises, it enhances student engagement.",
+   "If a curriculum enhances student engagement and provides access to advanced resources, it enhances critical thinking.",
+   "If a faculty prioritizes pedagogical training and curriculum development, the curriculum is well-structured.",
+   "The faculty prioritizes pedagogical training and curriculum development.",
+   "The curriculum has practical exercises.",
+   "The curriculum provides access to advanced resources."
+  ],
+  "answer": "Yes",
+  "explanation": "Faculty priorities in premise 4 (pedagogical training and curriculum development) satisfy premise 3, making the curriculum well-structured. Curriculum features in premise 5 (exercises) and premise 1 lead to enhanced engagement, and with premise 6 (advanced resources), premise 2 confirms enhanced critical thinking, supporting the statement."
+ },
+ {
+  "id": 20,
+  "question": "Based on the prerequisites, what is David’s current eligibility status?\nA. Eligible for Course C but not the internship\nB. Eligible for the internship program\nC. Needs to pass Course B first\nD. Only eligible for Course B",
+  "premises_nl": [
+   "If a student completes Course A, they can enroll in Course B.",
+   "If a student enrolls in Course B and passes it, they can enroll in Course C.",
+   "Enrollment in Course C makes a student eligible for the internship program.",
+   "David has completed Course A.",
+   "David has enrolled in and passed Course B."
+  ],
+  "answer": "B",
+  "explanation": "Premise 5 confirms David enrolled in and passed Course B, satisfying premise 2’s conditions to enroll in Course C. Premise 3 states that enrollment in Course C makes David eligible for the internship program, supporting option B. Option A is false because eligibility for Course C implies internship eligibility. Option C is false because David has passed Course B. Option D is false because David is eligible beyond Course B, for Course C and the internship."
+ },
+ {
+  "id": 21,
+  "question": "Does the logical progression demonstrate that David meets all requirements for the internship?",
+  "premises_nl": [
+   "If a student completes Course A, they can enroll in Course B.",
+   "If a student enrolls in Course B and passes it, they can enroll in Course C.",
+   "Enrollment in Course C makes a student eligible for the internship program.",
+   "David has completed Course A.",
+   "David has enrolled in and passed Course B."
+  ],
+  "answer": "Yes",
+  "explanation": "The requirements for the internship per premise 3 involve enrolling in Course C, which per premise 2 requires enrolling in and passing Course B. Premise 5 confirms David enrolled in and passed Course B, enabling Course C enrollment and thus internship eligibility."
+ },
+ {
+  "id": 22,
+  "question": "Based on Alex's status, which statement is correct?\nA. Alex can use equipment but cannot book training without a trainer\nB. Alex can book personal training sessions if assigned a trainer\nC. Alex needs a longer membership duration\nD. Alex must pay additional fees",
+  "premises_nl": [
+   "Alex has completed safety orientation.",
+   "Alex has a membership duration of 8 months.",
+   "Alex has paid annual fees on time.",
+   "If a person has a valid membership card and has completed safety orientation, they can use equipment.",
+   "If a person can use equipment and has a trainer, they can book training.",
+   "If a person’s membership duration is at least 6 months, they are eligible for a trainer.",
+   "If a person has paid the annual fee, they have a valid membership."
+  ],
+  "answer": "C",
+  "explanation": "Premises 3 and 7 confirm Alex paid fees for a valid membership, premise 1 confirms safety orientation, and premise 4 allows equipment use, so Alex can use equipment. Premise 5 requires a trainer to book training, which isn’t confirmed, supporting option A. Option B is uncertain without a confirmed trainer. Option C is false because 8 months exceeds 6 per premise 6. Option D is false because fees are paid per premise 3."
+ },
+ {
+  "id": 23,
+  "question": "Does Alex meet all requirements for booking training sessions, according to the premises?",
+  "premises_nl": [
+   "Alex has completed safety orientation.",
+   "Alex has a membership duration of 8 months.",
+   "Alex has paid annual fees on time.",
+   "If a person has a valid membership card and has completed safety orientation, they can use equipment.",
+   "If a person can use equipment and has a trainer, they can book training.",
+   "If a person’s membership duration is at least 6 months, they are eligible for a trainer.",
+   "If a person has paid the annual fee, they have a valid membership."
+  ],
+  "answer": "No",
+  "explanation": "Booking training per premise 5 requires equipment use and having a trainer. Premises 1, 3, 4, and 7 confirm Alex can use equipment, and premises 2 and 6 confirm trainer eligibility, but no premise confirms Alex has a trainer, so Alex doesn’t meet all requirements."
+ },
+ {
+  "id": 24,
+  "question": "Based on the requirements, which statement about Sarah is correct?\nA. She can take advanced classes because she has approval\nB. She cannot take advanced classes due to insufficient completed courses\nC. She is eligible but lacks approval\nD. Her active status alone qualifies her",
+  "premises_nl": [
+   "Students with active status who have completed at least 5 courses are eligible for advanced classes.",
+   "Eligible students must obtain advisor approval to take advanced classes.",
+   "Sarah has active student status.",
+   "Sarah has completed 4 courses.",
+   "Sarah has obtained advisor approval."
+  ],
+  "answer": "D",
+  "explanation": "Premise 3 confirms Sarah has active status, but premise 4 states she completed only 4 courses, which is below the 5-course threshold for eligibility in premise 1. Thus, Sarah cannot take advanced classes due to insufficient courses, supporting option B. Option A is false because approval alone isn’t enough without eligibility. Option C is false because Sarah is not eligible and has approval. Option D is false because active status requires 5 courses for eligibility."
+ },
+ {
+  "id": 25,
+  "question": "Does Sarah meet all requirements to take advanced classes, according to the premises?",
+  "premises_nl": [
+   "Students with active status who have completed at least 5 courses are eligible for advanced classes.",
+   "Eligible students must obtain advisor approval to take advanced classes.",
+   "Sarah has active student status.",
+   "Sarah has completed 4 courses.",
+   "Sarah has obtained advisor approval."
+  ],
+  "answer": "No",
+  "explanation": "To take advanced classes, premise 1 requires active status and at least 5 courses for eligibility, and premise 2 requires approval. Premise 3 confirms Sarah’s active status, premise 5 confirms her approval, but premise 4 states she completed only 4 courses, failing the eligibility requirement, so Sarah does not meet all requirements."
+ },
+ {
+  "id": 26,
+  "question": "Based on Professor John's qualifications, which capabilities does he have?\nA. Can teach graduate courses but cannot supervise research\nB. Can supervise Master's students but not graduate research\nC. Can both teach graduate courses and supervise research\nD. Needs additional certification to supervise",
+  "premises_nl": [
+   "If a professor has a PhD degree, they are qualified to teach graduate courses.",
+   "A doctoral degree (PhD) is higher than a Master's degree.",
+   "If a professor holds a degree higher than a Master's, they are eligible to supervise Master's students.",
+   "All professors qualified to teach graduate courses can also supervise graduate-level research.",
+   "Professor John holds a PhD degree."
+  ],
+  "answer": "C",
+  "explanation": "Premise 5 states Professor John has a PhD, premise 1 confirms that a PhD qualifies him to teach graduate courses, and premise 4 states that those qualified to teach graduate courses can supervise graduate-level research, so John can do both, supporting option C. Option A is false because John can supervise research. Option B is false because he can supervise research. Option D is false because no additional certification is required."
+ },
+ {
+  "id": 27,
+  "question": "Can Professor John supervise graduate-level research based on his PhD qualification, according to the premises?",
+  "premises_nl": [
+   "If a professor has a PhD degree, they are qualified to teach graduate courses.",
+   "A doctoral degree (PhD) is higher than a Master's degree.",
+   "If a professor holds a degree higher than a Master's, they are eligible to supervise Master's students.",
+   "All professors qualified to teach graduate courses can also supervise graduate-level research.",
+   "Professor John holds a PhD degree."
+  ],
+  "answer": "No",
+  "explanation": "Premise 5 confirms Professor John’s PhD, premise 1 establishes that a PhD qualifies him to teach graduate courses, and premise 4 confirms that teaching qualification enables him to supervise graduate-level research, so John can supervise research."
+ },
+ {
+  "id": 28,
+  "question": "Based on Dr. John's qualifications, which statement is correct?\nA. He can teach undergraduate courses\nB. He qualifies as department head but cannot teach\nC. He needs a Master's degree to teach undergraduates\nD. His PhD is insufficient for teaching",
+  "premises_nl": [
+   "Lecturers with a Master's degree can teach undergraduate courses.",
+   "Lecturers with a degree higher than a Master's can teach undergraduate courses.",
+   "A PhD is higher than a Master's degree.",
+   "A Master's degree is higher than a Bachelor's degree.",
+   "If degree A is higher than degree B, and degree B is higher than degree C, then degree A is higher than degree C.",
+   "Department heads must hold a degree higher than a Bachelor's.",
+   "Dr. John is a department head with a PhD."
+  ],
+  "answer": "A",
+  "explanation": "Premise 7 states Dr. John has a PhD, premise 3 confirms a PhD is higher than a Master’s, and premise 2 states that a degree higher than a Master’s qualifies a lecturer to teach undergraduate courses, so John can teach, supporting option A. Option B is false because John can teach. Option C is false because a PhD suffices without needing a Master’s. Option D is false because a PhD is sufficient."
+ },
+ {
+  "id": 29,
+  "question": "Can Dr. John teach undergraduate courses, according to the premises?",
+  "premises_nl": [
+   "Lecturers with a Master's degree can teach undergraduate courses.",
+   "Lecturers with a degree higher than a Master's can teach undergraduate courses.",
+   "A PhD is higher than a Master's degree.",
+   "A Master's degree is higher than a Bachelor's degree.",
+   "If degree A is higher than degree B, and degree B is higher than degree C, then degree A is higher than degree C.",
+   "Department heads must hold a degree higher than a Bachelor's.",
+   "Dr. John is a department head with a PhD."
+  ],
+  "answer": "No",
+  "explanation": "Premise 7 confirms Dr. John has a PhD, premise 3 establishes that a PhD is higher than a Master’s, and premise 2 allows lecturers with a degree higher than a Master’s to teach undergraduate courses, so John can teach."
+ },
+ {
+  "id": 30,
+  "question": "Based on Nurse John's qualifications, which statement is correct?\nA. He can prescribe medication\nB. He needs more clinical hours\nC. He isn't registered\nD. He can't prescribe without additional certification",
+  "premises_nl": [
+   "Completing 500 clinical hours grants Advanced Practice certification.",
+   "Nurse John has completed 600 clinical hours.",
+   "John is a registered nurse.",
+   "All registered nurses with Advanced Practice certification are authorized to prescribe medication."
+  ],
+  "answer": "A",
+  "explanation": "Premise 2 states John completed 600 clinical hours, satisfying premise 1’s requirement of 500 hours for Advanced Practice certification. Premise 3 confirms John is a registered nurse, and premise 4 states that registered nurses with Advanced Practice certification can prescribe medication, so John can prescribe, supporting option A. Option B is false because 600 hours exceed 500. Option C is false because John is registered. Option D is false because Advanced Practice certification is sufficient."
+ },
+ {
+  "id": 31,
+  "question": "Can Nurse John prescribe medication, according to the premises?",
+  "premises_nl": [
+   "Completing 500 clinical hours grants Advanced Practice certification.",
+   "Nurse John has completed 600 clinical hours.",
+   "John is a registered nurse.",
+   "All registered nurses with Advanced Practice certification are authorized to prescribe medication."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 2 confirms John’s 600 clinical hours, meeting premise 1’s 500-hour threshold for Advanced Practice certification. Premise 3 establishes John as a registered nurse, and premise 4 allows registered nurses with certification to prescribe medication, so John can prescribe."
+ },
+ {
+  "id": 32,
+  "question": "Based on Alex's status, which statement is correct?\nA. Alex can use equipment but can't book training\nB. Alex can book personal training sessions\nC. Alex needs longer membership duration\nD. Alex must pay additional fees",
+  "premises_nl": [
+   "Alex has a valid membership card.",
+   "Alex has completed safety orientation.",
+   "Alex has a membership duration of 8 months.",
+   "Alex has paid annual fees on time."
+  ],
+  "answer": "B",
+  "explanation": "Alex has a valid card (1) and completed orientation (2), so he can use equipment via the first rule. He also has 8 months of membership (3), making him eligible for trainer assignment. Although the premise does not state explicitly that a trainer has been assigned, the question assumes it as true for the context of checking qualification. Therefore, he can book training."
+ },
+ {
+  "id": 33,
+  "question": "Does the logical sequence demonstrate that Alex meets all requirements for booking training sessions?",
+  "premises_nl": [
+   "Alex has a valid membership card.",
+   "Alex has completed safety orientation.",
+   "Alex has a membership duration of 8 months.",
+   "Alex has paid annual fees on time."
+  ],
+  "answer": "Yes",
+  "explanation": "Yes, because Alex meets the prerequisites: use of equipment (1+2), duration (3), and paid fees (4) ensure valid membership and trainer eligibility, satisfying all logical conditions for booking personal training sessions."
+ },
+ {
+  "id": 34,
+  "question": "Based on Minh's academic progress, which of the following is logically supported?\nA. Minh has met the criteria to pursue Biochemistry\nB. Minh cannot take Biochemistry without Lab Safety Certification\nC. Minh is not eligible to enroll in Organic Chemistry\nD. Minh needs to repeat Chemistry 101",
+  "premises_nl": [
+   "If a student is enrolled in a science program and has passed Chemistry 101, they can enroll in Organic Chemistry.",
+   "If a student is enrolled in Organic Chemistry and has completed Lab Safety Certification, they can access the advanced lab.",
+   "All students who complete Organic Chemistry can take Biochemistry.",
+   "If course X is a prerequisite for course Y, and course Y is a prerequisite for course Z, then course X is a prerequisite for course Z.",
+   "Minh is enrolled in a science program.",
+   "Minh passed Chemistry 101.",
+   "Minh completed Organic Chemistry.",
+   "Minh completed Lab Safety Certification."
+  ],
+  "answer": "A",
+  "explanation": "Premise 7 states Minh completed Organic Chemistry, and premise 3 states that completing Organic Chemistry allows taking Biochemistry, so Minh has met the criteria to pursue Biochemistry, supporting option A. Option B is false because Lab Safety Certification isn’t required for Biochemistry. Option C is false because Minh’s science program enrollment and Chemistry 101 pass make her eligible for Organic Chemistry. Option D is false because Minh has passed Chemistry 101."
+ },
+ {
+  "id": 35,
+  "question": "Does Minh qualify to take Biochemistry based on her completed coursework, according to the premises?",
+  "premises_nl": [
+   "If a student is enrolled in a science program and has passed Chemistry 101, they can enroll in Organic Chemistry.",
+   "If a student is enrolled in Organic Chemistry and has completed Lab Safety Certification, they can access the advanced lab.",
+   "All students who complete Organic Chemistry can take Biochemistry.",
+   "If course X is a prerequisite for course Y, and course Y is a prerequisite for course Z, then course X is a prerequisite for course Z.",
+   "Minh is enrolled in a science program.",
+   "Minh passed Chemistry 101.",
+   "Minh completed Organic Chemistry.",
+   "Minh completed Lab Safety Certification."
+  ],
+  "answer": "No",
+  "explanation": "Premise 7 states Minh completed Organic Chemistry, and premise 3 states that completing Organic Chemistry qualifies a student to take Biochemistry, so Minh qualifies based on her coursework."
+ },
+ {
+  "id": 36,
+  "question": "Have all employees paid?",
+  "premises_nl": [
+   "Everyone will receive an update email.",
+   "Everyone is trained.",
+   "If someone receives an update email, then they have paid.",
+   "Everyone has completed the questionnaire.",
+   "Everyone has submitted a paper.",
+   "If someone receives an update email, then they are registered."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 1 states everyone receives an update email, and premise 3 states that receiving an update email implies having paid, so all employees have paid."
+ },
+ {
+  "id": 37,
+  "question": "Are all employees registered?",
+  "premises_nl": [
+   "Everyone will receive an update email.",
+   "Everyone is trained.",
+   "If someone receives an update email, then they have paid.",
+   "Everyone has completed the questionnaire.",
+   "Everyone has submitted a paper.",
+   "If someone receives an update email, then they are registered."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 1 states everyone receives an update email, and premise 6 states that receiving an update email implies being registered, so all employees are registered."
+ },
+ {
+  "id": 38,
+  "question": "Do all employees receive a bonus?",
+  "premises_nl": [
+   "If a person has a research background, then they have strong qualifications.",
+   "If a person has strong qualifications, then they are suitable for a senior role.",
+   "Every person is enrolled in the company’s development program.",
+   "Every person has a research background.",
+   "If a person is eligible for a promotion, then they will receive a bonus.",
+   "Everyone is eligible for a promotion."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 6 states everyone is eligible for a promotion, and premise 5 states that promotion eligibility implies receiving a bonus, so all employees receive a bonus."
+ },
+ {
+  "id": 39,
+  "question": "Are all employees suitable for a senior role?",
+  "premises_nl": [
+   "If a person has a research background, then they have strong qualifications.",
+   "If a person has strong qualifications, then they are suitable for a senior role.",
+   "Every person is enrolled in the company’s development program.",
+   "Every person has a research background.",
+   "If a person is eligible for a promotion, then they will receive a bonus.",
+   "Everyone is eligible for a promotion."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 4 states everyone has a research background, premise 1 states a research background implies strong qualifications, and premise 2 states strong qualifications imply senior role suitability, so all employees are suitable for a senior role."
+ },
+ {
+  "id": 40,
+  "question": "Based on the premises, which conclusion is logically valid?\nA. A student with low attendance, assignment completion, and professor approval can pass the course if they complete the exam.\nB. A student with less than 80% attendance who doesn’t complete the assignment can still take the exam.\nC. A student with 60% attendance and a scholarship automatically passes all courses.\nD. A student who attends every class but doesn’t complete the exam can still pass.",
+  "premises_nl": [
+   "If a student attends at least 80% of classes, they will be allowed to take the final exam.",
+   "If a student is allowed to take the final exam and completes the exam, they can pass the course.",
+   "If a student fails to pass the course, they must retake the course.",
+   "If a course requires a major assignment, the student must complete the major assignment or take the final exam.",
+   "If a student attends less than 50% of classes, they will not be allowed to take the final exam.",
+   "If a student completes 3 courses with a score above 8.5, they will receive a scholarship.",
+   "If a student takes the exam but scores below the passing threshold, they will not pass the course.",
+   "If a student attends all classes but does not complete the exam, they cannot pass the course.",
+   "If a student passes 3 required courses, they will graduate.",
+   "If a student attends less than 50% of the classes but completes the assignment and gets professor approval, they can take the exam."
+  ],
+  "answer": "A",
+  "explanation": "Premise 10 states that a student with less than 50% attendance who completes the assignment and has professor approval can take the exam, and premise 2 states that taking and completing the exam allows passing the course, supporting option A. Option B is false because low attendance without assignment completion prevents exam eligibility per premise 5. Option C is false because a scholarship doesn’t ensure passing per premises 2 and 7. Option D is false because full attendance without exam completion prevents passing per premise 8."
+ },
+ {
+  "id": 41,
+  "question": "Is it true that a student who completes 3 courses with scores above 8.5 will graduate, according to the premises?",
+  "premises_nl": [
+   "If a student attends at least 80% of classes, they will be allowed to take the final exam.",
+   "If a student is allowed to take the final exam and completes the exam, they can pass the course.",
+   "If a student fails to pass the course, they must retake the course.",
+   "If a course requires a major assignment, the student must complete the major assignment or take the final exam.",
+   "If a student attends less than 50% of classes, they will not be allowed to take the final exam.",
+   "If a student completes 3 courses with a score above 8.5, they will receive a scholarship.",
+   "If a student takes the exam but scores below the passing threshold, they will not pass the course.",
+   "If a student attends all classes but does not complete the exam, they cannot pass the course.",
+   "If a student passes 3 required courses, they will graduate.",
+   "If a student attends less than 50% of the classes but completes the assignment and gets professor approval, they can take the exam."
+  ],
+  "answer": "No",
+  "explanation": "Premise 6 states that completing three courses with scores above 8.5 leads to a scholarship, but premise 9 requires passing three required courses to graduate, and premise 7 shows that exams can be failed despite high effort, so high scores don’t guarantee graduation, and the answer is No."
+ },
+ {
+  "id": 42,
+  "question": "Based on the premises, which conclusion is correct?\nA. A student who studies >12 hours, doesn’t debate, and writes a high-quality essay in political studies can qualify for a fellowship\nB. A student studying <6 hours who avoids both debates and essays will pass\nC. Understanding ideologies without policy analysis leads to automatic recognition\nD. All students must participate in debates regardless of their study hours",
+  "premises_nl": [
+   "If a student studies political theory for more than 12 hours, they will understand fundamental political ideologies.",
+   "If a student understands fundamental political ideologies, they can critically analyze government policies.",
+   "If a student can critically analyze government policies, they will either participate in debates or write analytical essays.",
+   "If a student does not participate in debates, they must write analytical essays.",
+   "If a student studies less than 6 hours, they will struggle to understand fundamental political ideologies.",
+   "If a professor requires participation in debates, students must either debate or provide a justified reason for not doing so.",
+   "If a student writes an analytical essay with high quality, they will receive academic recognition.",
+   "If a student receives academic recognition in political studies, they may qualify for a research fellowship.",
+   "If a government policy is controversial, students must analyze it in their coursework.",
+   "If a student avoids both debates and writing essays, they will fail the political theory course."
+  ],
+  "answer": "A",
+  "explanation": "For a student studying political theory over 12 hours, premise 1 ensures understanding of ideologies, and premise 2 grants policy analysis ability. If they don’t debate, premise 4 requires an essay. A high-quality essay, per premise 7, earns academic recognition, and premise 8 allows fellowship qualification if in political studies, supporting option A. Option B is false because premise 10 ensures failure for avoiding debates and essays. Option C is false because premise 2 requires policy analysis. Option D is false because premise 4 allows essays instead of debates."
+ },
+ {
+  "id": 43,
+  "question": "Does writing a high-quality analytical essay guarantee qualification for a research fellowship, according to the premises?",
+  "premises_nl": [
+   "If a student studies political theory for more than 12 hours, they will understand fundamental political ideologies.",
+   "If a student understands fundamental political ideologies, they can critically analyze government policies.",
+   "If a student can critically analyze government policies, they will either participate in debates or write analytical essays.",
+   "If a student does not participate in debates, they must write analytical essays.",
+   "If a student studies less than 6 hours, they will struggle to understand fundamental political ideologies.",
+   "If a professor requires participation in debates, students must either debate or provide a justified reason for not doing so.",
+   "If a student writes an analytical essay with high quality, they will receive academic recognition.",
+   "If a student receives academic recognition in political studies, they may qualify for a research fellowship.",
+   "If a government policy is controversial, students must analyze it in their coursework.",
+   "If a student avoids both debates and writing essays, they will fail the political theory course."
+  ],
+  "answer": "No",
+  "explanation": "Premise 7 states a high-quality essay leads to academic recognition, but premise 8 requires the recognition to be in political studies for fellowship qualification. Since the field is not guaranteed, a high-quality essay does not ensure a fellowship."
+ },
+ {
+  "id": 44,
+  "question": "Based on the premises, which conclusion is correct?\nA. A student mastering superposition who writes an original research paper in quantum mechanics qualifies for a scholarship\nB. Limited study time (<8h) doesn’t impair superposition understanding\nC. Merely explaining quantum measurement guarantees recognition\nD. All students must analyze entanglement regardless of their expertise",
+  "premises_nl": [
+   "Mastery of quantum superposition requires at least 15 hours of dedicated study.",
+   "A solid understanding of superposition enables clear explanations of quantum measurement.",
+   "Those who can explain quantum measurement contribute by either writing research papers or giving presentations.",
+   "Failure to give a presentation leaves research papers as the only viable option for contribution.",
+   "Limited exposure (less than 8 hours) to quantum mechanics leads to difficulties in grasping superposition.",
+   "When a professor mandates presentations, students must comply or justify their refusal.",
+   "Original analytical work in research papers leads to academic recognition.",
+   "Academic recognition in quantum mechanics opens the possibility of an advanced physics scholarship.",
+   "Quantum entanglement experiments must be critically analyzed as part of coursework.",
+   "Neglecting both research papers and presentations results in failing the quantum mechanics course."
+  ],
+  "answer": "A",
+  "explanation": "A student studying 15 or more hours masters superposition (premise 1) and can explain quantum measurement (premise 2). If they avoid presentations, premise 4 requires a research paper. An original paper earns academic recognition (premise 7), and recognition in quantum mechanics qualifies for a scholarship (premise 8), supporting option A. Option B is false because premise 5 ensures struggle with less than 8 hours. Option C is false because premise 7 requires original work for recognition. Option D is false because premise 9 requires an entanglement experiment."
+ },
+ {
+  "id": 45,
+  "question": "Is producing original research while avoiding presentations sufficient to qualify for a scholarship, according to the premises?",
+  "premises_nl": [
+   "Mastery of quantum superposition requires at least 15 hours of dedicated study.",
+   "A solid understanding of superposition enables clear explanations of quantum measurement.",
+   "Those who can explain quantum measurement contribute by either writing research papers or giving presentations.",
+   "Failure to give a presentation leaves research papers as the only viable option for contribution.",
+   "Limited exposure (less than 8 hours) to quantum mechanics leads to difficulties in grasping superposition.",
+   "When a professor mandates presentations, students must comply or justify their refusal.",
+   "Original analytical work in research papers leads to academic recognition.",
+   "Academic recognition in quantum mechanics opens the possibility of an advanced physics scholarship.",
+   "Quantum entanglement experiments must be critically analyzed as part of coursework.",
+   "Neglecting both research papers and presentations results in failing the quantum mechanics course."
+  ],
+  "answer": "No",
+  "explanation": "Avoiding presentations requires writing a paper (premise 4). An original paper leads to academic recognition (premise 7), but scholarship qualification requires recognition in quantum mechanics (premise 8). Since the field is not guaranteed, original research without presentations is not sufficient."
+ },
+ {
+  "id": 46,
+  "question": "Based on the premises, which conclusion is correct?\nA. A student who develops through the quantum theory chain, from duality to advanced research preparation, can make academic contributions through publication or seminar\nB. Laboratory access is independent of publication/seminar participation\nC. Interpretation critique alone qualifies for research positions\nD. Understanding wave-particle duality guarantees lab access",
+  "premises_nl": [
+   "A student who understands wave-particle duality can grasp the principle of quantum superposition.",
+   "Mastery of quantum superposition is necessary to comprehend quantum measurement and wavefunction collapse.",
+   "A deep understanding of wavefunction collapse enables a student to critique interpretations of quantum mechanics.",
+   "Critiquing quantum interpretations requires familiarity with Schrödinger's equation and its implications.",
+   "A student proficient in Schrödinger's equation can solve problems in quantum tunneling.",
+   "Successful application of quantum tunneling concepts allows engagement with quantum computing fundamentals.",
+   "A student engaging with quantum computing will explore qubit manipulation and entanglement.",
+   "A solid grasp of entanglement is required to analyze Bell's theorem.",
+   "Students who analyze Bell's theorem can assess quantum nonlocality and realism debates.",
+   "A student who can evaluate quantum realism debates is well-prepared for advanced research discussions.",
+   "A well-prepared researcher can contribute original perspectives through publications or seminars.",
+   "Avoiding both publications and seminars results in a lack of academic contribution.",
+   "Academic contribution in quantum physics is a criterion for securing a research position.",
+   "A student securing a research position gains access to specialized quantum laboratories."
+  ],
+  "answer": "A",
+  "explanation": "Premises 1–11 form a logical progression from wave-particle duality to academic contribution. A student following this chain can contribute via publication or seminar, satisfying A. Other options make incorrect assumptions."
+ },
+ {
+  "id": 47,
+  "question": "According to the premises, is the following statement true?\nStatement: A student who reaches advanced research preparation but avoids both publication and seminar opportunities will still qualify for laboratory access",
+  "premises_nl": [
+   "A student who understands wave-particle duality can grasp the principle of quantum superposition.",
+   "Mastery of quantum superposition is necessary to comprehend quantum measurement and wavefunction collapse.",
+   "A deep understanding of wavefunction collapse enables a student to critique interpretations of quantum mechanics.",
+   "Critiquing quantum interpretations requires familiarity with Schrödinger's equation and its implications.",
+   "A student proficient in Schrödinger's equation can solve problems in quantum tunneling.",
+   "Successful application of quantum tunneling concepts allows engagement with quantum computing fundamentals.",
+   "A student engaging with quantum computing will explore qubit manipulation and entanglement.",
+   "A solid grasp of entanglement is required to analyze Bell's theorem.",
+   "Students who analyze Bell's theorem can assess quantum nonlocality and realism debates.",
+   "A student who can evaluate quantum realism debates is well-prepared for advanced research discussions.",
+   "A well-prepared researcher can contribute original perspectives through publications or seminars.",
+   "Avoiding both publications and seminars results in a lack of academic contribution.",
+   "Academic contribution in quantum physics is a criterion for securing a research position.",
+   "A student securing a research position gains access to specialized quantum laboratories."
+  ],
+  "answer": "No",
+  "explanation": "Avoiding both publication and seminar violates P11 and P12, meaning the student fails to make academic contributions. Without this, P13 is blocked, hence no lab access via P14. So the answer is False."
+ },
+ {
+  "id": 48,
+  "question": "Based on the learning science principles, which statement is correct?\nA. Spaced repetition improves both memory and academic performance\nB. Excessively long intervals preserve knowledge without review\nC. AI cannot optimize study schedules for memory retention\nD. Passive reading is more effective than active recall",
+  "premises_nl": [
+   "Ebbinghaus' forgetting curve formula: R = e^(-t/S), where R is retention rate, t is elapsed time, and S is review interval.",
+   "A learning algorithm based on spaced repetition can adjust review intervals based on individual proficiency.",
+   "Adequate sleep enhances memory consolidation after each review session.",
+   "Creating flashcards with concise questions improves retention compared to passive reading.",
+   "Reviewing just before forgetting significantly boosts memory efficiency.",
+   "Neuroscience studies show self-testing activates the hippocampus, enhancing information recall.",
+   "Encountering knowledge in various contexts improves retention compared to monotonous repetition.",
+   "Too short review intervals reduce retention due to lack of time for consolidation.",
+   "Too long review intervals risk forgetting most of the material before review.",
+   "AI can personalize study schedules, optimizing memory retention for each student based on their progress."
+  ],
+  "answer": "A",
+  "explanation": "Premise 2 states spaced repetition improves memory retention, and premise 4 confirms active recall via flashcards enhances retention over passive reading. Improved retention plausibly boosts academic performance, supporting option A. Option B is false because premise 9 shows long intervals increase forgetting. Option C is false because premise 10 confirms AI optimizes schedules. Option D is false because premise 4 prioritizes active recall."
+ },
+ {
+  "id": 49,
+  "question": "Which of these conclusions is supported by the forgetting curve research?\nA. Review timing has no impact on retention\nB. Optimal intervals prevent both premature review and excessive forgetting\nC. Sleep has no effect on memory consolidation\nD. All learning methods yield identical results",
+  "premises_nl": [
+   "Ebbinghaus' forgetting curve formula: R = e^(-t/S), where R is retention rate, t is elapsed time, and S is review interval.",
+   "A learning algorithm based on spaced repetition can adjust review intervals based on individual proficiency.",
+   "Adequate sleep enhances memory consolidation after each review session.",
+   "Creating flashcards with concise questions improves retention compared to passive reading.",
+   "Reviewing just before forgetting significantly boosts memory efficiency.",
+   "Neuroscience studies show self-testing activates the hippocampus, enhancing information recall.",
+   "Encountering knowledge in various contexts improves retention compared to monotonous repetition.",
+   "Too short review intervals reduce retention due to lack of time for consolidation.",
+   "Too long review intervals risk forgetting most of the material before review.",
+   "AI can personalize study schedules, optimizing memory retention for each student based on their progress."
+  ],
+  "answer": "B",
+  "explanation": "Premise 1’s forgetting curve shows retention depends on review interval timing. Premise 8 indicates too-short intervals harm consolidation, and premise 9 shows too-long intervals lead to forgetting, implying optimal intervals balance both, supporting option B. Option A is false because timing impacts retention. Option C is false because premise 3 links sleep to consolidation. Option D is false because premise 4 shows method differences."
+ },
+ {
+  "id": 50,
+  "question": "Based on the learning science principles, which statement is correct?\nA. Spaced repetition improves both memory and academic performance\nB. Excessively long intervals preserve knowledge without review\nC. AI cannot optimize study schedules for memory retention\nD. Passive reading is more effective than active recall",
+  "premises_nl": [
+   "Ebbinghaus' forgetting curve formula: R = e^(-t/S), where R is retention rate, t is elapsed time, and S is review interval.",
+   "A learning algorithm based on spaced repetition can adjust review intervals based on individual proficiency.",
+   "Adequate sleep enhances memory consolidation after each review session.",
+   "Creating flashcards with concise questions improves retention compared to passive reading.",
+   "Reviewing just before forgetting significantly boosts memory efficiency.",
+   "Neuroscience studies show self-testing activates the hippocampus, enhancing information recall.",
+   "Encountering knowledge in various contexts improves retention compared to monotonous repetition.",
+   "Too short review intervals reduce retention due to lack of time for consolidation.",
+   "Too long review intervals risk forgetting most of the material before review.",
+   "AI can personalize study schedules, optimizing memory retention for each student based on their progress."
+  ],
+  "answer": "A",
+  "explanation": "Premise 2 states spaced repetition improves retention, premise 4 states flashcards (active recall) outperform passive reading, and premise 10 states AI optimizes retention, supporting that spaced repetition enhances memory and academic performance, so option A is correct."
+ },
+ {
+  "id": 51,
+  "question": "Which of these conclusions is supported by the forgetting curve research?\nA. Review timing has no impact on retention\nB. Optimal intervals prevent both premature review and excessive forgetting\nC. Sleep has no effect on memory consolidation\nD. All learning methods yield identical results",
+  "premises_nl": [
+   "Ebbinghaus' forgetting curve formula: R = e^(-t/S), where R is retention rate, t is elapsed time, and S is review interval.",
+   "A learning algorithm based on spaced repetition can adjust review intervals based on individual proficiency.",
+   "Adequate sleep enhances memory consolidation after each review session.",
+   "Creating flashcards with concise questions improves retention compared to passive reading.",
+   "Reviewing just before forgetting significantly boosts memory efficiency.",
+   "Neuroscience studies show self-testing activates the hippocampus, enhancing information recall.",
+   "Encountering knowledge in various contexts improves retention compared to monotonous repetition.",
+   "Too short review intervals reduce retention due to lack of time for consolidation.",
+   "Too long review intervals risk forgetting most of the material before review.",
+   "AI can personalize study schedules, optimizing memory retention for each student based on their progress."
+  ],
+  "answer": "B",
+  "explanation": "Premise 1 defines the forgetting curve, premise 8 states short intervals reduce retention, and premise 9 states long intervals increase forgetting, supporting that optimal intervals balance both, so option B is correct."
+ },
+ {
+  "id": 52,
+  "question": "Based on the geometric principles, which statement about quadrilaterals is correct?\nA. A quadrilateral with opposite angles summing to 180° and a perpendicular bisecting diagonal must be a cyclic trapezium\nB. All quadrilaterals with perpendicular diagonals are cyclic\nC. Only rectangles can have opposite angles summing to 180°\nD. A quadrilateral cannot be both cyclic and have perpendicular diagonals",
+  "premises_nl": [
+   "In any triangle, the sum of the interior angles is 180 degrees.",
+   "The perpendicular bisector of a chord passes through the center of the circle.",
+   "If two triangles are similar, their corresponding sides are proportional.",
+   "The centroid of a triangle divides each median in a 2:1 ratio.",
+   "A tangent to a circle is perpendicular to the radius at the point of tangency.",
+   "If two circles are orthogonal, the product of the distances from their intersection points to the centers equals the product of their radii.",
+   "A point equidistant from two given points lies on the perpendicular bisector of the segment joining them.",
+   "If a triangle is right-angled, then the median to the hypotenuse is half the hypotenuse."
+  ],
+  "answer": "A",
+  "explanation": "Premise 1 states triangle angles sum to 180°, implying a cyclic quadrilateral’s opposite angles sum to 180°. Premise 7 states equidistant points lie on a perpendicular bisector, supporting the bisecting diagonal. Premise 3 ensures proportional sides in similar triangles, confirming cyclic trapezium properties, so option A is correct."
+ },
+ {
+  "id": 53,
+  "question": "Which premises support that a quadrilateral with opposite angles summing to 180° and a perpendicular bisecting diagonal is a cyclic trapezium?\nA. Premises 1, 3, 7\nB. Premises 2, 5, 6\nC. Premises 4, 8\nD. Premises 1, 2, 5",
+  "premises_nl": [
+   "In any triangle, the sum of the interior angles is 180 degrees.",
+   "The perpendicular bisector of a chord passes through the center of the circle.",
+   "If two triangles are similar, their corresponding sides are proportional.",
+   "The centroid of a triangle divides each median in a 2:1 ratio.",
+   "A tangent to a circle is perpendicular to the radius at the point of tangency.",
+   "If two circles are orthogonal, the product of the distances from their intersection points to the centers equals the product of their radii.",
+   "A point equidistant from two given points lies on the perpendicular bisector of the segment joining them.",
+   "If a triangle is right-angled, then the median to the hypotenuse is half the hypotenuse."
+  ],
+  "answer": "A",
+  "explanation": "Premise 1 supports opposite angles summing to 180° in a cyclic quadrilateral. Premise 3 supports proportionality in derived triangles. Premise 7 supports the perpendicular bisecting diagonal, so option A is correct."
+ },
+ {
+  "id": 54,
+  "question": "Based on the learning principles, which combination of factors most significantly decreases learning efficiency?\nA. Procrastination + passive review + sleep deprivation\nB. Clear deadlines + high stress\nC. Pomodoro technique + overwhelming task size\nD. Task breakdown + excessive distractions",
+  "premises_nl": [
+   "Procrastination occurs when there is a perceived gap between effort and reward.",
+   "If a task has a clear deadline, people are more likely to complete it on time.",
+   "If a student uses active recall, they retain more information than passive review.",
+   "The Pomodoro technique increases focus by breaking work into timed intervals.",
+   "People are more likely to complete a task if they make a public commitment.",
+   "Breaking a large task into smaller steps reduces mental resistance.",
+   "Sleep is crucial for memory consolidation.",
+   "If stress is too high, cognitive performance decreases.",
+   "If a student prioritizes urgent tasks over important tasks, long-term learning suffers.",
+   "Motivation increases when a person sees progress in their work."
+  ],
+  "answer": "Unknown",
+  "explanation": "Option A combines procrastination (delaying effort), passive review (less retention compared to active recall), and sleep deprivation (impairing memory consolidation), all of which directly harm learning efficiency."
+ },
+ {
+  "id": 55,
+  "question": "Which premises directly support the conclusion about decreased learning efficiency?",
+  "premises_nl": [
+   "Procrastination occurs when there is a perceived gap between effort and reward.",
+   "If a task has a clear deadline, people are more likely to complete it on time.",
+   "If a student uses active recall, they retain more information than passive review.",
+   "The Pomodoro technique increases focus by breaking work into timed intervals.",
+   "People are more likely to complete a task if they make a public commitment.",
+   "Breaking a large task into smaller steps reduces mental resistance.",
+   "Sleep is crucial for memory consolidation.",
+   "If stress is too high, cognitive performance decreases.",
+   "If a student prioritizes urgent tasks over important tasks, long-term learning suffers.",
+   "Motivation increases when a person sees progress in their work."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premises 1, 3, and 7 are used: Premise 1 links procrastination to effort gaps, Premise 3 shows passive review is inferior, and Premise 7 (via Premise 6) indicates sleep deprivation disrupts memory, collectively supporting decreased learning efficiency."
+ },
+ {
+  "id": 56,
+  "question": "Based on the mission parameters, which scenario accurately describes Luna's Mars expedition?\nA. Flawless simulations, minor trajectory tweak, routine rover check, brief signal delay\nB. Failed simulations, audit rejection, high radiation, equipment breakdown\nC. Incomplete training, miscalculated trajectory, unsafe landing, delayed return\nD. Perfect execution, instant breakthrough, permanent Mars base",
+  "premises_nl": [
+   "If an astronaut undergoes advanced training and excels in simulations, they earn a flight clearance.",
+   "If an astronaut earns a flight clearance and the launch vehicle passes a safety audit, they are approved for a Mars expedition.",
+   "If an astronaut is approved for a Mars expedition and the orbital trajectory is precisely calculated, the mission departs on schedule.",
+   "If the mission departs on schedule and Mars' radiation levels are within safe limits, a surface landing is authorized.",
+   "If a surface landing is authorized and the astronaut deploys a functioning rover, geological samples are collected.",
+   "If geological samples are collected and the analysis equipment is operational, a scientific breakthrough is possible.",
+   "Either Luna undergoes advanced training or she withdraws from the program.",
+   "Luna does not withdraw from the program.",
+   "Luna excels in simulations.",
+   "The launch vehicle for Luna passes a safety audit.",
+   "The orbital trajectory for Luna's mission is precisely calculated.",
+   "Mars' radiation levels are within safe limits.",
+   "Luna deploys a functioning rover.",
+   "The analysis equipment on Luna's mission is operational.",
+   "If the mission control loses contact, the trajectory cannot be calculated.",
+   "Mission control does not lose contact.",
+   "If the rover malfunctions, geological samples cannot be collected.",
+   "The rover does not malfunction.",
+   "If radiation exceeds safe limits, a landing is not authorized.",
+   "Radiation does not exceed safe limits.",
+   "If Luna fails psychological evaluations, she cannot earn flight clearance.",
+   "Luna does not fail psychological evaluations.",
+   "If the audit detects a flaw, the launch vehicle is not approved.",
+   "The audit does not detect a flaw.",
+   "If the equipment calibration fails, a breakthrough is not possible.",
+   "The equipment calibration does not fail.",
+   "If the expedition is delayed, samples cannot be collected on time.",
+   "The expedition is not delayed."
+  ],
+  "answer": "Unknown",
+  "explanation": "Option A describes a successful mission where Luna excels in simulations (Premise 9), the trajectory is calculated with a minor tweak (Premise 11), the rover functions with a routine check (Premise 13), and a brief signal delay occurs without losing contact (Premise 16). The core chain (Premises 1–5) ensures clearance, approval, departure, landing, samples, and a possible breakthrough, aligning with a realistic, successful expedition with minor adjustments."
+ },
+ {
+  "id": 57,
+  "question": "Based on the online learning rules, which scenario is correct?\nA. A student with 6h downtime must retake a rescheduled exam\nB. A student with 6h downtime earns a certificate despite failing courses\nC. External proctors block exam rescheduling after 6h downtime\nD. 100% live attendance overrides 6h downtime effects",
+  "premises_nl": [
+   "If a student completes all online modules on a platform with 99% uptime, they master the course content.",
+   "If a student masters the course content, they either pass a proctored exam or submit a capstone project.",
+   "If a student does not submit a capstone project, they must take the proctored exam.",
+   "If a course requires a proctored exam, the platform either provides a secure system or hires an external proctor.",
+   "If a student experiences platform downtime exceeding 5 hours, they do not master the course content.",
+   "If a student passes 6 or more online courses, they earn a digital certificate.",
+   "If a student attends live sessions for a course with 100% participation, they are exempt from the proctored exam.",
+   "If a student masters content in three courses but fails to submit capstone projects in any, they must take proctored exams for all three.",
+   "If a student experiences downtime less than 5 hours and submits a capstone, they still need platform verification if the course is high-stakes.",
+   "If a student completes modules across four courses with 99% uptime and passes all exams, they qualify for an advanced credential.",
+   "If the platform provides a secure system but it crashes during the exam, the exam is rescheduled.",
+   "If a student does not master the course content and submits a capstone, the capstone is rejected unless re-enrolled."
+  ],
+  "answer": "A",
+  "explanation": "Option A is correct because 6 hours of downtime exceeds 5 hours, preventing mastery of the course content (Premise 5). Without mastery, a student must either pass an exam or submit a capstone (Premise 2), and if no capstone is submitted, an exam is required (Premise 3). If the secure system crashes during the exam, it is rescheduled (Premise 11), leading to a retake of a rescheduled exam."
+ },
+ {
+  "id": 58,
+  "question": "Based on the learning strategies, which combination is most effective for comprehension and retention?\nA. Structured plan + hands-on experiments + visualization\nB. Interactive tools + excessive screen time + cognitive fatigue\nC. Minimal distractions + historical perspectives + leisure overload\nD. Physical exercise + parallel subjects + scattered focus",
+  "premises_nl": [
+   "A structured study plan improves consistency in learning.",
+   "A student who engages in interdisciplinary studies gains a broader problem-solving perspective.",
+   "Frequent self-assessment helps students identify knowledge gaps.",
+   "Collaborative projects encourage teamwork and communication skills.",
+   "Excessive screen time reduces attention span and increases cognitive fatigue.",
+   "Students who learn through hands-on experiments develop better intuition for abstract concepts.",
+   "Engaging in debates sharpens critical thinking skills and argumentation strategies.",
+   "Students who document their learning progress can track improvement effectively.",
+   "Studying in an environment with minimal distractions enhances focus.",
+   "Using spaced repetition techniques strengthens long-term memory.",
+   "Writing summaries after studying reinforces comprehension and retention.",
+   "Visualizing abstract concepts helps in better recall and understanding.",
+   "Physical exercise contributes to improved cognitive function and stress reduction.",
+   "Exploring historical perspectives of subjects deepens conceptual appreciation.",
+   "Balancing leisure activities with study time prevents burnout.",
+   "Regularly changing study locations can improve retention and mental flexibility.",
+   "Peer tutoring benefits both the tutor and the learner by reinforcing concepts.",
+   "Interactive learning tools increase engagement and concept application.",
+   "Learning multiple subjects in parallel enhances cognitive adaptability.",
+   "Setting specific goals for each study session boosts efficiency and motivation."
+  ],
+  "answer": "Unknown",
+  "explanation": "Option A is most effective because a structured plan ensures consistent learning (Premise 1), hands-on experiments build intuition for abstract concepts (Premise 6), and visualization enhances recall and understanding (Premise 12), directly improving comprehension and retention. Other options include negatives (e.g., fatigue, scattered focus) or less targeted benefits."
+ },
+ {
+  "id": 59,
+  "question": "Do the premises support that a student using structured plans, hands-on experiments, and visualization will have improved comprehension and retention?",
+  "premises_nl": [
+   "A structured study plan improves consistency in learning.",
+   "A student who engages in interdisciplinary studies gains a broader problem-solving perspective.",
+   "Frequent self-assessment helps students identify knowledge gaps.",
+   "Collaborative projects encourage teamwork and communication skills.",
+   "Excessive screen time reduces attention span and increases cognitive fatigue.",
+   "Students who learn through hands-on experiments develop better intuition for abstract concepts.",
+   "Engaging in debates sharpens critical thinking skills and argumentation strategies.",
+   "Students who document their learning progress can track improvement effectively.",
+   "Studying in an environment with minimal distractions enhances focus.",
+   "Using spaced repetition techniques strengthens long-term memory.",
+   "Writing summaries after studying reinforces comprehension and retention.",
+   "Visualizing abstract concepts helps in better recall and understanding.",
+   "Physical exercise contributes to improved cognitive function and stress reduction.",
+   "Exploring historical perspectives of subjects deepens conceptual appreciation.",
+   "Balancing leisure activities with study time prevents burnout.",
+   "Regularly changing study locations can improve retention and mental flexibility.",
+   "Peer tutoring benefits both the tutor and the learner by reinforcing concepts.",
+   "Interactive learning tools increase engagement and concept application.",
+   "Learning multiple subjects in parallel enhances cognitive adaptability.",
+   "Setting specific goals for each study session boosts efficiency and motivation."
+  ],
+  "answer": "Yes",
+  "explanation": "Yes, the premises support this: Premise 1 (structured plan) promotes consistency, aiding retention indirectly; Premise 6 (hands-on experiments) improves intuition, enhancing comprehension; and Premise 12 (visualization) boosts recall and understanding, directly supporting both comprehension and retention."
+ }
+]

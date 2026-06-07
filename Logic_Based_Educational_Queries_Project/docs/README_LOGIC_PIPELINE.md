@@ -4,7 +4,7 @@
 
 ## Kiến trúc (ý tưởng)
 
-1. **NL → FOL** (`data/nl_to_fol.py`, `data/prompts.py`): prompt chat để LLM dịch premise NL sang FOL; khi SFT mặc định dùng FOL gold trong dataset.
+1. **NL → FOL** (`data/prompts.py`, `data/fol_dataset.py`): prompt chat để model dịch premise NL sang FOL; khi SFT mặc định dùng FOL gold trong dataset.
 2. **Data** (`data/ingestion.py`, `data/dataset.py`, `services/drive.py`): flatten 808 câu, split 8:1:1 theo `record_id`, CSV + `DatasetDict` có `text`, `eval_prompt`, `gold_answer`.
 3. **Metrics** (`evaluation/metrics.py`): nhãn **chỉ** được `A`/`B`/`C`/`D`/`Yes`/`No`/`Unknown` (đúng JSON). Lúc load data gọi `require_answer_label` — sai nhãn → `ValueError`. Output model phải trích ra đúng một trong 7 chuỗi đó (sau `Answer:` hoặc dòng đầu), không thì raise.
 4. **Train** (`models/logic_model/train.py`, `trainer_accuracy.py`): LoRA + TRL `SFTTrainer`; **`metric_for_best_model=eval_accuracy`**, `greater_is_better=True` — checkpoint tốt nhất theo đúng/sai trắc nghiệm trên **dev** (explanation vẫn trong target SFT nhưng không dùng để chọn model). `test_accuracy.json` sau khi gọi `run_training` / `run_test_eval` trong notebook.
@@ -37,4 +37,4 @@
 ## Mở rộng neuro-symbolic (tuỳ chọn)
 
 - Cài engine (vd. `z3-solver`), thêm module riêng (vd. `services/symbolic_solver.py`) và prompt LLM nếu cần giải thích từ output engine.
-- Luồng gợi ý: `build_nl_to_fol_messages` → LLM → solver → LLM giải thích.
+- Luồng gợi ý: build chat messages (system + user NL→FOL) → LLM → solver → LLM giải thích.

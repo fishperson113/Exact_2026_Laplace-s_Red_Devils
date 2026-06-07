@@ -1,5 +1,29 @@
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
+
+
+# ============================================================== #
+#  Unified request — single /ask endpoint for BOTH task types    #
+# ============================================================== #
+
+class UnifiedAskRequest(BaseModel):
+    """One request shape for the single competition endpoint.
+
+    Routing is by the *presence* of premises (done in routes/ask.py):
+        Type 1 (logic):   {"premises-NL": ["...", ...], "question": "..."}
+        Type 2 (physics): {"question": "..."}
+
+    BTC sends the hyphenated key ``premises-NL``; we also accept the
+    underscore variants for internal/eval tooling.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="ignore")
+
+    question: str
+    premises_nl: Optional[list[str]] = Field(
+        default=None,
+        validation_alias=AliasChoices("premises-NL", "premises_nl", "premises_NL"),
+    )
 
 
 # ============================================================== #
@@ -26,32 +50,19 @@ class QAResponse(BaseModel):
 
 
 # ============================================================== #
-#  Task Type 1: Education Logic (placeholder — adapt later)      #
+#  Task Type 1: Education Logic                                  #
 # ============================================================== #
-
-class LogicAskRequest(BaseModel):
-    """Input for an education-logic question (Task Type 1).
-
-    Adapt fields when the real spec is finalized. Current shape mirrors
-    the physics track so the eval tooling is reusable.
-    """
-    question: str
-    choices: Optional[list[str]] = Field(
-        None,
-        description="Answer choices for multiple-choice questions (A/B/C/D).",
-    )
-
 
 class LogicQAResponse(BaseModel):
     """Output for education-logic questions.
 
-    Fields intentionally parallel QAResponse so eval_api.py / scorer can
-    be reused with minimal changes.
+    BTC submission fields are answer/explanation/fol; cot/confidence feed P3.
     """
-    answer: str                             # e.g. "A", "B", or free-text
+    answer: str                             # "A".."D" | "Yes"/"No" | "Unknown"
     explanation: str
-    cot: str
+    fol: str                                # FOL premises, joined by "\n"
+    cot: str = ""
     confidence: Optional[float] = Field(None, ge=0.0, le=1.0)
-    solve_method: str                       # "direct" | "cot" | "failed" | "timeout"
-    elapsed_s: float
-    domain: Optional[str] = None            # e.g. "logic", "math_reasoning", "reading"
+    solve_method: str = "fol_qa"            # "fol_qa" | "timeout"
+    elapsed_s: float = 0.0
+    domain: Optional[str] = "logic"
