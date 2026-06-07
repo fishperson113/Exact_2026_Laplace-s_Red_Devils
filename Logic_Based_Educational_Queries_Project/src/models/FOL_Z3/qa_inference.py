@@ -138,7 +138,7 @@ class QAInference:
     def _call_model(self, messages: list[dict]) -> dict:
         """Shared: tokenize, generate, parse output."""
         text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
         inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
 
@@ -147,7 +147,6 @@ class QAInference:
                 **inputs,
                 max_new_tokens=self.cfg.qa_max_new_tokens,
                 do_sample=False,
-                temperature=1.0,
             )
 
         generated = self.tokenizer.decode(

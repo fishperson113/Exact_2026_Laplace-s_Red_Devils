@@ -11,6 +11,7 @@ Import tu:       data.prompts, .prompts (refinement), .z3_solver (Z3Result)
 from __future__ import annotations
 
 import json
+import os
 import re
 
 import torch
@@ -32,6 +33,15 @@ from .prompts import (
     USER_TEMPLATE_Q2FOL,
 )
 from .z3_solver import Z3Result
+
+
+def _debug_raw(label: str, text: str) -> None:
+    """In raw output model khi env FOL_Z3_DEBUG=1 (gỡ lỗi parse FOL). Mặc định im lặng."""
+    if os.environ.get("FOL_Z3_DEBUG"):
+        print(
+            f"\n[FOL_Z3_DEBUG] === {label} (raw, {len(text)} chars) ===\n{text}\n[/{label}]\n",
+            flush=True,
+        )
 
 
 class FOLInference:
@@ -74,7 +84,7 @@ class FOLInference:
             {"role": "user", "content": user_msg},
         ]
         text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
         inputs = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=3500
@@ -85,13 +95,14 @@ class FOLInference:
                 **inputs,
                 max_new_tokens=self.cfg.fol_max_new_tokens,
                 do_sample=False,
-                repetition_penalty=1.2,
+                repetition_penalty=1.05,
             )
 
         generated = self.tokenizer.decode(
             out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
         ).strip()
 
+        _debug_raw("NL→FOL (initial)", generated)
         return self._parse_fol_output(generated)
 
     def generate_question_fol(
@@ -112,7 +123,7 @@ class FOLInference:
             {"role": "user", "content": user_msg},
         ]
         text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
         inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
 
@@ -151,7 +162,7 @@ class FOLInference:
             {"role": "user", "content": user_msg},
         ]
         text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
         inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
 
@@ -216,7 +227,7 @@ class FOLInference:
             {"role": "user", "content": user_msg},
         ]
         text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
         )
         inputs = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=3500
@@ -234,6 +245,7 @@ class FOLInference:
             out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
         ).strip()
 
+        _debug_raw("REFINE", generated)
         return self._parse_fol_output(generated)
 
     @staticmethod

@@ -1,0 +1,1138 @@
+[
+ {
+  "id": 480,
+  "question": "Which of the following can be inferred about students?\nA. All students have reviewed the course materials\nB. Some students have not participated actively in class\nC. Some students are not well-prepared for class discussions\nD. All students have joined a study group",
+  "premises_nl": [
+   "If a student has not reviewed the course materials, then they are not well-prepared for class discussions",
+   "All students participate actively in class",
+   "All students are well-prepared for class discussions"
+  ],
+  "answer": "Unknown",
+  "explanation": "All students are well-prepared for class discussions (premise 3), and being well-prepared requires reviewing course materials (premise 1). Thus, all students have reviewed the materials, derived through multiple steps."
+ },
+ {
+  "id": 481,
+  "question": "Is the following statement true? Statement: All students participate actively in class",
+  "premises_nl": [
+   "If a student has not reviewed the course materials, then they are not well-prepared for class discussions",
+   "All students participate actively in class",
+   "All students are well-prepared for class discussions"
+  ],
+  "answer": "No",
+  "explanation": "All students participate actively in class (premise 2), and all are well-prepared (premise 3). Thus, the statement is true, requiring steps to confirm consistency."
+ },
+ {
+  "id": 482,
+  "question": "Which of the following can be inferred about participants?\nA. All participants have signed the liability waiver\nB. Some participants have not received the safety briefing\nC. Some participants are not equipped with proper outdoor gear\nD. All participants have not completed the registration form",
+  "premises_nl": [
+   "If a participant has completed the registration form, then they have received the necessary safety briefing",
+   "All participants have completed the registration form",
+   "All participants are equipped with proper outdoor gear",
+   "If a participant has not signed the liability waiver, then they have not completed the registration form"
+  ],
+  "answer": "Unknown",
+  "explanation": "All participants have completed the registration form (premise 2), and completing the form requires signing the liability waiver (premise 4). Thus, all participants have signed the waiver, derived through multiple steps."
+ },
+ {
+  "id": 483,
+  "question": "Is the following statement true? Statement: If a participant has completed the registration form, then they have received the necessary safety briefing",
+  "premises_nl": [
+   "If a participant has completed the registration form, then they have received the necessary safety briefing",
+   "All participants have completed the registration form",
+   "All participants are equipped with proper outdoor gear",
+   "If a participant has not signed the liability waiver, then they have not completed the registration form"
+  ],
+  "answer": "No",
+  "explanation": "If a participant completes the registration form, they receive the safety briefing (premise 1), and all participants have completed the form (premise 2). Thus, the statement is true, requiring steps to confirm."
+ },
+ {
+  "id": 484,
+  "question": "Which of the following can be inferred about students?\nA. All students have been invited to the group\nB. Some students have not agreed to join a group\nC. Some students are not considered active group members\nD. All students have submitted the group contract",
+  "premises_nl": [
+   "If a student has not submitted the group contract, then they are not considered an active group member",
+   "If a student has been invited to the group, then they have agreed to join the group for the assignment",
+   "All students have agreed to join a group for the assignment",
+   "If a student has not been invited to the group, then they are not considered an active group member"
+  ],
+  "answer": "Unknown",
+  "explanation": "All students have agreed to join a group (premise 3), invitation implies agreement (premise 2), and lack of invitation denies membership (premise 4). Thus, all students have been invited, derived through multiple steps."
+ },
+ {
+  "id": 485,
+  "question": "Is the following statement true? Statement: If a student has been invited to the group, then it implies that if at least one student has agreed to join, then those who haven't submitted the contract aren't active members",
+  "premises_nl": [
+   "If a student has not submitted the group contract, then they are not considered an active group member",
+   "If a student has been invited to the group, then they have agreed to join the group for the assignment",
+   "All students have agreed to join a group for the assignment",
+   "If a student has not been invited to the group, then they are not considered an active group member"
+  ],
+  "answer": "No",
+  "explanation": "Invitation implies agreement (premise 2), all students have agreed (premise 3), and missing the contract denies membership (premise 1). Thus, the statement holds, requiring steps to connect premises."
+ },
+ {
+  "id": 486,
+  "question": "Which of the following can be inferred about students?\nA. All students meet the seminar's eligibility criteria\nB. Some students do not meet the seminar's eligibility criteria\nC. Some students have not submitted a complete seminar application\nD. Some students have not shown interest in the seminar",
+  "premises_nl": [
+   "All students meet the seminar's eligibility criteria",
+   "If a student has not submitted a complete seminar application, then they will not be selected to attend the seminar",
+   "All students have shown interest in the seminar"
+  ],
+  "answer": "Unknown",
+  "explanation": "All students meet the seminar's eligibility criteria (premise 1), and all have shown interest (premise 3). Thus, eligibility holds for all, derived through multiple steps."
+ },
+ {
+  "id": 487,
+  "question": "Is the following statement true? Statement: If there exists at least one student who has shown interest in the seminar, then all students meet the seminar's eligibility criteria",
+  "premises_nl": [
+   "All students meet the seminar's eligibility criteria",
+   "If a student has not submitted a complete seminar application, then they will not be selected to attend the seminar",
+   "All students have shown interest in the seminar"
+  ],
+  "answer": "No",
+  "explanation": "All students have shown interest (premise 3), implying at least one has, and all meet the eligibility criteria (premise 1). Thus, the statement is true, requiring steps to connect premises."
+ },
+ {
+  "id": 488,
+  "question": "Which of the following can be inferred about students?\nA. All students have received a festival invitation\nB. Some students do not have access to festival activities\nC. Some students are not attending the university festival\nD. All students have not registered for the festival",
+  "premises_nl": [
+   "If a student has not registered for the festival, then they do not have access to festival activities",
+   "If a student has not received a festival invitation, then they have not registered for the festival",
+   "If a student is attending the university festival, then they have access to festival activities",
+   "All students are attending the university festival"
+  ],
+  "answer": "Unknown",
+  "explanation": "All students are attending the festival (premise 4), attendance implies access (premise 3), access implies registration (premise 1), and registration implies invitation (premise 2). Thus, all students have received an invitation, derived through multiple steps."
+ },
+ {
+  "id": 489,
+  "question": "Is the following statement true? Statement: At least one student is attending the university festival",
+  "premises_nl": [
+   "If a student has not registered for the festival, then they do not have access to festival activities",
+   "If a student has not received a festival invitation, then they have not registered for the festival",
+   "If a student is attending the university festival, then they have access to festival activities",
+   "All students are attending the university festival"
+  ],
+  "answer": "No",
+  "explanation": "All students are attending the festival (premise 4), implying at least one is attending, with access ensured (premise 3). Thus, the statement is true, requiring steps to confirm."
+ },
+ {
+  "id": 490,
+  "question": "Which of the following can be inferred about students?\nA. Some students are eligible for the scholarship\nB. All students have maintained a good academic standing\nC. Some students will not be shortlisted for an interview\nD. All students have submitted a scholarship application",
+  "premises_nl": [
+   "If a student has submitted a scholarship application, then they are eligible for the scholarship",
+   "If a student has not maintained a good academic standing, then they will not be shortlisted for an interview",
+   "There exists at least one student who has maintained a good academic standing",
+   "If a student has not maintained a good academic standing, then they will not receive the scholarship",
+   "There exists at least one student who has submitted a scholarship application"
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student who has submitted a scholarship application (premise 5), and submitting an application implies eligibility (premise 1). Thus, some students are eligible, derived through multiple steps."
+ },
+ {
+  "id": 491,
+  "question": "Is the following statement true? Statement: If a student has not maintained a good academic standing, then they will not be shortlisted for an interview",
+  "premises_nl": [
+   "If a student has submitted a scholarship application, then they are eligible for the scholarship",
+   "If a student has not maintained a good academic standing, then they will not be shortlisted for an interview",
+   "There exists at least one student who has maintained a good academic standing",
+   "If a student has not maintained a good academic standing, then they will not receive the scholarship",
+   "There exists at least one student who has submitted a scholarship application"
+  ],
+  "answer": "No",
+  "explanation": "If a student has not maintained good standing, they will not be shortlisted (premise 2), and at least one student has good standing (premise 3). Thus, the statement is true, requiring steps to confirm consistency."
+ },
+ {
+  "id": 492,
+  "question": "Which of the following can be inferred about students?\nA. All students are officially granted permission to be absent\nB. Some students have not requested permission to be absent\nC. Some students are not granted permission to be absent\nD. All students provided a valid reason for absence",
+  "premises_nl": [
+   "If a student has requested permission to be absent, then they are officially granted that permission",
+   "If a student has not requested permission, then they are not granted permission to be absent",
+   "All students have requested permission to be absent from class",
+   "There exists at least one student who provided a valid reason for absence"
+  ],
+  "answer": "Unknown",
+  "explanation": "All students have requested permission to be absent (premise 3), and requesting permission implies it is granted (premise 1). Thus, all students are granted permission, derived through multiple steps."
+ },
+ {
+  "id": 493,
+  "question": "Is the following statement true? Statement: There exists at least one student who has requested permission to be absent from class",
+  "premises_nl": [
+   "If a student has requested permission to be absent, then they are officially granted that permission",
+   "If a student has not requested permission, then they are not granted permission to be absent",
+   "All students have requested permission to be absent from class",
+   "There exists at least one student who provided a valid reason for absence"
+  ],
+  "answer": "No",
+  "explanation": "All students have requested permission (premise 3), implying at least one has, with permission granted (premise 1). Thus, the statement is true, requiring steps to confirm."
+ },
+ {
+  "id": 494,
+  "question": "Which of the following can be inferred about students?\nA. Some students have formed a team\nB. All students have submitted a competition application\nC. Some students are not registered for the competition\nD. All students have shown interest in the competition",
+  "premises_nl": [
+   "There exists at least one student who has shown interest in the start-up competition",
+   "There exists at least one student who has submitted a competition application",
+   "If a student has not formed a team, then they are not registered for the start-up competition",
+   "If a student has not submitted a competition application, then they are not eligible for the pitching round",
+   "There exists at least one student who has registered for the start-up competition"
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student registered for the competition (premise 5), and registration requires forming a team (premise 3). Thus, some students have formed a team, derived through multiple steps."
+ },
+ {
+  "id": 495,
+  "question": "Is the following statement true? Statement: If a student has not formed a team, then they are not registered for the start-up competition",
+  "premises_nl": [
+   "There exists at least one student who has shown interest in the start-up competition",
+   "There exists at least one student who has submitted a competition application",
+   "If a student has not formed a team, then they are not registered for the start-up competition",
+   "If a student has not submitted a competition application, then they are not eligible for the pitching round",
+   "There exists at least one student who has registered for the start-up competition"
+  ],
+  "answer": "No",
+  "explanation": "If a student has not formed a team, they are not registered (premise 3), and at least one student is registered (premise 5). Thus, the statement is true, requiring steps to confirm consistency."
+ },
+ {
+  "id": 496,
+  "question": "Which of the following can be inferred about persons?\nA. All persons have been trained to recognize scams\nB. Some persons are vulnerable to scammers\nC. Some persons have not been trained to recognize scams\nD. All persons are vulnerable to scammers",
+  "premises_nl": [
+   "If a person has not been trained to recognize scams, then they are vulnerable to scammers",
+   "All individuals in the university environment are not vulnerable to scammers",
+   "All individuals have been trained to recognize scams"
+  ],
+  "answer": "Unknown",
+  "explanation": "All persons have been trained to recognize scams (premise 3), ensuring no vulnerability (premise 2). Thus, all are trained, derived through multiple steps."
+ },
+ {
+  "id": 497,
+  "question": "Is the following statement true? Statement: If a person has not been trained to recognize scams, then they are vulnerable to scammers",
+  "premises_nl": [
+   "If a person has not been trained to recognize scams, then they are vulnerable to scammers",
+   "All individuals in the university environment are not vulnerable to scammers",
+   "All individuals have been trained to recognize scams"
+  ],
+  "answer": "No",
+  "explanation": "If a person is not trained, they are vulnerable (premise 1), but all are trained (premise 3), making the implication trivially true. This requires steps to confirm consistency."
+ },
+ {
+  "id": 498,
+  "question": "Which of the following can be inferred about students?\nA. Some students gain more knowledge\nB. All students do not use online documents\nC. Some students do not gain more knowledge\nD. All students use online documents and do not gain knowledge",
+  "premises_nl": [
+   "If x does not use online documents from the library, then x does not gain more knowledge",
+   "There exists a student who gains more knowledge from the online documents",
+   "All students actively use the library's online resources"
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student who gains more knowledge (premise 2), and all students use online documents (premise 3). Thus, some students gain knowledge, derived through multiple steps."
+ },
+ {
+  "id": 499,
+  "question": "Is the following statement true? Statement: If x does not use online documents from the library, then x does not gain more knowledge",
+  "premises_nl": [
+   "If x does not use online documents from the library, then x does not gain more knowledge",
+   "There exists a student who gains more knowledge from the online documents",
+   "All students actively use the library's online resources"
+  ],
+  "answer": "No",
+  "explanation": "If x does not use online documents, x does not gain knowledge (premise 1), and all students use them (premise 3). The statement holds, requiring steps to confirm consistency."
+ },
+ {
+  "id": 500,
+  "question": "Which of the following can be inferred about students?\nA. Some students have received clearance from the academic office\nB. All students have not submitted the exam eligibility form\nC. Some students are not allowed to attend the final exam\nD. All students have confirmed their exam schedule",
+  "premises_nl": [
+   "All students have met all academic requirements",
+   "If a student has submitted the exam eligibility form, then they have received clearance from the academic office",
+   "All students are allowed to attend the final exam",
+   "There exists at least one student who has submitted the exam eligibility form"
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student who submitted the eligibility form (premise 4), and submitting the form implies clearance (premise 2). Thus, some students have clearance, derived through multiple steps."
+ },
+ {
+  "id": 501,
+  "question": "Is the following statement true? Statement: If submitting the eligibility form leads to receiving clearance, then confirming the exam schedule leads to being allowed to attend the final exam",
+  "premises_nl": [
+   "All students have met all academic requirements",
+   "If a student has submitted the exam eligibility form, then they have received clearance from the academic office",
+   "All students are allowed to attend the final exam",
+   "There exists at least one student who has submitted the exam eligibility form"
+  ],
+  "answer": "No",
+  "explanation": "Submitting the form leads to clearance (premise 2), and all students are allowed to attend the exam (premise 3), making the consequent trivially true. The statement holds, requiring steps to confirm."
+ },
+ {
+  "id": 502,
+  "question": "Which of the following can be inferred about students?\nA. Some students behaved suspiciously during the exam\nB. All students were caught using unauthorized materials\nC. Some students were not reported for cheating\nD. All students are summoned for a disciplinary hearing",
+  "premises_nl": [
+   "If a student was caught using unauthorized materials, then they were reported for cheating",
+   "If a student behaved suspiciously during the exam, then they were caught using unauthorized materials",
+   "If a student was reported for cheating, then they behaved suspiciously during the exam",
+   "There exists at least one student who attempted to communicate during the exam",
+   "If a student behaved suspiciously during the exam, then they are summoned for a disciplinary hearing"
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student who attempted to communicate (premise 4), which may imply suspicious behavior, and suspicious behavior leads to being caught (premise 2). Thus, some students behaved suspiciously, derived through multiple steps."
+ },
+ {
+  "id": 503,
+  "question": "Is the following statement true? Statement: If a student behaved suspiciously during the exam, then they were caught using unauthorized materials",
+  "premises_nl": [
+   "If a student was caught using unauthorized materials, then they were reported for cheating",
+   "If a student behaved suspiciously during the exam, then they were caught using unauthorized materials",
+   "If a student was reported for cheating, then they behaved suspiciously during the exam",
+   "There exists at least one student who attempted to communicate during the exam",
+   "If a student behaved suspiciously during the exam, then they are summoned for a disciplinary hearing"
+  ],
+  "answer": "No",
+  "explanation": "If a student behaved suspiciously, they were caught (premise 2), and being caught implies being reported (premise 1). The statement is true, requiring steps to confirm."
+ },
+ {
+  "id": 504,
+  "question": "Which of the following can be inferred about students?\nA. All students have improved their communication skills\nB. Some students did not participate in group projects\nC. All students have developed leadership abilities\nD. Some students have not attended soft skills workshops",
+  "premises_nl": [
+   "If a student has attended soft skills workshops, then they have improved their communication skills",
+   "If a student did not participate in group projects, then they did not develop leadership abilities",
+   "All students have attended soft skills workshops",
+   "If a student has developed leadership abilities, then they have improved their communication skills"
+  ],
+  "answer": "Unknown",
+  "explanation": "All students have attended workshops (premise 3), and attending workshops implies improved communication (premise 1). Thus, all students have improved communication skills, derived through multiple steps."
+ },
+ {
+  "id": 505,
+  "question": "Is the following statement true? Statement: If the implication from workshop attendance to communication improvement implies all students attended workshops, then all students did attend the workshops",
+  "premises_nl": [
+   "If a student has attended soft skills workshops, then they have improved their communication skills",
+   "If a student did not participate in group projects, then they did not develop leadership abilities",
+   "All students have attended soft skills workshops",
+   "If a student has developed leadership abilities, then they have improved their communication skills"
+  ],
+  "answer": "No",
+  "explanation": "The implication from workshop attendance to communication improvement (premise 1) is true, and all students have attended workshops (premise 3). Thus, the statement holds, requiring steps to confirm."
+ },
+ {
+  "id": 506,
+  "question": "Which of the following can be inferred about students?\nA. Some students have created a personal study-work schedule\nB. All students are employed part-time\nC. Some students do not maintain consistent academic performance\nD. All students report feeling balanced between work and study",
+  "premises_nl": [
+   "If a student has not created a personal study-work schedule, then they do not manage academic deadlines effectively",
+   "If a student does not manage deadlines effectively, then they do not maintain consistent academic performance",
+   "If a student is employed part-time, then they report feeling balanced between work and study",
+   "There exists at least one student who manages academic deadlines effectively"
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student who manages deadlines effectively (premise 4), and effective deadline management implies a study-work schedule (premise 1). Thus, some students have a schedule, derived through multiple steps."
+ },
+ {
+  "id": 507,
+  "question": "Is the following statement true? Statement: If a student is employed part-time, then they report feeling balanced between work and study",
+  "premises_nl": [
+   "If a student has not created a personal study-work schedule, then they do not manage academic deadlines effectively",
+   "If a student does not manage deadlines effectively, then they do not maintain consistent academic performance",
+   "If a student is employed part-time, then they report feeling balanced between work and study",
+   "There exists at least one student who manages academic deadlines effectively"
+  ],
+  "answer": "No",
+  "explanation": "If a student is employed part-time, they feel balanced (premise 3), and the existence of a student managing deadlines (premise 4) is consistent. The statement is true, requiring steps to confirm."
+ },
+ {
+  "id": 508,
+  "question": "Which of the following can be inferred about students?\nA. Some students have gained international experience\nB. All students have received support from the international office\nC. Some students are not ready to join the international community\nD. All students have applied for an exchange program",
+  "premises_nl": [
+   "If a student has not gained international experience through an exchange program, then they are not ready to actively join the international community",
+   "If a student has applied for an exchange program, then they have gained international experience",
+   "If a student has received support from the university’s international office, then they have gained international experience",
+   "If a student has not applied for an exchange program, then they are not selected for an international leadership role",
+   "There exists at least one student who has applied for an exchange program"
+  ],
+  "answer": "Unknown",
+  "explanation": "There exists a student who applied for an exchange program (premise 5), and applying implies gaining international experience (premise 2). Thus, some students have gained experience, derived through multiple steps."
+ },
+ {
+  "id": 509,
+  "question": "Is the following statement true? Statement: If a student has received support from the international office, then they have gained international experience",
+  "premises_nl": [
+   "If a student has not gained international experience through an exchange program, then they are not ready to actively join the international community",
+   "If a student has applied for an exchange program, then they have gained international experience",
+   "If a student has received support from the university’s international office, then they have gained international experience",
+   "If a student has not applied for an exchange program, then they are not selected for an international leadership role",
+   "There exists at least one student who has applied for an exchange program"
+  ],
+  "answer": "No",
+  "explanation": "If a student received support from the international office, they gained experience (premise 3), and the existence of a student who applied (premise 5) is consistent. The statement is true, requiring steps to confirm."
+ },
+ {
+  "id": 510,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∃x G(x)\nB. ∀x ¬S(x)\nC. ∀x ¬F(x)\nD. ∀x A(x)",
+  "premises_nl": [
+   "All students complete fundamental courses.",
+   "All students submit research papers.",
+   "At least one student participates in extracurricular activities.",
+   "If a student does not participate in extracurricular activities, they do not develop leadership skills.",
+   "If a student does not complete fundamental courses, they are not eligible for graduation.",
+   "If a student is enrolled in the honors program, they have access to advanced materials.",
+   "All students are enrolled in the honors program.",
+   "If a student does not participate in extracurricular activities, they cannot join the student council.",
+   "If a student not completing fundamental courses implies they are not eligible for graduation, then being enrolled in the honors program implies having access to advanced materials.",
+   "If a student not completing fundamental courses implies they are not eligible for graduation, then all students are enrolled in the honors program.",
+   "If not participating in extracurricular activities implies not developing leadership skills, then (if not completing fundamental courses implies not being eligible for graduation, then all students are enrolled in the honors program).",
+   "The previous complex implication implies that being enrolled in the honors program implies having access to advanced materials.",
+   "If not completing fundamental courses implies having access to advanced materials, then all students complete fundamental courses.",
+   "Being enrolled in the honors program implies completing fundamental courses.",
+   "All students participate in group projects.",
+   "If a student does not submit a research paper, they do not receive a passing grade."
+  ],
+  "answer": "D",
+  "explanation": "The statement that all students have access to advanced materials follows because all students are enrolled in the honors program (premise 7), and being enrolled in the honors program implies having access to advanced materials (premise 6)."
+ },
+ {
+  "id": 511,
+  "question": "Based on the above premises, is the statement true?\nStatement: If a student does not participate in extracurricular activities, they cannot develop leadership skills.",
+  "premises_nl": [
+   "All students complete fundamental courses.",
+   "All students submit research papers.",
+   "At least one student participates in extracurricular activities.",
+   "If a student does not participate in extracurricular activities, they do not develop leadership skills.",
+   "If a student does not complete fundamental courses, they are not eligible for graduation.",
+   "If a student is enrolled in the honors program, they have access to advanced materials.",
+   "All students are enrolled in the honors program.",
+   "If a student does not participate in extracurricular activities, they cannot join the student council.",
+   "If a student not completing fundamental courses implies they are not eligible for graduation, then being enrolled in the honors program implies having access to advanced materials.",
+   "If a student not completing fundamental courses implies they are not eligible for graduation, then all students are enrolled in the honors program.",
+   "If not participating in extracurricular activities implies not developing leadership skills, then (if not completing fundamental courses implies not being eligible for graduation, then all students are enrolled in the honors program).",
+   "The previous complex implication implies that being enrolled in the honors program implies having access to advanced materials.",
+   "If not completing fundamental courses implies having access to advanced materials, then all students complete fundamental courses.",
+   "Being enrolled in the honors program implies completing fundamental courses.",
+   "All students participate in group projects.",
+   "If a student does not submit a research paper, they do not receive a passing grade."
+  ],
+  "answer": "No",
+  "explanation": "The statement that if a student does not participate in extracurricular activities, they cannot develop leadership skills is true because it is explicitly stated (premise 4)."
+ },
+ {
+  "id": 512,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ¬∀x (R(x) → E(x))\nB. ∀x (S(x) → C(x))\nC. ∀x ¬S(x)\nD. ∀x (E(x) → ¬R(x))",
+  "premises_nl": [
+   "There exists at least one student in an advanced research program.",
+   "If a student does not attend advanced seminars, they do not earn research credits.",
+   "If a student demonstrates research skills, they receive a research grant.",
+   "There exists at least one advanced seminar.",
+   "All students maintain academic excellence.",
+   "All students are part of the advanced research program.",
+   "There exists at least one research project.",
+   "If a student is not in the advanced research program, they cannot access specialized research facilities.",
+   "If a student fails to secure a research grant, they cannot maintain academic excellence.",
+   "If a student does not complete a research project, they lose access to advanced seminars.",
+   "If a student does not maintain academic excellence, they are removed from the advanced research program.",
+   "If a student receives a research grant, they gain access to specialized research facilities.",
+   "If an advanced seminar exists, then students who do not maintain academic excellence are removed from the advanced research program.",
+   "If (students who do not maintain academic excellence are removed from the advanced research program), then (students who fail to secure a research grant cannot maintain academic excellence).",
+   "If (students who do not complete a research project lose advanced seminar access), then (an advanced seminar exists implies that students who do not maintain academic excellence are removed from the advanced research program).",
+   "There exists at least one research grant recipient.",
+   "There exists at least one student with specialized research access.",
+   "If a student is in the advanced research program, they must conduct a research project.",
+   "If a student gains specialized research access, they can attend advanced seminars."
+  ],
+  "answer": "A",
+  "explanation": "The statement that if a student attends advanced seminars, they earn research credits follows because all students are in the advanced research program (premise 6), complete research projects (premise 18), and have access to seminars (premise 19 via premises 5, 9, 12), ensuring seminar attendance implies credits (premise 2)."
+ },
+ {
+  "id": 513,
+  "question": "Based on the above premises, is the statement true?\nStatement: If an advanced seminar exists, then students who do not maintain academic excellence are removed from the advanced research program.",
+  "premises_nl": [
+   "There exists at least one student in an advanced research program.",
+   "If a student does not attend advanced seminars, they do not earn research credits.",
+   "If a student demonstrates research skills, they receive a research grant.",
+   "There exists at least one advanced seminar.",
+   "All students maintain academic excellence.",
+   "All students are part of the advanced research program.",
+   "There exists at least one research project.",
+   "If a student is not in the advanced research program, they cannot access specialized research facilities.",
+   "If a student fails to secure a research grant, they cannot maintain academic excellence.",
+   "If a student does not complete a research project, they lose access to advanced seminars.",
+   "If a student does not maintain academic excellence, they are removed from the advanced research program.",
+   "If a student receives a research grant, they gain access to specialized research facilities.",
+   "If an advanced seminar exists, then students who do not maintain academic excellence are removed from the advanced research program.",
+   "If (students who do not maintain academic excellence are removed from the advanced research program), then (students who fail to secure a research grant cannot maintain academic excellence).",
+   "If (students who do not complete a research project lose advanced seminar access), then (an advanced seminar exists implies that students who do not maintain academic excellence are removed from the advanced research program).",
+   "There exists at least one research grant recipient.",
+   "There exists at least one student with specialized research access.",
+   "If a student is in the advanced research program, they must conduct a research project.",
+   "If a student gains specialized research access, they can attend advanced seminars."
+  ],
+  "answer": "No",
+  "explanation": "The statement that if an advanced seminar exists, then students who do not maintain academic excellence are removed from the advanced research program is true because it is explicitly stated (premise 13)."
+ },
+ {
+  "id": 514,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∃x S(x)\nB. ∀x ¬N(x)\nC. ∀x ¬T(x)\nD. ∃x I(x)",
+  "premises_nl": [
+   "All students must complete advanced digital skills training.",
+   "If a student does not master coding skills, they cannot participate in tech innovation projects.",
+   "If a student fails to complete data analysis workshops, they do not receive advanced certification.",
+   "Every student in the technology track must demonstrate proficiency in artificial intelligence.",
+   "If a student demonstrates AI proficiency, they become eligible for research grants.",
+   "There is at least one student in the machine learning specialization.",
+   "If a student is in the machine learning specialization, they must complete advanced programming modules.",
+   "All students must develop a comprehensive technology portfolio.",
+   "If a student does not develop a technology portfolio, they cannot apply to top-tier tech companies.",
+   "Students who do not receive advanced certification cannot join professional tech networks.",
+   "If a student participates in hackathons, they gain practical coding experience.",
+   "All students in advanced technology tracks must complete innovative tech projects.",
+   "If a student does not complete an innovative tech project, they are ineligible for industry internships.",
+   "There exists at least one student in an advanced technology track.",
+   "If a student is in an advanced technology track, they must maintain cutting-edge technological skills."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that there is at least one student who completes innovative tech projects follows because there exists at least one student in an advanced technology track (premise 14), and all students in such tracks complete innovative tech projects (premise 12)."
+ },
+ {
+  "id": 515,
+  "question": "Based on the above premises, is the statement true?\nStatement: If a student is in the machine learning specialization, they gain practical coding experience.",
+  "premises_nl": [
+   "All students must complete advanced digital skills training.",
+   "If a student does not master coding skills, they cannot participate in tech innovation projects.",
+   "If a student fails to complete data analysis workshops, they do not receive advanced certification.",
+   "Every student in the technology track must demonstrate proficiency in artificial intelligence.",
+   "If a student demonstrates AI proficiency, they become eligible for research grants.",
+   "There is at least one student in the machine learning specialization.",
+   "If a student is in the machine learning specialization, they must complete advanced programming modules.",
+   "All students must develop a comprehensive technology portfolio.",
+   "If a student does not develop a technology portfolio, they cannot apply to top-tier tech companies.",
+   "Students who do not receive advanced certification cannot join professional tech networks.",
+   "If a student participates in hackathons, they gain practical coding experience.",
+   "All students in advanced technology tracks must complete innovative tech projects.",
+   "If a student does not complete an innovative tech project, they are ineligible for industry internships.",
+   "There exists at least one student in an advanced technology track.",
+   "If a student is in an advanced technology track, they must maintain cutting-edge technological skills."
+  ],
+  "answer": "No",
+  "explanation": "The statement that if a student is in the machine learning specialization, they gain practical coding experience is not true because, while there exists a student in the specialization (premise 6) who completes programming modules (premise 7), no premise guarantees they gain practical coding experience."
+ },
+ {
+  "id": 516,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x W(x)\nB. ∀x (¬C(x) → ¬P(x))\nC. ∀x (¬J(x) → ¬F(x))\nD. ∀x (N(x) → K(x))",
+  "premises_nl": [
+   "If a student does not complete core courses, they cannot graduate.",
+   "At least one student is enrolled in advanced research seminars.",
+   "If a student does not attend advanced research seminars, they cannot earn research credits.",
+   "If a student does not have research credits, they cannot join advanced research programs.",
+   "All students maintain academic excellence.",
+   "If a student does not maintain academic excellence, they are removed from research programs.",
+   "If a student completes advanced research seminars, they develop specialized research skills.",
+   "If a student develops specialized research skills, they become eligible for research grants.",
+   "If a student receives a research grant, they gain access to advanced research facilities.",
+   "There exists at least one opportunity for advanced research.",
+   "All students are required to participate in research projects.",
+   "If a student does not participate in research projects, they lose academic standing.",
+   "Students with advanced research access can attend specialized workshops.",
+   "If a student loses academic standing, they cannot receive research grants.",
+   "Completing research projects implies developing specialized research skills."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a student does not participate in research projects, they cannot receive research grants follows because not participating leads to losing academic standing (premise 12), and losing academic standing prevents receiving grants (premise 14)."
+ },
+ {
+  "id": 517,
+  "question": "Based on the above premises, is the statement true?\nStatement: If a student receives a research grant, they automatically maintain academic excellence.",
+  "premises_nl": [
+   "If a student does not complete core courses, they cannot graduate.",
+   "At least one student is enrolled in advanced research seminars.",
+   "If a student does not attend advanced research seminars, they cannot earn research credits.",
+   "If a student does not have research credits, they cannot join advanced research programs.",
+   "All students maintain academic excellence.",
+   "If a student does not maintain academic excellence, they are removed from research programs.",
+   "If a student completes advanced research seminars, they develop specialized research skills.",
+   "If a student develops specialized research skills, they become eligible for research grants.",
+   "If a student receives a research grant, they gain access to advanced research facilities.",
+   "There exists at least one opportunity for advanced research.",
+   "All students are required to participate in research projects.",
+   "If a student does not participate in research projects, they lose academic standing.",
+   "Students with advanced research access can attend specialized workshops.",
+   "If a student loses academic standing, they cannot receive research grants.",
+   "Completing research projects implies developing specialized research skills."
+  ],
+  "answer": "No",
+  "explanation": "The statement that if a student receives a research grant, they maintain academic excellence is true because all students maintain academic excellence (premise 5), so any student with a grant satisfies this condition."
+ },
+ {
+  "id": 518,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (S(x) → T(x))\nB. ∀x (T(x) → S(x))\nC. ¬∀x (S(x) → T(x))\nD. ∀x (S(x) → ¬T(x))",
+  "premises_nl": [
+   "If a student obtains academic credits, they meet course requirements.",
+   "If a student conducts research, they obtain academic credits.",
+   "If a student participates in seminars, they obtain academic credits.",
+   "All students are enrolled in advanced programs.",
+   "If a student obtains academic credits, they are in an advanced program.",
+   "At least one student participates in seminars.",
+   "At least one student obtains academic credits.",
+   "If a student participates in seminars, they are in an advanced program.",
+   "All students obtain academic credits.",
+   "All students conduct research.",
+   "At least one student conducts research.",
+   "If a student takes advanced tests, they meet course requirements.",
+   "If at least one student conducts research, then conducting research implies obtaining academic credits.",
+   "If obtaining academic credits implies meeting course requirements, then obtaining academic credits implies being in an advanced program.",
+   "If participating in seminars implies obtaining academic credits, then obtaining academic credits implies being in an advanced program.",
+   "If a student does not meet course requirements, they do not take advanced tests.",
+   "At least one student takes advanced tests.",
+   "If a student participates in seminars, they meet course requirements.",
+   "If a student is in an advanced program, they take advanced tests."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a student participates in seminars, they take advanced tests follows because seminar participation implies enrollment in an advanced program (premise 8), and enrollment in an advanced program implies taking advanced tests (premise 19)."
+ },
+ {
+  "id": 519,
+  "question": "Based on the above premises, is the statement true?\nStatement: If a student obtains academic credits, they meet course requirements.",
+  "premises_nl": [
+   "If a student obtains academic credits, they meet course requirements.",
+   "If a student conducts research, they obtain academic credits.",
+   "If a student participates in seminars, they obtain academic credits.",
+   "All students are enrolled in advanced programs.",
+   "If a student obtains academic credits, they are in an advanced program.",
+   "At least one student participates in seminars.",
+   "At least one student obtains academic credits.",
+   "If a student participates in seminars, they are in an advanced program.",
+   "All students obtain academic credits.",
+   "All students conduct research.",
+   "At least one student conducts research.",
+   "If a student takes advanced tests, they meet course requirements.",
+   "If at least one student conducts research, then conducting research implies obtaining academic credits.",
+   "If obtaining academic credits implies meeting course requirements, then obtaining academic credits implies being in an advanced program.",
+   "If participating in seminars implies obtaining academic credits, then obtaining academic credits implies being in an advanced program.",
+   "If a student does not meet course requirements, they do not take advanced tests.",
+   "At least one student takes advanced tests.",
+   "If a student participates in seminars, they meet course requirements.",
+   "If a student is in an advanced program, they take advanced tests."
+  ],
+  "answer": "No",
+  "explanation": "The statement that if a student obtains academic credits, they meet course requirements is true because it is explicitly stated (premise 1)."
+ },
+ {
+  "id": 520,
+  "question": "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not study regularly.\nB. There exists a student who does not qualify for a scholarship.\nC. All students attend training.\nD. No student understands the material.",
+  "premises_nl": [
+   "If a student attends training, then they pass the exam.",
+   "All students study regularly.",
+   "There is at least one student who receives recognition.",
+   "If a student does not study regularly, then they do not receive recognition.",
+   "If a student does not study regularly, then they do not qualify for a scholarship.",
+   "There is at least one student who understands the material.",
+   "If a student does not attend training, then they do not understand the material.",
+   "There is at least one student who passes the exam.",
+   "All students understand the material.",
+   "All students pass the exam.",
+   "All students attend training.",
+   "If a student qualifies for a scholarship, then they attend training.",
+   "If there is at least one student who passes the exam, then all students study regularly.",
+   "If qualifying for a scholarship implies attending training, then all students study regularly.",
+   "If a student does not understand the material, then they do not study regularly.",
+   "All students qualify for a scholarship.",
+   "If a student does not attend training, then they do not qualify for a scholarship.",
+   "If a student does not pass the exam, then they do not attend training."
+  ],
+  "answer": "C",
+  "explanation": "All students attend training is directly supported by the premise that all students attend training."
+ },
+ {
+  "id": 521,
+  "question": "Based on the above premises, is the statement true?\nStatement: ((QualifiesForScholarship(x) → AttendsTraining(x)) → ForAll(x, StudiesRegularly(x)))",
+  "premises_nl": [
+   "If a student attends training, then they pass the exam.",
+   "All students study regularly.",
+   "There is at least one student who receives recognition.",
+   "If a student does not study regularly, then they do not receive recognition.",
+   "If a student does not study regularly, then they do not qualify for a scholarship.",
+   "There is at least one student who understands the material.",
+   "If a student does not attend training, then they do not understand the material.",
+   "There is at least one student who passes the exam.",
+   "All students understand the material.",
+   "All students pass the exam.",
+   "All students attend training.",
+   "If a student qualifies for a scholarship, then they attend training.",
+   "If there is at least one student who passes the exam, then all students study regularly.",
+   "If qualifying for a scholarship implies attending training, then all students study regularly.",
+   "If a student does not understand the material, then they do not study regularly.",
+   "All students qualify for a scholarship.",
+   "If a student does not attend training, then they do not qualify for a scholarship.",
+   "If a student does not pass the exam, then they do not attend training."
+  ],
+  "answer": "No",
+  "explanation": "The statement is true because all students study regularly, making the consequent of the implication true, so the entire implication holds."
+ },
+ {
+  "id": 522,
+  "question": "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not receive a recommendation letter.\nB. There exists a student who does not pass the exam.\nC. All students attend tutoring sessions.\nD. All students do not study regularly.",
+  "premises_nl": [
+   "All students qualify for a scholarship.",
+   "There is at least one student who attends tutoring sessions.",
+   "If a student does not receive a recommendation letter, then they do not understand the material.",
+   "All students receive a recommendation letter.",
+   "All students pass the exam.",
+   "If a student studies regularly, then they pass the exam.",
+   "If a student understands the material, then they receive a recommendation letter.",
+   "If a student does not receive a recommendation letter, then they do not study regularly.",
+   "There is at least one student who qualifies for a scholarship.",
+   "There is at least one student who studies regularly.",
+   "If a student does not receive a recommendation letter, then they do not pass the exam.",
+   "If a student does not pass the exam, then they do not receive a recommendation letter.",
+   "If not receiving a recommendation letter implies not passing the exam, then there is at least one student who qualifies for a scholarship.",
+   "If there is at least one student who attends tutoring sessions, then if a student does not pass the exam, they do not receive a recommendation letter.",
+   "If the implication (if not receiving a recommendation letter then not passing the exam) guarantees the existence of a student who qualifies for a scholarship, then there is at least one student who studies regularly.",
+   "If a student passes the exam, then they attend tutoring sessions.",
+   "If a student does not understand the material, then they are not considered to qualify for a scholarship.",
+   "There is at least one student who passes the exam.",
+   "If a student does not pass the exam, then they do not understand the material."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students attend tutoring sessions because all students pass the exam, and passing the exam implies attending tutoring sessions."
+ },
+ {
+  "id": 523,
+  "question": "Based on the above premises, is the statement true?\nStatement: ((QualifiesForScholarship(x) → AttendsTutoring(x)) → ForAll(x, StudiesRegularly(x)))",
+  "premises_nl": [
+   "All students qualify for a scholarship.",
+   "There is at least one student who attends tutoring sessions.",
+   "If a student does not receive a recommendation letter, then they do not understand the material.",
+   "All students receive a recommendation letter.",
+   "All students pass the exam.",
+   "If a student studies regularly, then they pass the exam.",
+   "If a student understands the material, then they receive a recommendation letter.",
+   "If a student does not receive a recommendation letter, then they do not study regularly.",
+   "There is at least one student who qualifies for a scholarship.",
+   "There is at least one student who studies regularly.",
+   "If a student does not receive a recommendation letter, then they do not pass the exam.",
+   "If a student does not pass the exam, then they do not receive a recommendation letter.",
+   "If not receiving a recommendation letter implies not passing the exam, then there is at least one student who qualifies for a scholarship.",
+   "If there is at least one student who attends tutoring sessions, then if a student does not pass the exam, they do not receive a recommendation letter.",
+   "If the implication (if not receiving a recommendation letter then not passing the exam) guarantees the existence of a student who qualifies for a scholarship, then there is at least one student who studies regularly.",
+   "If a student passes the exam, then they attend tutoring sessions.",
+   "If a student does not understand the material, then they are not considered to qualify for a scholarship.",
+   "There is at least one student who passes the exam.",
+   "If a student does not pass the exam, then they do not understand the material."
+  ],
+  "answer": "Yes",
+  "explanation": "The statement is not necessarily true because, although all students qualify for a scholarship and attend tutoring, there is only evidence that at least one student studies regularly, not all."
+ },
+ {
+  "id": 524,
+  "question": "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not receive a recommendation letter.\nB. There exists a student who does not attend tutoring sessions.\nC. All students pass the exam.\nD. All students do not study regularly.",
+  "premises_nl": [
+   "If a student qualifies for a scholarship, then they pass the exam.",
+   "There is at least one student who receives a recommendation letter.",
+   "All students attend tutoring sessions.",
+   "If a student does not receive a recommendation letter, then they do not study regularly.",
+   "If a student attends tutoring sessions, then they receive a recommendation letter.",
+   "If a student does not receive a recommendation letter, then they do not pass the exam.",
+   "If a student does not receive a recommendation letter, then they do not qualify for a scholarship.",
+   "If a student does not receive a recommendation letter, then they do not attend tutoring sessions.",
+   "If a student does not pass the exam, then they do not receive a recommendation letter.",
+   "All students receive a recommendation letter.",
+   "There is at least one student who qualifies for a scholarship.",
+   "There is at least one student who studies regularly.",
+   "If not passing the exam implies not receiving a recommendation letter, then not receiving a recommendation letter implies not qualifying for a scholarship.",
+   "If not receiving a recommendation letter implies not attending tutoring sessions, then if a student qualifies for a scholarship, they pass the exam.",
+   "There is at least one student who passes the exam.",
+   "If a student does not attend tutoring sessions, then they do not study regularly.",
+   "There is at least one student who attends tutoring sessions.",
+   "If a student passes the exam, then they receive a recommendation letter."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students pass the exam because all students receive a recommendation letter, and if a student receives a recommendation letter, they pass the exam (via the contrapositive of not passing implying not receiving a recommendation letter)."
+ },
+ {
+  "id": 525,
+  "question": "Based on the above premises, is the statement true?\nStatement: (¬ReceivesRecommendation(x) → ¬AttendsTutoring(x))",
+  "premises_nl": [
+   "If a student qualifies for a scholarship, then they pass the exam.",
+   "There is at least one student who receives a recommendation letter.",
+   "All students attend tutoring sessions.",
+   "If a student does not receive a recommendation letter, then they do not study regularly.",
+   "If a student attends tutoring sessions, then they receive a recommendation letter.",
+   "If a student does not receive a recommendation letter, then they do not pass the exam.",
+   "If a student does not receive a recommendation letter, then they do not qualify for a scholarship.",
+   "If a student does not receive a recommendation letter, then they do not attend tutoring sessions.",
+   "If a student does not pass the exam, then they do not receive a recommendation letter.",
+   "All students receive a recommendation letter.",
+   "There is at least one student who qualifies for a scholarship.",
+   "There is at least one student who studies regularly.",
+   "If not passing the exam implies not receiving a recommendation letter, then not receiving a recommendation letter implies not qualifying for a scholarship.",
+   "If not receiving a recommendation letter implies not attending tutoring sessions, then if a student qualifies for a scholarship, they pass the exam.",
+   "There is at least one student who passes the exam.",
+   "If a student does not attend tutoring sessions, then they do not study regularly.",
+   "There is at least one student who attends tutoring sessions.",
+   "If a student passes the exam, then they receive a recommendation letter."
+  ],
+  "answer": "Yes",
+  "explanation": "The statement is true because all students receive a recommendation letter, making the premise of not receiving a recommendation letter false, so the implication holds vacuously."
+ },
+ {
+  "id": 526,
+  "question": "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not receive an award.\nB. There exists a student who does not pass the exam.\nC. All students study regularly.\nD. There exists a student who does not attend tutoring sessions.",
+  "premises_nl": [
+   "If a student does not pass the exam, then they do not receive an award.",
+   "If a student is diligent, then they study regularly.",
+   "If a student studies regularly, then they receive an award.",
+   "There is at least one student who passes the exam.",
+   "If a student participates in extracurricular activities, then they receive an award.",
+   "All students receive an award.",
+   "There is at least one diligent student.",
+   "If a student does not attend tutoring sessions, then they do not study regularly.",
+   "All students pass the exam.",
+   "There is at least one student who studies regularly.",
+   "All students are diligent.",
+   "There is at least one student who attends tutoring sessions.",
+   "If being diligent implies studying regularly, then all students pass the exam.",
+   "If the fact that being diligent implies studying regularly leads to all students passing the exam, then there is at least one diligent student.",
+   "If there is at least one student who attends tutoring sessions, then if being diligent implies studying regularly leads to all students passing the exam, then there is at least one diligent student.",
+   "If a student studies regularly, then they participate in extracurricular activities.",
+   "If a student does not attend tutoring sessions, then they do not receive an award.",
+   "If a student passes the exam, then they participate in extracurricular activities.",
+   "If a student passes the exam, then they attend tutoring sessions."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students study regularly because all students are diligent, and being diligent implies studying regularly."
+ },
+ {
+  "id": 527,
+  "question": "Based on the above premises, is the statement true?\nStatement: (¬ReceivesAward(x) → ¬AttendsTutoring(x))",
+  "premises_nl": [
+   "If a student does not pass the exam, then they do not receive an award.",
+   "If a student is diligent, then they study regularly.",
+   "If a student studies regularly, then they receive an award.",
+   "There is at least one student who passes the exam.",
+   "If a student participates in extracurricular activities, then they receive an award.",
+   "All students receive an award.",
+   "There is at least one diligent student.",
+   "If a student does not attend tutoring sessions, then they do not study regularly.",
+   "All students pass the exam.",
+   "There is at least one student who studies regularly.",
+   "All students are diligent.",
+   "There is at least one student who attends tutoring sessions.",
+   "If being diligent implies studying regularly, then all students pass the exam.",
+   "If the fact that being diligent implies studying regularly leads to all students passing the exam, then there is at least one diligent student.",
+   "If there is at least one student who attends tutoring sessions, then if being diligent implies studying regularly leads to all students passing the exam, then there is at least one diligent student.",
+   "If a student studies regularly, then they participate in extracurricular activities.",
+   "If a student does not attend tutoring sessions, then they do not receive an award.",
+   "If a student passes the exam, then they participate in extracurricular activities.",
+   "If a student passes the exam, then they attend tutoring sessions."
+  ],
+  "answer": "Yes",
+  "explanation": "The statement is true because all students receive an award, making the premise of not receiving an award false, so the implication holds vacuously."
+ },
+ {
+  "id": 528,
+  "question": "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not qualify for a scholarship.\nB. There exists a student who does not receive an award.\nC. All students pass the exam.\nD. There exists a student who does not study regularly.",
+  "premises_nl": [
+   "If a student does not qualify for a scholarship, then they do not receive an award.",
+   "There is at least one student who qualifies for a scholarship.",
+   "If a student does not study regularly, then they do not receive an award.",
+   "If a student studies regularly, then they pass the exam.",
+   "All students qualify for a scholarship.",
+   "All students receive a recommendation letter.",
+   "There is at least one student who attends tutoring sessions.",
+   "All students receive an award.",
+   "If a student does not qualify for a scholarship, then they do not receive a recommendation letter.",
+   "If a student qualifies for a scholarship, then they receive a recommendation letter.",
+   "There is at least one student who studies regularly.",
+   "All students study regularly.",
+   "If it holds that if a student does not study regularly then they do not receive an award, then all students qualify for a scholarship.",
+   "If a student qualifying for a scholarship implies they receive a recommendation letter, then there is at least one student who attends tutoring sessions.",
+   "There is at least one student who receives an award.",
+   "If a student receives an award, then they receive a recommendation letter.",
+   "If a student does not pass the exam, then they do not attend tutoring sessions.",
+   "If a student does not attend tutoring sessions, then they do not study regularly."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students pass the exam because all students study regularly, and studying regularly implies passing the exam."
+ },
+ {
+  "id": 529,
+  "question": "Based on the above premises, is the statement true?\nStatement: ForAll(x, QualifiesScholarship(x))",
+  "premises_nl": [
+   "If a student does not qualify for a scholarship, then they do not receive an award.",
+   "There is at least one student who qualifies for a scholarship.",
+   "If a student does not study regularly, then they do not receive an award.",
+   "If a student studies regularly, then they pass the exam.",
+   "All students qualify for a scholarship.",
+   "All students receive a recommendation letter.",
+   "There is at least one student who attends tutoring sessions.",
+   "All students receive an award.",
+   "If a student does not qualify for a scholarship, then they do not receive a recommendation letter.",
+   "If a student qualifies for a scholarship, then they receive a recommendation letter.",
+   "There is at least one student who studies regularly.",
+   "All students study regularly.",
+   "If it holds that if a student does not study regularly then they do not receive an award, then all students qualify for a scholarship.",
+   "If a student qualifying for a scholarship implies they receive a recommendation letter, then there is at least one student who attends tutoring sessions.",
+   "There is at least one student who receives an award.",
+   "If a student receives an award, then they receive a recommendation letter.",
+   "If a student does not pass the exam, then they do not attend tutoring sessions.",
+   "If a student does not attend tutoring sessions, then they do not study regularly."
+  ],
+  "answer": "Yes",
+  "explanation": "The statement is true because it is explicitly stated that all students qualify for a scholarship."
+ },
+ {
+  "id": 530,
+  "question": "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not understand the material.\nB. There exists a student who does not study regularly.\nC. All students complete assignments.\nD. There exists a student who does not pass the exam.",
+  "premises_nl": [
+   "All students understand the material.",
+   "There is at least one student who passes the exam.",
+   "All students study regularly.",
+   "There is at least one student who is diligent.",
+   "If a student does not study regularly, then they do not understand the material.",
+   "There is at least one student who studies regularly.",
+   "If a student does not pass the exam, then they are not diligent.",
+   "All students attend lectures.",
+   "All students are diligent.",
+   "If a student understands the material, then they study regularly.",
+   "If a student completes assignments, then they study regularly.",
+   "There is at least one student who completes assignments.",
+   "If completing assignments implies studying regularly, then all students understand the material.",
+   "If understanding the material implies studying regularly, then there is at least one student who completes assignments.",
+   "There is at least one student who understands the material.",
+   "If a student does not complete assignments, then they do not study regularly.",
+   "All students pass the exam.",
+   "If a student does not attend lectures, then they do not complete assignments."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students complete assignments because all students study regularly, and completing assignments is equivalent to studying regularly."
+ },
+ {
+  "id": 531,
+  "question": "Based on the above premises, is the statement true?\nStatement: ForAll(x, StudiesRegularly(x))",
+  "premises_nl": [
+   "All students understand the material.",
+   "There is at least one student who passes the exam.",
+   "All students study regularly.",
+   "There is at least one student who is diligent.",
+   "If a student does not study regularly, then they do not understand the material.",
+   "There is at least one student who studies regularly.",
+   "If a student does not pass the exam, then they are not diligent.",
+   "All students attend lectures.",
+   "All students are diligent.",
+   "If a student understands the material, then they study regularly.",
+   "If a student completes assignments, then they study regularly.",
+   "There is at least one student who completes assignments.",
+   "If completing assignments implies studying regularly, then all students understand the material.",
+   "If understanding the material implies studying regularly, then there is at least one student who completes assignments.",
+   "There is at least one student who understands the material.",
+   "If a student does not complete assignments, then they do not study regularly.",
+   "All students pass the exam.",
+   "If a student does not attend lectures, then they do not complete assignments."
+  ],
+  "answer": "Yes",
+  "explanation": "The statement is true because it is explicitly stated that all students study regularly."
+ },
+ {
+  "id": 532,
+  "question": "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not attend tutoring sessions.\nB. There exists a student who does not study regularly.\nC. All students qualify for a scholarship.\nD. There exists a student who does not pass the exam.",
+  "premises_nl": [
+   "If a student understands the material, then they attend tutoring sessions.",
+   "If a student understands the material, then they receive a recommendation letter.",
+   "There is at least one student who attends tutoring sessions.",
+   "If a student does not receive a recommendation letter, then they do not understand the material.",
+   "If a student receives a recommendation letter, then they study regularly.",
+   "If a student does not qualify for a scholarship, then they do not study regularly.",
+   "All students pass the exam.",
+   "If a student does not pass the exam, then they do not qualify for a scholarship.",
+   "There is at least one student who receives a recommendation letter.",
+   "If a student does not study regularly, then they do not qualify for a scholarship.",
+   "If a student Trần tutoring sessions, then they qualify for a scholarship.",
+   "If a student studies regularly, then they qualify for a scholarship.",
+   "If there is at least one student who attends tutoring sessions, then there is at least one student who receives a recommendation letter.",
+   "If studying regularly implies qualifying for a scholarship, then there is at least one student who attends tutoring sessions.",
+   "All students attend tutoring sessions.",
+   "If a student understands the material, then they qualify for a scholarship.",
+   "If a student passes the exam, then they understands the material.",
+   "All students study regularly."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students qualify for a scholarship because all students attend tutoring sessions, and attending tutoring sessions implies qualifying for a scholarship."
+ },
+ {
+  "id": 533,
+  "question": "Based on the above premises, is the statement true?\nStatement: ((AttendsTutoring(x) → QualifiesScholarship(x)) → (ReceivesRecommendation(x) → StudiesRegularly(x)))",
+  "premises_nl": [
+   "If a student understands the material, then they attend tutoring sessions.",
+   "If a student understands the material, then they receive a recommendation letter.",
+   "There is at least one student who attends tutoring sessions.",
+   "If a student does not receive a recommendation letter, then they do not understand the material.",
+   "If a student receives a recommendation letter, then they study regularly.",
+   "If a student does not qualify for a scholarship, then they do not study regularly.",
+   "All students pass the exam.",
+   "If a student does not pass the exam, then they do not qualify for a scholarship.",
+   "There is at least one student who receives a recommendation letter.",
+   "If a student does not study regularly, then they do not qualify for a scholarship.",
+   "If a student Trần tutoring sessions, then they qualify for a scholarship.",
+   "If a student studies regularly, then they qualify for a scholarship.",
+   "If there is at least one student who attends tutoring sessions, then there is at least one student who receives a recommendation letter.",
+   "If studying regularly implies qualifying for a scholarship, then there is at least one student who attends tutoring sessions.",
+   "All students attend tutoring sessions.",
+   "If a student understands the material, then they qualify for a scholarship.",
+   "If a student passes the exam, then they understands the material.",
+   "All students study regularly."
+  ],
+  "answer": "No",
+  "explanation": "The statement is true because all students study regularly, making the consequent of receiving a recommendation letter implying studying regularly true, so the entire implication holds."
+ },
+ {
+  "id": 534,
+  "question": "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not receive a recommendation letter.\nB. There exists a student who does not attend tutoring sessions.\nC. All students qualify for a scholarship.\nD. There exists a student who does not study regularly.",
+  "premises_nl": [
+   "If a student does not understand the material, then they do not receive a recommendation letter.",
+   "If a student attends tutoring sessions, then they receive a recommendation letter.",
+   "There is at least one student who understands the material.",
+   "All students pass the exam.",
+   "If a student does not attend tutoring sessions, then they do not qualify for a scholarship.",
+   "If a student studies regularly, then they attend tutoring sessions.",
+   "If a student qualifies for a scholarship, then they attend tutoring sessions.",
+   "If a student passes the exam, then they understand the material.",
+   "If a student does not pass the exam, then they do not attend tutoring sessions.",
+   "If a student understands the material, then they attend tutoring sessions.",
+   "If a student does not pass the exam, then they do not study regularly.",
+   "If a student does not study regularly, then they do not qualify for a scholarship.",
+   "If it holds that if a student does not understand the material then they do not receive a recommendation letter, then there is at least one student who understands the material.",
+   "If it holds that if a student understands the material then they attend tutoring sessions, then if a student does not pass the exam, they do not attend tutoring sessions.",
+   "If a student receives a recommendation letter, then they attend tutoring sessions.",
+   "If a student receives a recommendation letter, then they study regularly.",
+   "All students receive a recommendation letter.",
+   "If a student studies regularly, then they receive a recommendation letter."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students qualify for a scholarship because all students receive a recommendation letter, which implies they study regularly, leading to attending tutoring sessions, and not attending tutoring sessions implies not qualifying for a scholarship, so all must qualify."
+ },
+ {
+  "id": 535,
+  "question": "Based on the above premises, is the statement true?\nStatement: (StudiesRegularly(x) → AttendsTutoring(x))",
+  "premises_nl": [
+   "If a student does not understand the material, then they do not receive a recommendation letter.",
+   "If a student attends tutoring sessions, then they receive a recommendation letter.",
+   "There is at least one student who understands the material.",
+   "All students pass the exam.",
+   "If a student does not attend tutoring sessions, then they do not qualify for a scholarship.",
+   "If a student studies regularly, then they attend tutoring sessions.",
+   "If a student qualifies for a scholarship, then they attend tutoring sessions.",
+   "If a student passes the exam, then they understand the material.",
+   "If a student does not pass the exam, then they do not attend tutoring sessions.",
+   "If a student understands the material, then they attend tutoring sessions.",
+   "If a student does not pass the exam, then they do not study regularly.",
+   "If a student does not study regularly, then they do not qualify for a scholarship.",
+   "If it holds that if a student does not understand the material then they do not receive a recommendation letter, then there is at least one student who understands the material.",
+   "If it holds that if a student understands the material then they attend tutoring sessions, then if a student does not pass the exam, they do not attend tutoring sessions.",
+   "If a student receives a recommendation letter, then they attend tutoring sessions.",
+   "If a student receives a recommendation letter, then they study regularly.",
+   "All students receive a recommendation letter.",
+   "If a student studies regularly, then they receive a recommendation letter."
+  ],
+  "answer": "No",
+  "explanation": "The statement is true because it is explicitly stated that if a student studies regularly, then they attend tutoring sessions."
+ },
+ {
+  "id": 536,
+  "question": "Based on the above premises, which statement can be inferred?\nA. There exists a student who is not prepared.\nB. There exists a student who does not ask questions.\nC. All students attend university.\nD. There exists a student who does not study regularly.",
+  "premises_nl": [
+   "There exists at least one student who is prepared.",
+   "There exists at least one student who asks questions.",
+   "If a student is prepared, then they receive a recommendation letter.",
+   "All students take the test.",
+   "All students study regularly.",
+   "If a student does not receive a recommendation letter, then they do not ask questions.",
+   "If a student is not prepared, then they do not receive a recommendation letter.",
+   "All students ask questions.",
+   "If a student asks questions, then they are prepared.",
+   "If a student studies regularly, then they attend university.",
+   "If a student does not take the test, then they do not ask questions.",
+   "If a student does not take the test, then they do not attend university.",
+   "If at least one student asks questions, then all students who study regularly also attend university.",
+   "If all students take the test, then at least one student is prepared.",
+   "If the previous statement is true, then at least one student is prepared.",
+   "All students are prepared.",
+   "If a student is not prepared, then they do not study regularly.",
+   "There exists at least one student who attends university.",
+   "If a student asks questions, then they study regularly."
+  ],
+  "answer": "Unknown",
+  "explanation": "All students attend university because all students study regularly, and studying regularly implies attending university."
+ },
+ {
+  "id": 537,
+  "question": "Based on the above premises, is the statement true?\nStatement: (¬TakesTest(x) → ¬AsksQuestions(x))",
+  "premises_nl": [
+   "There exists at least one student who is prepared.",
+   "There exists at least one student who asks questions.",
+   "If a student is prepared, then they receive a recommendation letter.",
+   "All students take the test.",
+   "All students study regularly.",
+   "If a student does not receive a recommendation letter, then they do not ask questions.",
+   "If a student is not prepared, then they do not receive a recommendation letter.",
+   "All students ask questions.",
+   "If a student asks questions, then they are prepared.",
+   "If a student studies regularly, then they attend university.",
+   "If a student does not take the test, then they do not ask questions.",
+   "If a student does not take the test, then they do not attend university.",
+   "If at least one student asks questions, then all students who study regularly also attend university.",
+   "If all students take the test, then at least one student is prepared.",
+   "If the previous statement is true, then at least one student is prepared.",
+   "All students are prepared.",
+   "If a student is not prepared, then they do not study regularly.",
+   "There exists at least one student who attends university.",
+   "If a student asks questions, then they study regularly."
+  ],
+  "answer": "No",
+  "explanation": "The statement is true because all students take the test, making the premise of not taking the test false, so the implication holds vacuously."
+ },
+ {
+  "id": 538,
+  "question": "Based on the above premises, which statement can be inferred?\nA. There exists a student who does not study regularly.\nB. There exists a student who does not pass the exam.\nC. All students qualify for a scholarship.\nD. There exists a student who does not receive a recommendation letter.",
+  "premises_nl": [
+   "If a student studies regularly, then they pass the exam.",
+   "All students receive an award.",
+   "If a student does not receive a recommendation letter, then they do not qualify for a scholarship.",
+   "There is at least one student who receives an award.",
+   "There is at least one student who studies regularly.",
+   "All students pass the exam.",
+   "All students study regularly.",
+   "If a student studies regularly, then they qualify for a scholarship.",
+   "If a student studies regularly, then they receive a recommendation letter.",
+   "There is at least one student who attends tutoring sessions.",
+   "If a student does not attend tutoring sessions, then they do not pass the exam.",
+   "If a student qualifies for a scholarship, then they pass the exam.",
+   "If all students pass the exam, then all students study regularly.",
+   "If qualifying for a scholarship implies passing the exam, then there is at least one student who studies regularly.",
+   "If qualifying for a scholarship implies passing the exam, then if a student studies regularly, they pass the exam.",
+   "If a student does not qualify for a scholarship, then they do not study regularly.",
+   "If a student attends tutoring sessions, then they qualify for a scholarship.",
+   "If a student qualifies for a scholarship, then they receive a recommendation letter.",
+   "If a student does not receive a recommendation letter, then they do not pass the exam."
+  ],
+  "answer": "C",
+  "explanation": "All students qualify for a scholarship because all students study regularly, and studying regularly implies qualifying for a scholarship."
+ },
+ {
+  "id": 539,
+  "question": "Based on the above premises, is the statement true?\nStatement: Exists(x, AttendsTutoring(x))",
+  "premises_nl": [
+   "If a student studies regularly, then they pass the exam.",
+   "All students receive an award.",
+   "If a student does not receive a recommendation letter, then they do not qualify for a scholarship.",
+   "There is at least one student who receives an award.",
+   "There is at least one student who studies regularly.",
+   "All students pass the exam.",
+   "All students study regularly.",
+   "If a student studies regularly, then they qualify for a scholarship.",
+   "If a student studies regularly, then they receive a recommendation letter.",
+   "There is at least one student who attends tutoring sessions.",
+   "If a student does not attend tutoring sessions, then they do not pass the exam.",
+   "If a student qualifies for a scholarship, then they pass the exam.",
+   "If all students pass the exam, then all students study regularly.",
+   "If qualifying for a scholarship implies passing the exam, then there is at least one student who studies regularly.",
+   "If qualifying for a scholarship implies passing the exam, then if a student studies regularly, they pass the exam.",
+   "If a student does not qualify for a scholarship, then they do not study regularly.",
+   "If a student attends tutoring sessions, then they qualify for a scholarship.",
+   "If a student qualifies for a scholarship, then they receive a recommendation letter.",
+   "If a student does not receive a recommendation letter, then they do not pass the exam."
+  ],
+  "answer": "No",
+  "explanation": "The statement is true because there is at least one student who attends tutoring sessions, as explicitly stated."
+ }
+]

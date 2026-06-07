@@ -126,10 +126,11 @@ class FOLz3Pipeline:
             n_fail = len(z3_check.premises_failed)
             n_total = n_ok + n_fail
 
-            # Chỉ retry khi: >50% fail HOẶC hoàn toàn không parse được
-            # Nếu chỉ 1-2 premises fail → Z3 vẫn hoạt động được, không cần retry
+            # Retry khi: >50% parse fail, hoàn toàn không parse được, HOẶC premises mâu thuẫn (unsat).
+            # Nếu chỉ 1-2 premises fail → Z3 vẫn hoạt động được, không cần retry.
             needs_retry = (
                 z3_check.raw_status == "no_valid_premises"
+                or z3_check.raw_status == "unsat"
                 or (n_total > 0 and n_fail / n_total > 0.5)
             )
             if not needs_retry:
@@ -207,7 +208,7 @@ class FOLz3Pipeline:
 
         # Stage 2: FOL -> Z3 + entailment check
         t0 = time.perf_counter()
-        z3_result = self.z3.solve_safe(premises_fol, question_fol)
+        z3_result = self.z3.solve_safe(premises_fol, question_fol, options_fol)
         timing.z3_sec = time.perf_counter() - t0
 
         # Stage 3

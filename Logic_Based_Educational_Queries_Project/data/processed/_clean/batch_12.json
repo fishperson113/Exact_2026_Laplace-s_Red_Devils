@@ -1,0 +1,1004 @@
+[
+ {
+  "id": 720,
+  "question": "Do all students attend Programming Fundamentals?",
+  "premises_nl": [
+   "If a student attends the Programming Fundamentals course, then they will be ready for the Advanced Programming course.",
+   "All students are required to attend the Advanced Programming course.",
+   "All students have completed the Programming Fundamentals course.",
+   "If attending the Programming Fundamentals course leads to being ready for the Advanced Programming course, then all students must attend the Programming Fundamentals course.",
+   "All students have passed the Mathematics for Computer Science course."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 2 states all students attend Advanced Programming, premise 1 states attending Programming Fundamentals implies readiness for Advanced Programming, and premise 4 states if Fundamentals leads to readiness then all attend Fundamentals, so all students attend Programming Fundamentals."
+ },
+ {
+  "id": 721,
+  "question": "Which courses have all students passed?\nA. Programming Fundamentals, Mathematics for Computer Science.\nB. Advanced Programming, Programming Fundamentals.\nC. Mathematics for Computer Science, Advanced Programming.\nD. Programming Fundamentals, Advanced Programming, Mathematics for Computer Science.",
+  "premises_nl": [
+   "If a student attends the Programming Fundamentals course, then they will be ready for the Advanced Programming course.",
+   "All students are required to attend the Advanced Programming course.",
+   "All students have completed the Programming Fundamentals course.",
+   "If attending the Programming Fundamentals course leads to being ready for the Advanced Programming course, then all students must attend the Programming Fundamentals course.",
+   "All students have passed the Mathematics for Computer Science course."
+  ],
+  "answer": "A",
+  "explanation": "Premise 3 states all students passed Programming Fundamentals, and premise 5 states all passed Mathematics for Computer Science, so option A is correct."
+ },
+ {
+  "id": 722,
+  "question": "Do all students receive a passing grade?",
+  "premises_nl": [
+   "All students must comply with the institutional standards.",
+   "If a student attends a specific course, they will be required to complete an assignment.",
+   "If a student completes the assignment, they will receive a passing grade.",
+   "If a student has participated in the assessment process, they will have successfully completed the assignment.",
+   "All students have completed the assessment process."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 5 states all students participate in the assessment process, premise 4 states this implies completing the assignment, and premise 3 states completing the assignment implies a passing grade, so all students receive a passing grade."
+ },
+ {
+  "id": 723,
+  "question": "Which outcomes are guaranteed for all students?\nA. Meeting the standard, completing the assignment, receiving a passing grade.\nB. Meeting the standard, attending the course, receiving a passing grade.\nC. Completing the assignment, assessment process, attending the course.\nD. Receiving a passing grade, meeting the standard, completing training.",
+  "premises_nl": [
+   "All students must comply with the institutional standards.",
+   "If a student attends a specific course, they will be required to complete an assignment.",
+   "If a student completes the assignment, they will receive a passing grade.",
+   "If a student has participated in the assessment process, they will have successfully completed the assignment.",
+   "All students have completed the assessment process."
+  ],
+  "answer": "A",
+  "explanation": "Premise 1 states all students meet the standard, premise 5 states all participate in the assessment process, premise 4 states this implies completing the assignment, and premise 3 states completing the assignment implies a passing grade, so option A is correct."
+ },
+ {
+  "id": 724,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (R(x) → (H(x) ∧ W(x)))\nB. ∀x (P(x) → ¬W(x))\nC. ∀x (R(x) → ¬H(x))\nD. ∀x (¬P(x) → (H(x) ∧ ¬S(x)))",
+  "premises_nl": [
+   "If students receive low grades, it may indicate insufficient effort, decreasing motivation, frustration, and anxiety, or they might seek additional support.",
+   "If students reflect on their low grades, they will take proactive steps to improve.",
+   "If students take proactive steps to improve, they will increase their study hours and focus more on their weaknesses.",
+   "If students don't take proactive steps to improve, they won't increase their study hours and focus more on their weaknesses."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if students reflect on their low grades, they will increase study hours and focus on weaknesses follows because reflecting leads to proactive steps (premise 2), which include increasing study hours and focusing on weaknesses (premise 3)."
+ },
+ {
+  "id": 725,
+  "question": "Based on the above premises, is the following statement true?\nStatement: If students receive low grades, they will seek additional support.",
+  "premises_nl": [
+   "If students receive low grades, it may indicate insufficient effort, decreasing motivation, frustration, and anxiety, or they might seek additional support.",
+   "If students reflect on their low grades, they will take proactive steps to improve.",
+   "If students take proactive steps to improve, they will increase their study hours and focus more on their weaknesses.",
+   "If students don't take proactive steps to improve, they won't increase their study hours and focus more on their weaknesses."
+  ],
+  "answer": "No",
+  "explanation": "The statement that if students receive low grades, they will seek additional support is not true because low grades may lead to negative outcomes or support, but support is not guaranteed (premise 1)."
+ },
+ {
+  "id": 726,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (L(x) → (C(x) ∧ P(x) ∧ G(x)))\nB. ∀x (L(x) → ¬G(x))\nC. ∀x (S(x) → ¬L(x))\nD. ∀x (K(x) → ¬E(x))",
+  "premises_nl": [
+   "If a student spends time learning, then they will grow.",
+   "If a person is not teaching, then they cannot learn.",
+   "Everyone is a student.",
+   "There exists a teacher.",
+   "If a person is not a student, then they cannot teach.",
+   "If not teaching leads to not learning, then there exists someone who is learning.",
+   "If everyone is a student, then having knowledge leads to receiving education.",
+   "There exists someone who has graduated.",
+   "If a person has graduated, then they have knowledge.",
+   "Learning leads to the development of critical thinking and problem-solving skills."
+  ],
+  "answer": "C",
+  "explanation": "The statement that if a student learns, they develop critical thinking, problem-solving skills, and growth follows because learning leads to critical thinking and problem-solving (premise 10) and, since everyone is a student (premise 3), learning also leads to growth (premise 1)."
+ },
+ {
+  "id": 727,
+  "question": "Based on the above premises, is the statement true?\nStatement: It is not true that if a student learns, they will grow.",
+  "premises_nl": [
+   "If a student spends time learning, then they will grow.",
+   "If a person is not teaching, then they cannot learn.",
+   "Everyone is a student.",
+   "There exists a teacher.",
+   "If a person is not a student, then they cannot teach.",
+   "If not teaching leads to not learning, then there exists someone who is learning.",
+   "If everyone is a student, then having knowledge leads to receiving education.",
+   "There exists someone who has graduated.",
+   "If a person has graduated, then they have knowledge.",
+   "Learning leads to the development of critical thinking and problem-solving skills."
+  ],
+  "answer": "No",
+  "explanation": "The statement that it is not true that if a student learns, they will grow is false because, since everyone is a student (premise 3), learning leads to growth (premise 1)."
+ },
+ {
+  "id": 728,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (S(x) ∧ A(x) → F(x))\nB. ¬K(John)\nC. ∀x (M(x) > 0 → ¬K(x))\nD. A(Sarah)",
+  "premises_nl": [
+   "If a person is a student, then they must attend classes regularly.",
+   "If a person is not a student, then they cannot attend classes.",
+   "John is a student.",
+   "John attends classes regularly.",
+   "Sarah is not a student.",
+   "If a student attends classes regularly, they will gain knowledge.",
+   "Knowledge gained in class can lead to a better future.",
+   "There is a limit to the number of students who can attend each class.",
+   "Students who miss more than 3 classes per semester will be penalized.",
+   "John has missed no classes this semester."
+  ],
+  "answer": "B",
+  "explanation": "The statement that if a student attends classes regularly, they will have a better future follows because regular attendance leads to knowledge (premise 6), which can lead to a better future (premise 7)."
+ },
+ {
+  "id": 729,
+  "question": "Based on the premises, is the following statement true?\nStatement: John has missed more than 3 classes this semester.",
+  "premises_nl": [
+   "If a person is a student, then they must attend classes regularly.",
+   "If a person is not a student, then they cannot attend classes.",
+   "John is a student.",
+   "John attends classes regularly.",
+   "Sarah is not a student.",
+   "If a student attends classes regularly, they will gain knowledge.",
+   "Knowledge gained in class can lead to a better future.",
+   "There is a limit to the number of students who can attend each class.",
+   "Students who miss more than 3 classes per semester will be penalized.",
+   "John has missed no classes this semester."
+  ],
+  "answer": "Yes",
+  "explanation": "The statement that John has missed more than 3 classes this semester is false because John has missed no classes (premise 10)."
+ },
+ {
+  "id": 730,
+  "question": "Based on the above premises, which statement can be inferred?\nA. ∀x (O(x) → ¬B(x))\nB. B(An)\nC. ¬F(An)\nD. ¬O(An)",
+  "premises_nl": [
+   "If you are a student of the school and have a valid library card, you can borrow books.",
+   "If you return books overdue, you will be fined.",
+   "If you are fined, you cannot borrow books.",
+   "An is a student of the school.",
+   "An has a valid library card.",
+   "An returned books overdue."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a person returns books overdue, they cannot borrow books follows because returning books overdue leads to a fine (premise 2), and being fined prevents borrowing books (premise 3)."
+ },
+ {
+  "id": 731,
+  "question": "Based on the premises, is An allowed to borrow books from the school library?",
+  "premises_nl": [
+   "If you are a student of the school and have a valid library card, you can borrow books.",
+   "If you return books overdue, you will be fined.",
+   "If you are fined, you cannot borrow books.",
+   "An is a student of the school.",
+   "An has a valid library card.",
+   "An returned books overdue."
+  ],
+  "answer": "No",
+  "explanation": "An is not allowed to borrow books because she returned books overdue (premise 6), which leads to a fine (premise 2), and being fined prevents borrowing (premise 3)."
+ },
+ {
+  "id": 732,
+  "question": "Based on the above premises, which of the following statements can be inferred?\nA. ∀x (P(x) → (A(x) ∧ T(x)))\nB. ∀x (P(x) → ¬A(x))\nC. ¬∀x P(x)\nD. ∀x (E(x) → ¬T(x))",
+  "premises_nl": [
+   "If a student participates in a class, they will register for it.",
+   "Every student is enrolled in at least one course.",
+   "If a student is not enrolled in a course, they are not participating in it.",
+   "There exists at least one student who participates in a course.",
+   "If a student is enrolled in a course, they must complete the assignments.",
+   "If every student participates in a course, then if a student is enrolled, they must complete the assignments.",
+   "If it is true that every student participates in a course and if a student is enrolled, they must complete the assignments, then every student participates in a course.",
+   "If a student is enrolled in a course, they must attend the class.",
+   "Every student is required to attend the class in the course they are enrolled in."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a student participates in a course, they complete assignments and attend class follows because participation implies enrollment (premise 3), enrollment requires completing assignments (premise 5), and enrollment requires attending class (premise 8)."
+ },
+ {
+  "id": 733,
+  "question": "According to the above premises, is the following statement true?\nStatement: If every student participates in a course, then if a student is enrolled, they must complete the assignments.",
+  "premises_nl": [
+   "If a student participates in a class, they will register for it.",
+   "Every student is enrolled in at least one course.",
+   "If a student is not enrolled in a course, they are not participating in it.",
+   "There exists at least one student who participates in a course.",
+   "If a student is enrolled in a course, they must complete the assignments.",
+   "If every student participates in a course, then if a student is enrolled, they must complete the assignments.",
+   "If it is true that every student participates in a course and if a student is enrolled, they must complete the assignments, then every student participates in a course.",
+   "If a student is enrolled in a course, they must attend the class.",
+   "Every student is required to attend the class in the course they are enrolled in."
+  ],
+  "answer": "No",
+  "explanation": "The statement that if every student participates in a course, then enrolled students must complete assignments is true because every enrolled student must complete assignments (premise 5)."
+ },
+ {
+  "id": 734,
+  "question": "Based on the above premises, which statement can be logically inferred?\nA. ∀x (¬A(x) → (¬R(x) ∧ ¬P(x)))\nB. ∃x (¬A(x) ∧ F(x))\nC. ∀x (A(x) → ¬R(x))\nD. ∀x (¬S(x) → F(x))",
+  "premises_nl": [
+   "There exists at least one student who participated in the online training session.",
+   "There exists at least one student who signed the academic integrity agreement.",
+   "If a student did not submit the final report, then they did not receive course recognition.",
+   "If a student attended the training session, then they submitted the final report.",
+   "If a student did not attend the training session, then they did not submit the final report.",
+   "If students who did not attend the training session also failed to submit the final report, then they did not receive course recognition.",
+   "If not attending the training session leads to not submitting the final report, then some students must have signed the academic integrity agreement.",
+   "If a student did not attend the training session, then they did not submit the final project either.",
+   "If a student did not sign the academic integrity agreement, then they did not receive course recognition."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a student did not attend the training session, they did not receive course recognition nor submit the final project follows because non-attendance leads to not submitting the final report (premise 5), which prevents recognition (premise 3), and non-attendance also prevents submitting the final project (premise 8)."
+ },
+ {
+  "id": 735,
+  "question": "Based on the above premises, is the following statement true?\nStatement: If a student did not sign the academic integrity agreement, then they did not receive course recognition.",
+  "premises_nl": [
+   "There exists at least one student who participated in the online training session.",
+   "There exists at least one student who signed the academic integrity agreement.",
+   "If a student did not submit the final report, then they did not receive course recognition.",
+   "If a student attended the training session, then they submitted the final report.",
+   "If a student did not attend the training session, then they did not submit the final report.",
+   "If students who did not attend the training session also failed to submit the final report, then they did not receive course recognition.",
+   "If not attending the training session leads to not submitting the final report, then some students must have signed the academic integrity agreement.",
+   "If a student did not attend the training session, then they did not submit the final project either.",
+   "If a student did not sign the academic integrity agreement, then they did not receive course recognition."
+  ],
+  "answer": "No",
+  "explanation": "The statement that if a student did not sign the academic integrity agreement, they did not receive course recognition is true because it is explicitly stated (premise 9)."
+ },
+ {
+  "id": 736,
+  "question": "Based on the above premises, which statement can be logically inferred?\nA. ∀x (P(x) → E(x))\nB. ∀x (F(x) → ¬E(x))\nC. ∃x (¬R(x) ∧ J(x))\nD. ∀x (¬P(x) → A(x))",
+  "premises_nl": [
+   "There exists at least one student who has passed the prerequisite course in programming.",
+   "If a student does not meet the minimum grade requirement, they are not allowed to proceed to advanced courses.",
+   "All students are required to complete the foundational courses before proceeding to specialized courses.",
+   "If a student has not passed the core course, they cannot proceed with the elective courses.",
+   "If a student has not completed the prerequisite course, they are not allowed to enroll in any advanced courses.",
+   "If a student has passed the prerequisite course, they are allowed to proceed to specialized courses.",
+   "If a student has completed the foundational courses, then they must have met the prerequisites for elective courses.",
+   "If a student has failed to meet the required standards, they cannot participate in the final project preparation.",
+   "There exists at least one student who is eligible to participate in the final project preparation."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if a student passed the prerequisite programming course, they meet the prerequisites for elective courses follows because passing the programming course allows proceeding to specialized courses (premise 6), which requires completing foundational courses (premise 3), which in turn implies meeting elective prerequisites (premise 7)."
+ },
+ {
+  "id": 737,
+  "question": "Based on the above premises, is the following statement true?\nStatement: If students fail to meet the standards, they must take up the project the following semester.",
+  "premises_nl": [
+   "There exists at least one student who has passed the prerequisite course in programming.",
+   "If a student does not meet the minimum grade requirement, they are not allowed to proceed to advanced courses.",
+   "All students are required to complete the foundational courses before proceeding to specialized courses.",
+   "If a student has not passed the core course, they cannot proceed with the elective courses.",
+   "If a student has not completed the prerequisite course, they are not allowed to enroll in any advanced courses.",
+   "If a student has passed the prerequisite course, they are allowed to proceed to specialized courses.",
+   "If a student has completed the foundational courses, then they must have met the prerequisites for elective courses.",
+   "If a student has failed to meet the required standards, they cannot participate in the final project preparation.",
+   "There exists at least one student who is eligible to participate in the final project preparation."
+  ],
+  "answer": "Unknown",
+  "explanation": "The statement that if students fail to meet the standards, they must take up the project the following semester is false because failing to meet standards prevents participation in the final project (premise 8), and no premise supports a requirement to take it later."
+ },
+ {
+  "id": 738,
+  "question": "Based on the above premises, which statement can be inferred if we know that Kelvin submitted his CH3002 lab report on time?\nA. Kelvin is allowed to take the exam for CH3002.\nB. Liam is allowed to take the exam for CH3002.\nC. Kelvin must submit a project for CH3002.\nD. Kelvin’s Homework score in CH3001 affects his eligibility for CH3002’s exam.",
+  "premises_nl": [
+   "For courses with lab components, a student is allowed to take the exam if their lab score is at least 4.0 out of 10 and all their component scores are greater than 0.",
+   "Kelvin’s lab score for CH3002 is at least 4.0 out of 10, and all his component scores for CH3002 are positive.",
+   "Students enrolled in multiple courses must submit a project unless the course is taught by Professor X.",
+   "CH3002 has three components: Lab, Quiz, and Homework, but Quiz scores are optional for students over 20 years old.",
+   "Kelvin is 19 years old and has a Homework score of 7.0 in CH3001, which is unrelated to CH3002.",
+   "Professor Y teaches CH3002, and all courses taught by Professor Y have an extra credit option.",
+   "Extra credit can increase a student’s total score by up to 2 points, but it doesn’t affect component scores.",
+   "Another student, Liam, has a Lab score of 3.5 in CH3002 and is not allowed to take the exam.",
+   "Courses with more than 50 students require a midterm, but CH3002 has only 45 students.",
+   "Kelvin submitted his CH3002 lab report on time, which is required for lab scores to be valid.",
+   "Late submissions reduce a lab score by 1.0, unless the student has a medical excuse.",
+   "Liam has a medical excuse for CH3001 but not for CH3002.",
+   "CH3002’s final exam is scheduled for December 15th, and all eligible students must attend."
+  ],
+  "answer": "A",
+  "explanation": "From premise 17 (Kelvin submitted his CH3002 lab report on time), we know SubmittedOnTime(Kelvin, CH3002, LabReport). From premise 18, if a student submits their lab report on time, their lab score is valid (∀s ∀c (SubmittedOnTime(s, c, LabReport) → Valid(ComponentScore(s, c, Lab)))). Since premise 17 states that Kelvin submitted his lab report on time, premise 18's antecedent is true, so the consequent must be true. From premise 2, Kelvin’s lab score for CH3002 is at least 4.0 out of 10 (ComponentScore(Kelvin, CH3002, Lab) ≥ 4.0). From premise 3, all of Kelvin's component scores for CH3002 are positive (∀i ComponentScore(Kelvin, CH3002, i) > 0). From premise 1, for courses with lab components, a student is allowed to take the exam if their lab score is at least 4.0 out of 10 and all their component scores are greater than 0 (∀s ∀c (AllowedToTakeExam(s, c) ↔ (ComponentScore(s, c, Lab) ≥ 4.0 ∧ ∀i ComponentScore(s, c, i) > 0))). Since premise 2 and premise 3 satisfy the conditions in premise 1, Kelvin is allowed to take the exam for CH3002 (option A)."
+ },
+ {
+  "id": 739,
+  "question": "If Kelvin submitted his CH3002 lab report on time, does it follow that Kelvin is allowed to take the exam for CH3002?",
+  "premises_nl": [
+   "For courses with lab components, a student is allowed to take the exam if their lab score is at least 4.0 out of 10 and all their component scores are greater than 0.",
+   "Kelvin’s lab score for CH3002 is at least 4.0 out of 10, and all his component scores for CH3002 are positive.",
+   "Students enrolled in multiple courses must submit a project unless the course is taught by Professor X.",
+   "CH3002 has three components: Lab, Quiz, and Homework, but Quiz scores are optional for students over 20 years old.",
+   "Kelvin is 19 years old and has a Homework score of 7.0 in CH3001, which is unrelated to CH3002.",
+   "Professor Y teaches CH3002, and all courses taught by Professor Y have an extra credit option.",
+   "Extra credit can increase a student’s total score by up to 2 points, but it doesn’t affect component scores.",
+   "Another student, Liam, has a Lab score of 3.5 in CH3002 and is not allowed to take the exam.",
+   "Courses with more than 50 students require a midterm, but CH3002 has only 45 students.",
+   "Kelvin submitted his CH3002 lab report on time, which is required for lab scores to be valid.",
+   "Late submissions reduce a lab score by 1.0, unless the student has a medical excuse.",
+   "Liam has a medical excuse for CH3001 but not for CH3002.",
+   "CH3002’s final exam is scheduled for December 15th, and all eligible students must attend."
+  ],
+  "answer": "Yes",
+  "explanation": "From premise 17 (Kelvin submitted his CH3002 lab report on time), we know SubmittedOnTime(Kelvin, CH3002, LabReport). From premise 18, if a student submits their lab report on time, their lab score is valid (∀s ∀c (SubmittedOnTime(s, c, LabReport) → Valid(ComponentScore(s, c, Lab)))). Since premise 17 states that Kelvin submitted his lab report on time, premise 18's antecedent is true, so the consequent must be true. From premise 2, Kelvin’s lab score for CH3002 is at least 4.0 out of 10 (ComponentScore(Kelvin, CH3002, Lab) ≥ 4.0). From premise 3, all of Kelvin's component scores for CH3002 are positive (∀i ComponentScore(Kelvin, CH3002, i) > 0). From premise 1, for courses with lab components, a student is allowed to take the exam if their lab score is at least 4.0 out of 10 and all their component scores are greater than 0 (∀s ∀c (AllowedToTakeExam(s, c) ↔ (ComponentScore(s, c, Lab) ≥ 4.0 ∧ ∀i ComponentScore(s, c, i) > 0))). Since premise 2 and premise 3 satisfy the conditions in premise 1, if Kelvin submitted his CH3002 lab report on time, it follows that Kelvin is allowed to take the exam for CH3002."
+ },
+ {
+  "id": 740,
+  "question": "Based on the above premises, which statement can be inferred if we know that Lan is enrolled in Chemistry 101?\nA. Lan is allowed to enter the laboratory for Chemistry 101.\nB. Lan is not allowed to enter the laboratory for Chemistry 101.\nC. Kai is allowed to enter the laboratory for Chemistry 101.\nD. Lan must reserve lab equipment for Chemistry 101.",
+  "premises_nl": [
+   "Students are allowed to enter the laboratory to conduct experiments only if they have both health insurance and accident insurance.",
+   "Lan has both health insurance and accident insurance.",
+   "The laboratory is open from 9 AM to 5 PM on weekdays, unless there’s a special event.",
+   "Students must wear safety goggles in the lab, but this rule is waived for virtual labs.",
+   "Lan is enrolled in Chemistry 101, which requires lab access on Tuesdays.",
+   "Another student, Kai, has health insurance but no accident insurance.",
+   "Lab equipment must be reserved 24 hours in advance for groups larger than three.",
+   "Lan is working alone and doesn’t need to reserve equipment.",
+   "All students must complete a safety training course, though Lan completed hers last semester.",
+   "The lab supervisor, Dr. Zee, allows extra hours for students with a GPA above 3.5.",
+   "Lan’s GPA is 3.8, but she only works during regular hours.",
+   "Kai was denied lab access last week due to incomplete paperwork.",
+   "Chemistry 101 experiments require a minimum temperature of 20°C in the lab."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 6 (Lan is enrolled in Chemistry 101), we know Enrolled(Lan, Chemistry101). From premise 1, students are allowed to enter the laboratory to conduct experiments only if they have both health insurance and accident insurance (∀s (AllowedToEnterLab(s) ↔ (HasHealthInsurance(s) ∧ HasAccidentInsurance(s)))). From premise 2, Lan has health insurance (HasHealthInsurance(Lan)). From premise 3, Lan has accident insurance (HasAccidentInsurance(Lan)). Since premise 2 and premise 3 satisfy the conditions in premise 1, Lan is allowed to enter the laboratory for Chemistry 101 (option A)."
+ },
+ {
+  "id": 741,
+  "question": "If Lan is enrolled in Chemistry 101, does it follow that Lan is allowed to enter the laboratory for Chemistry 101?",
+  "premises_nl": [
+   "Students are allowed to enter the laboratory to conduct experiments only if they have both health insurance and accident insurance.",
+   "Lan has both health insurance and accident insurance.",
+   "The laboratory is open from 9 AM to 5 PM on weekdays, unless there’s a special event.",
+   "Students must wear safety goggles in the lab, but this rule is waived for virtual labs.",
+   "Lan is enrolled in Chemistry 101, which requires lab access on Tuesdays.",
+   "Another student, Kai, has health insurance but no accident insurance.",
+   "Lab equipment must be reserved 24 hours in advance for groups larger than three.",
+   "Lan is working alone and doesn’t need to reserve equipment.",
+   "All students must complete a safety training course, though Lan completed hers last semester.",
+   "The lab supervisor, Dr. Zee, allows extra hours for students with a GPA above 3.5.",
+   "Lan’s GPA is 3.8, but she only works during regular hours.",
+   "Kai was denied lab access last week due to incomplete paperwork.",
+   "Chemistry 101 experiments require a minimum temperature of 20°C in the lab."
+  ],
+  "answer": "No",
+  "explanation": "From premise 6 (Lan is enrolled in Chemistry 101), we know Enrolled(Lan, Chemistry101). From premise 1, students are allowed to enter the laboratory to conduct experiments only if they have both health insurance and accident insurance (∀s (AllowedToEnterLab(s) ↔ (HasHealthInsurance(s) ∧ HasAccidentInsurance(s)))). From premise 2, Lan has health insurance (HasHealthInsurance(Lan)). From premise 3, Lan has accident insurance (HasAccidentInsurance(Lan)). Since premise 2 and premise 3 satisfy the conditions in premise 1, if Lan is enrolled in Chemistry 101, it follows that Lan is allowed to enter the laboratory for Chemistry 101."
+ },
+ {
+  "id": 742,
+  "question": "Based on the above premises, which statement can be inferred if we know that Linh is a full-time student with health issues?\nA. Linh is not meeting the credit requirements for full-time students.\nB. Linh is meeting the credit requirements for full-time students.\nC. Linh needs to take more than 12 credits to meet the credit requirements.\nD. Linh is a part-time student.",
+  "premises_nl": [
+   "Full-time students must take at least 14 credits per semester, but in special cases (e.g., weak academic performance or health issues), they can take a minimum of 11 credits for up to 2 semesters.",
+   "Part-time (work-study) students must take at least 11 credits per semester, but in special cases (e.g., weak academic performance, health issues, or work reasons), they can take a minimum of 9 credits for up to 3 semesters.",
+   "Linh is a full-time student with health issues, taking 12 credits this semester.",
+   "This is Linh’s first semester using the special case exception.",
+   "Part-time students must submit a work schedule to the registrar each semester.",
+   "Full-time students taking fewer than 14 credits must meet with an advisor annually.",
+   "Linh is enrolled in a 4-credit lab course and two 4-credit lecture courses.",
+   "Another student, Minh, is a part-time student taking 10 credits due to work reasons.",
+   "Courses worth more than 3 credits require attendance at 80% of classes.",
+   "The university offers a tuition discount for students taking exactly 12 credits.",
+   "Linh has not exceeded the 2-semester limit for special cases.",
+   "Minh’s employer requires him to work 20 hours per week.",
+   "Full-time students must declare a major by their third semester, and Linh is in her second."
+  ],
+  "answer": "A",
+  "explanation": "From premise 3 (Linh is a full-time student with health issues, taking 12 credits this semester), we know FullTimeStudent(Linh) ∧ SpecialCase(Linh) ∧ Credits(Linh) = 12. From premise 1, full-time students must take at least 14 credits per semester, but in special cases they can take a minimum of 11 credits for up to 2 semesters (∀s (FullTimeStudent(s) → (Credits(s) ≥ 14 ∨ (SpecialCase(s) ∧ Credits(s) ≥ 11)))). From premise 13, Linh has not exceeded the 2-semester limit for special cases (SemesterCountSpecialCase(Linh) ≤ 2). Since premise 3 states that Linh is a full-time student with a special case and taking 12 credits, and premise 13 states she has not exceeded the limit, premise 1's conditions are met. Therefore, Linh is meeting the credit requirements for full-time students (option B)."
+ },
+ {
+  "id": 743,
+  "question": "If Linh is taking exactly 12 credits this semester, does it follow that Linh is eligible for the tuition discount?",
+  "premises_nl": [
+   "Full-time students must take at least 14 credits per semester, but in special cases (e.g., weak academic performance or health issues), they can take a minimum of 11 credits for up to 2 semesters.",
+   "Part-time (work-study) students must take at least 11 credits per semester, but in special cases (e.g., weak academic performance, health issues, or work reasons), they can take a minimum of 9 credits for up to 3 semesters.",
+   "Linh is a full-time student with health issues, taking 12 credits this semester.",
+   "This is Linh’s first semester using the special case exception.",
+   "Part-time students must submit a work schedule to the registrar each semester.",
+   "Full-time students taking fewer than 14 credits must meet with an advisor annually.",
+   "Linh is enrolled in a 4-credit lab course and two 4-credit lecture courses.",
+   "Another student, Minh, is a part-time student taking 10 credits due to work reasons.",
+   "Courses worth more than 3 credits require attendance at 80% of classes.",
+   "The university offers a tuition discount for students taking exactly 12 credits.",
+   "Linh has not exceeded the 2-semester limit for special cases.",
+   "Minh’s employer requires him to work 20 hours per week.",
+   "Full-time students must declare a major by their third semester, and Linh is in her second."
+  ],
+  "answer": "No",
+  "explanation": "From premise 3 (Linh is a full-time student with health issues, taking 12 credits this semester), we know Credits(Linh) = 12. From premise 12, the university offers a tuition discount for students taking exactly 12 credits (∀s (Credits(s) = 12 → EligibleForDiscount(s))). Since premise 3 states that Linh is taking exactly 12 credits, premise 12's antecedent is true, so the consequent must be true. Therefore, if Linh is taking exactly 12 credits this semester, it follows that Linh is eligible for the tuition discount."
+ },
+ {
+  "id": 744,
+  "question": "Based on the above premises, which statement can be inferred if we know that Hà has accumulated 80 credits in the training program?\nA. Hà is eligible for an internship because she has accumulated 80 credits.\nB. Hà is not eligible for an internship due to insufficient credits.\nC. Hà must take remedial courses before applying for the internship.\nD. Hà’s internship application was submitted after June 1st.",
+  "premises_nl": [
+   "Students must accumulate at least 65% of the total credits of their training program to be eligible for an internship.",
+   "The training program has a total of 120 credits.",
+   "Hà has accumulated 80 credits in the training program.",
+   "Students must submit an internship application by June 1st to be considered.",
+   "Hà submitted her application on May 15th.",
+   "The training program includes 30 credits of elective courses, but only 20 credits are counted toward the internship requirement.",
+   "Another student, Vinh, has accumulated 75 credits and is also in the training program.",
+   "Students with a GPA below 2.5 are required to take a remedial course before interning.",
+   "Hà’s GPA is 3.2, and she has no remedial requirements.",
+   "Internships are offered in two cycles: summer and fall, with summer priority for seniors.",
+   "Hà is a junior and applying for a fall internship.",
+   "The program advisor must approve all internship applications, and Hà’s was approved.",
+   "Vinh missed the application deadline and accumulated only 10 elective credits."
+  ],
+  "answer": "B",
+  "explanation": "From premise 3 (Hà has accumulated 80 credits in the training program), we know AccumulatedCredits(Hà) = 80. From premise 2, the training program has a total of 120 credits (TotalCredits(TrainingProgram) = 120). From premise 1, students must accumulate at least 65% of the total credits of their training program to be eligible for an internship (∀s (EligibleForInternship(s) ↔ (AccumulatedCredits(s) ≥ 0.65 * TotalCredits(Program(s))))). Since premise 2 states the total credits are 120, 65% of 120 is 78 credits (0.65 * 120 = 78). Since premise 3 states that Hà has accumulated 80 credits, which is more than 78 credits, premise 1's condition is satisfied. Therefore, Hà is eligible for an internship because she has accumulated 80 credits (option A)."
+ },
+ {
+  "id": 745,
+  "question": "If Hà has accumulated 80 credits in the training program, does it follow that Hà has accumulated more than 65% of the total credits required for the internship?",
+  "premises_nl": [
+   "Students must accumulate at least 65% of the total credits of their training program to be eligible for an internship.",
+   "The training program has a total of 120 credits.",
+   "Hà has accumulated 80 credits in the training program.",
+   "Students must submit an internship application by June 1st to be considered.",
+   "Hà submitted her application on May 15th.",
+   "The training program includes 30 credits of elective courses, but only 20 credits are counted toward the internship requirement.",
+   "Another student, Vinh, has accumulated 75 credits and is also in the training program.",
+   "Students with a GPA below 2.5 are required to take a remedial course before interning.",
+   "Hà’s GPA is 3.2, and she has no remedial requirements.",
+   "Internships are offered in two cycles: summer and fall, with summer priority for seniors.",
+   "Hà is a junior and applying for a fall internship.",
+   "The program advisor must approve all internship applications, and Hà’s was approved.",
+   "Vinh missed the application deadline and accumulated only 10 elective credits."
+  ],
+  "answer": "Yes",
+  "explanation": "From premise 3 (Hà has accumulated 80 credits in the training program), we know AccumulatedCredits(Hà) = 80. From premise 2, the training program has a total of 120 credits (TotalCredits(TrainingProgram) = 120). From premise 1, students must accumulate at least 65% of the total credits of their training program to be eligible for an internship (∀s (EligibleForInternship(s) ↔ (AccumulatedCredits(s) ≥ 0.65 * TotalCredits(Program(s))))). Since premise 2 states the total credits are 120, 65% of 120 is 78 credits (0.65 * 120 = 78). Since premise 3 states that Hà has accumulated 80 credits, which is more than 78 credits, if Hà has accumulated 80 credits in the training program, it follows that Hà has accumulated more than 65% of the total credits required for the internship."
+ },
+ {
+  "id": 746,
+  "question": "Based on the above premises, which statement can be inferred if we know that Phong has an average semester score of 2.3?\nA. Phong has an Excellent ranking.\nB. Phong has a Good ranking.\nC. Phong has an Average ranking.\nD. Phong is ranked Poor.",
+  "premises_nl": [
+   "Students are ranked based on their average semester scores as follows: Excellent (3.6 to 4.0), Good (3.2 to 3.6), Fair (2.5 to 3.2), Average (2.0 to 2.5), Weak (1.0 to 2.0), Poor (below 1.0).",
+   "Phong has an average semester score of 2.3.",
+   "Students with an Excellent ranking receive a scholarship of $500 per semester.",
+   "Phong is in his third semester and has taken 15 credits this term.",
+   "Another student, Hoa, has an average score of 3.7 and is ranked Excellent.",
+   "Scores are calculated based on a weighted average of exams (60%) and projects (40%).",
+   "Phong scored 2.5 on exams and 2.0 on projects this semester.",
+   "Students ranked below Fair must attend a study skills workshop.",
+   "The maximum score per course is 4.0, and Phong is enrolled in four courses.",
+   "Hoa has a part-time job and still maintains her ranking.",
+   "Rankings are reviewed at the end of each semester, with a deadline of December 20th.",
+   "Phong submitted his final project on time, avoiding a 0.5-point penalty."
+  ],
+  "answer": "A",
+  "explanation": "From premise 7 (Phong has an average semester score of 2.3), we know AverageScore(Phong) = 2.3. From premise 4, students are ranked as Average if their average score is between 2.0 and 2.5 (∀s ((AverageScore(s) ≥ 2.0 ∧ AverageScore(s) < 2.5) → Ranking(s, Average))). Since premise 7 states that Phong's average score is 2.3, which falls within the range of 2.0 to 2.5, premise 4's condition is satisfied. Therefore, Phong has an Average ranking (option C)."
+ },
+ {
+  "id": 747,
+  "question": "If Phong has an average semester score of 2.3, does it follow that Phong’s academic ranking is Average?",
+  "premises_nl": [
+   "Students are ranked based on their average semester scores as follows: Excellent (3.6 to 4.0), Good (3.2 to 3.6), Fair (2.5 to 3.2), Average (2.0 to 2.5), Weak (1.0 to 2.0), Poor (below 1.0).",
+   "Phong has an average semester score of 2.3.",
+   "Students with an Excellent ranking receive a scholarship of $500 per semester.",
+   "Phong is in his third semester and has taken 15 credits this term.",
+   "Another student, Hoa, has an average score of 3.7 and is ranked Excellent.",
+   "Scores are calculated based on a weighted average of exams (60%) and projects (40%).",
+   "Phong scored 2.5 on exams and 2.0 on projects this semester.",
+   "Students ranked below Fair must attend a study skills workshop.",
+   "The maximum score per course is 4.0, and Phong is enrolled in four courses.",
+   "Hoa has a part-time job and still maintains her ranking.",
+   "Rankings are reviewed at the end of each semester, with a deadline of December 20th.",
+   "Phong submitted his final project on time, avoiding a 0.5-point penalty."
+  ],
+  "answer": "Yes",
+  "explanation": "From premise 7 (Phong has an average semester score of 2.3), we know AverageScore(Phong) = 2.3. From premise 4, students are ranked as Average if their average score is between 2.0 and 2.5 (∀s ((AverageScore(s) ≥ 2.0 ∧ AverageScore(s) < 2.5) → Ranking(s, Average))). Since premise 7 states that Phong's average score is 2.3, which falls within the range of 2.0 to 2.5, if Phong has an average semester score of 2.3, it follows that Phong’s academic ranking is Average."
+ },
+ {
+  "id": 748,
+  "question": "Based on the above premises, which statement can be inferred if we know that Tâm has accumulated 40 credits and has met the foreign language standard for year two?\nA. Tâm is a second-year student.\nB. Tâm is in an accelerated program.\nC. Nam meets the language standard for year two.\nD. Tâm is eligible for the mentorship program.",
+  "premises_nl": [
+   "Students are ranked into academic years based on their accumulated credits (N) compared to the average credits per year (M). For the second year, M ≤ N < 2M and they must meet the foreign language standard for year two.",
+   "The average credits per year (M) for regular students is 33.",
+   "Tâm has accumulated 40 credits and has met the foreign language standard for year two.",
+   "Students in accelerated programs have an average credits per year (M) of 40.",
+   "Tâm is enrolled in the regular program, not the accelerated one.",
+   "Another student, Nam, has 70 credits but hasn’t met the language standard for year two.",
+   "The foreign language standard for year two requires a TOEFL score of at least 500.",
+   "Tâm’s TOEFL score is 550, and she submitted it before the October 1st deadline.",
+   "Students must complete at least 10 credits of core courses each year, and Tâm has 15 this year.",
+   "Nam is in his third semester and has a GPA of 3.0.",
+   "Second-year students are eligible for a mentorship program if they apply by November 15th.",
+   "Tâm applied for the mentorship program on November 10th.",
+   "The regular program includes a total of 132 credits across four years."
+  ],
+  "answer": "A",
+  "explanation": "From premise 3 (Tâm has accumulated 40 credits and has met the foreign language standard for year two), we know AccumulatedCredits(Tâm) = 40 ∧ MeetsLanguageStandard(Tâm, YearTwo). From premise 2, the average credits per year (M) for regular students is 33 (M = 33). From premise 1, students are ranked as second-year if their accumulated credits are between M and 2M and they meet the language standard (∀s (SecondYear(s) ↔ ((M ≤ AccumulatedCredits(s) < 2M) ∧ MeetsLanguageStandard(s, YearTwo)))). Since premise 2 states that M is 33, 2M is 66 (2 * 33 = 66). Since premise 3 states that Tâm has accumulated 40 credits, which is between 33 and 66, and she has met the language standard, premise 1's condition is satisfied. Therefore, Tâm is a second-year student (option A)."
+ },
+ {
+  "id": 749,
+  "question": "If Tâm has met the foreign language standard for year two, does it follow that Tâm is eligible for the mentorship program?",
+  "premises_nl": [
+   "Students are ranked into academic years based on their accumulated credits (N) compared to the average credits per year (M). For the second year, M ≤ N < 2M and they must meet the foreign language standard for year two.",
+   "The average credits per year (M) for regular students is 33.",
+   "Tâm has accumulated 40 credits and has met the foreign language standard for year two.",
+   "Students in accelerated programs have an average credits per year (M) of 40.",
+   "Tâm is enrolled in the regular program, not the accelerated one.",
+   "Another student, Nam, has 70 credits but hasn’t met the language standard for year two.",
+   "The foreign language standard for year two requires a TOEFL score of at least 500.",
+   "Tâm’s TOEFL score is 550, and she submitted it before the October 1st deadline.",
+   "Students must complete at least 10 credits of core courses each year, and Tâm has 15 this year.",
+   "Nam is in his third semester and has a GPA of 3.0.",
+   "Second-year students are eligible for a mentorship program if they apply by November 15th.",
+   "Tâm applied for the mentorship program on November 10th.",
+   "The regular program includes a total of 132 credits across four years."
+  ],
+  "answer": "Yes",
+  "explanation": "From premise 3 (Tâm has accumulated 40 credits and has met the foreign language standard for year two), we know MeetsLanguageStandard(Tâm, YearTwo). From premise 12, second-year students are eligible for a mentorship program if they apply by November 15th (∀s (SecondYear(s) ∧ AppliedBefore(s, November15) → EligibleMentorship(s))). From premise 13, Tâm applied for the mentorship program on November 10th (AppliedBefore(Tâm, November10)). From premise 1, students are ranked as second-year if their accumulated credits are between M and 2M and they meet the language standard (∀s (SecondYear(s) ↔ ((M ≤ AccumulatedCredits(s) < 2M) ∧ MeetsLanguageStandard(s, YearTwo)))). From premise 2, the average credits per year (M) for regular students is 33 (M = 33). Since premise 3 states that Tâm has accumulated 40 credits, which is between 33 and 66, and she has met the language standard, premise 1's condition is satisfied, so Tâm is a second-year student. Since premise 13 states that Tâm applied before November 15th, premise 12's conditions are met. Therefore, if Tâm has met the foreign language standard for year two, it follows that Tâm is eligible for the mentorship program."
+ },
+ {
+  "id": 750,
+  "question": "Based on the above premises, which statement can be inferred if we know that Phong has accumulated 70 credits and has met the foreign language standard for year three?\nA. Phong is a third-year student.\nB. Phong has not met the foreign language standard for year three.\nC. Lan is eligible for study abroad.\nD. Phong has not completed the capstone project.",
+  "premises_nl": [
+   "Students are ranked into academic years based on their accumulated credits (N) compared to the average credits per year (M). For the third year, 2M ≤ N < 3M and they must meet the foreign language standard for year three.",
+   "The average credits per year (M) for regular students is 33.",
+   "Phong has accumulated 70 credits and has met the foreign language standard for year three.",
+   "The foreign language standard for year three requires an IELTS score of at least 6.0.",
+   "Phong’s IELTS score is 6.5, certified last month.",
+   "Students in the honors program have an average credits per year (M) of 36.",
+   "Phong is in the regular program, not the honors program.",
+   "Another student, Lan, has 60 credits and meets the language standard for year two but not year three.",
+   "Third-year students must complete a 5-credit capstone project, which Phong has enrolled in.",
+   "The regular program requires a total of 132 credits for graduation.",
+   "Phong has a GPA of 3.4 and no academic probation history.",
+   "Lan missed the language certification deadline of September 30th.",
+   "Third-year students can apply for study abroad if they meet the foreign language standard for year three."
+  ],
+  "answer": "B",
+  "explanation": "From premise 3 (Phong has accumulated 70 credits and has met the foreign language standard for year three), we know AccumulatedCredits(Phong) = 70 ∧ MeetsLanguageStandard(Phong, YearThree). From premise 2, the average credits per year (M) for regular students is 33 (M = 33). From premise 1, students are ranked as third-year if their accumulated credits are between 2M and 3M and they meet the language standard (∀s (ThirdYear(s) ↔ ((2M ≤ AccumulatedCredits(s) < 3M) ∧ MeetsLanguageStandard(s, YearThree)))). Since premise 2 states that M is 33, 2M is 66 (2 * 33 = 66) and 3M is 99 (3 * 33 = 99). Since premise 3 states that Phong has accumulated 70 credits, which is between 66 and 99, and he has met the language standard, premise 1's condition is satisfied. Therefore, Phong is a third-year student (option A)."
+ },
+ {
+  "id": 751,
+  "question": "If Phong has met the foreign language standard for year three, does it follow that Phong is eligible to apply for study abroad?",
+  "premises_nl": [
+   "Students are ranked into academic years based on their accumulated credits (N) compared to the average credits per year (M). For the third year, 2M ≤ N < 3M and they must meet the foreign language standard for year three.",
+   "The average credits per year (M) for regular students is 33.",
+   "Phong has accumulated 70 credits and has met the foreign language standard for year three.",
+   "The foreign language standard for year three requires an IELTS score of at least 6.0.",
+   "Phong’s IELTS score is 6.5, certified last month.",
+   "Students in the honors program have an average credits per year (M) of 36.",
+   "Phong is in the regular program, not the honors program.",
+   "Another student, Lan, has 60 credits and meets the language standard for year two but not year three.",
+   "Third-year students must complete a 5-credit capstone project, which Phong has enrolled in.",
+   "The regular program requires a total of 132 credits for graduation.",
+   "Phong has a GPA of 3.4 and no academic probation history.",
+   "Lan missed the language certification deadline of September 30th.",
+   "Third-year students can apply for study abroad if they meet the foreign language standard for year three."
+  ],
+  "answer": "No",
+  "explanation": "From premise 3 (Phong has accumulated 70 credits and has met the foreign language standard for year three), we know MeetsLanguageStandard(Phong, YearThree). From premise 14, third-year students can apply for study abroad if they meet the foreign language standard for year three (∀s (ThirdYear(s) ∧ MeetsLanguageStandard(s, YearThree) → EligibleStudyAbroad(s))). From premise 1, students are ranked as third-year if their accumulated credits are between 2M and 3M and they meet the language standard (∀s (ThirdYear(s) ↔ ((2M ≤ AccumulatedCredits(s) < 3M) ∧ MeetsLanguageStandard(s, YearThree)))). From premise 2, the average credits per year (M) for regular students is 33 (M = 33). Since premise 3 states that Phong has accumulated 70 credits, which is between 66 and 99, and he has met the language standard, premise 1's condition is satisfied, so Phong is a third-year student. Since premise 3 states that Phong has met the language standard, premise 14's conditions are met. Therefore, if Phong has met the foreign language standard for year three, it follows that Phong is eligible to apply for study abroad."
+ },
+ {
+  "id": 752,
+  "question": "Based on the above premises, which statement can be inferred if we know that students work in groups?\nA. If students work in groups, then their performance improves.\nB. If students work in groups, then their performance does not improve.\nC. Students working in groups neither gain nor lose performance.\nD. None of the above can be concluded.",
+  "premises_nl": [
+   "If students join in group work, they develop interpersonal skills.",
+   "If students work in groups, then they can share their perspectives and create creative solutions.",
+   "If students work in groups, then they can increase motivation and performance.",
+   "If students join group work with unequal contribution, then they can frustrate among members.",
+   "If students join in a group work with dominant personality, then they will reduce collaboration effectiveness.",
+   "If students join in a group with promoting critical thinking, then they can improve their problem solving.",
+   "If students struggle with poor group dynamics, then they will be stressed and have lower satisfaction.",
+   "If students join a good communicative group, then they have successful collaboration."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 3 (If students work in groups, then they can increase motivation and performance), we know ∀x (Student(x) ∧ GroupWork(x) → IncreasedMotivation(x) ∧ ImprovedPerformance(x)). Since premise 3 states that if students work in groups, their performance improves, if we know that students work in groups, it follows that their performance improves (option A)."
+ },
+ {
+  "id": 753,
+  "question": "If students work in groups, does it follow that it is not true that group work improves student performance?",
+  "premises_nl": [
+   "If students join in group work, they develop interpersonal skills.",
+   "If students work in groups, then they can share their perspectives and create creative solutions.",
+   "If students work in groups, then they can increase motivation and performance.",
+   "If students join group work with unequal contribution, then they can frustrate among members.",
+   "If students join in a group work with dominant personality, then they will reduce collaboration effectiveness.",
+   "If students join in a group with promoting critical thinking, then they can improve their problem solving.",
+   "If students struggle with poor group dynamics, then they will be stressed and have lower satisfaction.",
+   "If students join a good communicative group, then they have successful collaboration."
+  ],
+  "answer": "No",
+  "explanation": "From premise 3 (If students work in groups, then they can increase motivation and performance), we know ∀x (Student(x) ∧ GroupWork(x) → IncreasedMotivation(x) ∧ ImprovedPerformance(x)). Since premise 3 states that if students work in groups, their performance improves, if students work in groups, it does not follow that it is not true that group work improves student performance. Therefore, the answer is 'No'."
+ },
+ {
+  "id": 754,
+  "question": "Based on the above premises, which statement can be inferred if we know that if a person is a teacher, then that person is respected?\nA. It is not true that if every teacher is respected, then someone is prepared.\nB. Teachers are respected if they graduate from famous universities.\nC. All teachers are disrespected.\nD. If every teacher is respected, then someone must be prepared.",
+  "premises_nl": [
+   "If a person is a student, then that person is qualified.",
+   "If a person is a teacher, then that person is respected.",
+   "There exists at least one person who is prepared.",
+   "If a person is respected, then that person is useful.",
+   "There exists at least one person who is respected.",
+   "If all students being qualified implies that someone is respected, then that implication holds.",
+   "If all teachers being respected implies that someone is prepared, then that implication holds.",
+   "If a person is not useful, then that person is not a student.",
+   "If a person is respected, then that person is also prepared."
+  ],
+  "answer": "D",
+  "explanation": "From premise 2 (If a person is a teacher, then that person is respected), we know ∀x (T(x) → R(x)). From premise 7, if all teachers being respected implies that someone is prepared, then that implication holds (∀x (T(x) → R(x)) → ∃x P(x)). Since premise 2 states that if a person is a teacher, then that person is respected, premise 7's antecedent is true, so the consequent must be true. Therefore, if every teacher is respected, then someone must be prepared (option D)."
+ },
+ {
+  "id": 755,
+  "question": "If every teacher is respected, does it follow that someone is prepared?",
+  "premises_nl": [
+   "If a person is a student, then that person is qualified.",
+   "If a person is a teacher, then that person is respected.",
+   "There exists at least one person who is prepared.",
+   "If a person is respected, then that person is useful.",
+   "There exists at least one person who is respected.",
+   "If all students being qualified implies that someone is respected, then that implication holds.",
+   "If all teachers being respected implies that someone is prepared, then that implication holds.",
+   "If a person is not useful, then that person is not a student.",
+   "If a person is respected, then that person is also prepared."
+  ],
+  "answer": "Yes",
+  "explanation": "From premise 2 (If a person is a teacher, then that person is respected), we know ∀x (T(x) → R(x)). From premise 7, if all teachers being respected implies that someone is prepared, then that implication holds (∀x (T(x) → R(x)) → ∃x P(x)). Since premise 2 states that if a person is a teacher, then that person is respected, premise 7's antecedent is true, so the consequent must be true. Therefore, if every teacher is respected, it follows that someone is prepared."
+ },
+ {
+  "id": 756,
+  "question": "Based on the above premises, which statement can be inferred if we know that every student is participating in the training session?\nA. It is not true that If a student attends the seminar, they will be eligible for the certification.\nB. It is both true and false that If a student attends the seminar, they will be eligible for the certification.\nC. If a student attends the seminar, they will be eligible for the certification.\nD. If a student attends the seminar, they won't be eligible for the certification.",
+  "premises_nl": [
+   "Every student is participating in the training session.",
+   "If a student attends the seminar, they will be eligible for the certification.",
+   "If a student is registered for the course, they attend the seminar.",
+   "Every student is registered for the course.",
+   "If a student attends the seminar, they are participating in the training session.",
+   "If a student does not submit assignments, they did not attend the seminar.",
+   "Every student completes the course successfully.",
+   "If there exists a student participating in the training session, then all students are participating in the training session."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 2 (If a student attends the seminar, they will be eligible for the certification), we know ∀x (S(x) → Q(x)). Since premise 2 directly states the implication, if a student attends the seminar, they will be eligible for the certification (option C)."
+ },
+ {
+  "id": 757,
+  "question": "If every student is participating in the training session, does it follow that if there exists a student participating in the training session, then all students are participating in the training session?",
+  "premises_nl": [
+   "Every student is participating in the training session.",
+   "If a student attends the seminar, they will be eligible for the certification.",
+   "If a student is registered for the course, they attend the seminar.",
+   "Every student is registered for the course.",
+   "If a student attends the seminar, they are participating in the training session.",
+   "If a student does not submit assignments, they did not attend the seminar.",
+   "Every student completes the course successfully.",
+   "If there exists a student participating in the training session, then all students are participating in the training session."
+  ],
+  "answer": "Yes",
+  "explanation": "From premise 1 (Every student is participating in the training session), we know ∀x T(x). From premise 8, if there exists a student participating in the training session, then all students are participating in the training session (∃x T(x) → ∀x T(x)). Since premise 1 states that all students are participating in the training session, premise 8's consequent is true, so the antecedent must be true. Therefore, if every student is participating in the training session, it follows that if there exists a student participating in the training session, then all students are participating in the training session."
+ },
+ {
+  "id": 758,
+  "question": "Based on the above premises, which statement can be logically inferred if we know that all students have attended the Software Engineering workshop?\nA. All students have attended the Software Engineering workshop.\nB. It is not true that All students have attended the Software Engineering workshop.\nC. It is both true and false that All students have attended the Software Engineering workshop.\nD. There are 2 students who have not attended the Software Engineering workshop.",
+  "premises_nl": [
+   "If a student attends the Software Engineering workshop, then they will be ready for the Capstone Project.",
+   "There exists at least one student who has passed the course on Computational Thinking.",
+   "If a student has completed the User Interface course, then they have also submitted the final project.",
+   "If a student has submitted the final project, then they have passed the Technical Writing course.",
+   "If a student is not ready for the Capstone Project, then they have not submitted the final project.",
+   "If submitting the final project leads to passing Technical Writing, then attending the Software Engineering workshop leads to being ready for the Capstone Project.",
+   "If the above implication holds, then submitting the final project leads to passing Technical Writing.",
+   "All students have attended the Software Engineering workshop.",
+   "There exists at least one student who has submitted the final project."
+  ],
+  "answer": "A",
+  "explanation": "From premise 8 (All students have attended the Software Engineering workshop), we know ∀x S(x). Since premise 8 directly states that all students have attended the Software Engineering workshop, if we know that all students have attended the Software Engineering workshop, it follows that all students have attended the Software Engineering workshop (option A)."
+ },
+ {
+  "id": 759,
+  "question": "If there exists at least one student who has submitted the final project, does it follow that if a student has submitted the final project, then they have passed the Technical Writing course?",
+  "premises_nl": [
+   "If a student attends the Software Engineering workshop, then they will be ready for the Capstone Project.",
+   "There exists at least one student who has passed the course on Computational Thinking.",
+   "If a student has completed the User Interface course, then they have also submitted the final project.",
+   "If a student has submitted the final project, then they have passed the Technical Writing course.",
+   "If a student is not ready for the Capstone Project, then they have not submitted the final project.",
+   "If submitting the final project leads to passing Technical Writing, then attending the Software Engineering workshop leads to being ready for the Capstone Project.",
+   "If the above implication holds, then submitting the final project leads to passing Technical Writing.",
+   "All students have attended the Software Engineering workshop.",
+   "There exists at least one student who has submitted the final project."
+  ],
+  "answer": "No",
+  "explanation": "From premise 9 (There exists at least one student who has submitted the final project), we know ∃x P(x). From premise 4, if a student has submitted the final project, then they have passed the Technical Writing course (∀x (P(x) → T(x))). Since premise 9 states that there exists a student who has submitted the final project, premise 4's antecedent can be true for some students, so the consequent must be true for those students. Therefore, if there exists at least one student who has submitted the final project, it follows that if a student has submitted the final project, then they have passed the Technical Writing course."
+ },
+ {
+  "id": 760,
+  "question": "Based on the above premises, which statement can be logically inferred if we know that there exists at least one student who has completed the Data Science course?\nA. If the implication from completing the Data Science course to being eligible for the Machine Learning course is valid, then completing the Data Science course leads to passing the Data Analytics exam.\nB. The negation of that implication.\nC. Both the implication and its negation are assumed true, which is a contradiction.\nD. The implication is assumed true and false at the same time.",
+  "premises_nl": [
+   "If a student has completed the Data Science course, then they are eligible to apply for the Machine Learning course.",
+   "There exists at least one student who has completed the Data Structures course.",
+   "If a student has completed the Algorithms course, then they have also completed the Data Science course.",
+   "If a student has completed the Data Science course, then they have passed the exam on Data Analytics.",
+   "If a student is not eligible to apply for the Machine Learning course, then they have not completed the Data Science course.",
+   "If completing the Data Science course leads to passing the Data Analytics exam, then completing the Data Science course makes the student eligible to apply for the Machine Learning course.",
+   "If the above implication holds, then completing the Data Science course leads to passing the Data Analytics exam.",
+   "All students have completed the Data Structures course.",
+   "There exists at least one student who has completed the Data Science course."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 9 (There exists at least one student who has completed the Data Science course), we know ∃x D(x). From premise 4, if a student has completed the Data Science course, then they have passed the exam on Data Analytics (∀x (D(x) → E(x))). From premise 6, if completing the Data Science course leads to passing the Data Analytics exam, then completing the Data Science course makes the student eligible to apply for the Machine Learning course (∀x (D(x) → E(x)) → ∀x (D(x) → M(x))). From premise 7, if the above implication holds, then completing the Data Science course leads to passing the Data Analytics exam (∀x (D(x) → E(x)) → ∀x (D(x) → M(x)) → ∀x (D(x) → E(x))). Since premise 9 states that there exists a student who has completed the Data Science course, premise 4's antecedent can be true for some students, so the consequent must be true for those students. Since premise 4 states the implication, premise 6's antecedent is true, so the consequent must be true. Therefore, premise 7's antecedent is true, so the consequent must be true. Therefore, if the implication from completing the Data Science course to being eligible for the Machine Learning course is valid, then completing the Data Science course leads to passing the Data Analytics exam (option A)."
+ },
+ {
+  "id": 761,
+  "question": "If there exists at least one student who has completed the Data Science course, does it follow that if a student has completed the Data Science course, then they have passed the Data Analytics exam?",
+  "premises_nl": [
+   "If a student has completed the Data Science course, then they are eligible to apply for the Machine Learning course.",
+   "There exists at least one student who has completed the Data Structures course.",
+   "If a student has completed the Algorithms course, then they have also completed the Data Science course.",
+   "If a student has completed the Data Science course, then they have passed the exam on Data Analytics.",
+   "If a student is not eligible to apply for the Machine Learning course, then they have not completed the Data Science course.",
+   "If completing the Data Science course leads to passing the Data Analytics exam, then completing the Data Science course makes the student eligible to apply for the Machine Learning course.",
+   "If the above implication holds, then completing the Data Science course leads to passing the Data Analytics exam.",
+   "All students have completed the Data Structures course.",
+   "There exists at least one student who has completed the Data Science course."
+  ],
+  "answer": "No",
+  "explanation": "From premise 9 (There exists at least one student who has completed the Data Science course), we know ∃x D(x). From premise 4, if a student has completed the Data Science course, then they have passed the exam on Data Analytics (∀x (D(x) → E(x))). Since premise 9 states that there exists a student who has completed the Data Science course, premise 4's antecedent can be true for some students, so the consequent must be true for those students. Therefore, if there exists at least one student who has completed the Data Science course, it follows that if a student has completed the Data Science course, then they have passed the Data Analytics exam."
+ },
+ {
+  "id": 762,
+  "question": "Based on the premises, which statement can be inferred?\nA. All students in the AI program can build trustworthy systems.\nB. Some students who study AI ethics cannot build trustworthy systems.\nC. Following ethical guidelines ensures trustworthy systems.\nD. Studying AI ethics is optional for AI program students.",
+  "premises_nl": [
+   "If a course includes AI ethics, then students understand responsible AI.",
+   "All students in the AI program study AI ethics.",
+   "If students understand responsible AI, then they can build trustworthy systems.",
+   "All students in the AI program follow the institution’s ethical AI guidelines."
+  ],
+  "answer": "A",
+  "explanation": "Premise 2 states all students study AI ethics, premise 1 states studying AI ethics leads to understanding responsible AI, and premise 3 states understanding leads to building trustworthy systems, so all students can build trustworthy systems, supporting option A. Option B is false because all can build systems. Option C is false because guidelines don’t ensure systems. Option D is false because ethics is mandatory."
+ },
+ {
+  "id": 763,
+  "question": "Do all students in the AI program build trustworthy systems, according to the premises?",
+  "premises_nl": [
+   "If a course includes AI ethics, then students understand responsible AI.",
+   "All students in the AI program study AI ethics.",
+   "If students understand responsible AI, then they can build trustworthy systems.",
+   "All students in the AI program follow the institution’s ethical AI guidelines."
+  ],
+  "answer": "Yes",
+  "explanation": "Premises 2, 1, and 3 show all students study AI ethics, which leads to understanding responsible AI, which enables building trustworthy systems, so all students can build trustworthy systems, and the answer is Yes."
+ },
+ {
+  "id": 764,
+  "question": "Based on the above premises, which statement can be logically inferred if we know that all students must meet the eligibility requirements to enroll in the advanced courses?\nA. It is a tautology that completing the prerequisite course implies eligibility for the advanced courses.\nB. Completing the prerequisite course implies eligibility for advanced courses.\nC. If completing the prerequisite course implies eligibility for advanced courses and its negation holds, then there is a contradiction.\nD. It is not true that completing the prerequisite course implies eligibility for the advanced courses.",
+  "premises_nl": [
+   "If a student has completed the required prerequisite course, they are eligible to enroll in advanced courses.",
+   "There exists at least one student who has met the eligibility requirements for advanced courses.",
+   "If a student has not met the eligibility requirements, they are not allowed to enroll in the elective courses.",
+   "All students must meet the eligibility requirements to enroll in the advanced courses.",
+   "If a student has not completed the prerequisite courses, they cannot proceed to the next level of courses.",
+   "If a student does not meet the eligibility criteria for advanced courses, they are not allowed to enroll in the elective courses.",
+   "If completing the prerequisite course implies eligibility for the advanced courses, then at least one student has the required eligibility.",
+   "If a student has completed the foundation course, they are eligible to proceed with the specialization courses.",
+   "If a student has failed to meet the standards for a course, they are not allowed to participate in the final project preparation."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 4 (All students must meet the eligibility requirements to enroll in the advanced courses), we know ∀x U(x). From premise 1, if a student has completed the required prerequisite course, they are eligible to enroll in advanced courses (∀x (R(x) → U(x))). Since premise 4 states that all students must meet the eligibility requirements, and premise 1 states that completing the prerequisite course leads to eligibility, if all students must meet the eligibility requirements to enroll in the advanced courses, it follows that completing the prerequisite course implies eligibility for advanced courses (option B)."
+ },
+ {
+  "id": 765,
+  "question": "If all students must meet the eligibility requirements to enroll in the advanced courses, does it follow that if a student has failed to meet the standards for a course, they are not allowed to participate in the final project preparation?",
+  "premises_nl": [
+   "If a student has completed the required prerequisite course, they are eligible to enroll in advanced courses.",
+   "There exists at least one student who has met the eligibility requirements for advanced courses.",
+   "If a student has not met the eligibility requirements, they are not allowed to enroll in the elective courses.",
+   "All students must meet the eligibility requirements to enroll in the advanced courses.",
+   "If a student has not completed the prerequisite courses, they cannot proceed to the next level of courses.",
+   "If a student does not meet the eligibility criteria for advanced courses, they are not allowed to enroll in the elective courses.",
+   "If completing the prerequisite course implies eligibility for the advanced courses, then at least one student has the required eligibility.",
+   "If a student has completed the foundation course, they are eligible to proceed with the specialization courses.",
+   "If a student has failed to meet the standards for a course, they are not allowed to participate in the final project preparation."
+  ],
+  "answer": "No",
+  "explanation": "From premise 4 (All students must meet the eligibility requirements to enroll in the advanced courses), we know ∀x U(x). From premise 9, if a student has failed to meet the standards for a course, they are not allowed to participate in the final project preparation (∀x (¬T(x) → ¬S(x))). Since premise 4 states that all students must meet the eligibility requirements, and premise 9 states the implication, if all students must meet the eligibility requirements to enroll in the advanced courses, it follows that if a student has failed to meet the standards for a course, they are not allowed to participate in the final project preparation."
+ },
+ {
+  "id": 766,
+  "question": "Do all students participate in research?",
+  "premises_nl": [
+   "All students belong to the university.",
+   "If a student does not participate in research, then they do not belong to the university.",
+   "If a student does not participate in research, then they are not taking the thesis course.",
+   "All students are registered.",
+   "If a student belongs to the university, then they are taking the thesis course.",
+   "All students receive a scholarship.",
+   "All students are taking the thesis course."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 1 states all students belong to the university, and premise 2 states not participating in research implies not belonging, so all students participate in research."
+ },
+ {
+  "id": 767,
+  "question": "Which activities do all students perform?\nA. Participating in research, taking thesis course, being registered, receiving scholarship.\nB. Participating in research, being registered, honors program.\nC. Taking thesis course, receiving scholarship, honors program.\nD. Participating in research, taking thesis course, honors program.",
+  "premises_nl": [
+   "All students belong to the university.",
+   "If a student does not participate in research, then they do not belong to the university.",
+   "If a student does not participate in research, then they are not taking the thesis course.",
+   "All students are registered.",
+   "If a student belongs to the university, then they are taking the thesis course.",
+   "All students receive a scholarship.",
+   "All students are taking the thesis course."
+  ],
+  "answer": "A",
+  "explanation": "Premise 1 states all students belong to the university, premise 2 implies all participate in research, premise 4 states all are registered, premise 5 implies all take the thesis course, and premise 6 states all receive a scholarship, so option A is correct."
+ },
+ {
+  "id": 768,
+  "question": "Do all students complete the capstone project?",
+  "premises_nl": [
+   "If a student completes the capstone project, then they gain teamwork skills.",
+   "All students possess problem-solving ability.",
+   "If a student does not have teamwork skills, then they do not have critical thinking skills.",
+   "All students have communication skills.",
+   "All students have critical thinking skills.",
+   "If a student does not complete the capstone project, then they do not possess problem-solving ability.",
+   "If a student has problem-solving ability, then they have teamwork skills."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 2 states all students have problem-solving ability, and premise 6 states not completing the capstone project implies lacking problem-solving ability, so all students complete the capstone project."
+ },
+ {
+  "id": 769,
+  "question": "Which skills do all students possess?\nA. Problem-solving, communication, critical thinking, teamwork, research skills.\nB. Problem-solving, communication, completing capstone project.\nC. Critical thinking, teamwork, research skills.\nD. Communication, critical thinking, completing capstone project.",
+  "premises_nl": [
+   "If a student completes the capstone project, then they gain teamwork skills.",
+   "All students possess problem-solving ability.",
+   "If a student does not have teamwork skills, then they do not have critical thinking skills.",
+   "All students have communication skills.",
+   "All students have critical thinking skills.",
+   "If a student does not complete the capstone project, then they do not possess problem-solving ability.",
+   "If a student has problem-solving ability, then they have teamwork skills."
+  ],
+  "answer": "A",
+  "explanation": "Premise 2 states all students have problem-solving ability, premise 4 states all have communication skills, premise 5 states all have critical thinking skills, and premise 7 states problem-solving implies teamwork skills, so option A is correct."
+ },
+ {
+  "id": 770,
+  "question": "Do all students write a thesis?",
+  "premises_nl": [
+   "All students complete the final project.",
+   "If a student has presentation skills, then they receive a certificate.",
+   "All students have presentation skills.",
+   "If a student writes a thesis, then they receive a certificate.",
+   "All students have theoretical knowledge.",
+   "If a student has theoretical knowledge, then they write a thesis.",
+   "All students receive a certificate."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 5 states all students have theoretical knowledge, and premise 6 states theoretical knowledge implies writing a thesis, so all students write a thesis."
+ },
+ {
+  "id": 771,
+  "question": "Which qualifications do all students possess?\nA. Theoretical knowledge, presentation skills, writing thesis, receiving certificate.\nB. Completing final project, writing thesis, practical experience.\nC. Presentation skills, receiving certificate, practical experience.\nD. Theoretical knowledge, completing final project, presentation skills.",
+  "premises_nl": [
+   "All students complete the final project.",
+   "If a student has presentation skills, then they receive a certificate.",
+   "All students have presentation skills.",
+   "If a student writes a thesis, then they receive a certificate.",
+   "All students have theoretical knowledge.",
+   "If a student has theoretical knowledge, then they write a thesis.",
+   "All students receive a certificate."
+  ],
+  "answer": "A",
+  "explanation": "Premise 1 states all students complete the final project, premise 3 states all have presentation skills, premise 5 states all have theoretical knowledge, premise 6 states knowledge implies writing a thesis, and premise 7 states all receive a certificate, so option A is correct."
+ },
+ {
+  "id": 772,
+  "question": "Do all students submit their thesis?",
+  "premises_nl": [
+   "All students pass the course.",
+   "If a student does not have high attendance, then they do not have good performance.",
+   "If a student does not submit assignments, then they do not have good performance.",
+   "If a student does not submit their thesis, then they do not pass the course.",
+   "If a student submits assignments, then they receive feedback.",
+   "If a student passes the course, then they have good performance.",
+   "All students have high attendance.",
+   "If a student does not receive feedback, then they did not submit assignments."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 1 states all students pass the course, and premise 4 states not submitting a thesis implies not passing, so all students submit their thesis."
+ },
+ {
+  "id": 773,
+  "question": "Which traits do all students possess?\nA. Good performance, high attendance, submitting thesis, submitting assignments.\nB. Good performance, submitting thesis, receiving feedback.\nC. High attendance, submitting assignments, receiving feedback.\nD. Passing course, good performance, submitting thesis.",
+  "premises_nl": [
+   "All students pass the course.",
+   "If a student does not have high attendance, then they do not have good performance.",
+   "If a student does not submit assignments, then they do not have good performance.",
+   "If a student does not submit their thesis, then they do not pass the course.",
+   "If a student submits assignments, then they receive feedback.",
+   "If a student passes the course, then they have good performance.",
+   "All students have high attendance.",
+   "If a student does not receive feedback, then they did not submit assignments."
+  ],
+  "answer": "A",
+  "explanation": "Premise 1 states all students pass the course, premise 6 states passing implies good performance, premise 7 states all have high attendance, premise 4 implies all submit their thesis, and premise 3 implies all submit assignments, so option A is correct."
+ },
+ {
+  "id": 774,
+  "question": "Do all students receive a recommendation?",
+  "premises_nl": [
+   "If a student gives a seminar, then they receive a recommendation.",
+   "If a student participates in a project, then they earn a certification.",
+   "All students complete the training module.",
+   "If a student does not earn a certification, then they did not participate in a project.",
+   "All students earn a certification.",
+   "If a student participates in a project, then they give a seminar."
+  ],
+  "answer": "No",
+  "explanation": "Premise 3 states all students complete the training module, premise 5 states all earn a certification, premise 4 implies all participate in a project, premise 6 states participating implies giving a seminar, and premise 1 states giving a seminar implies receiving a recommendation, so all students receive a recommendation."
+ },
+ {
+  "id": 775,
+  "question": "Which activities do all students perform?\nA. Completing training module, participating in project, giving seminar, earning certification.\nB. Completing training module, writing paper, giving seminar.\nC. Participating in project, earning certification, writing paper.\nD. Completing training module, giving seminar, receiving recommendation.",
+  "premises_nl": [
+   "If a student gives a seminar, then they receive a recommendation.",
+   "If a student participates in a project, then they earn a certification.",
+   "All students complete the training module.",
+   "If a student does not earn a certification, then they did not participate in a project.",
+   "All students earn a certification.",
+   "If a student participates in a project, then they give a seminar."
+  ],
+  "answer": "A",
+  "explanation": "Premise 3 states all students complete the training module, premise 5 states all earn a certification, premise 4 implies all participate in a project, and premise 6 states participating implies giving a seminar, so option A is correct."
+ },
+ {
+  "id": 776,
+  "question": "Do all students receive a recommendation?",
+  "premises_nl": [
+   "If a student gives a seminar, then they receive a recommendation.",
+   "If a student participates in a project, then they earn a certification.",
+   "All students complete the training module.",
+   "If a student does not earn a certification, then they did not participate in a project.",
+   "All students earn a certification.",
+   "If a student participates in a project, then they give a seminar."
+  ],
+  "answer": "No",
+  "explanation": "Premise 3 states all students complete the training module, premise 5 states all earn a certification, premise 4 implies all participate in a project, premise 6 states participating implies giving a seminar, and premise 1 states giving a seminar implies receiving a recommendation, so all students receive a recommendation."
+ },
+ {
+  "id": 777,
+  "question": "Which activities do all students perform?\nA. Completing training module, participating in project, giving seminar, earning certification.\nB. Completing training module, writing paper, giving seminar.\nC. Participating in project, earning certification, writing paper.\nD. Completing training module, giving seminar, receiving recommendation.",
+  "premises_nl": [
+   "If a student gives a seminar, then they receive a recommendation.",
+   "If a student participates in a project, then they earn a certification.",
+   "All students complete the training module.",
+   "If a student does not earn a certification, then they did not participate in a project.",
+   "All students earn a certification.",
+   "If a student participates in a project, then they give a seminar."
+  ],
+  "answer": "A",
+  "explanation": "Premise 3 states all students complete the training module, premise 5 states all earn a certification, premise 4 implies all participate in a project, and premise 6 states participating implies giving a seminar, so option A is correct."
+ },
+ {
+  "id": 778,
+  "question": "Do all students submit their assignment?",
+  "premises_nl": [
+   "If a student does not pass the course, then they did not submit the assignment.",
+   "If a student submits their assignment, then they qualify for graduation.",
+   "All students attend the university.",
+   "All students take the exam.",
+   "All students qualify for graduation.",
+   "All students pass the course.",
+   "If a student completes the research project, then they submit the assignment."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 6 states all students pass the course, and premise 1 states not passing implies not submitting the assignment, so all students submit their assignment."
+ },
+ {
+  "id": 779,
+  "question": "Which activities do all students perform?\nA. Attending university, taking exam, submitting assignment, passing course, qualifying for graduation.\nB. Attending university, submitting assignment, completing research project.\nC. Taking exam, passing course, completing research project.\nD. Submitting assignment, qualifying for graduation, completing research project.",
+  "premises_nl": [
+   "If a student does not pass the course, then they did not submit the assignment.",
+   "If a student submits their assignment, then they qualify for graduation.",
+   "All students attend the university.",
+   "All students take the exam.",
+   "All students qualify for graduation.",
+   "All students pass the course.",
+   "If a student completes the research project, then they submit the assignment."
+  ],
+  "answer": "A",
+  "explanation": "Premise 3 states all students attend the university, premise 4 states all take the exam, premise 6 states all pass the course, premise 1 implies all submit the assignment, and premise 5 states all qualify for graduation, so option A is correct."
+ }
+]

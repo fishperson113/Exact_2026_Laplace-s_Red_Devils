@@ -1,0 +1,1221 @@
+[
+ {
+  "id": 240,
+  "question": "Have all employees signed the safety compliance form?",
+  "premises_nl": [
+   "If someone completes the safety training, then they are allowed to operate heavy machinery.",
+   "If someone is allowed to operate heavy machinery, then they must have signed the safety compliance form.",
+   "All employees receive regular safety reminders.",
+   "If someone takes the advanced training course, then they receive safety reminders.",
+   "If someone has a supervisor's recommendation, then they have completed the safety training.",
+   "If someone is allowed to operate heavy machinery, then they have taken the advanced training course.",
+   "If someone has signed the safety compliance form, then they have taken the advanced training course.",
+   "All employees have completed the safety training.",
+   "If someone has signed the safety compliance form, then they received a supervisor’s recommendation.",
+   "If someone does not receive safety reminders, then they did not receive a supervisor’s recommendation.",
+   "If someone receives safety reminders, then they have completed the safety training.",
+   "If being allowed to operate heavy machinery implies taking the advanced training course, then all employees receive regular safety reminders.",
+   "If there exists someone with a supervisor’s recommendation, then there exists someone who receives safety reminders.",
+   "If someone has signed the safety compliance form, then if someone has a supervisor’s recommendation, someone receives safety reminders.",
+   "If taking the advanced training means receiving safety reminders, then not receiving reminders means not having a supervisor’s recommendation.",
+   "If being allowed to operate machinery means signing the safety compliance, then if being allowed to operate machinery means taking the advanced training course, then all employees receive safety reminders.",
+   "If someone has signed the safety compliance form, then they have completed the safety training.",
+   "If someone has not signed the safety compliance form, then they do not have a supervisor’s recommendation.",
+   "All employees are allowed to operate heavy machinery.",
+   "If someone does not have a supervisor’s recommendation, then they are not allowed to operate heavy machinery.",
+   "If someone has not completed the safety training, then they have not taken the advanced training course."
+  ],
+  "answer": "No",
+  "explanation": "Premise 19 states that all employees are allowed to operate heavy machinery, and premise 2 says that being allowed to operate machinery implies signing the safety compliance form. Thus, all employees have signed the safety compliance form."
+ },
+ {
+  "id": 241,
+  "question": "Have all employees taken the advanced training course?",
+  "premises_nl": [
+   "If someone completes the safety training, then they are allowed to operate heavy machinery.",
+   "If someone is allowed to operate heavy machinery, then they must have signed the safety compliance form.",
+   "All employees receive regular safety reminders.",
+   "If someone takes the advanced training course, then they receive safety reminders.",
+   "If someone has a supervisor's recommendation, then they have completed the safety training.",
+   "If someone is allowed to operate heavy machinery, then they have taken the advanced training course.",
+   "If someone has signed the safety compliance form, then they have taken the advanced training course.",
+   "All employees have completed the safety training.",
+   "If someone has signed the safety compliance form, then they received a supervisor’s recommendation.",
+   "If someone does not receive safety reminders, then they did not receive a supervisor’s recommendation.",
+   "If someone receives safety reminders, then they have completed the safety training.",
+   "If being allowed to operate heavy machinery implies taking the advanced training course, then all employees receive regular safety reminders.",
+   "If there exists someone with a supervisor’s recommendation, then there exists someone who receives safety reminders.",
+   "If someone has signed the safety compliance form, then if someone has a supervisor’s recommendation, someone receives safety reminders.",
+   "If taking the advanced training means receiving safety reminders, then not receiving reminders means not having a supervisor’s recommendation.",
+   "If being allowed to operate machinery means signing the safety compliance, then if being allowed to operate machinery means taking the advanced training course, then all employees receive safety reminders.",
+   "If someone has signed the safety compliance form, then they have completed the safety training.",
+   "If someone has not signed the safety compliance form, then they do not have a supervisor’s recommendation.",
+   "All employees are allowed to operate heavy machinery.",
+   "If someone does not have a supervisor’s recommendation, then they are not allowed to operate heavy machinery.",
+   "If someone has not completed the safety training, then they have not taken the advanced training course."
+  ],
+  "answer": "No",
+  "explanation": "Premise 19 states that all employees are allowed to operate heavy machinery, and premise 6 says that being allowed to operate machinery implies taking the advanced training course. Thus, all employees have taken the advanced training course."
+ },
+ {
+  "id": 242,
+  "question": "Based on the above premises, which statement can be inferred?\nA. All AI models have sufficient data.\nB. All AI models are untrained.\nC. If an AI model is trained, then it does not have sufficient data.\nD. No AI models use deep learning.",
+  "premises_nl": [
+   "There exists at least one AI model that can make predictions.",
+   "All AI models require training data.",
+   "If an AI system does not use deep learning, then it cannot make predictions.",
+   "All AI models utilize deep learning.",
+   "There exists at least one AI model that performs classification.",
+   "If an AI model is trained, then it can achieve high accuracy.",
+   "If an AI model does not perform classification, then it does not utilize deep learning.",
+   "If an AI model cannot make predictions, then it does not perform classification.",
+   "If an AI model does not use deep learning, then it does not have sufficient data.",
+   "If the inability to use deep learning implies a lack of sufficient data, then all AI models require training data.",
+   "If an AI model uses deep learning, then it has sufficient data.",
+   "All AI models perform classification.",
+   "If an AI model can make predictions, then it has sufficient data.",
+   "If an AI model cannot make predictions, then it does not require training data.",
+   "If an AI model performs classification, then it requires training data."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 3 says all AI models use deep learning. Premise 13 says that if an AI model uses deep learning, then it has sufficient data. Therefore, all AI models have sufficient data."
+ },
+ {
+  "id": 243,
+  "question": "Based on the above premises, is the following statement true?\nStatement: If an AI model performs classification, then it requires training data.",
+  "premises_nl": [
+   "There exists at least one AI model that can make predictions.",
+   "All AI models require training data.",
+   "If an AI system does not use deep learning, then it cannot make predictions.",
+   "All AI models utilize deep learning.",
+   "There exists at least one AI model that performs classification.",
+   "If an AI model is trained, then it can achieve high accuracy.",
+   "If an AI model does not perform classification, then it does not utilize deep learning.",
+   "If an AI model cannot make predictions, then it does not perform classification.",
+   "If an AI model does not use deep learning, then it does not have sufficient data.",
+   "If the inability to use deep learning implies a lack of sufficient data, then all AI models require training data.",
+   "If an AI model uses deep learning, then it has sufficient data.",
+   "All AI models perform classification.",
+   "If an AI model can make predictions, then it has sufficient data.",
+   "If an AI model cannot make predictions, then it does not require training data.",
+   "If an AI model performs classification, then it requires training data."
+  ],
+  "answer": "No",
+  "explanation": "Premise 17 directly states that if an AI model performs classification, then it requires training data. Since all models perform classification (Premise 14), the statement holds."
+ },
+ {
+  "id": 244,
+  "question": "Based on the above premises, which statement can be inferred?\nA. If a programmer understands loops, then they understand object-oriented programming.\nB. If a programmer does not understand recursion, then they do not understand loops.\nC. If a programmer does not study regularly, they will not improve debugging skills.\nD. If a programmer does not use functions, then they do not understand modular programming.",
+  "premises_nl": [
+   "All fundamental concepts in C++ are important for problem-solving.",
+   "If a programmer understands variables, then they can understand data types.",
+   "If a programmer understands functions, then they understand modular programming.",
+   "If a programmer understands loops, then they can apply them to problem-solving.",
+   "All programmers who practice coding improve their C++ skills.",
+   "If a programmer does not understand pointers, then they will struggle with dynamic memory allocation.",
+   "If a programmer does not understand loops, then they will not understand recursion.",
+   "If a programmer does not understand C++, then they will struggle with object-oriented programming.",
+   "If a programmer understands loops, then they will understand C++.",
+   "If all programmers who study regularly improve their debugging skills, then if a programmer does not understand loops, they will not understand recursion.",
+   "If all fundamental concepts in C++ are important for problem-solving, then if a programmer understands variables, they can understand data types.",
+   "All programmers should practice coding.",
+   "There exists at least one programmer who understands loops.",
+   "If a programmer understands C++, then they understand object-oriented programming.",
+   "There exists at least one programmer who understands C++."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 9 states that if a programmer understands loops, then they understand C++. Premise 16 says that if they understand C++, then they understand object-oriented programming. Chaining both gives: if a programmer understands loops, then they understand object-oriented programming."
+ },
+ {
+  "id": 245,
+  "question": "Based on the above premises, is the following statement true?\nStatement: There exists at least one programmer who understands object-oriented programming.",
+  "premises_nl": [
+   "All fundamental concepts in C++ are important for problem-solving.",
+   "If a programmer understands variables, then they can understand data types.",
+   "If a programmer understands functions, then they understand modular programming.",
+   "If a programmer understands loops, then they can apply them to problem-solving.",
+   "All programmers who practice coding improve their C++ skills.",
+   "If a programmer does not understand pointers, then they will struggle with dynamic memory allocation.",
+   "If a programmer does not understand loops, then they will not understand recursion.",
+   "If a programmer does not understand C++, then they will struggle with object-oriented programming.",
+   "If a programmer understands loops, then they will understand C++.",
+   "If all programmers who study regularly improve their debugging skills, then if a programmer does not understand loops, they will not understand recursion.",
+   "If all fundamental concepts in C++ are important for problem-solving, then if a programmer understands variables, they can understand data types.",
+   "All programmers should practice coding.",
+   "There exists at least one programmer who understands loops.",
+   "If a programmer understands C++, then they understand object-oriented programming.",
+   "There exists at least one programmer who understands C++."
+  ],
+  "answer": "No",
+  "explanation": "Premise 14 confirms at least one programmer understands loops. From premise 9, that implies they understand C++, and from premise 16, that implies they understand object-oriented programming. So such a programmer exists."
+ },
+ {
+  "id": 246,
+  "question": "Based on the above premises, which conclusion is correct?\nA. If a student scores above 90%, then they are honored.\nB. If a student is honored, then they scored above 90%.\nC. If a student is not honored, then they did not receive a certificate of excellence.\nD. If a student receives a certificate of excellence, then they have a distinction.",
+  "premises_nl": [
+   "If a student does not submit the exam, then they fail.",
+   "All students who study regularly pass the exam.",
+   "There exists at least one student who passed the exam.",
+   "If a student passes the exam, then they meet the course requirements.",
+   "If a student fails the exam, then they must retake the course.",
+   "If a student scores exactly 100%, then they receive a distinction.",
+   "If a student does not study, then they do not pass.",
+   "There exists at least one student who scored above 90%.",
+   "If a student scores above 90%, then they receive a certificate of excellence.",
+   "If passing implies meeting course requirements, then all passing students meet the course requirements.",
+   "If scoring above 90% implies receiving a certificate, then students who do not receive a certificate did not score above 90%.",
+   "If a student does not submit the exam, then they do not pass.",
+   "If a student receives a distinction, then they have a high academic standing.",
+   "All students who receive a certificate of excellence are honored.",
+   "There exists at least one student who studied but did not pass.",
+   "There exists at least one student who failed but improved later.",
+   "If a student does not pass, then they do not meet the course requirements."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 9 says students scoring above 90% receive a certificate of excellence. Premise 14 says students with a certificate are honored. So, scoring above 90% leads to being honored."
+ },
+ {
+  "id": 247,
+  "question": "According to the above premises, is the following statement true?\nStatement: If a student scores exactly 100%, then they have a high academic standing.",
+  "premises_nl": [
+   "If a student does not submit the exam, then they fail.",
+   "All students who study regularly pass the exam.",
+   "There exists at least one student who passed the exam.",
+   "If a student passes the exam, then they meet the course requirements.",
+   "If a student fails the exam, then they must retake the course.",
+   "If a student scores exactly 100%, then they receive a distinction.",
+   "If a student does not study, then they do not pass.",
+   "There exists at least one student who scored above 90%.",
+   "If a student scores above 90%, then they receive a certificate of excellence.",
+   "If passing implies meeting course requirements, then all passing students meet the course requirements.",
+   "If scoring above 90% implies receiving a certificate, then students who do not receive a certificate did not score above 90%.",
+   "If a student does not submit the exam, then they do not pass.",
+   "If a student receives a distinction, then they have a high academic standing.",
+   "All students who receive a certificate of excellence are honored.",
+   "There exists at least one student who studied but did not pass.",
+   "There exists at least one student who failed but improved later.",
+   "If a student does not pass, then they do not meet the course requirements."
+  ],
+  "answer": "No",
+  "explanation": "Premise 6 states that scoring 100% implies receiving a distinction. Premise 13 states that receiving a distinction implies high academic standing. Chaining both, scoring 100% implies high academic standing."
+ },
+ {
+  "id": 248,
+  "question": "Based on the above premises, which conclusion is correct?\nA. If a student completes a final project, then they receive a diploma.\nB. If a student completes an internship, then they receive a certificate of excellence.\nC. If a student receives a diploma, then they have completed a final project.\nD. If a student is eligible for graduation, then they have graduated with distinction.",
+  "premises_nl": [
+   "If a student completes all required courses, then they are eligible for graduation.",
+   "If a student has a GPA below 2.0, then they are not eligible for graduation.",
+   "All students must complete a final project.",
+   "If a student is eligible for graduation, then they receive a diploma.",
+   "If a student completes an internship, then they have completed all required courses.",
+   "There exists at least one student who graduates with honors.",
+   "If a student has a GPA of at least 3.5, then they graduate with honors.",
+   "There exists at least one student who has completed an internship.",
+   "If a student has completed all required courses, then they meet the academic requirements.",
+   "If all students with a GPA of at least 3.5 graduate with honors, then all students eligible for honors have a good GPA.",
+   "If all students who complete an internship fulfill the graduation requirements, then those who have not completed an internship are not eligible for graduation.",
+   "If a student completes a final project, then they meet the academic requirements.",
+   "If a student meets the academic requirements, then they receive a diploma.",
+   "All students must meet the academic requirements.",
+   "All students who receive a diploma must have completed all graduation requirements.",
+   "There exists at least one student who graduates with a distinction.",
+   "There exists at least one student who is eligible for graduation.",
+   "If a student does not complete a final project, then they do not meet the academic requirements."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 12 says that completing a final project implies meeting academic requirements. Premise 13 says that meeting academic requirements implies receiving a diploma. So, completing a final project leads to receiving a diploma."
+ },
+ {
+  "id": 249,
+  "question": "According to the above premises, is the following statement true?\nStatement: If all students must meet the academic requirements, then all students must complete a final project.",
+  "premises_nl": [
+   "If a student completes all required courses, then they are eligible for graduation.",
+   "If a student has a GPA below 2.0, then they are not eligible for graduation.",
+   "All students must complete a final project.",
+   "If a student is eligible for graduation, then they receive a diploma.",
+   "If a student completes an internship, then they have completed all required courses.",
+   "There exists at least one student who graduates with honors.",
+   "If a student has a GPA of at least 3.5, then they graduate with honors.",
+   "There exists at least one student who has completed an internship.",
+   "If a student has completed all required courses, then they meet the academic requirements.",
+   "If all students with a GPA of at least 3.5 graduate with honors, then all students eligible for honors have a good GPA.",
+   "If all students who complete an internship fulfill the graduation requirements, then those who have not completed an internship are not eligible for graduation.",
+   "If a student completes a final project, then they meet the academic requirements.",
+   "If a student meets the academic requirements, then they receive a diploma.",
+   "All students must meet the academic requirements.",
+   "All students who receive a diploma must have completed all graduation requirements.",
+   "There exists at least one student who graduates with a distinction.",
+   "There exists at least one student who is eligible for graduation.",
+   "If a student does not complete a final project, then they do not meet the academic requirements."
+  ],
+  "answer": "No",
+  "explanation": "Premise 14 states all students must meet academic requirements. Premise 18 says that if a student does not complete a final project, they do not meet academic requirements. By contraposition, meeting academic requirements requires a final project. Thus, all students must complete a final project."
+ },
+ {
+  "id": 250,
+  "question": "Based on the above premises, which conclusion can be inferred?\nA. All Python code is optimized.\nB. All optimized code is not well-tested.\nC. If a Python code is optimized, then it is not well-tested.\nD. No Python code follows PEP 8 standards.",
+  "premises_nl": [
+   "If a Python code is not well-tested, then it is not optimized.",
+   "All Python projects are easy to maintain.",
+   "All Python code follows PEP 8 standards.",
+   "If a Python project is easy to maintain, then it is well-tested.",
+   "There exists at least one Python project that is well-tested.",
+   "All Python code is well-tested.",
+   "If a Python code does not follow PEP 8 standards, then it is not well-tested.",
+   "If a Python project is not optimized, then it is not well-tested.",
+   "If a Python code is easy to maintain, then it follows PEP 8 standards.",
+   "If a Python code is well-tested, then it follows PEP 8 standards.",
+   "If a Python project is easy to maintain, then it is well-tested.",
+   "All Python projects have clean and readable code.",
+   "If a Python project is well-tested, then it is optimized."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 5 says all Python code is well-tested. Premise 12 says well-tested code is optimized. So, all Python code is optimized."
+ },
+ {
+  "id": 251,
+  "question": "Based on the above premises, is the statement true?\nStatement: If a Python code is optimized, then it is well-tested.",
+  "premises_nl": [
+   "If a Python code is not well-tested, then it is not optimized.",
+   "All Python projects are easy to maintain.",
+   "All Python code follows PEP 8 standards.",
+   "If a Python project is easy to maintain, then it is well-tested.",
+   "There exists at least one Python project that is well-tested.",
+   "All Python code is well-tested.",
+   "If a Python code does not follow PEP 8 standards, then it is not well-tested.",
+   "If a Python project is not optimized, then it is not well-tested.",
+   "If a Python code is easy to maintain, then it follows PEP 8 standards.",
+   "If a Python code is well-tested, then it follows PEP 8 standards.",
+   "If a Python project is easy to maintain, then it is well-tested.",
+   "All Python projects have clean and readable code.",
+   "If a Python project is well-tested, then it is optimized."
+  ],
+  "answer": "No",
+  "explanation": "From premise 0, if a code is not well-tested, it is not optimized. The contrapositive is: if it is optimized, then it must be well-tested."
+ },
+ {
+  "id": 252,
+  "question": "Based on the above premises, which statement can be inferred?\nA. All stoichiometrically correct reactions are balanced.\nB. If a reaction is balanced, then it is not stoichiometrically correct.\nC. A reaction is stoichiometrically correct if and only if it is unbalanced.\nD. No reaction can follow the law of conservation of mass.",
+  "premises_nl": [
+   "If a chemical reaction is not balanced, then it is not stoichiometrically correct.",
+   "All chemical equations must follow the law of conservation of mass.",
+   "All chemical reactions involve energy changes.",
+   "If a reaction is balanced, then it is stoichiometrically correct.",
+   "There exists at least one reaction that is exothermic.",
+   "All chemical reactions are exothermic or endothermic.",
+   "If a reaction involves energy changes, then it is either exothermic or endothermic.",
+   "If a reaction is exothermic, then it releases heat.",
+   "If a reaction is balanced, then it follows the law of conservation of mass.",
+   "If a reaction involves energy changes, then it is balanced.",
+   "All chemical reactions follow the law of conservation of mass.",
+   "If a reaction is stoichiometrically correct, then it is balanced."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 12 explicitly states that if a reaction is stoichiometrically correct, then it is balanced."
+ },
+ {
+  "id": 253,
+  "question": "Based on the above premises, is the following statement true?\nStatement: If a chemical reaction occurs, then it is balanced.",
+  "premises_nl": [
+   "If a chemical reaction is not balanced, then it is not stoichiometrically correct.",
+   "All chemical equations must follow the law of conservation of mass.",
+   "All chemical reactions involve energy changes.",
+   "If a reaction is balanced, then it is stoichiometrically correct.",
+   "There exists at least one reaction that is exothermic.",
+   "All chemical reactions are exothermic or endothermic.",
+   "If a reaction involves energy changes, then it is either exothermic or endothermic.",
+   "If a reaction is exothermic, then it releases heat.",
+   "If a reaction is balanced, then it follows the law of conservation of mass.",
+   "If a reaction involves energy changes, then it is balanced.",
+   "All chemical reactions follow the law of conservation of mass.",
+   "If a reaction is stoichiometrically correct, then it is balanced."
+  ],
+  "answer": "No",
+  "explanation": "From premise 2, we know every chemical reaction involves energy change. Premise 10 states that energy change implies a reaction is balanced. Therefore, all chemical reactions are balanced."
+ },
+ {
+  "id": 254,
+  "question": "Based on the above premises, which statement can be inferred?\nA. A person gains knowledge if and only if they understand the content.\nB. A person gains knowledge if and only if they have read a book.\nC. A person who gains knowledge does not necessarily understand the content.\nD. A person understands content if and only if they gain wisdom.",
+  "premises_nl": [
+   "If a person reads a book, then they gain knowledge.",
+   "All people who read books gain knowledge.",
+   "If a person does not understand the content, they do not gain knowledge.",
+   "If a person reads a book, they gain wisdom.",
+   "All people who read books gain wisdom.",
+   "If a person gains wisdom, they gain knowledge.",
+   "If a person does not gain knowledge, they have not understood the content.",
+   "If a person reads a book and gains wisdom, they gain knowledge.",
+   "Everyone who reads books gains knowledge.",
+   "If a person has gained knowledge and wisdom, they have mastered the content.",
+   "Everyone who has gained knowledge has read a book."
+  ],
+  "answer": "Unknown",
+  "explanation": "Premise 2 says that not understanding content implies not gaining knowledge, and premise 6 says not gaining knowledge implies not understanding content. So understanding and knowledge are logically equivalent."
+ },
+ {
+  "id": 255,
+  "question": "Based on the above premises, is the following statement true?\nStatement: If a person gains both knowledge and wisdom, they have mastered the content.",
+  "premises_nl": [
+   "If a person reads a book, then they gain knowledge.",
+   "All people who read books gain knowledge.",
+   "If a person does not understand the content, they do not gain knowledge.",
+   "If a person reads a book, they gain wisdom.",
+   "All people who read books gain wisdom.",
+   "If a person gains wisdom, they gain knowledge.",
+   "If a person does not gain knowledge, they have not understood the content.",
+   "If a person reads a book and gains wisdom, they gain knowledge.",
+   "Everyone who reads books gains knowledge.",
+   "If a person has gained knowledge and wisdom, they have mastered the content.",
+   "Everyone who has gained knowledge has read a book."
+  ],
+  "answer": "No",
+  "explanation": "Premise 9 explicitly states that gaining both knowledge and wisdom implies mastering the content. Therefore, the statement is true."
+ },
+ {
+  "id": 256,
+  "question": "Can the variable 'Math' be accessed in the class 'Science_subject'?",
+  "premises_nl": [
+   "In C++ language, variables that are in classes are stored in 3 types of access specifiers: Public, Protected, and Private.",
+   "Variables in the Public specifier are accessible within the class, by inherited classes, and outside the class.",
+   "An access specifier that allows access in inherited classes but not outside is different from Public and Private.",
+   "Variables in the Private specifier are only accessible within the class.",
+   "If a person creates a setter and getter function and uses it for a variable inside a class, then the variable can be accessed within the class and from outside.",
+   "John is coding and making a class called 'Subject'.",
+   "John creates an inherited class 'Science_subject'.",
+   "John assigns an access specifier to 'Math' that allows access in inherited classes but not outside the class.",
+   "There is no getter function for 'Math' in 'Subject'.",
+   "There is no setter function for 'Math' in 'Subject'."
+  ],
+  "answer": "A",
+  "explanation": "The variable 'Math' can be accessed in 'Science_subject' because it has an access specifier that allows access in inherited classes (premise 8), and 'Science_subject' inherits from 'Subject' (premise 7). Premises 1 and 3 indicate there are three specifiers, and the one allowing inherited access but not outside access is 'Protected', distinct from 'Public' (premise 2) and 'Private' (premise 4)."
+ },
+ {
+  "id": 257,
+  "question": "Based on the premises, which of the following must be true?\nA. I ate a Banh Mi.\nB. I passed the test.\nC. It is raining.\nD. I slept.",
+  "premises_nl": [
+   "If it's raining, then I'm going to sleep.",
+   "If I'm going to sleep, then I don't study.",
+   "If I don't study, then I fail the test.",
+   "You fail the test if and only if you don't pass the test.",
+   "I don’t fail the test."
+  ],
+  "answer": "B",
+  "explanation": "Premises 4 and 5 state that failing the test is equivalent to not passing, and I don’t fail the test, so I must have passed."
+ },
+ {
+  "id": 258,
+  "question": "Based on the premises, which of the following can be inferred?\nA) Bob will graduate the school because he studies hard.\nB) Bob will be happy because he studies hard and graduates the school.\nC) Bob will pass the test because he studies hard and is never lazy.\nD) Bob will never graduate the school because he is never lazy.",
+  "premises_nl": [
+   "If a person studies hard, then they can pass the test.",
+   "If a person passes the test, they graduate the school.",
+   "If they graduate the school, they are happy.",
+   "Bob never lazy."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 4, we know that Bob never lazy, which implies Bob studies hard. From premise 1, if Bob studies hard, he can pass the test. From premise 2, if Bob passes the test, he graduates the school. From premise 3, if Bob graduates the school, he is happy. Therefore, Bob will be happy because he studies hard (from premises 4 and 1) and graduates the school (from premises 2 and 3), making option B correct."
+ },
+ {
+  "id": 259,
+  "question": "Based on the premises, is the following statement true?\nStatement: Bob will be happy because he studies hard and graduates the school.",
+  "premises_nl": [
+   "If a person studies hard, then they can pass the test.",
+   "If a person passes the test, they graduate the school.",
+   "If they graduate the school, they are happy.",
+   "Bob never lazy."
+  ],
+  "answer": "No",
+  "explanation": "From premise 4, we know that Bob never lazy, which implies Bob studies hard. From premise 1, if Bob studies hard, he can pass the test. From premise 2, if Bob passes the test, he graduates the school. From premise 3, if Bob graduates the school, he is happy. Therefore, Bob will be happy because he studies hard (from premises 4 and 1) and graduates the school (from premises 2 and 3), making the statement true."
+ },
+ {
+  "id": 260,
+  "question": "Based on the premises, which of the following can be inferred?\nA) Jake passed Calculus 1 because he is a freshman.\nB) Jake cannot attend Calculus 2 because he did not pass Calculus 1.\nC) Jake is a freshman student and has passed Calculus 1 and Calculus 2.\nD) Jake has attended Calculus 2, implying he passed Calculus 1 and scored at least 4 points on it.",
+  "premises_nl": [
+   "All students who are freshmen have to pass Calculus 1 and Calculus 2.",
+   "If they don't achieve 4 points or over on Calculus 1, they cannot attend Calculus 2.",
+   "Jake has learned Calculus 2."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 3, we know that Jake has learned Calculus 2, which means he took Calculus 2. From premise 2, we know that to take Calculus 2, a student must have scored at least 4 points on Calculus 1. Therefore, Jake has attended Calculus 2, implying he passed Calculus 1 and scored at least 4 points on it (from premises 2 and 3), making option D correct."
+ },
+ {
+  "id": 261,
+  "question": "Based on the premises, is the following statement true?\nStatement: Jake passed Calculus 1 and scored at least 4 points on it because he attended Calculus 2.",
+  "premises_nl": [
+   "All students who are freshmen have to pass Calculus 1 and Calculus 2.",
+   "If they don't achieve 4 points or over on Calculus 1, they cannot attend Calculus 2.",
+   "Jake has learned Calculus 2."
+  ],
+  "answer": "No",
+  "explanation": "From premise 3, we know that Jake has learned Calculus 2, which means he took Calculus 2. From premise 2, we know that to take Calculus 2, a student must have scored at least 4 points on Calculus 1. Therefore, Jake passed Calculus 1 and scored at least 4 points on it because he attended Calculus 2 (from premises 2 and 3), making the statement true."
+ },
+ {
+  "id": 262,
+  "question": "Based on the premises, which of the following can be inferred?\nA) John has enough social work days to graduate.\nB) John cannot graduate because he didn't gain enough social work days and has spent 6 years at BK university.\nC) John will have to study more if he does not graduate within 6 years and is out of school.\nD) John can graduate as long as he has 15 social work days and has not spent 6 years at BK university.",
+  "premises_nl": [
+   "All students at BK university need to gain at least 15 social work days.",
+   "They cannot graduate from school if they don't have enough 15 social work days.",
+   "If they cannot graduate from school in 6 years, they are out of school.",
+   "If they are out of school, they have to spend more time studying at school.",
+   "John is a BK student."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 5, we know that John is a BK student. From premise 3, if John does not graduate within 6 years, he will be out of school. From premise 4, if John is out of school, he has to study more. Therefore, John will have to study more if he does not graduate within 6 years and is out of school (from premises 3, 4, and 5), making option C correct."
+ },
+ {
+  "id": 263,
+  "question": "Based on the premises, is the following statement true?\nStatement: John has to study more if he does not graduate within 6 years and is out of school.",
+  "premises_nl": [
+   "All students at BK university need to gain at least 15 social work days.",
+   "They cannot graduate from school if they don't have enough 15 social work days.",
+   "If they cannot graduate from school in 6 years, they are out of school.",
+   "If they are out of school, they have to spend more time studying at school.",
+   "John is a BK student."
+  ],
+  "answer": "No",
+  "explanation": "From premise 5, we know that John is a BK student. From premise 3, if John does not graduate within 6 years, he will be out of school. From premise 4, if John is out of school, he has to study more. Therefore, John has to study more if he does not graduate within 6 years and is out of school (from premises 3, 4, and 5), making the statement true."
+ },
+ {
+  "id": 264,
+  "question": "Based on the premises, which of the following can be inferred?\nA) Mary failed the subject because her average score was less than 8.\nB) Mary received an A grade due to her scores on the midterm, project, and final exams.\nC) The average score of Mary is less than 8 because she scored 7 on the midterm.\nD) The scores of Mary don't add up to more than 8 because her midterm score was low.",
+  "premises_nl": [
+   "In a subject, students can get scores through the midterm exam, project, and final exam.",
+   "If the average of those scores is higher than 8, students can get an A grade.",
+   "Mary got an A grade.",
+   "Mary got 7 on the midterm exam, 10 on the project, and 9 on the final exam."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 4, we know that Mary got 7 on the midterm exam, 10 on the project, and 9 on the final exam. From premise 2, if the average of these scores is higher than 8, Mary can get an A grade. From premise 3, Mary got an A grade. Therefore, Mary received an A grade due to her scores on the midterm, project, and final exams (from premises 2, 3, and 4), making option B correct."
+ },
+ {
+  "id": 265,
+  "question": "Based on the premises, is the following statement true?\nStatement: Mary got an A grade because her average score from the midterm, project, and final exams was higher than 8.",
+  "premises_nl": [
+   "In a subject, students can get scores through the midterm exam, project, and final exam.",
+   "If the average of those scores is higher than 8, students can get an A grade.",
+   "Mary got an A grade.",
+   "Mary got 7 on the midterm exam, 10 on the project, and 9 on the final exam."
+  ],
+  "answer": "No",
+  "explanation": "From premise 4, we know that Mary got 7 on the midterm exam, 10 on the project, and 9 on the final exam. From premise 2, if the average of these scores is higher than 8, Mary can get an A grade. From premise 3, Mary got an A grade. Therefore, Mary got an A grade because her average score from the midterm, project, and final exams was higher than 8 (from premises 2 and 4), making the statement true."
+ },
+ {
+  "id": 266,
+  "question": "Based on the premises, which of the following can be inferred?\nA) Peter Griffin can register for PE2 because he passed PE1.\nB) Peter Griffin cannot graduate until he registers for PE2 and passes it.\nC) Peter Griffin has already graduated because he passed PE1.\nD) Peter Griffin must take PE1 again because he is a freshman.",
+  "premises_nl": [
+   "If a person is a freshman, they need to attend 2 physics courses: PE1 and PE2.",
+   "Nobody can register for PE2 if they don't pass PE1.",
+   "A person cannot register for PE1 twice.",
+   "All people need to pass both PE physics courses in order to meet the condition for graduating school.",
+   "Peter Griffin is a freshman.",
+   "Peter Griffin passed PE1."
+  ],
+  "answer": "D",
+  "explanation": "From premise 5, we know that Peter Griffin is a freshman. From premise 1, this means he needs to register for both PE1 and PE2. From premise 6, we know that Peter Griffin passed PE1. From premise 4, to meet the condition for graduating, Peter Griffin needs to pass both PE1 and PE2. Therefore, Peter Griffin cannot graduate until he registers for PE2 and passes it (from premises 1, 4, 5, and 6), making option B correct."
+ },
+ {
+  "id": 267,
+  "question": "Based on the premises, is the following statement true?\nStatement: Peter Griffin can graduate after registering for PE2 and passing both PE1 and PE2.",
+  "premises_nl": [
+   "If a person is a freshman, they need to attend 2 physics courses: PE1 and PE2.",
+   "Nobody can register for PE2 if they don't pass PE1.",
+   "A person cannot register for PE1 twice.",
+   "All people need to pass both PE physics courses in order to meet the condition for graduating school.",
+   "Peter Griffin is a freshman.",
+   "Peter Griffin passed PE1."
+  ],
+  "answer": "No",
+  "explanation": "From premise 5, we know that Peter Griffin is a freshman. From premise 1, this means he needs to register for both PE1 and PE2. From premise 6, we know that Peter Griffin passed PE1. From premise 4, to meet the condition for graduating, Peter Griffin needs to pass both PE1 and PE2. Therefore, Peter Griffin can graduate after registering for PE2 and passing both PE1 and PE2 (from premises 1, 4, and 6), making the statement true."
+ },
+ {
+  "id": 268,
+  "question": "Based on the premises, which of the following can be inferred?\nA) Tu has gained experience and improved their skills.\nB) Tu is not confident yet because they have not improved their skills.\nC) Tu has attended fewer than 2 events, so they have not gained experience.\nD) Tu has improved their skills but has not gained experience.",
+  "premises_nl": [
+   "Every member in the club will gain experience through events.",
+   "If they gain experience, they get better and improve their skills.",
+   "Improving their skills lets them become confident.",
+   "They have to attend at least 2 events to gain experience.",
+   "Tu attended 5 events."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 5, we know that Tu attended 5 events. From premise 4, attending at least 2 events leads to gaining experience. From premise 2, gaining experience leads to improving skills. Therefore, Tu has gained experience and improved their skills (from premises 2, 4, and 5), making option A correct."
+ },
+ {
+  "id": 269,
+  "question": "Based on the premises, is the following statement true?\nStatement: Tu is confident because they have gained experience and improved their skills.",
+  "premises_nl": [
+   "Every member in the club will gain experience through events.",
+   "If they gain experience, they get better and improve their skills.",
+   "Improving their skills lets them become confident.",
+   "They have to attend at least 2 events to gain experience.",
+   "Tu attended 5 events."
+  ],
+  "answer": "No",
+  "explanation": "From premise 5, we know that Tu attended 5 events. From premise 4, attending at least 2 events leads to gaining experience. From premise 2, gaining experience leads to improving skills. From premise 3, improving skills leads to becoming confident. Therefore, Tu is confident because they have gained experience and improved their skills (from premises 2, 3, 4, and 5), making the statement true."
+ },
+ {
+  "id": 270,
+  "question": "Based on the premises, which of the following can be inferred?\nA) Tuan can stay in the BK dormitory because he is in the first semester and has a studying schedule.\nB) Tuan failed a subject, so he cannot stay in the BK dormitory.\nC) Tuan is not allowed to register in the dormitory because he has not registered subjects.\nD) Tuan has registered subjects for the semester, so he can stay in the BK dormitory.",
+  "premises_nl": [
+   "Students in BK university can register in BK dormitory if they have a studying schedule.",
+   "To have a studying schedule, they need to register subjects or be registered by the school for the first semester.",
+   "They cannot stay in BK dormitory if they fail or drop out of school.",
+   "Tuan is in the first semester."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 4, we know that Tuan is in the first semester. From premise 2, being in the first semester means Tuan has a studying schedule. From premise 1, having a studying schedule allows Tuan to register in the BK dormitory. Therefore, Tuan can stay in the BK dormitory because he is in the first semester and has a studying schedule (from premises 1, 2, and 4), making option A correct."
+ },
+ {
+  "id": 271,
+  "question": "Based on the premises, is the following statement true?\nStatement: Tuan can register for the BK dormitory because he is in the first semester and has a studying schedule.",
+  "premises_nl": [
+   "Students in BK university can register in BK dormitory if they have a studying schedule.",
+   "To have a studying schedule, they need to register subjects or be registered by the school for the first semester.",
+   "They cannot stay in BK dormitory if they fail or drop out of school.",
+   "Tuan is in the first semester."
+  ],
+  "answer": "No",
+  "explanation": "From premise 4, we know that Tuan is in the first semester. From premise 2, being in the first semester means Tuan has a studying schedule. From premise 1, having a studying schedule allows Tuan to register in the BK dormitory. Therefore, Tuan can register for the BK dormitory because he is in the first semester and has a studying schedule (from premises 1, 2, and 4), making the statement true."
+ },
+ {
+  "id": 272,
+  "question": "Based on the premises, which of the following can be inferred?\nA) Kahne will not receive guidance because they are not a BK student.\nB) Kahne can write a science article if they receive guidance and broaden their knowledge through training.\nC) Kahne will not get plus points in their graduation thesis because they have not published an article.\nD) Kahne needs to complete more training before they can write the article, even though they are a lab member.",
+  "premises_nl": [
+   "BK students can participate in the lab of a lecturer to gain guidance to do a science article.",
+   "If they are a member of the lab, they can get training.",
+   "Training helps them to broaden knowledge.",
+   "With guidance and knowledge, they can do a science article.",
+   "If the science article is successfully published, they get plus points in their graduation thesis.",
+   "Kahne is a member of the lab."
+  ],
+  "answer": "D",
+  "explanation": "From premise 6, we know that Kahne is a member of the lab. From premise 2, being a lab member means Kahne can get training. From premise 3, training helps Kahne to broaden their knowledge. From premise 1, if Kahne is a BK student and a lab member, they can receive guidance. From premise 4, with guidance and knowledge, Kahne can do a science article. Therefore, Kahne can write a science article if they receive guidance and broaden their knowledge through training (from premises 1, 2, 3, 4, and 6), making option B correct."
+ },
+ {
+  "id": 273,
+  "question": "Based on the premises, is the following statement true?\nStatement: Kahne will receive plus points for their graduation thesis if they write a science article and it is successfully published.",
+  "premises_nl": [
+   "BK students can participate in the lab of a lecturer to gain guidance to do a science article.",
+   "If they are a member of the lab, they can get training.",
+   "Training helps them to broaden knowledge.",
+   "With guidance and knowledge, they can do a science article.",
+   "If the science article is successfully published, they get plus points in their graduation thesis.",
+   "Kahne is a member of the lab."
+  ],
+  "answer": "No",
+  "explanation": "From premise 6, we know that Kahne is a member of the lab. From premise 4, with guidance and knowledge, Kahne can do a science article. From premise 5, if the science article is successfully published, Kahne will get plus points in their graduation thesis. Therefore, Kahne will receive plus points for their graduation thesis if they write a science article and it is successfully published (from premises 4, 5, and 6), making the statement true."
+ },
+ {
+  "id": 274,
+  "question": "Based on the premises, which of the following can be inferred?\nA) Coke can get an internship or go to work because they are a fourth-year student.\nB) Coke is guaranteed to get a job because they are a fourth-year student.\nC) Coke has a good CV because they are a fourth-year student.\nD) Coke doesn't need a CV to get a job because they are a fourth-year student.",
+  "premises_nl": [
+   "The third-year students can get an internship at a company or go to work.",
+   "If they get an internship, they get a good CV.",
+   "A good CV means they are easily able to get a job.",
+   "Coke is a fourth-year student."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 4, we know that Coke is a fourth-year student. From premise 1, fourth-year students (n ≥ 3) can get an internship or go to work. Therefore, Coke can get an internship or go to work because they are a fourth-year student (from premises 1 and 4), making option A correct."
+ },
+ {
+  "id": 275,
+  "question": "Based on the premises, is the following statement true?\nStatement: Coke will have a good CV and easily get a job if they choose to intern because they are a fourth-year student.",
+  "premises_nl": [
+   "The third-year students can get an internship at a company or go to work.",
+   "If they get an internship, they get a good CV.",
+   "A good CV means they are easily able to get a job.",
+   "Coke is a fourth-year student."
+  ],
+  "answer": "No",
+  "explanation": "From premise 4, we know that Coke is a fourth-year student. From premise 1, fourth-year students can get an internship or go to work. From premise 2, if Coke gets an internship, they will get a good CV. From premise 3, a good CV means Coke will easily get a job. Therefore, Coke will have a good CV and easily get a job if they choose to intern because they are a fourth-year student (from premises 1, 2, 3, and 4), making the statement true."
+ },
+ {
+  "id": 276,
+  "question": "Based on the premises, which of the following can be inferred?\nA) The Titan computer is likely to have a strong cooling unit because it runs complex software and supports multitasking efficiently.\nB) The Titan computer does not support multitasking efficiently because it lacks enough RAM.\nC) The Titan computer does not require a cooling unit because it runs complex software.\nD) The Titan computer has enough RAM because it supports multitasking efficiently.",
+  "premises_nl": [
+   "A computer with a fast processor can run complex software.",
+   "If a computer has enough RAM, it supports multitasking efficiently.",
+   "A system that runs complex software and supports multitasking efficiently requires a strong cooling unit.",
+   "Only systems with a strong cooling unit remain stable during heavy use.",
+   "The Titan computer runs complex software.",
+   "The Titan computer supports multitasking efficiently."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 5, we know that the Titan computer runs complex software. From premise 6, we know that the Titan computer supports multitasking efficiently. From premise 3, a system that runs complex software and supports multitasking efficiently requires a strong cooling unit. Therefore, the Titan computer is likely to have a strong cooling unit because it runs complex software and supports multitasking efficiently (from premises 3, 5, and 6), making option A correct."
+ },
+ {
+  "id": 277,
+  "question": "Based on the premises, is the following statement true?\nStatement: The Titan computer remains stable during heavy use because it runs complex software and supports multitasking efficiently.",
+  "premises_nl": [
+   "A computer with a fast processor can run complex software.",
+   "If a computer has enough RAM, it supports multitasking efficiently.",
+   "A system that runs complex software and supports multitasking efficiently requires a strong cooling unit.",
+   "Only systems with a strong cooling unit remain stable during heavy use.",
+   "The Titan computer runs complex software.",
+   "The Titan computer supports multitasking efficiently."
+  ],
+  "answer": "No",
+  "explanation": "From premise 5, we know that the Titan computer runs complex software. From premise 6, we know that the Titan computer supports multitasking efficiently. From premise 3, a system that runs complex software and supports multitasking efficiently requires a strong cooling unit. From premise 4, only systems with a strong cooling unit remain stable during heavy use. Therefore, the Titan computer remains stable during heavy use because it runs complex software and supports multitasking efficiently (from premises 3, 4, 5, and 6), making the statement true."
+ },
+ {
+  "id": 278,
+  "question": "Based on the premises, which of the following can be inferred?\nA) The AlphaNet model does not require hyperparameter tuning because it achieves high accuracy.\nB) The AlphaNet model has been extensively tuned because it achieves high accuracy and processes data quickly.\nC) The AlphaNet model uses a weak GPU because it processes data quickly.\nD) The AlphaNet model achieves high accuracy because it uses a powerful GPU and processes data quickly.",
+  "premises_nl": [
+   "Models trained with large datasets achieve high accuracy.",
+   "If a model uses a powerful GPU, it can process large datasets quickly.",
+   "A model that achieves high accuracy and processes data quickly requires extensive hyperparameter tuning.",
+   "Only models with extensive hyperparameter tuning perform consistently on new data.",
+   "The AlphaNet model achieves high accuracy.",
+   "The AlphaNet model processes data quickly."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 5, we know that the AlphaNet model achieves high accuracy. From premise 6, we know that the AlphaNet model processes data quickly. From premise 3, a model that achieves high accuracy and processes data quickly requires extensive hyperparameter tuning. Therefore, the AlphaNet model has been extensively tuned because it achieves high accuracy and processes data quickly (from premises 3, 5, and 6), making option B correct."
+ },
+ {
+  "id": 279,
+  "question": "Based on the premises, is the following statement true?\nStatement: The AlphaNet model performs consistently on new data because it achieves high accuracy and processes data quickly.",
+  "premises_nl": [
+   "Models trained with large datasets achieve high accuracy.",
+   "If a model uses a powerful GPU, it can process large datasets quickly.",
+   "A model that achieves high accuracy and processes data quickly requires extensive hyperparameter tuning.",
+   "Only models with extensive hyperparameter tuning perform consistently on new data.",
+   "The AlphaNet model achieves high accuracy.",
+   "The AlphaNet model processes data quickly."
+  ],
+  "answer": "No",
+  "explanation": "From premise 5, we know that the AlphaNet model achieves high accuracy. From premise 6, we know that the AlphaNet model processes data quickly. From premise 3, a model that achieves high accuracy and processes data quickly requires extensive hyperparameter tuning. From premise 4, only models with extensive hyperparameter tuning perform consistently on new data. Therefore, the AlphaNet model performs consistently on new data because it achieves high accuracy and processes data quickly (from premises 3, 4, 5, and 6), making the statement true."
+ },
+ {
+  "id": 280,
+  "question": "Based on the premises, which of the following can be inferred?\nA) A variable declared with 'let' is immutable and block-scoped.\nB) A function can be declared with either the 'function' keyword or arrow syntax, making it callable.\nC) If a promise is rejected, the 'then' block will be executed before the 'catch' block.\nD) The DOM in JavaScript is used for network requests and manipulation of HTML elements.",
+  "premises_nl": [
+   "In JavaScript, a variable can be declared using 'let', 'const', or 'var'.",
+   "If a variable is declared with 'let', it is block-scoped.",
+   "If a variable is declared with 'const', its value cannot be reassigned.",
+   "A function can be declared using the 'function' keyword or using arrow syntax.",
+   "JavaScript supports asynchronous programming with promises and async/await.",
+   "If a promise is resolved, the 'then' block will be executed.",
+   "If a promise is rejected, the 'catch' block will be executed.",
+   "A closure in JavaScript allows a function to access variables from its outer scope even after the outer function has finished execution.",
+   "The DOM in JavaScript allows manipulation of HTML elements on the page.",
+   "JavaScript supports event handling to respond to user interactions."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 4, we know that a function can be declared using the 'function' keyword or arrow syntax. This directly implies that such functions are callable, making option B correct."
+ },
+ {
+  "id": 281,
+  "question": "Based on the premises, is the following statement true?\nStatement: JavaScript supports event handling to respond to user actions and manipulate HTML elements on the page.",
+  "premises_nl": [
+   "In JavaScript, a variable can be declared using 'let', 'const', or 'var'.",
+   "If a variable is declared with 'let', it is block-scoped.",
+   "If a variable is declared with 'const', its value cannot be reassigned.",
+   "A function can be declared using the 'function' keyword or using arrow syntax.",
+   "JavaScript supports asynchronous programming with promises and async/await.",
+   "If a promise is resolved, the 'then' block will be executed.",
+   "If a promise is rejected, the 'catch' block will be executed.",
+   "A closure in JavaScript allows a function to access variables from its outer scope even after the outer function has finished execution.",
+   "The DOM in JavaScript allows manipulation of HTML elements on the page.",
+   "JavaScript supports event handling to respond to user interactions."
+  ],
+  "answer": "No",
+  "explanation": "From premise 10, we know that JavaScript supports event handling to respond to user interactions. From premise 9, we know that the DOM in JavaScript allows manipulation of HTML elements on the page. Therefore, JavaScript supports event handling to respond to user actions and manipulate HTML elements on the page (from premises 9 and 10), making the statement true."
+ },
+ {
+  "id": 282,
+  "question": "Based on the premises, which of the following can be inferred?\nA) C++ does not support exception handling because it does not use 'try', 'catch', and 'throw' keywords.\nB) C++ uses pointers to reference memory locations and can dynamically allocate memory.\nC) C++ functions cannot return values because they are not declared with a return type.\nD) The STL in C++ does not contain vectors or maps because it does not support templates.",
+  "premises_nl": [
+   "In C++, variables need to be declared with a type before they can be used.",
+   "C++ supports both primitive data types, such as int, char, and float, and user-defined types like structs and classes.",
+   "Functions in C++ can return a value and are declared with a return type.",
+   "C++ supports function overloading, allowing multiple functions with the same name but different parameters.",
+   "Classes in C++ are defined with the 'class' keyword and support encapsulation, inheritance, and polymorphism.",
+   "C++ uses pointers to reference memory locations, and pointers can be used to dynamically allocate memory.",
+   "In C++, the 'new' keyword is used to dynamically allocate memory, and 'delete' is used to deallocate it.",
+   "C++ supports exception handling with 'try', 'catch', and 'throw' keywords.",
+   "Templates in C++ allow generic programming by defining functions and classes that work with any data type.",
+   "The Standard Template Library (STL) in C++ includes data structures like vectors, maps, and sets, and algorithms like sort and find."
+  ],
+  "answer": "Unknown",
+  "explanation": "From premise 6, we know that C++ uses pointers to reference memory locations and can dynamically allocate memory. Therefore, option B is correct."
+ },
+ {
+  "id": 283,
+  "question": "Based on the premises, is the following statement true?\nStatement: In C++, 'new' is used to dynamically allocate memory and 'delete' is used to deallocate it, allowing for memory management through pointers.",
+  "premises_nl": [
+   "In C++, variables need to be declared with a type before they can be used.",
+   "C++ supports both primitive data types, such as int, char, and float, and user-defined types like structs and classes.",
+   "Functions in C++ can return a value and are declared with a return type.",
+   "C++ supports function overloading, allowing multiple functions with the same name but different parameters.",
+   "Classes in C++ are defined with the 'class' keyword and support encapsulation, inheritance, and polymorphism.",
+   "C++ uses pointers to reference memory locations, and pointers can be used to dynamically allocate memory.",
+   "In C++, the 'new' keyword is used to dynamically allocate memory, and 'delete' is used to deallocate it.",
+   "C++ supports exception handling with 'try', 'catch', and 'throw' keywords.",
+   "Templates in C++ allow generic programming by defining functions and classes that work with any data type.",
+   "The Standard Template Library (STL) in C++ includes data structures like vectors, maps, and sets, and algorithms like sort and find."
+  ],
+  "answer": "No",
+  "explanation": "From premise 6, we know that C++ uses pointers to reference memory locations and can dynamically allocate memory. From premise 7, we know that the 'new' keyword is used to dynamically allocate memory. From premise 8, we know that the 'delete' keyword is used to deallocate memory. Therefore, in C++, 'new' is used to dynamically allocate memory and 'delete' is used to deallocate it, allowing for memory management through pointers (from premises 6, 7, and 8), making the statement true."
+ },
+ {
+  "id": 284,
+  "question": "Are all students eligible for a raise?",
+  "premises_nl": [
+   "If a person does not have a university degree, then they are not eligible for a senior job.",
+   "Everyone has completed training.",
+   "If someone does not have a university degree, then they have not completed training.",
+   "Everyone has passed the qualification test.",
+   "If someone has a university degree, then they have completed training.",
+   "Everyone has attended the onboarding program.",
+   "If someone has not completed training, then they do not have a university degree.",
+   "If someone is eligible for a senior job, then they are eligible for a raise.",
+   "Everyone has a university degree.",
+   "If someone is not eligible for a senior job, then they do not have a university degree.",
+   "If someone attended the onboarding program, then they passed the qualification test.",
+   "If someone did not pass the qualification test, then they are not eligible for a senior job.",
+   "If someone has a university degree, then they attended the onboarding program.",
+   "If it is true that 'if someone does not have a university degree, then they are not eligible for a senior job', then it also follows that 'if someone is eligible for a senior job, then they are eligible for a raise'.",
+   "If everyone passed the qualification test, then it follows that 'if someone does not have a university degree, then they are not eligible for a senior job' implies 'if someone is eligible for a senior job, then they are eligible for a raise'.",
+   "If it is true that 'if someone does not have a university degree, then they are not eligible for a senior job', then it follows that 'if everyone passed the qualification test, then the conclusion from (14) holds true'.",
+   "If everyone has a university degree, then anyone who attended the onboarding program must have passed the qualification test.",
+   "If everyone attended the onboarding program, then anyone who attended it must have passed the qualification test.",
+   "Everyone is eligible for a senior job.",
+   "If someone does not have a university degree, then they did not attend the onboarding program.",
+   "If someone attended the onboarding program, then they have a university degree."
+  ],
+  "answer": "No",
+  "explanation": "Premise 19 states that everyone is eligible for a senior job, and premise 8 says that if someone is eligible for a senior job, they are eligible for a raise. Thus, all are eligible for a raise."
+ },
+ {
+  "id": 285,
+  "question": "Are all students eligible for a senior job?",
+  "premises_nl": [
+   "If a person does not have a university degree, then they are not eligible for a senior job.",
+   "Everyone has completed training.",
+   "If someone does not have a university degree, then they have not completed training.",
+   "Everyone has passed the qualification test.",
+   "If someone has a university degree, then they have completed training.",
+   "Everyone has attended the onboarding program.",
+   "If someone has not completed training, then they do not have a university degree.",
+   "If someone is eligible for a senior job, then they are eligible for a raise.",
+   "Everyone has a university degree.",
+   "If someone is not eligible for a senior job, then they do not have a university degree.",
+   "If someone attended the onboarding program, then they passed the qualification test.",
+   "If someone did not pass the qualification test, then they are not eligible for a senior job.",
+   "If someone has a university degree, then they attended the onboarding program.",
+   "If it is true that 'if someone does not have a university degree, then they are not eligible for a senior job', then it also follows that 'if someone is eligible for a senior job, then they are eligible for a raise'.",
+   "If everyone passed the qualification test, then it follows that 'if someone does not have a university degree, then they are not eligible for a senior job' implies 'if someone is eligible for a senior job, then they are eligible for a raise'.",
+   "If it is true that 'if someone does not have a university degree, then they are not eligible for a senior job', then it follows that 'if everyone passed the qualification test, then the conclusion from (14) holds true'.",
+   "If everyone has a university degree, then anyone who attended the onboarding program must have passed the qualification test.",
+   "If everyone attended the onboarding program, then anyone who attended it must have passed the qualification test.",
+   "Everyone is eligible for a senior job.",
+   "If someone does not have a university degree, then they did not attend the onboarding program.",
+   "If someone attended the onboarding program, then they have a university degree."
+  ],
+  "answer": "No",
+  "explanation": "Premise 19 directly states that everyone is eligible for a senior job, so it’s true that all are eligible."
+ },
+ {
+  "id": 286,
+  "question": "Do all students complete their assignments?",
+  "premises_nl": [
+   "Every student at the university is enrolled in at least one course.",
+   "If a person is not registered, then they are not allowed to take an exam.",
+   "If someone is not a paying student, then they are not registered.",
+   "All students have access to the university library.",
+   "There is at least one person who has completed their assignments.",
+   "If a person is a paying student, then they are enrolled in a course.",
+   "Everyone is allowed to take exams.",
+   "If a person doesn’t have access to the library, then they are not registered.",
+   "If someone has access to the library, then they have completed their assignments.",
+   "If someone has access to the library, then they are registered.",
+   "Everyone is registered.",
+   "If someone is allowed to take an exam, then they have access to the library.",
+   "If someone has access to the library, then they are allowed to take an exam.",
+   "If not being registered implies not being allowed to take an exam, then not being a paying student implies not being registered.",
+   "If not being a paying student implies not being registered, then having access to the library implies being allowed to take an exam.",
+   "If there exists someone who is registered, then everyone has access to the library.",
+   "If paying students are enrolled in courses, then those without library access are not registered.",
+   "If having access to the library implies assignment completion, then someone must be registered.",
+   "If someone is not registered, then they are not a paying student.",
+   "If someone is enrolled in a course, then they have completed their assignments.",
+   "If someone has completed their assignments, then they are allowed to take an exam."
+  ],
+  "answer": "No",
+  "explanation": "Premise 11 states that everyone is registered, premise 4 says all students have library access, and premise 9 says that having library access implies completing assignments. Thus, all students complete their assignments."
+ },
+ {
+  "id": 287,
+  "question": "Are all students registered?",
+  "premises_nl": [
+   "Every student at the university is enrolled in at least one course.",
+   "If a person is not registered, then they are not allowed to take an exam.",
+   "If someone is not a paying student, then they are not registered.",
+   "All students have access to the university library.",
+   "There is at least one person who has completed their assignments.",
+   "If a person is a paying student, then they are enrolled in a course.",
+   "Everyone is allowed to take exams.",
+   "If a person doesn’t have access to the library, then they are not registered.",
+   "If someone has access to the library, then they have completed their assignments.",
+   "If someone has access to the library, then they are registered.",
+   "Everyone is registered.",
+   "If someone is allowed to take an exam, then they have access to the library.",
+   "If someone has access to the library, then they are allowed to take an exam.",
+   "If not being registered implies not being allowed to take an exam, then not being a paying student implies not being registered.",
+   "If not being a paying student implies not being registered, then having access to the library implies being allowed to take an exam.",
+   "If there exists someone who is registered, then everyone has access to the library.",
+   "If paying students are enrolled in courses, then those without library access are not registered.",
+   "If having access to the library implies assignment completion, then someone must be registered.",
+   "If someone is not registered, then they are not a paying student.",
+   "If someone is enrolled in a course, then they have completed their assignments.",
+   "If someone has completed their assignments, then they are allowed to take an exam."
+  ],
+  "answer": "No",
+  "explanation": "Premise 11 directly states that everyone is registered, so all students are registered."
+ },
+ {
+  "id": 288,
+  "question": "Do all students attend the tutorial?",
+  "premises_nl": [
+   "If a student has enrolled in a course, then they have passed the prerequisite.",
+   "All students have a valid registration.",
+   "If a student has completed the qualifying test, then they have passed the prerequisite.",
+   "If a student has attended the tutorial, then they have submitted the assignment.",
+   "All students have completed the qualifying test.",
+   "If a student has completed the qualifying test, then they have attended the tutorial.",
+   "If a student has not completed the qualifying test, then they have not passed the prerequisite.",
+   "If a student is not registered, then they have not enrolled in a course.",
+   "All students have submitted the assignment.",
+   "If a student has enrolled in a course, then they have completed the qualifying test.",
+   "If a student has not attended the tutorial, then they have not enrolled in a course.",
+   "If the statement 'If a student has not completed the qualifying test then they have not passed the prerequisite' is true, then there exists at least one student who has submitted the assignment.",
+   "If the statement 'If a student is not registered then they have not enrolled in a course' is true, then it follows that if a student has completed the qualifying test, they have attended the tutorial.",
+   "If it is true that 'If a student has attended the tutorial, then they have submitted the assignment', then it must be that if a student is not registered, they have not enrolled in a course.",
+   "If it is true that 'If a student has completed the qualifying test, then they have attended the tutorial', then it must be that if a student has not completed the qualifying test, they have not passed the prerequisite.",
+   "If the statement 'If a student has not completed the qualifying test then they have not passed the prerequisite' implies that some student submitted the assignment, then there exists at least one student who attended the tutorial.",
+   "If a student is registered, then they have enrolled in a course.",
+   "If a student has not passed the prerequisite, then they are not registered.",
+   "If a student is registered, then they have completed the qualifying test.",
+   "If a student has passed the prerequisite, then they have completed the qualifying test.",
+   "All students have enrolled in a course."
+  ],
+  "answer": "No",
+  "explanation": "Premise 5 states that all students have completed the qualifying test, and premise 6 says that completing the qualifying test implies attending the tutorial. Thus, all students attend the tutorial."
+ },
+ {
+  "id": 289,
+  "question": "Do all students pass the prerequisite?",
+  "premises_nl": [
+   "If a student has enrolled in a course, then they have passed the prerequisite.",
+   "All students have a valid registration.",
+   "If a student has completed the qualifying test, then they have passed the prerequisite.",
+   "If a student has attended the tutorial, then they have submitted the assignment.",
+   "All students have completed the qualifying test.",
+   "If a student has completed the qualifying test, then they have attended the tutorial.",
+   "If a student has not completed the qualifying test, then they have not passed the prerequisite.",
+   "If a student is not registered, then they have not enrolled in a course.",
+   "All students have submitted the assignment.",
+   "If a student has enrolled in a course, then they have completed the qualifying test.",
+   "If a student has not attended the tutorial, then they have not enrolled in a course.",
+   "If the statement 'If a student has not completed the qualifying test then they have not passed the prerequisite' is true, then there exists at least one student who has submitted the assignment.",
+   "If the statement 'If a student is not registered then they have not enrolled in a course' is true, then it follows that if a student has completed the qualifying test, they have attended the tutorial.",
+   "If it is true that 'If a student has attended the tutorial, then they have submitted the assignment', then it must be that if a student is not registered, they have not enrolled in a course.",
+   "If it is true that 'If a student has completed the qualifying test, then they have attended the tutorial', then it must be that if a student has not completed the qualifying test, they have not passed the prerequisite.",
+   "If the statement 'If a student has not completed the qualifying test then they have not passed the prerequisite' implies that some student submitted the assignment, then there exists at least one student who attended the tutorial.",
+   "If a student is registered, then they have enrolled in a course.",
+   "If a student has not passed the prerequisite, then they are not registered.",
+   "If a student is registered, then they have completed the qualifying test.",
+   "If a student has passed the prerequisite, then they have completed the qualifying test.",
+   "All students have enrolled in a course."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 21 states that all students are enrolled in a course, and premise 1 says that enrollment implies passing the prerequisite. Thus, all students pass the prerequisite."
+ },
+ {
+  "id": 290,
+  "question": "Do all employees work in the security department?",
+  "premises_nl": [
+   "Everyone in the company has received a security clearance.",
+   "If someone is a manager, then they have received a security clearance.",
+   "All employees in the company have completed cybersecurity training.",
+   "If a person is not a manager, then they have not received a security clearance.",
+   "If a person has not received a security clearance, then they do not work in the security department.",
+   "If a person does not have permission to access confidential files, then they have not received a security clearance.",
+   "If a person is not assigned a security token, then they are not a manager.",
+   "If a person is assigned a security token, then they are a manager.",
+   "Everyone in the company has been assigned a security token.",
+   "If someone works in the security department, then they are a manager.",
+   "If someone has completed cybersecurity training, then they have received a security clearance.",
+   "If there is at least one manager, then everyone has completed cybersecurity training.",
+   "If everyone has been assigned a security token, then anyone without permission to access confidential files has not received a security clearance.",
+   "If being assigned a security token implies being a manager, then not having a token implies not being a manager.",
+   "If everyone has completed cybersecurity training, then being assigned a security token implies being a manager.",
+   "If the fact that having at least one manager implies everyone has completed cybersecurity training, then being assigned a token implies being a manager.",
+   "If someone is a manager, then they have permission to access confidential files.",
+   "If a person is assigned a security token, then they have received a security clearance.",
+   "If a person is assigned a security token, then they work in the security department.",
+   "If someone has received a security clearance, then they have completed cybersecurity training.",
+   "If someone has received a security clearance, then they are a manager."
+  ],
+  "answer": "No",
+  "explanation": "Premise 9 states that everyone has been assigned a security token, and premise 19 says that being assigned a token implies working in the security department. Thus, all employees work in the security department."
+ },
+ {
+  "id": 291,
+  "question": "Are all employees managers?",
+  "premises_nl": [
+   "Everyone in the company has received a security clearance.",
+   "If someone is a manager, then they have received a security clearance.",
+   "All employees in the company have completed cybersecurity training.",
+   "If a person is not a manager, then they have not received a security clearance.",
+   "If a person has not received a security clearance, then they do not work in the security department.",
+   "If a person does not have permission to access confidential files, then they have not received a security clearance.",
+   "If a person is not assigned a security token, then they are not a manager.",
+   "If a person is assigned a security token, then they are a manager.",
+   "Everyone in the company has been assigned a security token.",
+   "If someone works in the security department, then they are a manager.",
+   "If someone has completed cybersecurity training, then they have received a security clearance.",
+   "If there is at least one manager, then everyone has completed cybersecurity training.",
+   "If everyone has been assigned a security token, then anyone without permission to access confidential files has not received a security clearance.",
+   "If being assigned a security token implies being a manager, then not having a token implies not being a manager.",
+   "If everyone has completed cybersecurity training, then being assigned a security token implies being a manager.",
+   "If the fact that having at least one manager implies everyone has completed cybersecurity training, then being assigned a token implies being a manager.",
+   "If someone is a manager, then they have permission to access confidential files.",
+   "If a person is assigned a security token, then they have received a security clearance.",
+   "If a person is assigned a security token, then they work in the security department.",
+   "If someone has received a security clearance, then they have completed cybersecurity training.",
+   "If someone has received a security clearance, then they are a manager."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 1 states that everyone has received a security clearance, and premise 21 says that having security clearance implies being a manager. Thus, all employees are managers."
+ },
+ {
+  "id": 292,
+  "question": "Are all employees skilled?",
+  "premises_nl": [
+   "Everyone in the company is trained.",
+   "Everyone in the company is up to date with the latest tools.",
+   "If someone is not qualified, then they are not trained.",
+   "If someone is not qualified, then they are not productive.",
+   "If someone is skilled, then they are qualified.",
+   "If someone is skilled, then they are up to date with the latest tools.",
+   "If someone is qualified, then they are skilled.",
+   "If someone is not productive, then they are not qualified.",
+   "If someone is not trained, then they are not qualified.",
+   "Everyone in the company is qualified.",
+   "Everyone in the company follows the rules.",
+   "If someone is qualified, then they follow the rules.",
+   "If everyone is up to date with the latest tools, then everyone is qualified.",
+   "If everyone follows the rules, then if someone is not productive, they are not qualified.",
+   "If qualified people follow the rules, then if someone is not trained, they are not qualified.",
+   "If everyone is up to date with the latest tools, then this implies that if everyone is up to date with the latest tools, then everyone is qualified.",
+   "If the statement 'everyone up to date with tools implies everyone is qualified' is true, then it must be that if someone is not qualified, they are not trained.",
+   "If someone is not trained, then they are not skilled.",
+   "If someone is up to date with the latest tools, then they follow the rules.",
+   "If someone is not productive, then they do not follow the rules.",
+   "If someone is qualified, then they are up to date with the latest tools."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 10 states that everyone in the company is qualified, and premise 7 says that being qualified implies being skilled. Thus, all employees are skilled."
+ },
+ {
+  "id": 293,
+  "question": "Are all employees productive?",
+  "premises_nl": [
+   "Everyone in the company is trained.",
+   "Everyone in the company is up to date with the latest tools.",
+   "If someone is not qualified, then they are not trained.",
+   "If someone is not qualified, then they are not productive.",
+   "If someone is skilled, then they are qualified.",
+   "If someone is skilled, then they are up to date with the latest tools.",
+   "If someone is qualified, then they are skilled.",
+   "If someone is not productive, then they are not qualified.",
+   "If someone is not trained, then they are not qualified.",
+   "Everyone in the company is qualified.",
+   "Everyone in the company follows the rules.",
+   "If someone is qualified, then they follow the rules.",
+   "If everyone is up to date with the latest tools, then everyone is qualified.",
+   "If everyone follows the rules, then if someone is not productive, they are not qualified.",
+   "If qualified people follow the rules, then if someone is not trained, they are not qualified.",
+   "If everyone is up to date with the latest tools, then this implies that if everyone is up to date with the latest tools, then everyone is qualified.",
+   "If the statement 'everyone up to date with tools implies everyone is qualified' is true, then it must be that if someone is not qualified, they are not trained.",
+   "If someone is not trained, then they are not skilled.",
+   "If someone is up to date with the latest tools, then they follow the rules.",
+   "If someone is not productive, then they do not follow the rules.",
+   "If someone is qualified, then they are up to date with the latest tools."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 10 states that everyone in the company is qualified, and premise 8 implies that being qualified means being productive (via contrapositive: if not productive, then not qualified). Thus, all employees are productive."
+ },
+ {
+  "id": 294,
+  "question": "Do all students take the test?",
+  "premises_nl": [
+   "Every student attends the university.",
+   "If a student doesn't pass the project, then they will not pass the university course.",
+   "If a student doesn't complete the quiz, they won’t pass the university course.",
+   "If a student takes the test, then they pass the university course.",
+   "All students pass the university course.",
+   "If a student attends the review session, then they pass the project.",
+   "Every student attends the review session.",
+   "If a student doesn’t complete the quiz, they don’t attend the university.",
+   "If a student doesn’t attend the university, they don’t take the test.",
+   "If a student attends the review session, then they take the test.",
+   "If it's true that 'If a student doesn't pass the project, then they don’t pass the university course', then it's also true that 'If a student doesn't complete the quiz, then they don’t attend the university.'",
+   "If all students pass the university course, then all students attend the university.",
+   "If all students attend the review session, then it's true that 'If a student doesn't complete the quiz, then they don’t pass the university course.'",
+   "If 'If a student doesn't pass the project, then they don’t pass the university course' is true, then at least one student attends the university.",
+   "If the implication 'If a student doesn't pass the project, then they don’t pass the university course' implies 'If a student doesn't complete the quiz, then they don’t attend the university', then any student who attends the review session must take the test.",
+   "If a student passes the project, then they also complete the quiz.",
+   "If a student passes the university course, then they attend the university.",
+   "All students pass the project.",
+   "If a student doesn't pass the project, then they didn’t attend the review session.",
+   "If a student passes the university course, then they complete the quiz."
+  ],
+  "answer": "No",
+  "explanation": "Premise 7 states that every student attends the review session, and premise 10 says that attending the review session implies taking the test. Thus, all students take the test."
+ },
+ {
+  "id": 295,
+  "question": "Do all students complete the quiz?",
+  "premises_nl": [
+   "Every student attends the university.",
+   "If a student doesn't pass the project, then they will not pass the university course.",
+   "If a student doesn't complete the quiz, they won’t pass the university course.",
+   "If a student takes the test, then they pass the university course.",
+   "All students pass the university course.",
+   "If a student attends the review session, then they pass the project.",
+   "Every student attends the review session.",
+   "If a student doesn’t complete the quiz, they don’t attend the university.",
+   "If a student doesn’t attend the university, they don’t take the test.",
+   "If a student attends the review session, then they take the test.",
+   "If it's true that 'If a student doesn't pass the project, then they don’t pass the university course', then it's also true that 'If a student doesn't complete the quiz, then they don’t attend the university.'",
+   "If all students pass the university course, then all students attend the university.",
+   "If all students attend the review session, then it's true that 'If a student doesn't complete the quiz, then they don’t pass the university course.'",
+   "If 'If a student doesn't pass the project, then they don’t pass the university course' is true, then at least one student attends the university.",
+   "If the implication 'If a student doesn't pass the project, then they don’t pass the university course' implies 'If a student doesn't complete the quiz, then they don’t attend the university', then any student who attends the review session must take the test.",
+   "If a student passes the project, then they also complete the quiz.",
+   "If a student passes the university course, then they attend the university.",
+   "All students pass the project.",
+   "If a student doesn't pass the project, then they didn’t attend the review session.",
+   "If a student passes the university course, then they complete the quiz."
+  ],
+  "answer": "No",
+  "explanation": "Premise 5 states that all students pass the university course, and premise 20 says that passing the university course implies completing the quiz. Thus, all students complete the quiz."
+ },
+ {
+  "id": 296,
+  "question": "Are all students responsible?",
+  "premises_nl": [
+   "Everyone is punctual.",
+   "Everyone is qualified.",
+   "If someone is not talented, then they are not qualified.",
+   "If someone is talented, then they are punctual.",
+   "Everyone is a student.",
+   "Everyone is unemployed.",
+   "Everyone is talented.",
+   "Everyone is responsible.",
+   "If someone is not unemployed, then they are not punctual.",
+   "If someone is unemployed, then they are qualified.",
+   "If someone is not a student, then they are not talented.",
+   "If someone is responsible, then they are unemployed.",
+   "If everyone is a student, then if someone is not talented, they are not qualified.",
+   "If the previous statement is true, then everyone is qualified.",
+   "If there is at least one qualified person, then everyone is punctual.",
+   "If the implication from everyone being a student to the previous rule implies everyone is qualified, then everyone is a student.",
+   "If not being unemployed implies not being punctual, then the implication from everyone being a student to the rule that not being talented implies not being qualified leads to everyone being qualified.",
+   "If someone is not punctual, then they are not a student.",
+   "If someone is not qualified, then they are not talented.",
+   "If someone is qualified, then they are punctual.",
+   "If someone is responsible, then they are qualified.",
+   "If someone is unemployed, then they are responsible."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 5 states that everyone is a student, and premise 8 states that everyone is responsible. Thus, all students are responsible."
+ },
+ {
+  "id": 297,
+  "question": "Are all students unemployed?",
+  "premises_nl": [
+   "Everyone is punctual.",
+   "Everyone is qualified.",
+   "If someone is not talented, then they are not qualified.",
+   "If someone is talented, then they are punctual.",
+   "Everyone is a student.",
+   "Everyone is unemployed.",
+   "Everyone is talented.",
+   "Everyone is responsible.",
+   "If someone is not unemployed, then they are not punctual.",
+   "If someone is unemployed, then they are qualified.",
+   "If someone is not a student, then they are not talented.",
+   "If someone is responsible, then they are unemployed.",
+   "If everyone is a student, then if someone is not talented, they are not qualified.",
+   "If the previous statement is true, then everyone is qualified.",
+   "If there is at least one qualified person, then everyone is punctual.",
+   "If the implication from everyone being a student to the previous rule implies everyone is qualified, then everyone is a student.",
+   "If not being unemployed implies not being punctual, then the implication from everyone being a student to the rule that not being talented implies not being qualified leads to everyone being qualified.",
+   "If someone is not punctual, then they are not a student.",
+   "If someone is not qualified, then they are not talented.",
+   "If someone is qualified, then they are punctual.",
+   "If someone is responsible, then they are qualified.",
+   "If someone is unemployed, then they are responsible."
+  ],
+  "answer": "Yes",
+  "explanation": "Premise 5 states that everyone is a student, and premise 6 states that everyone is unemployed. Thus, all students are unemployed."
+ },
+ {
+  "id": 298,
+  "question": "Do all students graduate?",
+  "premises_nl": [
+   "If a student is eligible, then they must have taken the required test.",
+   "If a student does not pass the prerequisite, then they won't be allowed to graduate.",
+   "All students are eligible.",
+   "If a student has taken the required test, then their GPA requirement is met.",
+   "All students have passed the prerequisite.",
+   "If a student has not taken the required test, then they are not eligible.",
+   "If a student has taken the test, then they must have passed the prerequisite.",
+   "If a student’s GPA requirement is not met, then they have not taken the test.",
+   "If a student is eligible, then their GPA requirement is met.",
+   "If a student has passed the prerequisite, then they are allowed to graduate.",
+   "If a student is not allowed to graduate, then they have not taken the test.",
+   "If it's true that 'if a student's GPA is not met then they haven't taken the test', then it must also be true that 'if the student is eligible then they’ve taken the test'.",
+   "If it's true that 'if a student isn't allowed to graduate then they haven't taken the test', then it must also be true that 'if the student is eligible then they’ve taken the test'.",
+   "If there is some student who is allowed to graduate, then any student who takes the test will meet the GPA requirement.",
+   "If passing the prerequisite guarantees graduation, then there must exist at least one student who is allowed to graduate.",
+   "If eligibility guarantees test-taking, then not passing the prerequisite guarantees not graduating.",
+   "If a student meets the GPA requirement, then they are allowed to graduate.",
+   "If a student does not meet the GPA requirement, then they are not recommended.",
+   "If a student is not eligible, then they do not meet the GPA requirement.",
+   "If a student has not taken the test, then they are not recommended."
+  ],
+  "answer": "No",
+  "explanation": "Premise 5 states that all students have passed the prerequisite, and premise 10 says that passing the prerequisite implies being allowed to graduate. Thus, all students graduate."
+ },
+ {
+  "id": 299,
+  "question": "Are all students recommended?",
+  "premises_nl": [
+   "If a student is eligible, then they must have taken the required test.",
+   "If a student does not pass the prerequisite, then they won't be allowed to graduate.",
+   "All students are eligible.",
+   "If a student has taken the required test, then their GPA requirement is met.",
+   "All students have passed the prerequisite.",
+   "If a student has not taken the required test, then they are not eligible.",
+   "If a student has taken the test, then they must have passed the prerequisite.",
+   "If a student’s GPA requirement is not met, then they have not taken the test.",
+   "If a student is eligible, then their GPA requirement is met.",
+   "If a student has passed the prerequisite, then they are allowed to graduate.",
+   "If a student is not allowed to graduate, then they have not taken the test.",
+   "If it's true that 'if a student's GPA is not met then they haven't taken the test', then it must also be true that 'if the student is eligible then they’ve taken the test'.",
+   "If it's true that 'if a student isn't allowed to graduate then they haven't taken the test', then it must also be true that 'if the student is eligible then they’ve taken the test'.",
+   "If there is some student who is allowed to graduate, then any student who takes the test will meet the GPA requirement.",
+   "If passing the prerequisite guarantees graduation, then there must exist at least one student who is allowed to graduate.",
+   "If eligibility guarantees test-taking, then not passing the prerequisite guarantees not graduating.",
+   "If a student meets the GPA requirement, then they are allowed to graduate.",
+   "If a student does not meet the GPA requirement, then they are not recommended.",
+   "If a student is not eligible, then they do not meet the GPA requirement.",
+   "If a student has not taken the test, then they are not recommended."
+  ],
+  "answer": "No",
+  "explanation": "Premise 3 states that all students are eligible, premise 1 says that eligibility implies taking the test, and premise 20 implies that taking the test means being recommended (via contrapositive: if not recommended, then not tested). Thus, all students are recommended."
+ }
+]

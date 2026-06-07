@@ -2,10 +2,10 @@
 # Usage: python -m models.QA_model.train --config configs/qa_model.yaml
 
 model:
-  name: Qwen/Qwen2.5-3B-Instruct
+  name: Qwen/Qwen3.5-4B
   trust_remote_code: true
   max_seq_length: 3500
-  gen_max_new_tokens: 200
+  gen_max_new_tokens: 256
 
 lora:
   r: 8
@@ -14,10 +14,12 @@ lora:
   target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
 
 training:
-  num_train_epochs: 30
-  per_device_train_batch_size: 1
-  per_device_eval_batch_size: 2
-  gradient_accumulation_steps: 8
+  num_train_epochs: 20
+  # OOM fix: logits tensor = [batch, seq_len, vocab~152k] là chỗ ngốn VRAM nhất.
+  # Hạ batch → giữ effective batch = 1×8 = 8 (bằng 4×2 cũ) qua grad accumulation.
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 10
+  gradient_accumulation_steps: 4
   learning_rate: 2e-5
   warmup_ratio: 0.05
   weight_decay: 0.01
@@ -26,20 +28,26 @@ training:
   gradient_checkpointing: true
   train_seed: 42
   load_in_8bit: true
+  # Liger kernel: fused cross-entropy KHÔNG materialize full logits → tiết kiệm
+  # VRAM lớn nhất cho vocab to. Bật sau khi: pip install liger-kernel
+  use_liger_kernel: false
+  # Completion-only loss: chỉ tính loss trên phần assistant (JSON đáp án),
+  # mask system+user. Khớp FOL train_on_responses_only.
+  completion_only_loss: true
   # Early stopping
-  early_stopping_patience: 7
+  early_stopping_patience: 4
   load_best_model_at_end: true
-  metric_for_best_model: eval_loss
-  greater_is_better: false
+  metric_for_best_model: eval_accuracy
+  greater_is_better: true
   save_total_limit: 2
 
 eval:
   # Số mẫu dev tối đa để tính accuracy mỗi epoch (null = cả dev, chậm)
-  eval_accuracy_max_samples: 40
+  eval_accuracy_max_samples: 50
   # Số mẫu random in full JSON mỗi epoch (NL, FOL, question, gold, prediction)
   eval_print_samples: 6
   # Latency benchmark sau training
-  inference_latency_benchmark_n: 40
+  inference_latency_benchmark_n: 50
   inference_latency_warmup: 2
   inference_latency_benchmark_split: test
 
@@ -51,7 +59,7 @@ inference:
 
 hub:
   org: Laplaces-Red-Devils
-  repo_version: v01
+  repo_version: v02
   type: QA
   method: CoT
   push_to_hub: true

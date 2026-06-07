@@ -21,21 +21,6 @@ Explanation: {explanation}
 PREMISES_FOL_HEADER = "Premises (FOL):"
 PREMISES_NL_HEADER = "Premises (NL):"
 
-# --- Bước pipeline: NL → FOL (LLM) — chỉnh prompt tại đây ---
-SYSTEM_PROMPT_NL_TO_FOL = """\
-You translate natural-language premises into first-order logic (FOL).
-Output ONLY numbered FOL lines, one formula per line, no markdown fences.
-Use the same alphabet of predicates as in similar logic benchmarks when possible.
-"""
-
-USER_TEMPLATE_NL_TO_FOL = """\
-Natural language premises:
-{nl_block}
-
-Task: write the equivalent FOL premises (numbered list).
-"""
-
-
 def format_nl_block_numbered(premises_nl: list[str]) -> str:
     if not premises_nl:
         return "(none)"
