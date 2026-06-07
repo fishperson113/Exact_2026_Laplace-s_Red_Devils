@@ -11,12 +11,14 @@ Per problem:
       verify each (extract -> execute -> score vs gold)
       on EXECUTION ERROR: retry once with the stderr fed back (the v05 shape)
       keep every correct, distinct-code sample  (dedup by normalized-code hash)
-  >=1 correct  -> append Trajectories to trajectories_selfgen.jsonl
-  0   correct  -> append the ProblemSpec to selfgen_residual.jsonl
-                  (carrying one failed attempt in meta.qwen_attempt as a teacher hint)
+  >= --min-keep correct -> append Trajectories to trajectories_selfgen.jsonl
+  too few correct       -> ALSO append the ProblemSpec to selfgen_residual.jsonl, carrying
+                           meta.qwen_attempt (a failed try) + meta.hint_code (the QC verified
+                           solve) for the hinted route (`hinted.py`) to re-derive on-policy.
 
 Qwen NEVER sees the gold answer -- that would defeat the on-policy / verification
-point. Gold is used only by the scorer to gate.
+point. Gold is used only by the scorer to gate. (The hinted route shows a reference
+SOLUTION, not the gold value, and the gate still verifies Qwen's own output.)
 
 Auto-saves every --save-every problems and resumes by skipping ids already in
 either output file (re-run without --fresh). Interrupt-safe.
@@ -38,7 +40,9 @@ from app.physics_solution.shared.runtime.tracing import setup_tracing
 from app.physics_solution.versions.v06_finetune.data_pipeline import pot_common, vllm_client
 from app.physics_solution.versions.v06_finetune.data_pipeline.schema import ProblemSpec
 
-INPUT = "app/physics_solution/versions/v06_finetune/input/problems_all.jsonl"
+# THE canonical clean dataset (1584 problems, each with an optional `hint_code`): the single
+# source of truth for train+val. Do not reference any other dataset file. See v07 README.
+INPUT = "app/physics_solution/versions/v06_finetune/input/self_gen_dataset.jsonl"
 OUT_TRAJ = "app/physics_solution/versions/v06_finetune/output/trajectories_selfgen.jsonl"
 OUT_RESIDUAL = "app/physics_solution/versions/v06_finetune/output/selfgen_residual.jsonl"
 
@@ -136,9 +140,12 @@ async def _process_problem(spec: ProblemSpec, client, args):
             elif best_failed is None and comp.strip():
                 best_failed = comp
 
-    if kept:
+    # Route to the hinted residual when Qwen found TOO FEW correct samples (default <1, i.e.
+    # only on 0 correct; raise --min-keep to also top up problems with very few). The kept
+    # samples are still emitted; the hinted route adds more (guards then caps per problem).
+    if len(kept) >= args.min_keep:
         return kept, None
-    return [], _residual(spec, best_failed)
+    return kept, _residual(spec, best_failed)
 
 
 def _residual(spec: ProblemSpec, qwen_attempt: str | None) -> dict:
@@ -157,7 +164,12 @@ async def _run(args) -> None:
     in_path = root / args.input
     traj_path, res_path = root / OUT_TRAJ, root / OUT_RESIDUAL
 
-    specs = [ProblemSpec.from_dict(d) for d in pot_common.read_jsonl(in_path)]
+    specs = []
+    for d in pot_common.read_jsonl(in_path):
+        s = ProblemSpec.from_dict(d)
+        if d.get("hint_code"):  # carry the QC hint into meta for the hinted residual route
+            s.meta = dict(s.meta or {}, hint_code=d["hint_code"], hint_source=d.get("hint_source"))
+        specs.append(s)
     if args.limit:
         specs = specs[: args.limit]
 
@@ -222,6 +234,9 @@ def main() -> None:
     p.add_argument("--limit", type=int, default=None)
     p.add_argument("--concurrency", type=int, default=32)
     p.add_argument("--k", type=int, default=8, help="total samples per problem (spread over temps)")
+    p.add_argument("--min-keep", type=int, default=1,
+                   help="route to the hinted residual when fewer than this many correct "
+                        "samples were kept (default 1 = only on 0 correct)")
     p.add_argument("--temps", type=float, nargs="+", default=DEFAULT_TEMPS)
     p.add_argument("--base-url", default=None, help="vLLM base url (default env VLLM_BASE_URL / :18000)")
     p.add_argument("--model", default=None, help="served model id (default env VLLM_MODEL)")

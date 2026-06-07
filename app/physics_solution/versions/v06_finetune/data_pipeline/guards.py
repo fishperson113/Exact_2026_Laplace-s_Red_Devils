@@ -32,7 +32,8 @@ from app.physics_solution.versions.v06_finetune.data_pipeline import pot_common
 from app.physics_solution.versions.v06_finetune.data_pipeline.schema import write_jsonl
 
 IN_SELFGEN = "app/physics_solution/versions/v06_finetune/output/trajectories_selfgen.jsonl"
-IN_TEACHER = "app/physics_solution/versions/v06_finetune/output/trajectories_teacher.jsonl"
+IN_HINTED = "app/physics_solution/versions/v06_finetune/output/trajectories_hinted.jsonl"
+IN_TEACHER = "app/physics_solution/versions/v06_finetune/output/trajectories_teacher.jsonl"  # legacy (deprecated)
 OUT_SFT = "app/physics_solution/versions/v06_finetune/output/trajectories_sft.jsonl"
 OUT_REJECTED = "app/physics_solution/versions/v06_finetune/output/guards_rejected.jsonl"
 
@@ -153,8 +154,9 @@ def spurious_reason(traj: dict, rel_tol: float) -> str | None:
     return None
 
 
-# preference order when capping: on-policy first, then cleaner (low temp / few retries)
-_ROUTE_RANK = {"self_gen": 0, "teacher_residual": 1, "teacher_rewrite": 1}
+# preference order when capping: pure on-policy first, then hinted (still Qwen, but guided),
+# then any legacy teacher; within a route, lower temperature / fewer retries is cleaner.
+_ROUTE_RANK = {"self_gen": 0, "self_gen_hinted": 1, "teacher_residual": 2, "teacher_rewrite": 2}
 
 
 def _sort_key(traj: dict) -> tuple:
@@ -169,10 +171,10 @@ def _sort_key(traj: dict) -> tuple:
 def run(cap: int, rel_tol: float) -> None:
     root = repo_root()
     candidates: list[dict] = []
-    for path in (IN_SELFGEN, IN_TEACHER):
+    for path in (IN_SELFGEN, IN_HINTED, IN_TEACHER):
         candidates.extend(pot_common.load_jsonl_if_exists(root / path))
     print(f"Loaded {len(candidates)} candidate trajectories "
-          f"(self_gen + teacher).")
+          f"(self_gen + hinted [+ legacy teacher]).")
     if not candidates:
         raise SystemExit("No candidate trajectories. Run selfgen.py / teacher.py first.")
 

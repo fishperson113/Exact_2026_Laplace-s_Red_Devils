@@ -1,5 +1,13 @@
 # V06 Handoff Prompt
 
+> ⚠️ **DEPRECATED / HISTORICAL — see [v07](../v07_final-version/README.md).** This was the
+> original v06 plan. It is kept for background only and **conflicts with the current
+> architecture** in two big ways: (1) the **DeepSeek teacher (Route 2/3) is gone** — replaced
+> by an on-policy **hinted self-gen** route that shows Qwen a reference `hint_code` (no API);
+> (2) the generation prompt now requires a **5–10 line reasoning preamble** before the code.
+> The single canonical dataset is **`input/self_gen_dataset.jsonl`**. Use v07 for anything
+> actionable.
+
 ## Context: EXACT 2026 Physics Competition — v06: Data Generation + Fine-tune
 
 I'm working on a physics problem-solving system for a competition. The system uses **Qwen 3.5 4B** to solve **English** physics problems (electrostatics, circuits, capacitors, energy, induction, measurement) by **generating and executing Python code**. The organizer's data is machine-translated from Vietnamese; everything competition-facing is English.
