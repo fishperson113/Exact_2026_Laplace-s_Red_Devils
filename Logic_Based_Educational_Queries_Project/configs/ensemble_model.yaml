@@ -15,6 +15,8 @@ qa_model:
 
 inference:
   load_in_8bit: true
+  # Số mẫu sinh cùng lúc mỗi pha (FOL/QA) — tăng để chạy nhanh hơn, giảm nếu OOM.
+  batch_size: 4
   # Cảnh báo nếu 1 sample vượt ngưỡng (giây)
   slow_threshold_sec: 60
   # In chi tiết JSON từng mẫu ra stdout (giống QA, kèm fol_prediction). 0 = in TẤT CẢ.

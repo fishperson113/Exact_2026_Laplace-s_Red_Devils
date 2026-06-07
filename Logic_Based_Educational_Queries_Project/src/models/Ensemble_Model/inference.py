@@ -57,6 +57,18 @@ def resolve_project_root() -> Path:
     return Path(__file__).resolve().parents[3]
 
 
+def _render_no_think(tokenizer, messages) -> str:
+    """apply_chat_template với thinking TẮT (Qwen3); fallback nếu tokenizer không nhận kwarg."""
+    try:
+        return tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+        )
+    except TypeError:
+        return tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
+
+
 # ─── Result Dataclass ────────────────────────────────────────────────────────
 
 @dataclass
@@ -124,6 +136,33 @@ class FOLModel:
 
         return self._parse_fol(raw), raw
 
+    def generate_batch(self, premises_nl_list: list[list[str]], max_new_tokens: int = 650) -> list[tuple[list[str], str]]:
+        """Batched: list[NL premises] → list[(fol_list, raw)]. Left-pad cho decoder-only."""
+        self.tokenizer.padding_side = "left"
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+        texts = []
+        for nl in premises_nl_list:
+            user_msg = USER_TEMPLATE_FOL_SFT.format(premises_nl=format_nl_block_numbered(nl))
+            messages = [
+                {"role": "system", "content": SYSTEM_PROMPT_FOL_SFT},
+                {"role": "user", "content": user_msg},
+            ]
+            texts.append(_render_no_think(self.tokenizer, messages))
+        inputs = self.tokenizer(
+            texts, return_tensors="pt", padding=True, truncation=True, max_length=3500
+        ).to(self.model.device)
+        with torch.no_grad():
+            out = self.model.generate(
+                **inputs, max_new_tokens=max_new_tokens, do_sample=False, repetition_penalty=1.2,
+            )
+        input_len = inputs["input_ids"].shape[1]
+        res = []
+        for i in range(out.shape[0]):
+            raw = self.tokenizer.decode(out[i][input_len:], skip_special_tokens=True).strip()
+            res.append((self._parse_fol(raw), raw))
+        return res
+
     @staticmethod
     def _parse_fol(text: str) -> list[str]:
         match = re.search(r"\{.*\}", text, re.DOTALL)
@@ -163,7 +202,10 @@ class QAModel:
         base_model_name = peft_config.base_model_name_or_path
         print(f"[QA] Base model: {base_model_name}")
 
-        self.tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
+        # Tokenizer + chat_template lấy TỪ repo adapter (final_lora) để dùng ĐÚNG
+        # template lúc train. Vocab giống base (LoRA không đổi tokenizer); chỉ weights
+        # base lấy từ base_model_name.
+        self.tokenizer = AutoTokenizer.from_pretrained(hub_repo_id, trust_remote_code=True)
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
@@ -208,6 +250,35 @@ class QAModel:
         ).strip()
 
         return self._parse_output(raw)
+
+    def generate_batch(self, items: list[tuple], max_new_tokens: int = 256) -> list[dict]:
+        """Batched: list[(premises_nl, premises_fol, question)] → list[{answer, explanation}]."""
+        self.tokenizer.padding_side = "left"
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+        texts = []
+        for nl, fol, q in items:
+            user_content = USER_TEMPLATE_QA_COT.format(
+                premises_nl_block=format_premises_nl(nl),
+                premises_fol_block=format_premises_fol(fol),
+                question=q,
+            )
+            messages = [
+                {"role": "system", "content": SYSTEM_PROMPT_QA_COT},
+                {"role": "user", "content": user_content},
+            ]
+            texts.append(_render_no_think(self.tokenizer, messages))
+        inputs = self.tokenizer(
+            texts, return_tensors="pt", padding=True, truncation=True, max_length=4096
+        ).to(self.model.device)
+        with torch.no_grad():
+            out = self.model.generate(**inputs, max_new_tokens=max_new_tokens, do_sample=False)
+        input_len = inputs["input_ids"].shape[1]
+        res = []
+        for i in range(out.shape[0]):
+            raw = self.tokenizer.decode(out[i][input_len:], skip_special_tokens=True).strip()
+            res.append(self._parse_output(raw))
+        return res
 
     @staticmethod
     def _parse_output(text: str) -> dict[str, str]:
@@ -264,6 +335,7 @@ class EnsemblePipeline:
         self.load_8bit = inf_cfg.get("load_in_8bit", True)
         self.fol_max_new_tokens = fol_cfg.get("max_new_tokens", 650)
         self.qa_max_new_tokens = qa_cfg.get("max_new_tokens", 200)
+        self.batch_size = max(1, int(inf_cfg.get("batch_size", 4)))
 
     @staticmethod
     def _vram_gb() -> float:
@@ -285,16 +357,20 @@ class EnsemblePipeline:
     # ───── PHA 1: chỉ FOL trong VRAM ─────
     def generate_fol_all(self, premises_nl_list: list[list[str]]) -> list[dict]:
         n = len(premises_nl_list)
-        print(f"\n[PHA 1] Nạp FOL model (chỉ 1 LLM trong VRAM)…")
+        bs = self.batch_size
+        print(f"\n[PHA 1] Nạp FOL model (chỉ 1 LLM trong VRAM)… batch_size={bs}")
         fol_model = FOLModel(self.fol_repo, self.load_8bit)
         print(f"[VRAM] sau khi nạp FOL: {self._vram_gb():.2f} GB")
-        out = []
-        for i, nl in enumerate(premises_nl_list):
+        out: list[dict] = []
+        for s in range(0, n, bs):
+            chunk = premises_nl_list[s:s + bs]
             t0 = time.perf_counter()
-            fol, raw = fol_model.generate(nl, self.fol_max_new_tokens)
+            batch_res = fol_model.generate_batch(chunk, self.fol_max_new_tokens)
             dt = time.perf_counter() - t0
-            out.append({"premises_fol": fol, "fol_raw": raw, "fol_latency_sec": dt})
-            print(f"  [FOL {i+1:3d}/{n}] {dt:.1f}s", flush=True)
+            per = dt / len(chunk)
+            for fol, raw in batch_res:
+                out.append({"premises_fol": fol, "fol_raw": raw, "fol_latency_sec": per})
+            print(f"  [FOL {min(s + bs, n):3d}/{n}] batch {len(chunk)} → {dt:.1f}s ({per:.1f}s/mẫu)", flush=True)
         self._unload(fol_model)
         print(f"[VRAM] sau khi GIẢI PHÓNG FOL: {self._vram_gb():.2f} GB  (đã unload trước khi nạp QA)")
         return out
@@ -302,16 +378,20 @@ class EnsemblePipeline:
     # ───── PHA 2: chỉ QA trong VRAM ─────
     def answer_all(self, items: list[tuple]) -> list[dict]:
         n = len(items)
-        print(f"\n[PHA 2] Nạp QA model (FOL đã unload; chỉ 1 LLM trong VRAM)…")
+        bs = self.batch_size
+        print(f"\n[PHA 2] Nạp QA model (FOL đã unload; chỉ 1 LLM trong VRAM)… batch_size={bs}")
         qa_model = QAModel(self.qa_repo, self.load_8bit)
         print(f"[VRAM] sau khi nạp QA: {self._vram_gb():.2f} GB")
-        out = []
-        for i, (nl, fol, q) in enumerate(items):
+        out: list[dict] = []
+        for s in range(0, n, bs):
+            chunk = items[s:s + bs]
             t0 = time.perf_counter()
-            res = qa_model.generate(nl, fol, q, self.qa_max_new_tokens)
+            batch_res = qa_model.generate_batch(chunk, self.qa_max_new_tokens)
             dt = time.perf_counter() - t0
-            out.append({"answer": res["answer"], "explanation": res["explanation"], "qa_latency_sec": dt})
-            print(f"  [QA {i+1:3d}/{n}] {dt:.1f}s pred={res['answer']}", flush=True)
+            per = dt / len(chunk)
+            for res in batch_res:
+                out.append({"answer": res["answer"], "explanation": res["explanation"], "qa_latency_sec": per})
+            print(f"  [QA {min(s + bs, n):3d}/{n}] batch {len(chunk)} → {dt:.1f}s ({per:.1f}s/mẫu)", flush=True)
         self._unload(qa_model)
         print(f"[VRAM] sau khi GIẢI PHÓNG QA: {self._vram_gb():.2f} GB")
         return out
