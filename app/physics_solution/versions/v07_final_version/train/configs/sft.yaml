@@ -1,0 +1,67 @@
+# v07 SFT — Qwen3.5-4B QLoRA, code-gen (reasoning + ONE python block).
+# Drives train/train.py. Records everything needed to reload the model exactly.
+# Run: PYTHONPATH=. <venv>/bin/python -m app.physics_solution.versions.v07_final_version.train.train \
+#        --config app/physics_solution/versions/v07_final_version/train/configs/sft.yaml
+
+model:
+  name: Qwen/Qwen3.5-4B          # base (qwen3_5; needs transformers>=5.5)
+  trust_remote_code: true
+  max_seq_length: 2048           # reasoning + one code block fits; raise if truncation high
+  load_in_4bit: true             # QLoRA (NF4). false -> 16-bit LoRA (A100-40G has room)
+  attn_implementation: sdpa      # flex-attn is disabled in code (tf5 unpack bug)
+
+lora:
+  r: 16
+  alpha: 32                      # alpha/r = 2
+  dropout: 0.05
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj",
+                   "gate_proj", "up_proj", "down_proj"]
+  bias: none
+
+training:
+  num_train_epochs: 3
+  per_device_train_batch_size: 8
+  per_device_eval_batch_size: 8
+  gradient_accumulation_steps: 2     # effective batch 16
+  learning_rate: 2.0e-4
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.05
+  weight_decay: 0.01
+  logging_steps: 5
+  bf16: true                         # A100 -> bf16
+  gradient_checkpointing: true       # unsloth mode
+  optim: adamw_8bit                  # VRAM-friendly
+  seed: 42
+  packing: false                     # train-on-completion masks the prompt; no packing
+  train_on_responses_only: true
+  # Qwen chat markers — loss only AFTER the assistant header.
+  instruction_marker: "<|im_start|>user\n"
+  response_marker: "<|im_start|>assistant\n"
+  # checkpoint selection
+  eval_strategy: epoch
+  save_strategy: epoch
+  load_best_model_at_end: true
+  metric_for_best_model: eval_loss
+  greater_is_better: false
+  save_total_limit: 2
+  early_stopping_patience: 2
+
+paths:
+  train_jsonl: app/physics_solution/versions/v07_final_version/output/train.jsonl
+  val_jsonl: app/physics_solution/versions/v07_final_version/output/val.jsonl
+  out_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07
+  adapter_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07/adapter
+  merged_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07/merged
+
+eval:
+  # accuracy eval (run model -> execute code -> score) is a separate step (eval.py)
+  max_new_tokens: 1024
+  temperature: 0.0
+
+hub:
+  org: Laplaces-Red-Devils
+  adapter_repo: physics-v07-sft-qwen3.5-4b           # LoRA adapter + tokenizer
+  merged_repo: physics-v07-sft-qwen3.5-4b-merged     # merged full model (vLLM serves this)
+  private: true
+  push_to_hub: true
+  commit_message: "v07 SFT QLoRA (code-gen PoT)"
