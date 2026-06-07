@@ -34,7 +34,9 @@ class QAModel:
         base_model_id  = peft_cfg.base_model_name_or_path
         print(f"[QA] Base model: {base_model_id}")
 
-        self.tokenizer = AutoTokenizer.from_pretrained(base_model_id, trust_remote_code=True)
+        # Tokenizer + chat_template lấy TỪ repo adapter (final_lora) để dùng ĐÚNG
+        # template lúc train; vocab giống base (LoRA không đổi tokenizer).
+        self.tokenizer = AutoTokenizer.from_pretrained(hub_repo_id, trust_remote_code=True)
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
@@ -63,9 +65,16 @@ class QAModel:
             {"role": "system", "content": SYSTEM_PROMPT_QA},
             {"role": "user",   "content": user_content},
         ]
-        text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
+        # enable_thinking=False: khớp lúc train (no-think) → đầu ra là JSON thuần,
+        # tránh <think> ăn token budget làm cắt JSON.
+        try:
+            text = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+            )
+        except TypeError:
+            text = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True
+            )
         inputs = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=4096
         ).to(self.model.device)
@@ -96,8 +105,21 @@ class QAModel:
                     }
             except json.JSONDecodeError:
                 pass
-        # Fallback: trích label từ text
-        for label in ("A", "B", "C", "D", "Yes", "No", "Unknown"):
-            if label in text:
-                return {"answer": label, "explanation": text}
-        return {"answer": "Unknown", "explanation": text}
+        # JSON cụt/lỗi: moi "answer": "..." (và explanation nếu có)
+        m = re.search(r'"answer"\s*:\s*"([^"]+)"', text)
+        if m:
+            ans = m.group(1).strip()
+            em = re.search(r'"explanation"\s*:\s*"(.*)', text, re.DOTALL)
+            explanation = em.group(1).strip().rstrip('"}').strip() if em else ""
+            return {"answer": ans, "explanation": explanation}
+        # Last-resort: word-boundary + cue, KHÔNG đoán bừa chữ "A" trong văn xuôi
+        m2 = re.search(
+            r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
+            text, re.I,
+        )
+        if m2:
+            return {"answer": m2.group(1), "explanation": ""}
+        for label in ("Unknown", "Yes", "No"):
+            if re.search(rf"\b{label}\b", text):
+                return {"answer": label, "explanation": ""}
+        return {"answer": "Unknown", "explanation": ""}
