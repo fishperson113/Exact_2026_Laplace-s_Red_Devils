@@ -63,10 +63,10 @@ User: "DOMAIN: {domain}\nANSWER TYPE: {answer_type}\n\nREFERENCE:\n{formula_hint
 | Path | What | Lang | Role | Status |
 |---|---|---|---|---|
 | `app/physics_solution/data/golden/deepseek-v4-pro_golden_data.csv` | 1,352 organizer (BTC) train rows (`id, question, cot, answer, unit`), DeepSeek-rewritten CoT | EN (translated from VN) | **SFT** | ready, but CoT must be converted into PoT code-gen trajectories |
-| `data/pretrain_corpus/` | English physics textbooks (OpenStax, Giancoli, Young & Freedman, Fundamentals), 451 golden markdown across 4 schemas + `prepare_*.py` per source | EN | **CPT — the *real* pretrain corpus** | complex multi-schema, **needs more processing**; not SFT-ready |
+| `data/pretrain_corpus/` | English physics textbooks (OpenStax, Giancoli, Young & Freedman, Fundamentals), 451 golden markdown across 4 schemas + `prepare_*.py` per source | EN | **Parked — was the CPT corpus; not used in v06 (SFT-only)** | complex multi-schema; left as-is for a possible future CPT experiment |
 | `data/pretrain_processed/` | 2,261 QC'd Vietjack worked solutions (lớp 6–12); v06 uses **lớp 10–12** (physics-dense) | VN | **SFT** (after VN→EN + answer/unit extraction) | processed, format fairly good; needs translation + label extraction |
 
-- `data/pretrain_corpus/DATA_CATALOG.md` — its `app/data/...` source paths are **stale**; real files live under `data/pretrain_corpus/<source>/{golden,processed}/`. Intended for CPT; the catalog itself says: don't SFT on it directly until reformatted into instruction/response pairs.
+- `data/pretrain_corpus/DATA_CATALOG.md` — its `app/data/...` source paths are **stale**; real files live under `data/pretrain_corpus/<source>/{golden,processed}/`. This corpus was the CPT source; **v06 is SFT-only, so it's unused** (parked for a possible future CPT experiment).
 - `data/pretrain_processed/DATA_CATALOG.md` — built from `data/vietjack_physics_spider/vietjack_physics_spider.rar` (74,807 raw → 2,261 after strict QC) via `scripts/filter_dataset.py` + `scripts/generate_catalog.py`. Figure/graph/table-dependent questions already removed. Grade skew: lớp 12 = 1,130, lớp 11 = 270, lớp 10 = 547.
 - More Vietnamese data is being crawled and will be translated to English later (same reason the BTC set is VN→EN: expand the VN pool, then translate).
 
@@ -76,16 +76,11 @@ User: "DOMAIN: {domain}\nANSWER TYPE: {answer_type}\n\nREFERENCE:\n{formula_hint
 
 ## DATA-PROCESSING PIPELINE (the heart of v06)
 
-The task is fine-tuning a model to **generate code**. Nothing is SFT-ready as-is. Two tracks — keep them separate.
+The task is fine-tuning a model to **generate code**. **v06 is SFT-only** — CPT is
+dropped from scope (the `data/pretrain_corpus/` textbook corpus is parked for a
+possible future experiment, not part of this plan). Nothing is SFT-ready as-is.
 
-### Track A — CPT (knowledge injection, optional but recommended)
-- Source: `data/pretrain_corpus/` (EN textbooks). **No answer verification** — raw corpus.
-- Concatenate per-document (`golden/**/*.md`), pack into ~2k-token sequences (Qwen tokenizer), standard causal-LM objective (mask nothing).
-- Unsloth CPT: LoRA on a wider module set than SFT, low LR, ~1 epoch. Cheap warm-up.
-- Save weights as the **SFT base**. A/B vs stock Qwen on golden; if it doesn't help, SFT from stock.
-- `data/pretrain_processed/` (Vietjack) is **not** CPT in v06 — it's routed to SFT (below).
-
-### Track B — SFT (code-gen, execution-verified)
+### SFT (code-gen, execution-verified)
 Sources: **BTC golden + Vietjack (lớp 10–12)**, normalized to **one** format matching the BTC inference format. Strategy: **self-gen first, teacher residual**, with **multi-step PoT** targets, gated by execution.
 
 **Step 0 — Filter first (DeepSeek).** Drop samples that reference a figure/image or are underspecified (unsolvable from text alone). Run this *before* any code-gen so we don't waste compute. (Vietjack already dropped figure-dependent ones; BTC may still have some.)
@@ -108,8 +103,8 @@ Sources: **BTC golden + Vietjack (lớp 10–12)**, normalized to **one** format
 > **Why this shape:** Route 1 (Qwen's own correct samples) is the highest-value data and directly mitigates the forgetting / distribution-shift risk of distilling a much larger teacher (DeepSeek ≫ 4B). Teacher data is confined to the residual Qwen can't reach. Consider iterating **ReST-EM style** later: after the first SFT, re-run Route 1 from the improved model so self-gen covers more and teacher shrinks.
 
 ### Phase F — Fine-tuning (SFT)
-- Base: CPT weights if Track A helped, else stock Qwen 3.5 4B.
-- Unsloth LoRA/QLoRA. Anti-forgetting: LoRA (not full-FT), low LR, ≤ a few epochs, optionally mix in a little CPT/general data. Start rank=16, lr=2e-4, ~3 epochs.
+- Base: **stock Qwen 3.5 4B** (no CPT warm-up in v06).
+- Unsloth LoRA/QLoRA. Anti-forgetting: LoRA (not full-FT), low LR, ≤ a few epochs, optionally mix in a little general/instruction data. Start rank=16, lr=2e-4, ~3 epochs.
 - Training format: Qwen chat template. System = shortened CODEGEN system (drop the inline example — the model will have learned the pattern). User = `DOMAIN / ANSWER TYPE / REFERENCE (formula hints) / PROBLEM / Write a Python script to solve this.` Assistant = the verified PoT trajectory.
 - Formula hints (`formulas.yaml`) still injected at inference; few-shot + verbose system text removed.
 
@@ -122,7 +117,7 @@ Sources: **BTC golden + Vietjack (lớp 10–12)**, normalized to **one** format
 |---|---|---|
 | Data prep (orchestration, DeepSeek teacher/translate/filter, run+score code) | **Local WSL box** | No local GPU. DeepSeek via `config.py` (`COMMERCIAL_PROVIDER=deepseek`, `COMMERCIAL_MODEL=deepseek-v4-pro`, key `DEEPSEEK_API_KEY`, base `https://api.deepseek.com`). |
 | Route-1 Qwen self-gen sampling | **Vast AI** (vLLM endpoint) | Sampling 4B needs a GPU. |
-| Training (CPT + SFT) | **Vast AI** (A100 / RTX 6000) | Unsloth LoRA/QLoRA. |
+| Training (SFT) | **Vast AI** (A100 / RTX 6000) | Unsloth LoRA/QLoRA. |
 | Inference + scoring | **Vast AI** (vLLM template) | `README_GPU_SETUP.md`. |
 
 **All GPU work is on Vast AI** (training, self-gen, serving) — one environment for consistency; setup in `README_GPU_SETUP.md`.
@@ -146,10 +141,9 @@ Sources: **BTC golden + Vietjack (lớp 10–12)**, normalized to **one** format
 > Data is collected, not finetune-ready. You are building the **processing + training** pipelines, not collecting data.
 
 1. **Create the v06 pipeline scaffolding** under `app/physics_solution/versions/v06_finetune/`.
-2. **(Optional) CPT (Track A):** concat/pack `data/pretrain_corpus/` → Unsloth CPT → A/B vs stock; keep weights as SFT base if it helps.
-3. **SFT data pipeline (Track B):** filter → normalize (incl. Vietjack VN→EN + answer/unit extraction) → Route-1 self-gen (Qwen, multi-temp, execution-verified) → Route-2/3 teacher residual (DeepSeek) → guards → stratified split (val includes the 60 golden).
-4. **SFT training (Unsloth/QLoRA)** + an eval script comparing the fine-tuned model vs v05_best on golden.
-5. **Inference pipeline** adapted from v05_best for the fine-tuned model.
+2. **SFT data pipeline:** filter → normalize (incl. Vietjack VN→EN + answer/unit extraction) → Route-1 self-gen (Qwen, multi-temp, execution-verified) → Route-2/3 teacher residual (DeepSeek) → guards → stratified split (val includes the 60 golden).
+3. **SFT training (Unsloth/QLoRA)** + an eval script comparing the fine-tuned model vs v05_best on golden.
+4. **Inference pipeline** adapted from v05_best for the fine-tuned model.
 
 Start by reading the key files to understand the full context, then create a plan before coding.
 
