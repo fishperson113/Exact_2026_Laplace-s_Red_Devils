@@ -10,7 +10,7 @@ fol_model:
 
 qa_model:
   # HF Hub repo chứa LoRA adapter (base model tự đọc từ adapter_config.json)
-  hub_repo_id: Laplaces-Red-Devils/v01-QA-CoT
+  hub_repo_id: Laplaces-Red-Devils/v02-QA-CoT
   max_new_tokens: 200
 
 inference:
@@ -23,6 +23,6 @@ output_dir: outputs/ensemble
 
 hub:
   org: Laplaces-Red-Devils
-  repo_name: Logic-Final-Result-V01
+  repo_name: Logic-Final-Result-V02
   push_results: true
   private: false
