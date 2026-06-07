@@ -51,6 +51,10 @@ FOL_GPU="${FOL_GPU:-0.45}"                   # triple: fol+qa awake together (~0
 QA_GPU="${QA_GPU:-0.45}"
 MAX_MODEL_LEN="${MAX_MODEL_LEN:-8192}"
 MAX_NUM_SEQS="${MAX_NUM_SEQS:-16}"
+# ENFORCE_EAGER=1 (default) keeps vLLM in eager mode (lower VRAM, safe for serving).
+# Set ENFORCE_EAGER=0 to enable CUDA graphs (faster decode) — useful for high-throughput
+# data-gen where the KV cache has headroom. Pair with a larger MAX_NUM_SEQS.
+ENFORCE_EAGER="${ENFORCE_EAGER:-1}"
 
 export HF_HOME="${HF_HOME:-/dev/shm/hf}"
 export HF_HUB_ENABLE_HF_TRANSFER="${HF_HUB_ENABLE_HF_TRANSFER:-1}"
@@ -126,12 +130,13 @@ start_vllm() {
     if health_ok "$port"; then log "$logname healthy on :$port — skip."; return 0; fi
     local extra=""
     if [ "$sleepmode" = "1" ]; then extra="--enable-sleep-mode"; export VLLM_SERVER_DEV_MODE=1; else unset VLLM_SERVER_DEV_MODE; fi
-    log "Starting vLLM '$logname' ($repo -> served '$served') :$port util=$util sleep=$sleepmode"
+    [ "$ENFORCE_EAGER" = "1" ] && extra="$extra --enforce-eager"
+    log "Starting vLLM '$logname' ($repo -> served '$served') :$port util=$util sleep=$sleepmode eager=$ENFORCE_EAGER seqs=$MAX_NUM_SEQS"
     OMP_NUM_THREADS=8 \
     nohup "$VLLM_BIN" serve "$repo" --served-model-name "$served" \
         --host 127.0.0.1 --port "$port" --dtype bfloat16 \
         --gpu-memory-utilization "$util" --max-model-len "$MAX_MODEL_LEN" \
-        --max-num-seqs "$MAX_NUM_SEQS" --enforce-eager $extra \
+        --max-num-seqs "$MAX_NUM_SEQS" $extra \
         </dev/null >"$LOG_DIR/$logname.log" 2>&1 &
     echo $! > "$RUN_DIR/$logname.pid"; disown 2>/dev/null || true
     wait_health "$logname" "$port"
