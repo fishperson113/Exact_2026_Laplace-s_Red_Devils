@@ -15,6 +15,9 @@ qa_model:
 
 inference:
   load_in_8bit: true
+  # Ablation: false = BỎ pha FOL, QA chỉ nhận NL + FOL rỗng (cùng prompt train).
+  # true (mặc định) = pipeline đầy đủ FOL → QA.
+  use_fol: true
   # Số mẫu sinh cùng lúc mỗi pha (FOL/QA) — tăng để chạy nhanh hơn, giảm nếu OOM.
   batch_size: 4
   # Cảnh báo nếu 1 sample vượt ngưỡng (giây)

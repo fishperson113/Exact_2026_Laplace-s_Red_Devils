@@ -336,6 +336,9 @@ class EnsemblePipeline:
         self.fol_max_new_tokens = fol_cfg.get("max_new_tokens", 650)
         self.qa_max_new_tokens = qa_cfg.get("max_new_tokens", 200)
         self.batch_size = max(1, int(inf_cfg.get("batch_size", 4)))
+        # Ablation: use_fol=False → BỎ pha FOL, QA nhận NL + FOL RỖNG (cùng prompt train)
+        # → đo đóng góp thuần của FOL mà KHÔNG đổi prompt (so sánh công bằng).
+        self.use_fol = bool(inf_cfg.get("use_fol", True))
 
     @staticmethod
     def _vram_gb() -> float:
@@ -374,6 +377,18 @@ class EnsemblePipeline:
         self._unload(fol_model)
         print(f"[VRAM] sau khi GIẢI PHÓNG FOL: {self._vram_gb():.2f} GB  (đã unload trước khi nạp QA)")
         return out
+
+    def run_fol_stage(self, premises_nl_list: list[list[str]]) -> list[dict]:
+        """PHA 1 — sinh FOL (use_fol=True) HOẶC bỏ FOL cho ablation (use_fol=False).
+
+        Ablation: KHÔNG nạp FOL model, trả FOL rỗng → QA dùng ĐÚNG prompt train
+        nhưng block FOL trống. Chỉ đổi 1 biến (có/không FOL), prompt giữ nguyên.
+        """
+        if self.use_fol:
+            return self.generate_fol_all(premises_nl_list)
+        print("\n[ABLATION] use_fol=False → BỎ pha FOL. QA nhận NL + FOL RỖNG (prompt train giữ nguyên).")
+        return [{"premises_fol": [], "fol_raw": "", "fol_latency_sec": 0.0}
+                for _ in premises_nl_list]
 
     # ───── PHA 2: chỉ QA trong VRAM ─────
     def answer_all(self, items: list[tuple]) -> list[dict]:
@@ -448,7 +463,7 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
         fol_golds.append(parse_list_field(row.get("premises_fol", "[]")))
 
     # PHA 1: FOL (chỉ FOL trong VRAM) → PHA 2: QA (FOL đã unload, chỉ QA trong VRAM)
-    fol_results = pipeline.generate_fol_all(premises_nl_list)
+    fol_results = pipeline.run_fol_stage(premises_nl_list)
     items = [(premises_nl_list[i], fol_results[i]["premises_fol"], questions[i]) for i in range(n)]
     qa_results = pipeline.answer_all(items)
 
@@ -751,7 +766,7 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
     n = len(data)
 
     # 2 PHA — mỗi thời điểm chỉ 1 LLM trong VRAM (tuân thủ luật BTC)
-    fol_results = pipeline.generate_fol_all(premises_nl_list)
+    fol_results = pipeline.run_fol_stage(premises_nl_list)
     items = [(premises_nl_list[i], fol_results[i]["premises_fol"], questions[i]) for i in range(n)]
     qa_results = pipeline.answer_all(items)
 
