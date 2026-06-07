@@ -6,17 +6,19 @@
 fol_model:
   # HF Hub repo chứa FOL model đã merge
   hub_repo_id: Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4
-  max_new_tokens: 400
+  max_new_tokens: 768   # đủ cho JSON premises_fol nhiều mệnh đề (no-think)
 
 qa_model:
   # HF Hub repo chứa LoRA adapter (base model tự đọc từ adapter_config.json)
   hub_repo_id: Laplaces-Red-Devils/v02-QA-CoT
-  max_new_tokens: 200
+  max_new_tokens: 256   # khớp gen_max_new_tokens lúc train QA (no-think)
 
 inference:
   load_in_8bit: true
   # Cảnh báo nếu 1 sample vượt ngưỡng (giây)
   slow_threshold_sec: 60
+  # In chi tiết JSON từng mẫu ra stdout (giống QA, kèm fol_prediction). 0 = in TẤT CẢ.
+  eval_print_samples: 0
 
 # Output directory cho log
 output_dir: outputs/ensemble
