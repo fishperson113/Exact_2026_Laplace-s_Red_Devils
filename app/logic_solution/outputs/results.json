@@ -1,12 +1,12 @@
 [
   {
     "answer": "A",
-    "explanation": "From premise 4, we know that Dr. John has a PhD. From premise 3, a PhD is higher than a Master's degree. From premise 2, a PhD allows teaching undergraduate courses. Therefore, Dr. John can teach undergraduate courses, making option A correct.",
-    "fol": "∀x (∀d ((has_degree(x,d) ∧ dual_degree(d,'Masters')) → can_teach_undergrad(x)))\n∀x (∀d ((has_degree(x,d) ∧ postgraduate_degree(d)) → can_teach_undergrad(x)))\nhigher_degree('PhD','Masters')\nhas_degree(john,'PhD')"
+    "explanation": "Premise 4 states Dr. John has a PhD, and premise 3 says a PhD is higher than a Master's degree, so premise 2 applies, meaning he can teach undergraduate courses.",
+    "fol": "{\"premises_fol\": [\"∀x (M(x) → L(x))\", \"∀x (H(x) → L(x))\", \"∀x (D(x) → H(x))\", \"Q(John)\")\"]}"
   },
   {
     "answer": "Yes",
-    "explanation": "From premise 3, every person has a research background. From premise 1, having a research background implies strong qualifications. From premise 2, strong qualifications imply suitability for a senior role. From premise 4, being eligible for a promotion implies receiving a bonus. Since everyone is eligible for a promotion, all employees receive a bonus.",
-    "fol": "∀x(has_research_background(x) → strong_qualifications(x))\n∀x(strong_qualifications(x) → suitable_for_senior_role(x))\n∀x(has_research_background(x))\n∀x(eligible_for_promotion(x) → receives_bonus(x))\n∀x(eligible_for_promotion(x))"
+    "explanation": "Premise 3 states every person has a research background, premise 1 says research background implies strong qualifications, premise 2 says strong qualifications imply suitability for a senior role, premise 4 says eligibility for promotion implies receiving a bonus, and premise 5 says everyone is eligible for a promotion. Thus, all employees receive a bonus.",
+    "fol": "∀x (R(x) → Q(x))\n∀x (Q(x) → S(x))\n∀x (R(x))\n∀x (E(x) → B(x))\n∀x (E(x))"
   }
 ]
