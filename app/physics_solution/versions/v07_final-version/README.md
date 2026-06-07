@@ -10,12 +10,39 @@ target >70%). Keep it lean — **no over-engineering**.
 
 ---
 
-## 0. THE data file (single source of truth)
+## ⏱ Progress (2026-06-07)
+
+**Steps A–C (data-gen) are DONE and committed.** The execution-verified SFT trajectory set is
+built. Next chat starts at **step D (build_sft)** and focuses on **SFT training (E)**.
+
+The clean SFT data:
+```
+app/physics_solution/versions/v07_final-version/input/trajectories_sft.jsonl
+```
+- **2846 trajectories · 1505 / 1584 problems (95%)** · all v06 format (5–10 line reasoning +
+  ONE code block) · execution-verified.
+- Cap = **2 diverse** solves/problem (`guards --cap 2 --select diverse`): the cleanest solve
+  (on-policy, lowest temp) + the most code-different valid solve. Histogram `{1:164, 2:1341}`.
+- Routes: `self_gen` 2291 + `self_gen_hinted` 555 (the old DeepSeek-teacher route is gone).
+- Each row carries: `id, source_id, question, domain, answer_type, gold_answer, gold_unit,
+  dataset_source, assistant` (reasoning+code text), `code`, `provenance{route,gen_model,
+  temperature,retry_count,hint_source}`. **For SFT, the target = the `assistant` field**
+  (system=`GEN_SYSTEM`, user=problem block).
+- 79 problems unsolved (`output/hinted_failed.jsonl`): 51 have no hint (unsolvable from text),
+  28 had a hint but still failed — acceptable, not in the SFT set.
+
+How it was built (for the record, don't re-run unless regenerating): `selfgen --k 4
+--concurrency 64` → `hinted --concurrency 64` → `guards --cap 2 --select diverse`, all with
+`VLLM_MODEL=physics` on the Vast box (tuned vLLM: `MAX_NUM_SEQS=64 ENFORCE_EAGER=0`).
+
+---
+
+## 0. The source dataset (data-gen input — A–C done, kept for reference)
 
 ```
 app/physics_solution/versions/v06_finetune/input/self_gen_dataset.jsonl
 ```
-**1584** QC-clean problems. **Do not reference any other dataset file.** Each row:
+**1584** QC-clean problems (the canonical problem set; **don't duplicate it**). Each row:
 ```json
 {"id","question","domain","answer_type","gold_answer","gold_unit","dataset_source",
  "hint_code","hint_source"}
@@ -29,8 +56,8 @@ app/physics_solution/versions/v06_finetune/input/self_gen_dataset.jsonl
 4 answer types), described in
 [v06_finetune/PHASE2_EDA.md](../v06_finetune/PHASE2_EDA.md). It is the original
 `problems_strat.jsonl` 56, except `DDT145` + `vj_l11_0005` were filtered out by QC and
-replaced with same-domain/type problems (`DDT209`, `DDT138`). **Train = the other 1528;
-val = these 56** (split by id in build_sft).
+replaced with same-domain/type problems (`DDT209`, `DDT138`). **Train = trajectories whose
+`source_id` is NOT in val_56; val = those 56** (split by id in build_sft).
 
 ---
 
@@ -53,31 +80,35 @@ on `:18000`); the execution gate runs locally in-process (scipy/sympy, no GPU).
 
 | Step | Module | What | Status |
 |---|---|---|---|
-| **A. self-gen** (Route 1) | `data_pipeline/selfgen.py` | Qwen multi-temp → reasoning+code → execute → keep correct (dedup); retry once on a code error and keep only the **clean final** reasoning+code (not the error transcript). Too few correct (`--min-keep`) → residual. | ✅ updated |
-| **B. hinted** (residual) | `data_pipeline/hinted.py` | For the residual, show Qwen the `hint_code` as a METHOD reference; Qwen re-derives its OWN reasoning+code → execute-verify. **No API.** On-policy ⇒ less domain shift. | ✅ new |
-| **C. guards** | `data_pipeline/guards.py` | spurious-reject (echo/hardcode) + dedup + cap **top-4 per problem** (prefers self_gen > hinted). → `output/trajectories_sft.jsonl` | ✅ updated |
-| **D. build_sft** | `v07` (to build) | split by the 56 val ids → `train.jsonl` / `val.jsonl`, formatted as the Qwen chat template (system=`GEN_SYSTEM`, user=problem block, assistant=reasoning+code). | ⏳ todo |
-| **E. SFT train** | `v07/train/` (to build) | Unsloth QLoRA on `train.jsonl`; eval on `val_56` + the 60 golden. | ⏳ todo |
-| **F. inference + explanation/cot** | `v07` (to build) | see §3 | ⏳ todo |
+| **A. self-gen** (Route 1) | `data_pipeline/selfgen.py` | Qwen multi-temp → reasoning+code → execute → keep correct (dedup); retry once on a code error and keep only the **clean final** reasoning+code. Too few correct (`--min-keep`) → residual. | ✅ **done** |
+| **B. hinted** (residual) | `data_pipeline/hinted.py` | For the residual, show Qwen the `hint_code` as a METHOD reference; Qwen re-derives its OWN reasoning+code → execute-verify. **No API.** On-policy. | ✅ **done** |
+| **C. guards** | `data_pipeline/guards.py` | spurious-reject (echo/hardcode) + dedup + cap **2 diverse/problem** (`--select diverse`: cleanest + most code-different). → `input/trajectories_sft.jsonl` | ✅ **done** |
+| **D. build_sft** | `v07_final_version/` (to build) | split `input/trajectories_sft.jsonl` by the 56 val ids → `train.jsonl` / `val.jsonl`, formatted as the Qwen chat template (system=`GEN_SYSTEM`, user=problem block, assistant=`assistant` field). | ⏳ **next** |
+| **E. SFT train** | `v07_final_version/train/` (to build) | Unsloth QLoRA on `train.jsonl`; **save LoRA adapter + tokenizer cleanly so it reloads exactly** (see §E note); eval on `val_56` + the 60 golden. | ⏳ todo |
+| **F. inference + explanation/cot** | `v07_final_version/` (to build) | see §3 | ⏳ todo |
 
-Run A→C (the data-gen the other chat executes):
+**A–C already ran** (see Progress block at top). The exact commands used, for regeneration only:
 ```bash
-# on Vast (vLLM serving Qwen3.5-4B on :18000); reads the canonical dataset by default
-PYTHONPATH=. python -m app.physics_solution.versions.v06_finetune.data_pipeline.selfgen --concurrency 48
-#   -> output/trajectories_selfgen.jsonl  +  output/selfgen_residual.jsonl (carries hint_code)
-PYTHONPATH=. python -m app.physics_solution.versions.v06_finetune.data_pipeline.hinted   --concurrency 32
-#   -> output/trajectories_hinted.jsonl   +  output/hinted_failed.jsonl
-PYTHONPATH=. python -m app.physics_solution.versions.v06_finetune.data_pipeline.guards   --cap 4
-#   -> output/trajectories_sft.jsonl      +  output/guards_rejected.jsonl
+# on Vast box (tuned vLLM on :18000, served name = physics)
+VLLM_MODEL=physics PYTHONPATH=. python -m ...data_pipeline.selfgen --k 4 --concurrency 64
+VLLM_MODEL=physics PYTHONPATH=. python -m ...data_pipeline.hinted  --concurrency 64
+VLLM_MODEL=physics PYTHONPATH=. python -m ...data_pipeline.guards  --cap 2 --select diverse
 ```
-Every stage auto-saves and resumes (skips done ids). Local GPU-free smoke first:
-`python -m ...selfgen --stub --limit 30`.
+Outputs live in `v06_finetune/output/`; the SFT set is copied to `v07_final-version/input/trajectories_sft.jsonl`.
 
-> **Note on code location:** the runnable data-gen modules stay in `v06_finetune/data_pipeline/`
-> (they work and are interdependent — moving them is needless churn). This `v07_final-version/`
-> folder holds the authoritative docs + `val_56.jsonl` + the new steps D–F. The folder name has
-> a hyphen (not import-safe); put any new **runnable** Python either in
-> `v06_finetune/data_pipeline/` or a renamed `v07_final_version/` package.
+### E note — save LoRA so it reloads *exactly* (don't skip this)
+The submission serves via vLLM, so the trained weights MUST reload deterministically. Drive
+training from a **YAML config** (model / lora / training / eval / hub sections — copy the shape
+of [`Logic_Based_Educational_Queries_Project/configs/qa_model.yaml`](../../../../Logic_Based_Educational_Queries_Project/configs/qa_model.yaml)).
+On finish: save the **LoRA adapter + tokenizer** to a versioned dir AND **merge-and-save** a
+full model (vLLM serves the merged model cleanly), then **push both to the Hub**
+(`Laplaces-Red-Devils/...`, the org used in `app/core/config.py`). Record base-model id, LoRA
+rank/alpha/target_modules, and the exact chat template in the config so loading is reproducible.
+
+> **Code location:** put runnable Python in a NEW import-safe package **`v07_final_version/`**
+> (underscore — the `v07_final-version` doc folder has a hyphen and can't be imported). Add it to
+> the `VERSIONS` dict in `cli/inference.py` if you wire a batch eval. Data-gen modules stay in
+> `v06_finetune/data_pipeline/` (reused, don't move).
 
 ---
 
@@ -111,8 +142,14 @@ Build it in §F; keep the writer prompt short. (Documented here for now per the 
 
 ## Layout
 ```
-v07_final-version/
-├── README.md        # this file (authoritative)
-├── val_56.jsonl     # the 56-problem validation set
-└── (to build: build_sft, train/sft_unsloth, explain — steps D–F)
+v07_final-version/                 # docs + data (hyphen → not importable)
+├── README.md                      # this file (authoritative)
+├── val_56.jsonl                   # the 56-problem validation set (split key)
+└── input/
+    └── trajectories_sft.jsonl     # ✅ THE SFT data — 2846 traj / 1505 problems
+
+v07_final_version/                 # (to build) runnable code (underscore → importable)
+├── build_sft.py                   # D: split by val_56 → train.jsonl / val.jsonl
+├── train/                         # E: Unsloth QLoRA + YAML config + save/merge/push LoRA
+└── explain.py                     # F: explanation + cot writer pass
 ```
