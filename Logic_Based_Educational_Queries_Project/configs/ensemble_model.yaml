@@ -19,7 +19,7 @@ inference:
   # true (mặc định) = pipeline đầy đủ FOL → QA.
   use_fol: false
   # Số mẫu sinh cùng lúc mỗi pha (FOL/QA) — tăng để chạy nhanh hơn, giảm nếu OOM.
-  batch_size: 6
+  batch_size: 8
   # Cảnh báo nếu 1 sample vượt ngưỡng (giây)
   slow_threshold_sec: 60
   # In chi tiết JSON từng mẫu ra stdout (giống QA, kèm fol_prediction). 0 = in TẤT CẢ.
