@@ -46,9 +46,16 @@ class FOLModel:
             {"role": "system", "content": SYSTEM_PROMPT_FOL},
             {"role": "user",   "content": user_msg},
         ]
-        text = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
+        # enable_thinking=False: model Qwen3.5 (thinking) được train với no-think →
+        # BẮT BUỘC tắt khi inference, nếu không <think> ăn hết token budget và JSON bị cắt.
+        try:
+            text = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+            )
+        except TypeError:
+            text = self.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True
+            )
         inputs = self.tokenizer(
             text, return_tensors="pt", truncation=True, max_length=3500
         ).to(self.model.device)

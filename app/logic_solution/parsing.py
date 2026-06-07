@@ -43,8 +43,21 @@ def parse_qa_output(text: str) -> dict[str, str]:
                 }
         except json.JSONDecodeError:
             pass
-    # Fallback: pull a label out of free text
-    for label in ("A", "B", "C", "D", "Yes", "No", "Unknown"):
-        if label in text:
-            return {"answer": label, "explanation": text}
-    return {"answer": "Unknown", "explanation": text}
+    # JSON cụt/lỗi: vẫn moi được "answer": "..." (và explanation nếu có)
+    m = re.search(r'"answer"\s*:\s*"([^"]+)"', text)
+    if m:
+        ans = m.group(1).strip()
+        em = re.search(r'"explanation"\s*:\s*"(.*)', text, re.DOTALL)
+        explanation = em.group(1).strip().rstrip('"}').strip() if em else ""
+        return {"answer": ans, "explanation": explanation}
+    # Last-resort: word-boundary + cue, KHÔNG đoán bừa chữ "A" trong văn xuôi
+    m2 = re.search(
+        r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
+        text, re.I,
+    )
+    if m2:
+        return {"answer": m2.group(1), "explanation": ""}
+    for label in ("Unknown", "Yes", "No"):
+        if re.search(rf"\b{label}\b", text):
+            return {"answer": label, "explanation": ""}
+    return {"answer": "Unknown", "explanation": ""}
