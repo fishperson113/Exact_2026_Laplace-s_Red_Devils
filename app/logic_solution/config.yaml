@@ -3,7 +3,7 @@
 
 fol_model:
   hub_repo_id: Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4
-  max_new_tokens: 512       # đủ cho JSON premises_fol nhiều mệnh đề (no-think)
+  max_new_tokens: 768       # đủ cho JSON premises_fol nhiều mệnh đề (no-think)
 
 qa_model:
   hub_repo_id: Laplaces-Red-Devils/v02-QA-CoT
