@@ -10,13 +10,17 @@ target >70%). Keep it lean — **no over-engineering**.
 
 ---
 
-## ⏱ Progress (2026-06-07)
+## ⏱ Progress (2026-06-08)
 
-**Steps A–D done; E modules built + smoke-tested.** A–C (data-gen) built the trajectory set;
-D (build_sft) wrote `output/{train,val}.jsonl` (chat-message, golden held out — §0); **E (train)
-modules are built and smoke-passed on a Colab A100-40G** (Unsloth loads Qwen3.5-4B `qwen3_5` on
-tf5, `train_on_responses_only`, eval_loss, save adapter — all green). Next: the **full SFT run**
-(3 epochs) + merge/push + accuracy eval.
+**Steps A–E done; two full SFT runs trained + evaluated (v07b 4bit, v07c 16-bit).** A–C built
+the trajectories; D split `output/{train,val}.jsonl` (golden held out — §0); E trained on a
+Colab A100-40G with Unsloth (`train_on_responses_only`, **execution-accuracy checkpoint
+selection** — not eval_loss — via `train/acc_callback.py`). Both runs pushed to the Hub. See
+**§Results & Error Analysis** for the numbers, the QLoRA-merge finding, and the failure
+breakdown. Next: 3 high-ROI fixes (scorer units, drop sci-notation rule, stop rounding) → re-eval.
+
+**Deploy artifact:** `Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b-merged` (16-bit LoRA, so
+the merge is lossless — see the merge finding below). Serve think-OFF, `max_new_tokens=2048`.
 
 **Proven environment (don't re-derive):** Qwen3.5-4B needs **transformers ≥ 5.5.0** (4.57.x only
 has `qwen3_next`; the model ships no remote code) + **unsloth 2026.5.6 / torch 2.10 / trl 0.24 /
@@ -43,6 +47,87 @@ app/physics_solution/versions/v07_final-version/input/trajectories_sft.jsonl
 How it was built (for the record, don't re-run unless regenerating): `selfgen --k 4
 --concurrency 64` → `hinted --concurrency 64` → `guards --cap 2 --select diverse`, all with
 `VLLM_MODEL=physics` on the Vast box (tuned vLLM: `MAX_NUM_SEQS=64 ENFORCE_EAGER=0`).
+
+---
+
+## Results & Error Analysis (2026-06-08)
+
+All eval is **think-OFF, greedy, `max_new_tokens=2048`** unless noted. `val_56` = held-out
+validation (in-distribution: same self-gen source). `golden_60` = the held-out **true test**
+(out-of-distribution). Raw per-problem dumps: `train/runs/eval_*.json`.
+
+### Training runs
+- **v07b** (4-bit QLoRA, lr 3e-5, r8 q/k/v/o, 6 ep, acc-selected): best **val_56 acc 0.7857**
+  (ep5). Per-epoch: 0.732 / 0.696 / 0.750 / 0.732 / **0.786** / 0.732.
+- **v07c** (same recipe but **16-bit LoRA**): best **val_56 acc 0.7857** (ep3). Per-epoch:
+  0.732 / 0.732 / **0.786** / 0.786 / 0.768 / 0.786. Train batch 8 / accum 2 (eff 16, peak
+  33.8 GB), `acc_batch_size=28`.
+
+### Eval comparison
+| Model | val_56 | golden_60 |
+|---|---|---|
+| base Qwen3.5-4B (16-bit) | 0.679 | **0.650** |
+| v07b 4bit-base + adapter (= train condition) | 0.732 | 0.650 |
+| v07b **merged**-16bit | 0.696 | 0.600 |
+| **v07c merged-16bit (deploy)** | **0.750** | 0.633 |
+
+**Finding 1 — the QLoRA merge was lossy (~4–5 pt).** v07b's 4bit-base+adapter scored
+0.732/0.650 but the **merged** 16-bit artifact dropped to 0.696/0.600: the adapter learned to
+correct an NF4-4bit base, so merging it into a 16-bit base mis-applies the correction. Fix:
+retrain with **16-bit LoRA** (`load_in_4bit: false`) → merge is lossless → v07c-merged recovers
+to **0.750/0.633**. Deploy v07c-merged, never v07b-merged.
+
+**Finding 2 — self-gen SFT is at the data ceiling on OOD.** Even at its best, v07c beats base
+clearly on val (+4 problems, in-distribution) but is ~tied on golden (−1, noise). Base already
+does PoT physics + the exact format, so SFT on its own correct samples adds little OOD.
+
+### Error analysis — why v07c fails (categorised from `eval_v07c_*.json`)
+14 val + 22 golden failures. **All 22 golden failures are domain LDDT (electrostatics).** Three
+root causes, not one:
+
+**A. Scorer false-negatives — the model is physically CORRECT (~5 cases).** The scorer ignores
+units and matches text one-directionally:
+- `DDT138`: gold `5.654 mT`, model `0.005655 T` — **identical** (0.005655 T = 5.655 mT); scorer
+  doesn't convert mT↔T.
+- `vj_l11_0026`: gold `4×10⁻³ μF`, model `4×10⁻⁹ F` — **identical**; no μF↔F convert.
+- `DDT350`/`DDT330`: gold "…inductive characteristic", model "inductive" — right; text match is
+  `gold in pred` only (one-directional).
+- `LD047` (golden): gold is **untranslated Vietnamese** ("Hướng về phía q₂"); model "towards q2"
+  is the correct translation — a golden *label* bug, not a model error.
+
+**B. Output-formatting bugs from our own prompt rules (~3 cases).** The rule *"write X * 10^N,
+never e-notation"* makes the model hand-format and double-count: `LD098` computed `1.152e7`
+(= gold) but printed `"11520000.00 * 10^7"` → parsed as 1.152e14. The rule *"round to 2–4 sig
+figs"* trips the 2% tolerance: `LD115` 0.03 vs 0.036, `LD292` 0.002 vs 0.001732, `THCB088` 0.07
+vs 0.067, `LD285` `round(x,3)`→0.0.
+
+**C. Real physics errors — the genuine ceiling (~11, all LDDT).** Coulomb-force **vector
+superposition** (components/angles/signs) on multi-charge geometries: `LD274`/`LD150`
+(36.32→21.79, dropped a component), `LD054`/`LD285` (→0.0 from an **invented symmetry** — the
+text needs a figure the model guessed), `LD400`, `LD202`, `LD053`, `LD033`, `LD024`, `LD021`,
+`LD057`. Plus 1 code crash (`LD087`).
+
+**Takeaway:** golden's low score is **not** a broken finetune — ~8 of 22 are scorer/format bugs
+we can fix without retraining, and the rest is genuinely hard electrostatics (often
+figure-dependent problems that should have been filtered).
+
+### High-ROI fixes (in progress)
+1. **Scorer units + text** — normalise SI prefixes (mT↔T, μF↔F, cm↔m, …) before numeric compare;
+   bidirectional text containment (len-guarded). Re-scores existing dumps with **no GPU**.
+2. **Drop the sci-notation rule** in `GEN_SYSTEM` — let the model print plain floats / e-notation
+   (the scorer already parses e-notation); kills the malformed-`X*10^N` bug.
+3. **Stop forcing rounding** — print full precision (`:.6g`); let the 2% tolerance handle it.
+
+(1) is scorer-only; (2)+(3) are prompt changes → need re-inference of v07c.
+
+### New results after fixes
+_(filled in after re-scoring + re-eval — see below)_
+
+| Model / config | val_56 | golden_60 | note |
+|---|---|---|---|
+| v07c merged (old scorer, old prompt) | 0.750 | 0.633 | baseline |
+| v07c merged (**new scorer**, old dumps) | _TBD_ | _TBD_ | fix ① only, no GPU |
+| v07c merged (**new scorer + new prompt**) | _TBD_ | _TBD_ | fixes ①②③, re-inferred |
 
 ---
 

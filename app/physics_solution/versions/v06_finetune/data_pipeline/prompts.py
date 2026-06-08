@@ -42,8 +42,9 @@ CODE RULES:
 - For yes_no: compute the quantity and compare WITH ~1% tolerance (textbooks round, e.g.
   79.57 -> 80), then print "Yes" or "No".
 - For multi_value: print values separated by semicolons.
-- NEVER use e-notation in output. Write 2.97 * 10^6, not 2.97e6.
-- Round numeric answers to 2-4 significant figures unless the problem specifies otherwise."""
+- Print the COMPUTED value at FULL precision, e.g. print(f"FINAL ANSWER: {value:.6g}").
+  Do NOT round to a few significant figures, and do NOT hand-format scientific notation —
+  a plain Python float or e-notation (1.15e7) is fine; the scorer parses it."""
 
 
 def _user_block(question: str, domain: str, answer_type: str, formula_hints: str | None) -> str:

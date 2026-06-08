@@ -24,19 +24,19 @@ _SUPERSCRIPT_MAP = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺", "012345678
 
 _SCI_RE = re.compile(
     r"([-+]?\d+(?:\.\d+)?)\s*(?:[x×·*]|\\times)\s*10\s*"
-    r"(?:\^?\s*\{?\s*([-+]?\d+)\s*\}?"  # caret: 10^-3 or 10^{-3}
+    r"(?:\^?\s*[\{(]?\s*([-+]?\d+)\s*[\})]?"  # caret: 10^-3, 10^{-3}, 10^(-3)
     r"|([⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+))",          # superscript: 10⁻³
     re.IGNORECASE,
 )
 
 _SCI_DOT_RE = re.compile(
-    r"([-+]?\d+)\s*\.\s*10\s*\^\s*\{?\s*([-+]?\d+)\s*\}?",
+    r"([-+]?\d+)\s*\.\s*10\s*\^\s*[\{(]?\s*([-+]?\d+)\s*[\})]?",
 )
 # NOTE: ^ is now REQUIRED (was \^? optional), to prevent false matches
 # on plain decimals like "957.1068" being parsed as "957 . 10^68".
 
 _BARE_POWER_RE = re.compile(
-    r"^[-+]?\s*10\s*\^\s*\{?\s*([-+]?\d+)\s*\}?\s*$"
+    r"^[-+]?\s*10\s*\^\s*[\{(]?\s*([-+]?\d+)\s*[\})]?\s*$"
 )
 
 _E_NOTATION_RE = re.compile(
@@ -363,7 +363,13 @@ def _score_text_only(pred_completion: str, gold_answer: str) -> ScoringResult:
     extracted = extract(pred_completion)
     gold_norm = gold_answer.strip().lower()
     pred_raw = (extracted.raw_answer or "").strip().lower()
-    correct = gold_norm != "" and gold_norm in pred_raw
+    # Bidirectional containment: a short keyword answer ("inductive") is correct even when the
+    # gold is a sentence ("the circuit exhibits an inductive characteristic"). Guard with a
+    # min length so a 1-2 char pred can't spuriously match.
+    correct = gold_norm != "" and (
+        gold_norm in pred_raw
+        or (len(pred_raw) >= 4 and pred_raw in gold_norm)
+    )
     return ScoringResult(
         is_correct=correct, pred_value=extracted.raw_answer,
         pred_unit=extracted.raw_unit, detected_answer_type=AnswerType.TEXT_ONLY,
@@ -398,6 +404,50 @@ def _safe_float(s) -> float | None:
         return None
 
 
+# ------------------------------------------------------------------ unit conversion
+# Case-sensitive SI prefixes (M=mega vs m=milli). Lets us score a correct value that
+# the model expressed in a different prefix than the gold (e.g. 0.005655 T == 5.654 mT).
+_PREFIX: dict[str, float] = {
+    "T": 1e12, "G": 1e9, "M": 1e6, "k": 1e3, "h": 1e2, "da": 1e1,
+    "d": 1e-1, "c": 1e-2, "m": 1e-3, "u": 1e-6, "µ": 1e-6, "μ": 1e-6,
+    "n": 1e-9, "p": 1e-12, "f": 1e-15,
+}
+
+
+def _split_prefix(unit: str) -> tuple[float, str]:
+    """(factor, base_unit_lower). 'mT'->(1e-3,'t'), 'μF'->(1e-6,'f'), 'cm'->(1e-2,'m'),
+    'kV/m'->(1e3,'v/m'), 'T'->(1.0,'t'), 'N'->(1.0,'n'). A prefix is only stripped when a
+    non-empty base remains (so 'T'/'N'/'m' stay whole)."""
+    u = (unit or "").strip()
+    if len(u) >= 2 and u[0] in _PREFIX and u[1:].strip():
+        return _PREFIX[u[0]], u[1:].strip().lower()
+    return 1.0, u.lower()
+
+
+def _convert_factor(pred_unit: str | None, gold_unit: str | None) -> float | None:
+    """Multiplier to express a pred value (in pred_unit) on gold_unit's scale, or None when
+    the base units differ / are missing. e.g. pred 'T', gold 'mT' -> 1e3 (×1000 to get mT)."""
+    if not pred_unit or not gold_unit:
+        return None
+    pf, pb = _split_prefix(pred_unit)
+    gf, gb = _split_prefix(gold_unit)
+    if not pb or pb != gb:
+        return None
+    if pf == gf:
+        return None  # same unit; raw compare already covers it
+    return pf / gf
+
+
+def _unit_rescued(pred_value, pred_unit, gold_value, gold_unit) -> bool:
+    """True if pred (numeric) matches gold once rescaled by the SI-prefix ratio of the units."""
+    if not isinstance(pred_value, (int, float)) or gold_value is None:
+        return False
+    factor = _convert_factor(pred_unit, gold_unit)
+    if factor is None:
+        return False
+    return numeric_close(pred_value * factor, gold_value)
+
+
 _SCORE_DISPATCH: dict[AnswerType, callable] = {
     AnswerType.PURE_NUMERIC: _score_pure_numeric,
     AnswerType.SCI_NOTATION: _score_sci_notation,
@@ -415,7 +465,59 @@ def score(pred_completion: str, gold_answer: str, gold_unit: str) -> ScoringResu
     if result.pred_unit is None:
         ext = extract(pred_completion)
         result.pred_unit = ext.raw_unit
+
+    # Unit rescue: the value can be right but expressed in a different SI prefix than gold
+    # (0.005655 T == 5.654 mT). Only ever flips a miss -> hit, never the reverse.
+    if not result.is_correct and gold_unit:
+        if answer_type in (AnswerType.PURE_NUMERIC, AnswerType.SCI_NOTATION):
+            gold_v = _parse_sci_notation(gold_answer)
+            if _unit_rescued(result.pred_value, result.pred_unit, gold_v, gold_unit):
+                result.is_correct = True
+                result.notes = (result.notes + " | unit-rescued").strip(" |")
+        elif answer_type is AnswerType.MULTI_VALUE:
+            if _multi_value_unit_rescued(result, gold_answer, gold_unit):
+                result.is_correct = True
+                result.partial_correct = False
+                result.notes = (result.notes + " | unit-rescued").strip(" |")
     return result
+
+
+def _multi_value_unit_rescued(result: ScoringResult, gold_answer: str, gold_unit: str) -> bool:
+    """Per-part SI-prefix rescue for multi_value (gold/pred units are ';'-separated lists)."""
+    pred_vals = result.pred_value
+    if not isinstance(pred_vals, list):
+        return False
+    gold_parts = [p.strip() for p in str(gold_answer).split(";") if p.strip()]
+    gold_floats = []
+    for p in gold_parts:
+        f = _safe_float(p)
+        if f is None:
+            f = _parse_sci_notation(p)
+        if f is None:
+            return False
+        gold_floats.append(f)
+    if len(pred_vals) != len(gold_floats):
+        return False
+    n = len(gold_floats)
+
+    def _broadcast(unit_str: str, count: int) -> list[str]:
+        parts = [u.strip() for u in str(unit_str or "").split(";")]
+        if len(parts) == 1:           # one unit applies to every value ("cm" for "0.6; 1.2")
+            return parts * count
+        return (parts + [""] * count)[:count]
+
+    gold_units = _broadcast(gold_unit, n)
+    pred_units = _broadcast(result.pred_unit or "", n)
+    # match on sorted magnitude pairs, allowing per-part SI-prefix rescale
+    gp = sorted(zip(gold_floats, gold_units), key=lambda t: t[0])
+    pp = sorted(zip(pred_vals, pred_units), key=lambda t: t[0])
+    for (g, gu), (p, pu) in zip(gp, pp):
+        if numeric_close(p, g):
+            continue
+        if _unit_rescued(p, pu, g, gu):
+            continue
+        return False
+    return True
 
 
 # ------------------------------------------------------------------ inline tests
@@ -504,6 +606,28 @@ if __name__ == "__main__":
               score("FINAL ANSWER: 4.0 * 10^{-4}\nUNIT: H", "0.0004", "H"), True)
         check("sci pred, wrong value",
               score("FINAL ANSWER: 7.5 * 10^{3}\nUNIT: V/m", "500", "V/m"), False)
+
+        print("\n=== Unit rescue (right value, different SI prefix) ===")
+        check("T vs mT (DDT138)",
+              score("FINAL ANSWER: 0.005655\nUNIT: T", "5.654", "mT"), True)
+        check("F vs uF",
+              score("FINAL ANSWER: 4e-9\nUNIT: F", "4 . 10^{-9}", "F"), True)  # same unit baseline
+        check("m vs cm",
+              score("FINAL ANSWER: 0.102\nUNIT: m", "10.2", "cm"), True)
+        check("kV vs V",
+              score("FINAL ANSWER: 2.5\nUNIT: kV", "2500", "V"), True)
+        check("different base NOT rescued",
+              score("FINAL ANSWER: 0.005655\nUNIT: A", "5.654", "mT"), False)
+        check("multi-value uF rescue (vj_l11_0026)",
+              score("FINAL ANSWER: 2.00; 4.00 * 10^-9\nUNIT: dimensionless; F",
+                    "2; 4 * 10^{-3}", "N/A; μF"), True)
+
+        print("\n=== Bidirectional text ===")
+        check("short pred in long gold (DDT350)",
+              score("FINAL ANSWER: inductive\nUNIT: N/A",
+                    "The circuit exhibits an inductive characteristic.", "—"), True)
+        check("tiny pred guarded (no spurious match)",
+              score("FINAL ANSWER: in\nUNIT: -", "increases with the number of turns", "-"), False)
 
         print(f"\n{'='*40}\n{ok}/{total} tests passed")
 
