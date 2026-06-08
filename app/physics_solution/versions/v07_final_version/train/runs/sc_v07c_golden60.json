@@ -1,0 +1,607 @@
+{
+  "n": 60,
+  "correct": 49,
+  "accuracy": 0.8167,
+  "rows": [
+    {
+      "id": "LD343",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "2.027 * 10^{6}",
+      "gold_unit": "V/m",
+      "pred": "2027000.0000000002"
+    },
+    {
+      "id": "LD248",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "0.495",
+      "gold_unit": "N",
+      "pred": "0.494975"
+    },
+    {
+      "id": "LD110",
+      "correct": true,
+      "votes": "2/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "0.023",
+      "gold_unit": "N",
+      "pred": "0.0231609"
+    },
+    {
+      "id": "LD151",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "5.09 * 10^{-4}",
+      "gold_unit": "N",
+      "pred": "0.000509117"
+    },
+    {
+      "id": "LD192",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "8.2594",
+      "gold_unit": "N",
+      "pred": "8.25943"
+    },
+    {
+      "id": "LD170",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "8.8882",
+      "gold_unit": "N",
+      "pred": "8.88819"
+    },
+    {
+      "id": "LD274",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "36.32",
+      "gold_unit": "N",
+      "pred": "36.3173"
+    },
+    {
+      "id": "LD377",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "8.44 * 10^{6}",
+      "gold_unit": "V/m",
+      "pred": "8441462.52"
+    },
+    {
+      "id": "LD172",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "4.3589",
+      "gold_unit": "N",
+      "pred": "4.3589"
+    },
+    {
+      "id": "LD049",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "14.34",
+      "gold_unit": "N",
+      "pred": "14.3418"
+    },
+    {
+      "id": "LD183",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "5.5678",
+      "gold_unit": "N",
+      "pred": "5.56776"
+    },
+    {
+      "id": "LD328",
+      "correct": false,
+      "votes": "2/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "3.29 * 10^{6}",
+      "gold_unit": "V/m",
+      "pred": "6200955.1"
+    },
+    {
+      "id": "LD098",
+      "correct": true,
+      "votes": "2/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "1.152 * 10^{7}",
+      "gold_unit": "V/m",
+      "pred": "11520000.0"
+    },
+    {
+      "id": "LD087",
+      "correct": false,
+      "votes": "1/5",
+      "answer_type": "mixed",
+      "domain": "LDDT",
+      "gold": "-2\\sqrt{2} q",
+      "gold_unit": "-",
+      "pred": "1.41421"
+    },
+    {
+      "id": "LD182",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "7.8102",
+      "gold_unit": "N",
+      "pred": "7.81025"
+    },
+    {
+      "id": "LD385",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "3.50 * 10^{6}",
+      "gold_unit": "V/m",
+      "pred": "3503998.3"
+    },
+    {
+      "id": "LD083",
+      "correct": true,
+      "votes": "3/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "9.6 * 10^{2}",
+      "gold_unit": "V/m",
+      "pred": "957.107"
+    },
+    {
+      "id": "LD117",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "0.734 * 10^{-3}",
+      "gold_unit": "N",
+      "pred": "0.000734375"
+    },
+    {
+      "id": "LD054",
+      "correct": false,
+      "votes": "3/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "0.094",
+      "gold_unit": "N",
+      "pred": "1.296"
+    },
+    {
+      "id": "LD047",
+      "correct": false,
+      "votes": "1/5",
+      "answer_type": "text_only",
+      "domain": "LDDT",
+      "gold": "Hướng về phía q₂",
+      "gold_unit": "-",
+      "pred": "Towards q2"
+    },
+    {
+      "id": "LD119",
+      "correct": false,
+      "votes": "2/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "12 * 10^{-3}",
+      "gold_unit": "N",
+      "pred": "0.0144011"
+    },
+    {
+      "id": "LD073",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "937.5",
+      "gold_unit": "V/m",
+      "pred": "937.5"
+    },
+    {
+      "id": "LD367",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "50.39 * 10^{6}",
+      "gold_unit": "V/m",
+      "pred": "50385390.95"
+    },
+    {
+      "id": "LD315",
+      "correct": true,
+      "votes": "3/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "7.6 * 10^{6}",
+      "gold_unit": "V/m",
+      "pred": "7597015.0"
+    },
+    {
+      "id": "LD018",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "3.12",
+      "gold_unit": "N",
+      "pred": "3.11769"
+    },
+    {
+      "id": "LD217",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "0.815",
+      "gold_unit": "N",
+      "pred": "0.814587"
+    },
+    {
+      "id": "LD400",
+      "correct": true,
+      "votes": "2/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "2.01 * 10^{7}",
+      "gold_unit": "V/m",
+      "pred": "20000000.0"
+    },
+    {
+      "id": "LD298",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "8.14 * 10^{6}",
+      "gold_unit": "V/m",
+      "pred": "8144030.000000001"
+    },
+    {
+      "id": "LD202",
+      "correct": true,
+      "votes": "3/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "0.453",
+      "gold_unit": "N",
+      "pred": "0.453376"
+    },
+    {
+      "id": "LD115",
+      "correct": true,
+      "votes": "3/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "0.036",
+      "gold_unit": "N",
+      "pred": "0.0359477"
+    },
+    {
+      "id": "LD102",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "0.238",
+      "gold_unit": "N",
+      "pred": "0.237565"
+    },
+    {
+      "id": "LD053",
+      "correct": false,
+      "votes": "3/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "3.125 * 10^{6}",
+      "gold_unit": "V/m",
+      "pred": "6817950.0"
+    },
+    {
+      "id": "LD120",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "0.379 * 10^{-3}",
+      "gold_unit": "N",
+      "pred": "0.000379665"
+    },
+    {
+      "id": "LD222",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "4.608",
+      "gold_unit": "N",
+      "pred": "4.608"
+    },
+    {
+      "id": "LD351",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "2.36 * 10^{7}",
+      "gold_unit": "V/m",
+      "pred": "23629617.14"
+    },
+    {
+      "id": "LD056",
+      "correct": false,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "33.6 * 10^{5}",
+      "gold_unit": "V/m",
+      "pred": "0.16817"
+    },
+    {
+      "id": "LD181",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "12.7671",
+      "gold_unit": "N",
+      "pred": "12.7671"
+    },
+    {
+      "id": "LD124",
+      "correct": true,
+      "votes": "2/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "1.82 * 10^{-3}",
+      "gold_unit": "N",
+      "pred": "0.00181587"
+    },
+    {
+      "id": "LD232",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "6.928 * 10^{-3}",
+      "gold_unit": "N",
+      "pred": "0.0069282"
+    },
+    {
+      "id": "LD269",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "3.62 * 10^{-3}",
+      "gold_unit": "N",
+      "pred": "0.00362039"
+    },
+    {
+      "id": "LD327",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "4.36 * 10^{7}",
+      "gold_unit": "V/m",
+      "pred": "44000000.0"
+    },
+    {
+      "id": "LD033",
+      "correct": false,
+      "votes": "2/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "8.4 * 10^{-4}",
+      "gold_unit": "N",
+      "pred": "0.000471384"
+    },
+    {
+      "id": "LD024",
+      "correct": true,
+      "votes": "2/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "6.04",
+      "gold_unit": "N",
+      "pred": "6.03738"
+    },
+    {
+      "id": "LD276",
+      "correct": true,
+      "votes": "3/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "9.1125",
+      "gold_unit": "N",
+      "pred": "9.1125"
+    },
+    {
+      "id": "LD078",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "16",
+      "gold_unit": "V/m",
+      "pred": "16.0"
+    },
+    {
+      "id": "LD285",
+      "correct": false,
+      "votes": "3/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "0.115",
+      "gold_unit": "N",
+      "pred": "0.0"
+    },
+    {
+      "id": "LD173",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "10.6283",
+      "gold_unit": "N",
+      "pred": "10.6283"
+    },
+    {
+      "id": "LD184",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "10.7037",
+      "gold_unit": "N",
+      "pred": "10.7037"
+    },
+    {
+      "id": "LD224",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "1.0825",
+      "gold_unit": "N",
+      "pred": "1.08253"
+    },
+    {
+      "id": "LD205",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "5.832",
+      "gold_unit": "N",
+      "pred": "5.832"
+    },
+    {
+      "id": "LD010",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "6.24",
+      "gold_unit": "N",
+      "pred": "6.23538"
+    },
+    {
+      "id": "LD021",
+      "correct": true,
+      "votes": "3/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "2.98",
+      "gold_unit": "N",
+      "pred": "2.975"
+    },
+    {
+      "id": "LD236",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "2.7713",
+      "gold_unit": "N",
+      "pred": "2.77128"
+    },
+    {
+      "id": "LD057",
+      "correct": false,
+      "votes": "3/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "0.17",
+      "gold_unit": "N",
+      "pred": "0.468"
+    },
+    {
+      "id": "LD270",
+      "correct": true,
+      "votes": "3/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "180.0",
+      "gold_unit": "N",
+      "pred": "180.0"
+    },
+    {
+      "id": "LD125",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "7.5498",
+      "gold_unit": "N",
+      "pred": "7.54983"
+    },
+    {
+      "id": "LD251",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "0.023",
+      "gold_unit": "N",
+      "pred": "0.0226274"
+    },
+    {
+      "id": "LD070",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "4.5 * 10^{5}",
+      "gold_unit": "V/m",
+      "pred": "450000.0"
+    },
+    {
+      "id": "LD292",
+      "correct": false,
+      "votes": "5/5",
+      "answer_type": "sci_notation",
+      "domain": "LDDT",
+      "gold": "1.732 * 10^{-3}",
+      "gold_unit": "N",
+      "pred": "0.002"
+    },
+    {
+      "id": "LD150",
+      "correct": true,
+      "votes": "3/5",
+      "answer_type": "pure_numeric",
+      "domain": "LDDT",
+      "gold": "36.32",
+      "gold_unit": "N",
+      "pred": "36.3173"
+    }
+  ]
+}

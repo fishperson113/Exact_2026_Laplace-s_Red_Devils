@@ -1,0 +1,24 @@
+{
+  "model": "app/physics_solution/versions/v07_final_version/train/runs/sft_v07c/merged",
+  "val_56": {
+    "name": "val_56",
+    "n": 56,
+    "correct": 48,
+    "accuracy": 0.8571,
+    "buckets": {
+      "ok": 48,
+      "wrong_answer": 8
+    }
+  },
+  "golden_60": {
+    "name": "golden_60",
+    "n": 60,
+    "correct": 43,
+    "accuracy": 0.7167,
+    "buckets": {
+      "ok": 43,
+      "wrong_answer": 16,
+      "no_code": 1
+    }
+  }
+}

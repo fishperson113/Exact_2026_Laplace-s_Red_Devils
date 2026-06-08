@@ -146,6 +146,36 @@ original v05_best 58.3% golden bar comfortably. Remaining v07c misses are the ge
 electrostatics-superposition ceiling (§C above) — the next lever is teacher-residual data or
 inference-time self-consistency, not more scorer/prompt tweaks.
 
+### Self-consistency (majority voting) — `self_consistency.py`
+
+Sample **K=5** completions per problem in ONE batched `generate` (do_sample, temp 0.7, top_p
+0.95, think-off), execute each, **majority-vote the answer using only the predictions (never the
+gold)**, then score the voted answer. Competition-legal: one model, one batched generate per
+request, < 60 s (the K samples ride the batch dimension — not parallel models, not sequential
+temp passes). Voted greedy → SC:
+
+| Model | val_56 | golden_60 |
+|---|---|---|
+| base Qwen3.5-4B (greedy) | 0.821 | 0.683 |
+| base Qwen3.5-4B (**SC K=5**) | 0.875 | 0.783 |
+| v07c merged (greedy) | 0.857 | 0.717 |
+| **v07c merged (SC K=5)** | **0.875** (49/56) | **0.817** (49/60) |
+
+SC lifts both models hard on the OOD golden (+0.10 each); v07c still leads base **+2 problems on
+golden**, tied on val. Best config overall: **v07c + SC K=5 = 0.875 / 0.817**.
+
+**Where SC helps / doesn't (golden, greedy 43 → SC 49; gained 9, lost 3):** it recovers problems
+the model gets right *some* of the time — including **3 of the 4 problems base beat v07c on**
+(LD049 5/5 votes, LD083 3/5, LD124 2/5) and the cos/sin superposition LD274 (4/5). It **cannot**
+fix *systematic* errors where the wrong answer is the consensus: LD292 (5/5 voted the rounded
+0.002 — sampling at temp 0.7 resurfaces the rounding habit still latent in the weights, which
+only a data-level retrain on full-precision targets removes), LD285 (3/5 voted 0.0 from an
+invented symmetry on a figure-dependent problem), LD328 (a wrong cluster won the vote).
+
+> **Logs note:** the Colab box was terminated before the bulk log scp finished; only
+> `colab_logs/sc_base.log` survived. All result numbers are preserved here and in the JSON dumps
+> (`train/runs/{eval,sc}_*.json`); weights are on the Hub.
+
 ---
 
 ## 0. The source dataset (data-gen input — A–C done, kept for reference)
