@@ -7,7 +7,9 @@ model:
   name: Qwen/Qwen3.5-4B          # base (qwen3_5; needs transformers>=5.5)
   trust_remote_code: true
   max_seq_length: 2048           # reasoning + one code block fits; raise if truncation high
-  load_in_4bit: true             # QLoRA (NF4). false -> 16-bit LoRA (A100-40G has room)
+  load_in_4bit: false            # 16-bit LoRA: QLoRA merge lost 4-5pt (adapter trained vs
+                                 # NF4 base, merged into 16-bit base mis-applies) -> merge
+                                 # losslessly here. v07b merged 0.696/0.600 vs adapter 0.732/0.650.
   attn_implementation: sdpa      # flex-attn is disabled in code (tf5 unpack bug)
 
 # De-overfit (v2): the v1 run (lr 2e-4, r16, all-7 modules, 3ep) overfit — train_loss
@@ -22,9 +24,9 @@ lora:
 
 training:
   num_train_epochs: 6
-  per_device_train_batch_size: 8
-  per_device_eval_batch_size: 8
-  gradient_accumulation_steps: 2     # effective batch 16
+  per_device_train_batch_size: 4     # 16-bit base +6GB weights -> halve batch to fit 40GB
+  per_device_eval_batch_size: 4
+  gradient_accumulation_steps: 4     # effective batch 16 (unchanged from v07b)
   learning_rate: 3.0e-5              # was 2e-4 (that's a learn-new-task lr; this refines)
   lr_scheduler_type: cosine
   warmup_ratio: 0.05
@@ -54,9 +56,9 @@ paths:
   train_jsonl: app/physics_solution/versions/v07_final_version/output/train.jsonl
   val_jsonl: app/physics_solution/versions/v07_final_version/output/val.jsonl
   val_problems: app/physics_solution/versions/v07_final_version/val_56.jsonl  # 56 unique problems for acc callback
-  out_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07
-  adapter_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07/adapter
-  merged_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07/merged
+  out_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07c
+  adapter_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07c/adapter
+  merged_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07c/merged
 
 eval:
   # per-epoch execution-accuracy callback (model selection metric)
@@ -66,10 +68,10 @@ eval:
 
 hub:
   org: Laplaces-Red-Devils
-  # v2 = de-overfit (lr 3e-5, r8) + accuracy-based checkpoint selection. Separate repos
-  # so v1 (physics-v07-sft-qwen3.5-4b[-merged]) is preserved for comparison.
-  adapter_repo: physics-v07b-sft-qwen3.5-4b           # LoRA adapter + tokenizer
-  merged_repo: physics-v07b-sft-qwen3.5-4b-merged     # merged full model (vLLM serves this)
+  # v07c = v07b recipe (lr 3e-5, r8, acc-selected) but 16-bit LoRA so the merge is
+  # lossless. Separate repos so v07b (4bit) is preserved for comparison.
+  adapter_repo: physics-v07c-sft-qwen3.5-4b           # LoRA adapter + tokenizer
+  merged_repo: physics-v07c-sft-qwen3.5-4b-merged     # merged full model (vLLM serves this)
   private: true
   push_to_hub: true
-  commit_message: "v07b SFT QLoRA (de-overfit, acc-selected)"
+  commit_message: "v07c SFT 16-bit LoRA (lossless merge, acc-selected)"
