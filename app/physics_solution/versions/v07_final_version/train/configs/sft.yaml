@@ -24,9 +24,9 @@ lora:
 
 training:
   num_train_epochs: 6
-  per_device_train_batch_size: 4     # 16-bit base +6GB weights -> halve batch to fit 40GB
-  per_device_eval_batch_size: 4
-  gradient_accumulation_steps: 4     # effective batch 16 (unchanged from v07b)
+  per_device_train_batch_size: 8     # 16-bit base; batch 4 only used 21/40GB -> bump to 8
+  per_device_eval_batch_size: 8
+  gradient_accumulation_steps: 2     # effective batch 16 (unchanged from v07b)
   learning_rate: 3.0e-5              # was 2e-4 (that's a learn-new-task lr; this refines)
   lr_scheduler_type: cosine
   warmup_ratio: 0.05
@@ -64,7 +64,7 @@ eval:
   # per-epoch execution-accuracy callback (model selection metric)
   eval_accuracy_max_samples: 56     # all of val_56; lower to speed each epoch
   acc_max_new_tokens: 1024
-  acc_batch_size: 4                 # small: generation runs alongside training memory (40G A100)
+  acc_batch_size: 28                # gen only used ~5GB at bs4 & was epoch-slow; bump (val_56 -> 2 batches)
 
 hub:
   org: Laplaces-Red-Devils
