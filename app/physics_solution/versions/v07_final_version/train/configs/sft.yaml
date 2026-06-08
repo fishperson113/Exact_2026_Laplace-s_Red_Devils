@@ -10,20 +10,22 @@ model:
   load_in_4bit: true             # QLoRA (NF4). false -> 16-bit LoRA (A100-40G has room)
   attn_implementation: sdpa      # flex-attn is disabled in code (tf5 unpack bug)
 
+# De-overfit (v2): the v1 run (lr 2e-4, r16, all-7 modules, 3ep) overfit — train_loss
+# fell 0.35->0.16 while eval_loss stayed flat (~0.29) and FT ~= base. Mirror the proven
+# FOL Stage-2 fine-tune: lower lr, smaller rank, attention-only modules.
 lora:
-  r: 16
-  alpha: 32                      # alpha/r = 2
+  r: 8
+  alpha: 16                      # alpha/r = 2
   dropout: 0.05
-  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj",
-                   "gate_proj", "up_proj", "down_proj"]
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
   bias: none
 
 training:
-  num_train_epochs: 3
+  num_train_epochs: 6
   per_device_train_batch_size: 8
   per_device_eval_batch_size: 8
   gradient_accumulation_steps: 2     # effective batch 16
-  learning_rate: 2.0e-4
+  learning_rate: 3.0e-5              # was 2e-4 (that's a learn-new-task lr; this refines)
   lr_scheduler_type: cosine
   warmup_ratio: 0.05
   weight_decay: 0.01
@@ -37,31 +39,37 @@ training:
   # Qwen chat markers — loss only AFTER the assistant header.
   instruction_marker: "<|im_start|>user\n"
   response_marker: "<|im_start|>assistant\n"
-  # checkpoint selection
+  # checkpoint selection: EXECUTION ACCURACY, not eval_loss (code-gen: loss is a poor
+  # proxy — many token sequences map to a correct program). ExecAccuracyCallback injects
+  # eval_accuracy each epoch (generate val -> run code -> score).
   eval_strategy: epoch
   save_strategy: epoch
   load_best_model_at_end: true
-  metric_for_best_model: eval_loss
-  greater_is_better: false
+  metric_for_best_model: eval_accuracy
+  greater_is_better: true
   save_total_limit: 2
-  early_stopping_patience: 2
+  early_stopping_patience: 3
 
 paths:
   train_jsonl: app/physics_solution/versions/v07_final_version/output/train.jsonl
   val_jsonl: app/physics_solution/versions/v07_final_version/output/val.jsonl
+  val_problems: app/physics_solution/versions/v07_final_version/val_56.jsonl  # 56 unique problems for acc callback
   out_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07
   adapter_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07/adapter
   merged_dir: app/physics_solution/versions/v07_final_version/train/runs/sft_v07/merged
 
 eval:
-  # accuracy eval (run model -> execute code -> score) is a separate step (eval.py)
-  max_new_tokens: 1024
-  temperature: 0.0
+  # per-epoch execution-accuracy callback (model selection metric)
+  eval_accuracy_max_samples: 56     # all of val_56; lower to speed each epoch
+  acc_max_new_tokens: 1024
+  acc_batch_size: 4                 # small: generation runs alongside training memory (40G A100)
 
 hub:
   org: Laplaces-Red-Devils
-  adapter_repo: physics-v07-sft-qwen3.5-4b           # LoRA adapter + tokenizer
-  merged_repo: physics-v07-sft-qwen3.5-4b-merged     # merged full model (vLLM serves this)
+  # v2 = de-overfit (lr 3e-5, r8) + accuracy-based checkpoint selection. Separate repos
+  # so v1 (physics-v07-sft-qwen3.5-4b[-merged]) is preserved for comparison.
+  adapter_repo: physics-v07b-sft-qwen3.5-4b           # LoRA adapter + tokenizer
+  merged_repo: physics-v07b-sft-qwen3.5-4b-merged     # merged full model (vLLM serves this)
   private: true
   push_to_hub: true
-  commit_message: "v07 SFT QLoRA (code-gen PoT)"
+  commit_message: "v07b SFT QLoRA (de-overfit, acc-selected)"

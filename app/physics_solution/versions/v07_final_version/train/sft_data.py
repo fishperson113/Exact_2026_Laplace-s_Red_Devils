@@ -24,9 +24,15 @@ def load_datasets(cfg: dict, tokenizer: Any) -> DatasetDict:
     def render(example: dict) -> dict:
         # add_generation_prompt=False -> include the assistant turn + closing
         # <|im_end|> so the model learns to stop.
-        text = tokenizer.apply_chat_template(
-            example["messages"], tokenize=False, add_generation_prompt=False
-        )
+        # enable_thinking=False -> mirror FOL (same flag at train AND inference) so the
+        # rendered <think> scaffolding is consistent between training and serving.
+        try:
+            text = tokenizer.apply_chat_template(
+                example["messages"], tokenize=False, add_generation_prompt=False,
+                enable_thinking=False)
+        except TypeError:
+            text = tokenizer.apply_chat_template(
+                example["messages"], tokenize=False, add_generation_prompt=False)
         return {"text": text}
 
     out = {}

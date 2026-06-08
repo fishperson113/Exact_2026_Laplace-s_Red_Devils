@@ -77,6 +77,20 @@ def run(config_path: str, skip_hub: bool = False) -> dict:
         eval_dataset=dd["val"],
         processing_class=tokenizer,
     )
+    # execution-accuracy callback FIRST (injects eval_accuracy into metrics) so
+    # best-model selection + early stopping read it.
+    acc_cb = None
+    if t.get("metric_for_best_model") == "eval_accuracy":
+        from .acc_callback import ExecAccuracyCallback
+        ev = cfg.get("eval", {})
+        acc_cb = ExecAccuracyCallback(
+            tokenizer,
+            cfg["paths"]["val_problems"],
+            max_samples=ev.get("eval_accuracy_max_samples", 56),
+            max_new_tokens=ev.get("acc_max_new_tokens", 1024),
+            batch_size=ev.get("acc_batch_size", 16),
+        )
+        trainer.add_callback(acc_cb)
     if int(t.get("early_stopping_patience", 0) or 0) > 0:
         trainer.add_callback(EarlyStoppingCallback(early_stopping_patience=int(t["early_stopping_patience"])))
 
@@ -102,10 +116,13 @@ def run(config_path: str, skip_hub: bool = False) -> dict:
     # --- metrics for the model card ---
     hist = trainer.state.log_history
     eval_losses = [h["eval_loss"] for h in hist if "eval_loss" in h]
+    accs = [a for _, a in (acc_cb.history if acc_cb else [])]
     metrics = {
         "train_loss": train_result.metrics.get("train_loss"),
         "best_eval_loss": min(eval_losses) if eval_losses else None,
         "final_eval_loss": eval_losses[-1] if eval_losses else None,
+        "best_eval_accuracy": max(accs) if accs else None,
+        "eval_accuracy_per_epoch": acc_cb.history if acc_cb else None,
         "epochs": cfg["training"]["num_train_epochs"],
         "n_train": len(dd["train"]),
         "n_val": len(dd["val"]),

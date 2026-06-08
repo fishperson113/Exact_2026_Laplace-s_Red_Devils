@@ -60,6 +60,7 @@ reasoning preamble then ONE Python code block that computes `FINAL ANSWER:` / `U
 ## Metrics
 - train_loss: {metrics.get('train_loss')}
 - best_eval_loss: {metrics.get('best_eval_loss')}
+- best_eval_accuracy (val_56, selection metric): {metrics.get('best_eval_accuracy')}
 {acc_lines}
 
 External hint/teacher data used during data-gen is declared in the Data Disclosure Document.
