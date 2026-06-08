@@ -48,9 +48,16 @@ def _load_golden() -> list[dict]:
     return out
 
 
-def _prompt(tokenizer, p: dict) -> str:
+def _prompt(tokenizer, p: dict, thinking: bool) -> str:
     msgs = build_gen_messages(p["question"], p["domain"], p["answer_type"])
-    return tokenizer.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+    # Qwen3.5's template defaults thinking ON (suffix `<|im_start|>assistant\n<think>\n`).
+    # think OFF matches the training distribution (we trained short-reasoning+code, no <think>)
+    # and avoids no_code on easy problems; think ON helps hard reasoning but needs more budget.
+    try:
+        return tokenizer.apply_chat_template(
+            msgs, tokenize=False, add_generation_prompt=True, enable_thinking=thinking)
+    except TypeError:
+        return tokenizer.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
 
 
 @torch.no_grad()
@@ -65,12 +72,13 @@ def _generate_batch(model, tokenizer, prompts: list[str], max_new_tokens: int) -
 
 
 def _eval_set(model, tokenizer, probs: list[dict], name: str, max_new_tokens: int,
-              batch_size: int) -> dict:
+              batch_size: int, thinking: bool) -> dict:
     n_ok = 0
     rows = []
     for s in range(0, len(probs), batch_size):
         batch = probs[s:s + batch_size]
-        completions = _generate_batch(model, tokenizer, [_prompt(tokenizer, p) for p in batch],
+        completions = _generate_batch(model, tokenizer,
+                                      [_prompt(tokenizer, p, thinking) for p in batch],
                                       max_new_tokens)
         for p, completion in zip(batch, completions):
             code = extract_code(completion)
@@ -111,7 +119,7 @@ def _eval_set(model, tokenizer, probs: list[dict], name: str, max_new_tokens: in
 
 
 def run_eval(model_path: str, sets: str = "both", limit: int | None = None,
-             max_new_tokens: int = 1024, batch_size: int = 16) -> dict:
+             max_new_tokens: int = 1024, batch_size: int = 16, thinking: bool = False) -> dict:
     tok = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
@@ -119,14 +127,15 @@ def run_eval(model_path: str, sets: str = "both", limit: int | None = None,
     model = AutoModelForCausalLM.from_pretrained(
         model_path, torch_dtype="auto", device_map="auto", trust_remote_code=True)
     model.eval()
+    print(f"[eval] thinking={thinking} max_new_tokens={max_new_tokens} batch_size={batch_size}")
 
     summary = {"model": model_path}
     if sets in ("both", "val"):
         v = _load_val()[: limit or None]
-        summary["val_56"] = _eval_set(model, tok, v, "val_56", max_new_tokens, batch_size)
+        summary["val_56"] = _eval_set(model, tok, v, "val_56", max_new_tokens, batch_size, thinking)
     if sets in ("both", "golden"):
         g = _load_golden()[: limit or None]
-        summary["golden_60"] = _eval_set(model, tok, g, "golden_60", max_new_tokens, batch_size)
+        summary["golden_60"] = _eval_set(model, tok, g, "golden_60", max_new_tokens, batch_size, thinking)
 
     out = OUT_DIR / "eval_results.json"
     out.write_text(json.dumps({k: (v if k == "model" else {kk: vv for kk, vv in v.items() if kk != "rows"})
@@ -143,6 +152,7 @@ if __name__ == "__main__":
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--max-new-tokens", type=int, default=1024)
     ap.add_argument("--batch-size", type=int, default=16)
+    ap.add_argument("--thinking", action="store_true", help="enable Qwen <think> (default off)")
     args = ap.parse_args()
-    run_eval(args.model, sets=args.sets, limit=args.limit,
-             max_new_tokens=args.max_new_tokens, batch_size=args.batch_size)
+    run_eval(args.model, sets=args.sets, limit=args.limit, max_new_tokens=args.max_new_tokens,
+             batch_size=args.batch_size, thinking=args.thinking)
