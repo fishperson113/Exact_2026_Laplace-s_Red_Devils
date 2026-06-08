@@ -41,6 +41,34 @@ clobbered) and installs the pinned stack. Training/eval are then run with
 
 Everything else (train, merge+push, eval) is in `train_v07.ipynb`.
 
+## Inference-only quickstart (verify results on a fresh GPU)
+
+The same `/content/v07_env` is all you need to *infer* (eval.py / self_consistency.py use plain
+`transformers.AutoModelForCausalLM`, not Unsloth). On a new Colab box:
+
+```bash
+# 0. nvidia libs on path
+echo 'export LD_LIBRARY_PATH=/usr/lib64-nvidia:/usr/local/nvidia/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc && source ~/.bashrc
+# 1. clone + env (skip if repo already at /content)
+cd /content && git clone <repo> Exact_2026_Laplace-s_Red_Devils 2>/dev/null; cd Exact_2026_Laplace-s_Red_Devils
+git fetch origin && git reset --hard origin/Nguyen/submition_v1
+bash app/physics_solution/versions/v07_final_version/colab_setup/setup_colab.sh   # builds /content/v07_env (~5 min)
+# 2. token (the deploy merged repo is PRIVATE)
+export HF_TOKEN=<hf_token>; export HUGGING_FACE_HUB_TOKEN=$HF_TOKEN
+# 3. run
+export LD_LIBRARY_PATH=/usr/lib64-nvidia:$LD_LIBRARY_PATH PYTORCH_ALLOC_CONF=expandable_segments:True PYTHONPATH=.
+PY=/content/v07_env/bin/python; M=app.physics_solution.versions.v07_final_version
+DEPLOY=Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b-merged
+$PY -m $M.eval             --model $DEPLOY --sets both --max-new-tokens 2048 --batch-size 32   # expect 0.857 / 0.717
+$PY -m $M.self_consistency --model $DEPLOY --sets both --k 5 --temperature 0.7 --prob-batch 6  # expect 0.875 / 0.817
+```
+
+Expected (think-OFF): greedy **val 0.857 / golden 0.717**, SC K=5 **0.875 / 0.817**. SC has
+sampling variance (±1–2 problems run-to-run). Output naming: see
+[`../train/runs/README.md`](../train/runs/README.md). ⚠️ **Pull `runs/*.json` + `/content/*.log`
+to local immediately after each run** — Colab boxes get terminated without warning (we lost the
+base-SC dump that way).
+
 ## Notes
 - Base weights (~8 GB, bnb-4bit) download on first run; cached afterwards.
 - `merge_push.py` merges on CPU and pushes the **adapter** and a **merged** repo to

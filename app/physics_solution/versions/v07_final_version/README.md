@@ -298,11 +298,14 @@ v07_final_version/                 # one importable package: docs + data + code
 ├── val_56.jsonl                   # the 56-problem validation set (rebuilt; split key)
 ├── make_val.py                    # D-pre: rebuild val_56 (drop-stale + golden-safe)  ✅
 ├── build_sft.py                   # D: split → output/{train,val}.jsonl (chat messages)  ✅
-├── eval.py                        # F-pre: accuracy on val_56 + golden_60 (run→exec→score)  ✅
+├── eval.py                        # F-pre: greedy accuracy on val_56 + golden_60 (run→exec→score)  ✅
+├── self_consistency.py           # SC: sample K, majority-vote answer (no gold), score — best config  ✅
 ├── input/
 │   └── trajectories_sft.jsonl     # ✅ THE SFT data — 2846 traj / 1505 problems
 ├── output/                        # ✅ train.jsonl (2634) + val.jsonl (110)
-├── train/                         # E: Unsloth QLoRA  ✅ (smoke-passed)
+├── colab_logs/                    # surviving run logs (sc_base.log; rest lost to box termination)
+├── train/                         # E: Unsloth LoRA  ✅ (v07b 4-bit, v07c 16-bit trained)
+│   └── runs/README.md             #   ⭐ DECODER for the eval/sc_*.json naming + results map
 │   ├── sft_model.py               #   Unsloth load qwen3_5 + LoRA (tf5 flex-attn/tokenizer fixes)
 │   ├── sft_data.py                #   messages → chat-template text
 │   ├── train.py                   #   SFTTrainer + train_on_responses_only + save + merge/push
