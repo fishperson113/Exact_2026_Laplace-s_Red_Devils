@@ -102,8 +102,8 @@ def _eval_set(model, tokenizer, probs: list[dict], name: str, max_new_tokens: in
                          "answer_type": p["answer_type"], "domain": p["domain"],
                          "gold": p["gold_answer"], "gold_unit": p["gold_unit"],
                          "pred": str(sc.pred_value), "pred_unit": sc.pred_unit,
-                         "had_code": bool(code), "exec_stdout": stdout[:300],
-                         "exec_err": err[:300], "completion": completion[:1500]})
+                         "had_code": bool(code), "exec_stdout": stdout[:800],
+                         "exec_err": err[:300], "completion": completion[:2000]})
         done = s + len(batch)
         print(f"  [{name}] {done}/{len(probs)} acc={n_ok/done:.3f}", flush=True)
     acc = n_ok / len(probs) if probs else 0.0

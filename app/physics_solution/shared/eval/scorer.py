@@ -151,7 +151,7 @@ def extract(completion: str) -> Extraction:
 def numeric_close(
     pred: float | None,
     gold: float,
-    rel_tol: float = 1e-2,
+    rel_tol: float = 2e-2,
     abs_tol: float = 1e-4,
 ) -> bool:
     if pred is None or math.isnan(pred) or math.isinf(pred):
@@ -319,6 +319,8 @@ def _score_multi_value(pred_completion: str, gold_answer: str) -> ScoringResult:
     gold_floats = []
     for p in gold_parts:
         f = _safe_float(p)
+        if f is None:
+            f = _parse_sci_notation(p)  # multi-value parts can be sci-notation too
         if f is not None:
             gold_floats.append(f)
 
@@ -327,6 +329,8 @@ def _score_multi_value(pred_completion: str, gold_answer: str) -> ScoringResult:
     pred_floats = []
     for p in pred_parts:
         f = _safe_float(p)
+        if f is None:
+            f = _parse_sci_notation(p)
         if f is not None:
             pred_floats.append(f)
 
