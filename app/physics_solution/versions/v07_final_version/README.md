@@ -120,14 +120,31 @@ figure-dependent problems that should have been filtered).
 
 (1) is scorer-only; (2)+(3) are prompt changes → need re-inference of v07c.
 
-### New results after fixes
-_(filled in after re-scoring + re-eval — see below)_
+### New results after fixes (verified 2026-06-08)
 
-| Model / config | val_56 | golden_60 | note |
+The 3 fixes compound. ① (scorer) lifts val for every model but does nothing for golden
+(golden's misses were real, not scoring). ②③ (prompt: full precision, no hand-formatted
+sci-notation) recover the **golden** format bugs — and help the base model too.
+
+**v07c, fix-by-fix:**
+| v07c merged config | val_56 | golden_60 | Δ |
 |---|---|---|---|
-| v07c merged (old scorer, old prompt) | 0.750 | 0.633 | baseline |
-| v07c merged (**new scorer**, old dumps) | _TBD_ | _TBD_ | fix ① only, no GPU |
-| v07c merged (**new scorer + new prompt**) | _TBD_ | _TBD_ | fixes ①②③, re-inferred |
+| old scorer, old prompt (baseline) | 0.750 | 0.633 | — |
+| **+ scorer ①** (re-score old dumps, no GPU) | 0.821 | 0.633 | val +0.071 |
+| **+ new prompt ②③** (re-inferred) | **0.857** | **0.717** | golden +0.084 |
+
+**Fair head-to-head (both with new prompt ②③ + new scorer ①):**
+| Model | val_56 | golden_60 |
+|---|---|---|
+| base Qwen3.5-4B | 0.821 | 0.683 |
+| **v07c merged (deploy)** | **0.857** (48/56) | **0.717** (43/60) |
+
+**v07c beats base by +2 problems on each set** — now consistently positive including the OOD
+golden (before the fixes it was tied/below on golden). The prompt fix lifted both models; the
+SFT edge is small but real. Net journey: v07c **0.750/0.633 → 0.857/0.717**, and it clears the
+original v05_best 58.3% golden bar comfortably. Remaining v07c misses are the genuine LDDT
+electrostatics-superposition ceiling (§C above) — the next lever is teacher-residual data or
+inference-time self-consistency, not more scorer/prompt tweaks.
 
 ---
 
