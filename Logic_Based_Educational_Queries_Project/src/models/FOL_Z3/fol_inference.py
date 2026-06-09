@@ -132,7 +132,7 @@ class FOLInference:
                 **inputs,
                 max_new_tokens=128,   # question FOL = 1 formula, thuong ~20-50 tokens
                 do_sample=False,
-                temperature=1.0,
+                repetition_penalty=1.3,   # chong Qwen3 lap vo han ∀x∀y∀z... khi greedy
             )
 
         generated = self.tokenizer.decode(
@@ -171,7 +171,7 @@ class FOLInference:
                 **inputs,
                 max_new_tokens=256,   # 4 FOL formulas, thuong ~80-150 tokens
                 do_sample=False,
-                temperature=1.0,
+                repetition_penalty=1.3,   # chong Qwen3 lap vo han ∀x∀y∀z... khi greedy
             )
 
         generated = self.tokenizer.decode(
