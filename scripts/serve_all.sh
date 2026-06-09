@@ -92,7 +92,7 @@ status_all() {
     if [ "$SERVE_MODE" = "triple" ]; then
         local pairs="physics:$PHYSICS_PORT fol:$FOL_PORT qa:$QA_PORT gateway:$API_PORT"
     elif [ "$SERVE_MODE" = "physics_ensemble" ]; then
-        local pairs="sft:$VLLM_PORT base:${ENS_BASE_PORT:-18004} gateway:$API_PORT"
+        local pairs="vllm(base+sft):$VLLM_PORT gateway:$API_PORT"
     else
         local pairs="vllm:$VLLM_PORT gateway:$API_PORT"
     fi
@@ -168,21 +168,34 @@ load_hf_token
 # Launch vLLM server(s)
 # ---------------------------------------------------------------------------
 if [ "$SERVE_MODE" = "physics_ensemble" ]; then
-    # Two 4B physics models resident IN PARALLEL (BTC: 2x4B = 8B active). SFT is the
-    # primary solver; BASE is the second voter AND the judge. No sleep-swap.
-    SFT_REPO="${SFT_REPO:-Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b-merged}"
+    # ONE vLLM serves the BASE Qwen3.5-4B (vLLM-supported arch Qwen3_5ForConditionalGeneration)
+    # AND the SFT as a LoRA adapter (the adapter's keys match the composite base's
+    # language_model.*). It exposes BOTH model ids on /v1/models: "base" (voter #2 + judge)
+    # and "sft" (primary solver). Total params ~4B (one base + tiny adapter) << 8B.
+    # NOTE: the text-only MERGED checkpoint (arch Qwen3_5ForCausalLM, model_type qwen3_5_text)
+    # is NOT servable by vLLM 0.22.1 — LoRA serving is the working path (and uses less VRAM,
+    # so a single base gives a huge KV cache → both base+sft requests batch on one engine).
     BASE_REPO="${BASE_REPO:-Qwen/Qwen3.5-4B}"
-    SFT_GPU="${SFT_GPU:-0.45}"; BASE_GPU="${BASE_GPU:-0.45}"
-    ENS_BASE_PORT="${ENS_BASE_PORT:-18004}"
-    log "SERVE_MODE=physics_ensemble — SFT($SFT_REPO):$VLLM_PORT + BASE($BASE_REPO):$ENS_BASE_PORT"
-    start_vllm vllm_physics "$SFT_REPO"  "$VLLM_PORT"     "$SFT_GPU"  0 physics || { err "SFT failed";  exit 1; }
-    start_vllm vllm_base    "$BASE_REPO" "$ENS_BASE_PORT" "$BASE_GPU" 0 base    || { err "BASE failed"; exit 1; }
-    log "Both physics models resident (SFT + BASE). vLLM /v1/models on :$VLLM_PORT and :$ENS_BASE_PORT."
+    SFT_ADAPTER="${SFT_ADAPTER:-Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b}"
+    MAX_LORA_RANK="${MAX_LORA_RANK:-16}"
+    log "SERVE_MODE=physics_ensemble (LoRA) — BASE($BASE_REPO) + adapter sft=$SFT_ADAPTER on :$VLLM_PORT"
+    if ! health_ok "$VLLM_PORT"; then
+        extra=""; [ "$ENFORCE_EAGER" = "1" ] && extra="--enforce-eager"
+        OMP_NUM_THREADS=8 nohup "$VLLM_BIN" serve "$BASE_REPO" --served-model-name base \
+            --host 0.0.0.0 --port "$VLLM_PORT" --dtype bfloat16 \
+            --gpu-memory-utilization "$GPU_UTIL" --max-model-len "$MAX_MODEL_LEN" \
+            --max-num-seqs "$MAX_NUM_SEQS" --enable-lora --max-lora-rank "$MAX_LORA_RANK" \
+            --lora-modules "sft=$SFT_ADAPTER" $extra \
+            </dev/null >"$LOG_DIR/vllm_physics.log" 2>&1 &
+        echo $! > "$RUN_DIR/vllm_physics.pid"; disown 2>/dev/null || true
+        wait_health vllm_physics "$VLLM_PORT" || { err "vLLM (base+LoRA) failed."; exit 1; }
+    fi
+    log "Serving base+sft on :$VLLM_PORT. /v1/models lists both (BTC verify): curl :$VLLM_PORT/v1/models"
     GW_ENV=(PIPELINE_VERSION=v07_ensemble_vLLM
-            VLLM_MODEL=physics VLLM_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
-            JUDGE_MODEL=base   JUDGE_BASE_URL="http://127.0.0.1:$ENS_BASE_PORT/v1"
-            FOL_MODEL=physics  FOL_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
-            QA_MODEL=physics   QA_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
+            VLLM_MODEL=sft   VLLM_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
+            JUDGE_MODEL=base JUDGE_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
+            FOL_MODEL=base   FOL_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
+            QA_MODEL=base    QA_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
             SLEEP_SWAP_ENABLED=0)
 elif [ "$SERVE_MODE" = "triple" ]; then
     log "SERVE_MODE=triple — 3 distinct models with sleep-swap."

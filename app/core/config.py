@@ -14,16 +14,16 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     # ---- Physics (Task Type 2) — kept VLLM_* names for back-compat ----
-    # Primary physics model = the SFT (v07c). The ensemble pipeline also queries a
-    # second BASE model (Qwen3.5-4B) which doubles as the JUDGE; 2x4B = 8B active,
-    # both resident on one GPU (BTC allows parallel models summing to <=8B).
-    vllm_model: str = "Laplaces-Red-Devils/physics-v04-optimized_routing-qwen3.5-4b"
+    # Ensemble serving = ONE vLLM hosting the BASE Qwen3.5-4B + the SFT as a LoRA adapter,
+    # exposing two ids on /v1/models: "sft" (primary solver) and "base" (voter #2 + judge).
+    # Both share the same endpoint; total params ~4B (base + tiny adapter) << 8B.
+    vllm_model: str = "sft"                          # LoRA adapter id served by vLLM
     vllm_base_url: str = "http://localhost:18000/v1"
     vllm_api_key: str = "dummy"
 
-    # ---- Physics ensemble: BASE model + JUDGE (same endpoint) ----
-    judge_model: str = "base"                       # served-model-name of the base vLLM
-    judge_base_url: str = "http://localhost:18004/v1"
+    # ---- Physics ensemble: BASE model + JUDGE (SAME vLLM endpoint as SFT) ----
+    judge_model: str = "base"                        # base served-model-name on the same vLLM
+    judge_base_url: str = "http://localhost:18000/v1"
     # ensemble sampling knobs (self-consistency K + judge)
     ensemble_k: int = 5
     ensemble_temperature: float = 0.7

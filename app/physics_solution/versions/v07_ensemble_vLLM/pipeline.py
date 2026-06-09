@@ -32,7 +32,7 @@ from app.physics_solution.versions.v05_best_vLLM.code_executor import execute_co
 from app.physics_solution.versions.v05_best_vLLM.pipeline import _build_classify_messages
 from app.physics_solution.versions.v06_finetune.data_pipeline.prompts import build_gen_messages
 
-_DEFAULT_ROUTE = RouteResult(domain="ELECTROSTATICS", answer_type="numeric")
+_DEFAULT_ROUTE = RouteResult(domain="ELECTROSTATICS", answer_type="numeric", confidence=0.0)
 _AB = re.compile(r"\b([AB])\b")
 
 
