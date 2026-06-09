@@ -30,15 +30,18 @@ step-by-step through the logical structure and answer the question.
 **Step 2: DETERMINE QUESTION TYPE**
 - Multiple choice (A/B/C/D) → evaluate each option against the logical chains.
 - Yes/No → determine if the statement follows from, is contradicted by, or cannot be determined from the premises.
+- Numeric / Short-answer → the question asks for a specific value (a number, a name, or a short phrase) that the premises determine or that can be computed from them (e.g. "how many more", "what is the minimum", "which course"). No options are listed.
 
 **Step 3: EVALUATE & REASON**
 - For MCQ: check each option — does it follow from a chain? Is it a valid contrapositive? Does it conflate separate chains?
 - For Yes/No: trace whether the full chain connects the antecedent to the consequent without gaps.
+- For Numeric/Short-answer: extract the relevant quantities or entities from the premises, perform the required arithmetic or lookup, and state the resulting value. Show the computation explicitly (e.g. 120 − 118 = 2).
 - Cite specific premise numbers in your reasoning.
 
 **Step 4: ANSWER**
 - MCQ → exactly one of: A, B, C, D, or Unknown.
 - Yes/No → exactly one of: Yes, No, or Unknown.
+- Numeric/Short-answer → the exact value as a string (e.g. "2", "Course C", "$15"). For a number, output digits only and omit units unless the unit is essential to disambiguate the answer.
 - Use "Unknown" ONLY when premises are genuinely insufficient.
 
 ### Output Format
@@ -97,6 +100,21 @@ D. John cannot transport standard goods.
 
 Output:
 {"answer": "A", "explanation": "Premises 4 and 5 confirm John passed vehicle inspection and has the appropriate license, so premise 1 derives that he can transport standard goods — option A is justified. Option B requires a safety endorsement (antecedent of premise 2), but premise 7 states John has NOT received one, so premise 2 never fires and we cannot derive that he can transport hazardous materials. This makes B unknown: the premises provide no rule proving he cannot, they merely fail to prove he can, so the claim is unsupported rather than false. Option C depends on first being able to transport hazardous materials (premise 3), so it inherits the same unknown status as B and has no basis for conclusion. Option D directly contradicts the derivation establishing A. Therefore the only justified answer is A, while B and C remain undeterminable from the given premises."}
+
+#### Example 3 — Numeric / Short-answer
+Premises (NL):
+1. A student with at least 120 credits is eligible to graduate.
+2. Student A has 118 credits.
+
+Premises (FOL):
+1. ∀x (credits(x) ≥ 120 → eligible_graduate(x))
+2. credits(StudentA) = 118
+
+Question:
+How many more credits does Student A need to graduate?
+
+Output:
+{"answer": "2", "explanation": "Premise 1 sets the graduation threshold at 120 credits. Premise 2 states Student A currently has 118 credits. The shortfall is 120 − 118 = 2, so Student A needs 2 more credits. If premise 2 had not given a concrete credit count, the value would be undeterminable and the answer would be Unknown."}
 
 No markdown fences, no text outside the JSON.
 """

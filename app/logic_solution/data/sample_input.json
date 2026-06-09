@@ -24,5 +24,17 @@
     "Student A has 118 credits."
   ],
   "question": "How many more credits does Student A need to graduate?"
+  },
+  {
+  "premises-NL": [
+    "A courier is assigned to a route if they have a valid license and are available on that day.",
+    "Route X requires a motorcycle license.",
+    "Route Y requires a car license.",
+    "Courier Minh has a motorcycle license.",
+    "Courier Minh is available on Monday.",
+    "Courier Lan has a car license.",
+    "Courier Lan is not available on Monday."
+  ],
+  "question": "Which courier can be assigned to a route on Monday, and which route?"
   }
 ]
