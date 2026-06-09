@@ -51,10 +51,12 @@ FOL_GPU="${FOL_GPU:-0.45}"                   # triple: fol+qa awake together (~0
 QA_GPU="${QA_GPU:-0.45}"
 MAX_MODEL_LEN="${MAX_MODEL_LEN:-8192}"
 MAX_NUM_SEQS="${MAX_NUM_SEQS:-16}"
-# ENFORCE_EAGER=1 (default) keeps vLLM in eager mode (lower VRAM, safe for serving).
-# Set ENFORCE_EAGER=0 to enable CUDA graphs (faster decode) — useful for high-throughput
-# data-gen where the KV cache has headroom. Pair with a larger MAX_NUM_SEQS.
-ENFORCE_EAGER="${ENFORCE_EAGER:-1}"
+# ENFORCE_EAGER=1 keeps vLLM eager (lower VRAM). 0 = CUDA graphs (faster decode).
+# physics_ensemble runs ONE small model with a huge KV cache, so CUDA graphs are a big
+# win there (golden_60: median 8.9s vs ~15s eager, max 22s vs ~60s) -> default 0 for it,
+# 1 elsewhere. User override always wins.
+_EAGER_DEFAULT=1; [ "$SERVE_MODE" = "physics_ensemble" ] && _EAGER_DEFAULT=0
+ENFORCE_EAGER="${ENFORCE_EAGER:-$_EAGER_DEFAULT}"
 
 export HF_HOME="${HF_HOME:-/dev/shm/hf}"
 export HF_HUB_ENABLE_HF_TRANSFER="${HF_HUB_ENABLE_HF_TRANSFER:-1}"
@@ -235,6 +237,16 @@ else
 fi
 
 log "Gateway /health: $(curl -sf -m3 "http://127.0.0.1:$API_PORT/health" 2>/dev/null || echo '(not ready)')"
+
+# Warm-up: send one /predict so the grader's FIRST real query isn't a cold-start
+# (cold first request was ~60s; warmed requests are ~10-22s). Best-effort, non-fatal.
+if health_ok "$API_PORT"; then
+    log "Warming up the pipeline (1 throwaway /predict)..."
+    curl -s -m 90 "http://127.0.0.1:$API_PORT/predict" -H 'Content-Type: application/json' \
+      -d '{"query_id":"warmup","type":"type2","query":"What is the energy stored in a 2 uF capacitor charged to 12 V, in joules?","premises":[],"options":[]}' \
+      >/dev/null 2>&1 && log "  warmup done." || log "  warmup skipped (gateway busy)."
+fi
+
 echo; log "=== STACK UP (mode=$SERVE_MODE) ==="; status_all
 echo; log "Test from laptop:  ssh -p <PORT> root@<HOST> -L $API_PORT:localhost:$API_PORT  then http://localhost:$API_PORT/docs"
 
