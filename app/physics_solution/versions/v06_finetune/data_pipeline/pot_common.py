@@ -47,14 +47,24 @@ EXEC_TIMEOUT = 10  # seconds; same sandbox budget as v05_best
 # ------------------------------------------------------------------ prompts
 
 def build_gen_messages(spec: ProblemSpec) -> list[dict]:
-    """The PoT generation prompt -- reuses the proven v05_best codegen prompt.
+    """The v06 PoT generation prompt: short reasoning THEN one code block (see prompts.py).
 
-    Lazy import: pulls v05_best.prompts -> formula_kb -> PyYAML, which the GPU
-    boxes have but the lean verifier-only path should not require.
+    Lazy import: pulls prompts -> formula_kb -> PyYAML, which the GPU boxes have but the
+    lean verifier-only path should not require.
     """
-    from app.physics_solution.versions.v05_best.prompts import build_codegen_prompt
+    from app.physics_solution.versions.v06_finetune.data_pipeline import prompts
 
-    return build_codegen_prompt(spec.question, spec.domain, spec.answer_type)
+    return prompts.build_gen_messages(spec.question, spec.domain, spec.answer_type)
+
+
+def build_hinted_messages(spec: ProblemSpec) -> list[dict]:
+    """Hinted self-gen prompt: shows `spec.meta['hint_code']` as a method reference so Qwen
+    can re-derive ITS OWN reasoning + code (on-policy). Used for the residual only.
+    """
+    from app.physics_solution.versions.v06_finetune.data_pipeline import prompts
+
+    hint = (spec.meta or {}).get("hint_code") or ""
+    return prompts.build_hinted_messages(spec.question, spec.domain, spec.answer_type, hint)
 
 
 def error_feedback(exec_result: ExecutionResult | None) -> str:
@@ -114,6 +124,7 @@ def make_trajectory(
     temperature: float,
     retry_count: int = 0,
     sample_idx: int = 0,
+    hint_source: str = "",
 ) -> Trajectory:
     """Wrap a verified completion into the cross-stage `Trajectory` contract.
 
@@ -129,6 +140,7 @@ def make_trajectory(
         retry_count=retry_count,
         sample_idx=sample_idx,
         created_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        hint_source=hint_source,
     )
     return Trajectory(
         id=f"{spec.id}#{route}{sample_idx}",

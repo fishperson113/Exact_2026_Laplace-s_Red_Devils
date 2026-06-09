@@ -46,6 +46,27 @@ class VLLMClient:
         )
         return response.choices[0].message.content or ""
 
+    async def chat_n(
+        self,
+        messages: list[dict],
+        n: int,
+        temperature: float = 0.7,
+        top_p: float = 0.95,
+        max_tokens: int = 2048,
+    ) -> list[str]:
+        """Sample ``n`` completions in ONE request (vLLM ``n`` param) — used for
+        self-consistency. Returns up to ``n`` completion strings."""
+        response = await self._get_client().chat.completions.create(
+            model=self._model,
+            messages=messages,
+            temperature=temperature,
+            top_p=top_p,
+            max_tokens=max_tokens,
+            n=n,
+            extra_body={"chat_template_kwargs": {"enable_thinking": False}},
+        )
+        return [c.message.content or "" for c in response.choices]
+
     async def generate(
         self,
         prompt: str,
@@ -89,6 +110,9 @@ class VLLMClient:
 # Physics (Task Type 2). `llm` is the canonical name used by the v05 pipeline.
 llm = VLLMClient(settings.vllm_base_url, settings.vllm_model)
 physics_llm = llm
+
+# Physics ensemble: the BASE Qwen3.5-4B endpoint, which also serves as the JUDGE.
+physics_base_llm = VLLMClient(settings.judge_base_url, settings.judge_model)
 
 # Logic (Task Type 1) — two-stage FOL -> QA, each on its own vLLM server.
 fol_llm = VLLMClient(settings.fol_base_url, settings.fol_model)
