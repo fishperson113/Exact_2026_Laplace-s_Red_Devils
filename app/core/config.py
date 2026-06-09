@@ -31,12 +31,15 @@ class Settings(BaseSettings):
     ensemble_max_tokens: int = 2048
 
     # ---- Logic (Task Type 1) — two vLLM servers, FOL then QA ----
-    fol_model: str = "Laplaces-Red-Devils/fol-v05-cot-augmented-fol-pretrain-malls-qwen2.5-3"
+    # Both are FULL Qwen3.5-4B finetunes (fol-pretrain = continued-pretrain; qa =
+    # cot-augmented SFT on top). They ship as the text-only arch Qwen3_5ForCausalLM,
+    # which vLLM 0.22.1 CANNOT serve — serve_all grafts each onto the composite base
+    # (scripts/graft_text_to_composite.py) and serves the local composite dir. These
+    # are the vLLM served-model-NAMES ("fol"/"qa"), not repo ids.
+    fol_model: str = "fol"
     fol_base_url: str = "http://localhost:18001/v1"
     fol_max_tokens: int = 400
 
-    # qa_model is the LoRA module name registered in vLLM (--lora-modules qa=<adapter>),
-    # NOT a HF repo id. The base (Qwen/Qwen2.5-3B-Instruct) is loaded by the qa server.
     qa_model: str = "qa"
     qa_base_url: str = "http://localhost:18002/v1"
     qa_max_tokens: int = 400

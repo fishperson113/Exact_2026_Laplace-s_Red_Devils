@@ -91,8 +91,8 @@ stop_all() {
 }
 
 status_all() {
-    if [ "$SERVE_MODE" = "triple" ]; then
-        local pairs="physics:$PHYSICS_PORT fol:$FOL_PORT qa:$QA_PORT gateway:$API_PORT"
+    if [ "$SERVE_MODE" = "triple" ] || [ "$SERVE_MODE" = "combined" ]; then
+        local pairs="physics(base+sft):$VLLM_PORT fol:$FOL_PORT qa:$QA_PORT gateway:$API_PORT"
     elif [ "$SERVE_MODE" = "physics_ensemble" ]; then
         local pairs="vllm(base+sft):$VLLM_PORT gateway:$API_PORT"
     else
@@ -199,6 +199,60 @@ if [ "$SERVE_MODE" = "physics_ensemble" ]; then
             FOL_MODEL=base   FOL_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
             QA_MODEL=base    QA_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
             SLEEP_SWAP_ENABLED=0)
+elif [ "$SERVE_MODE" = "combined" ]; then
+    # FULL competition stack on ONE GPU, both task types, sleep-swap by type:
+    #   physics group : ONE vLLM :18000 = BASE Qwen3.5-4B + LoRA(sft)  (ids base, sft)  ~4B
+    #   logic   group : fol-composite :18001 + qa-composite :18002     (ids fol, qa)    ~8B
+    # All three engines run --enable-sleep-mode; the gateway wakes the needed group and
+    # sleeps the rest (ensure_awake), so only ≤8B is GPU-resident at any moment.
+    #
+    # The logic models ship as text-only Qwen3_5ForCausalLM (NOT vLLM-servable); we graft
+    # each onto the composite base first (idempotent) and serve the local composite dir.
+    BASE_REPO="${BASE_REPO:-Qwen/Qwen3.5-4B}"
+    SFT_ADAPTER="${SFT_ADAPTER:-Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b}"
+    MAX_LORA_RANK="${MAX_LORA_RANK:-16}"
+    FOL_FT="${FOL_FT:-Laplaces-Red-Devils/fol-pretrain-malls-qwen3.5-4b}"
+    QA_FT="${QA_FT:-Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4}"
+    MODELS_DIR="${MODELS_DIR:-/dev/shm/models}"
+
+    log "SERVE_MODE=combined — grafting logic models -> composite (idempotent)..."
+    for spec in "fol:$FOL_FT" "qa:$QA_FT"; do
+        name="${spec%%:*}"; repo="${spec#*:}"
+        HF_HOME="$HF_HOME" HF_TOKEN="${HF_TOKEN:-}" HUGGING_FACE_HUB_TOKEN="${HF_TOKEN:-}" \
+        "$PY" "$PROJECT_ROOT/scripts/graft_text_to_composite.py" \
+            --base "$BASE_REPO" --finetune "$repo" --out "$MODELS_DIR/$name-composite" \
+            >>"$LOG_DIR/graft.log" 2>&1 \
+          || { err "graft of $name failed — see $LOG_DIR/graft.log"; exit 1; }
+        log "  $name -> $MODELS_DIR/$name-composite ready"
+    done
+
+    # logic servers first; SLEEP each after load so the next sees free VRAM.
+    start_vllm vllm_fol "$MODELS_DIR/fol-composite" "$FOL_PORT" "$FOL_GPU" 1 fol || { err "fol failed"; exit 1; }
+    sleep_server "$FOL_PORT"
+    start_vllm vllm_qa  "$MODELS_DIR/qa-composite"  "$QA_PORT"  "$QA_GPU"  1 qa  || { err "qa failed";  exit 1; }
+    sleep_server "$QA_PORT"
+
+    # physics base+LoRA on :18000 (sleep-mode), left AWAKE as the default group.
+    if ! health_ok "$VLLM_PORT"; then
+        export VLLM_SERVER_DEV_MODE=1
+        extra="--enable-sleep-mode --enable-lora --max-lora-rank $MAX_LORA_RANK --lora-modules sft=$SFT_ADAPTER"
+        [ "$ENFORCE_EAGER" = "1" ] && extra="$extra --enforce-eager"
+        log "Starting physics base+LoRA ($BASE_REPO + sft=$SFT_ADAPTER) :$VLLM_PORT util=$GPU_UTIL sleep=1 eager=$ENFORCE_EAGER"
+        OMP_NUM_THREADS=8 nohup "$VLLM_BIN" serve "$BASE_REPO" --served-model-name base \
+            --host 0.0.0.0 --port "$VLLM_PORT" --dtype bfloat16 \
+            --gpu-memory-utilization "$GPU_UTIL" --max-model-len "$MAX_MODEL_LEN" \
+            --max-num-seqs "$MAX_NUM_SEQS" $extra \
+            </dev/null >"$LOG_DIR/vllm_physics.log" 2>&1 &
+        echo $! > "$RUN_DIR/vllm_physics.pid"; disown 2>/dev/null || true
+        wait_health vllm_physics "$VLLM_PORT" || { err "physics base+LoRA failed."; exit 1; }
+    fi
+    log "Combined stack: physics(base+sft):$VLLM_PORT awake; fol:$FOL_PORT qa:$QA_PORT asleep. Gateway swaps by type."
+    GW_ENV=(PIPELINE_VERSION=v07_ensemble_vLLM
+            VLLM_MODEL=sft   VLLM_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
+            JUDGE_MODEL=base JUDGE_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
+            FOL_MODEL=fol    FOL_BASE_URL="http://127.0.0.1:$FOL_PORT/v1"
+            QA_MODEL=qa      QA_BASE_URL="http://127.0.0.1:$QA_PORT/v1"
+            SLEEP_SWAP_ENABLED=1)
 elif [ "$SERVE_MODE" = "triple" ]; then
     log "SERVE_MODE=triple — 3 distinct models with sleep-swap."
     # Start sequentially; SLEEP each right after it loads so the next sees free VRAM.
@@ -241,10 +295,18 @@ log "Gateway /health: $(curl -sf -m3 "http://127.0.0.1:$API_PORT/health" 2>/dev/
 # Warm-up: send one /predict so the grader's FIRST real query isn't a cold-start
 # (cold first request was ~60s; warmed requests are ~10-22s). Best-effort, non-fatal.
 if health_ok "$API_PORT"; then
-    log "Warming up the pipeline (1 throwaway /predict)..."
-    curl -s -m 90 "http://127.0.0.1:$API_PORT/predict" -H 'Content-Type: application/json' \
-      -d '{"query_id":"warmup","type":"type2","query":"What is the energy stored in a 2 uF capacitor charged to 12 V, in joules?","premises":[],"options":[]}' \
-      >/dev/null 2>&1 && log "  warmup done." || log "  warmup skipped (gateway busy)."
+    # Warm BOTH types so the grader's first query of EITHER type isn't a cold swap.
+    # type1 first (swaps in the logic group), then type2 (swaps back) -> end physics-awake.
+    if [ "$SERVE_MODE" = "combined" ] || [ "$SERVE_MODE" = "triple" ]; then
+        log "Warming type1 (logic group)..."
+        curl -s -m 120 "http://127.0.0.1:$API_PORT/predict" -H 'Content-Type: application/json' \
+          -d '{"query_id":"warmup1","type":"type1","query":"Is a cat an animal?","premises":["All cats are animals.","Tom is a cat."],"options":["Yes","No"]}' \
+          >/dev/null 2>&1 && log "  type1 warmup done." || log "  type1 warmup skipped."
+    fi
+    log "Warming type2 (physics group)..."
+    curl -s -m 120 "http://127.0.0.1:$API_PORT/predict" -H 'Content-Type: application/json' \
+      -d '{"query_id":"warmup2","type":"type2","query":"What is the energy stored in a 2 uF capacitor charged to 12 V, in joules?","premises":[],"options":[]}' \
+      >/dev/null 2>&1 && log "  type2 warmup done." || log "  type2 warmup skipped."
 fi
 
 echo; log "=== STACK UP (mode=$SERVE_MODE) ==="; status_all

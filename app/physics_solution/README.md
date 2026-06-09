@@ -94,15 +94,48 @@ HF repos: `Laplaces-Red-Devils/physics-v{NN:02d}-{strategy}-{base}`.
 | v05_best_vLLM | `best_vLLM` | Done — v05_best served async over vLLM (`pipeline.py::solve`) |
 | v06_finetune | `pot` | Done — SFT data pipeline (PoT trajectories) |
 | v07_final_version | `self-sft` | Done — SFT Qwen3.5-4B (v07c merged); eval/self-consistency harness |
-| **v07_ensemble_vLLM** | **`ensemble_vLLM`** | **CURRENT serving** — SFT + BASE in parallel, BASE judges (see below) |
+| **v07_ensemble_vLLM** | **`ensemble_vLLM`** | **CURRENT serving** — physics group of `SERVE_MODE=combined` (pooled SFT+BASE vote, BASE writes explanation; see below) |
 
-## Production serving — BTC `/predict` + physics ensemble (CURRENT)
+## Production serving — BTC `/predict`, both task types (CURRENT)
 
 The competition endpoint is **`POST /predict`** (BTC 2026 Submission Guide): one
 endpoint, route by the `type` field, return a JSON **list** of result objects
 (`{query_id, answer, unit, explanation, premises_used, reasoning}`). Implemented in
 [`app/api/routes/predict.py`](../../app/api/routes/predict.py) (`type2` → physics
-ensemble; `type1` → logic, output shaped best-effort). Legacy `/ask` kept for tooling.
+ensemble; `type1` → logic FOL→QA). The gateway also proxies **`GET /v1/models`**
+([`app/api/routes/models.py`](../../app/api/routes/models.py)) — it aggregates every
+vLLM engine's model list into one OpenAI-compatible response, so a **single public
+URL** covers both BTC-required endpoints (`/predict` + `/v1/models`). Legacy `/ask` kept.
+
+### Full stack = per-type models on one GPU, sleep-swapped (`SERVE_MODE=combined`)
+
+The four serving weights exceed the ≤8B that may be GPU-resident at once, so each
+vLLM runs with `--enable-sleep-mode` and the gateway wakes the group a request needs
+and sleeps the rest ([`app/core/model_swap.py`](../../app/core/model_swap.py), keyed
+by the `type` field):
+
+| Group (type) | Engine(s) | Models | GPU-resident |
+|---|---|---|---|
+| **physics** (type2) | :18000 | base `Qwen3.5-4B` + LoRA `sft` (ids `base`,`sft`) | ~4B |
+| **logic** (type1) | :18001 + :18002 | `fol` + `qa` (two full Qwen3.5-4B) | ~8B (organizer-permitted 2×4B) |
+
+**The graft step (load-bearing).** All three finetunes (physics-merged, fol-pretrain,
+qa) ship as the text-only arch `Qwen3_5ForCausalLM` / model_type `qwen3_5_text`, which
+**vLLM 0.22.1 cannot serve** — it registers only the composite `Qwen3_5ForConditionalGeneration`.
+The physics SFT is served as a **LoRA adapter** on the composite base (adapter keys are
+already in the `model.language_model.*` namespace). The two **logic** models are full
+finetunes (no shared base), so each is **grafted onto the composite base** by
+[`scripts/graft_text_to_composite.py`](../../scripts/graft_text_to_composite.py): take
+the base composite, overwrite its 426 `model.language_model.*` tensors with the
+finetune's, keep the base's vision tower + mtp + config → a valid composite checkpoint
+vLLM serves text-only (vision is dead weight, never exercised). `serve_all.sh combined`
+runs this automatically (idempotent, to `/dev/shm/models/{fol,qa}-composite`).
+
+Measured on RTX 5090 (eager, swap-safe): **type2 ~17–18s** (correct: 2µF@12V→1.44e-4 J,
+4∥4Ω→2Ω), **type1 ~2.6s including the physics→logic swap** (`Yes`, premises_used=[0,1],
+FOL steps emitted). Swaps are cheap (sleep-level-1 wake from CPU RAM).
+
+### Type 2 ensemble (physics)
 
 **Type 2 ensemble** ([`versions/v07_ensemble_vLLM/pipeline.py`](versions/v07_ensemble_vLLM/pipeline.py)) —
 **ONE vLLM hosts the BASE `Qwen/Qwen3.5-4B` + the SFT (v07c) as a LoRA adapter** (`--enable-lora`,
@@ -149,14 +182,18 @@ Offline harness (non-serving) + measurement scripts:
 
 **Bring-up** (RTX 5090 32 GB or any CUDA-13 box; **transformers 5.10 + vLLM 0.22.1**):
 ```bash
-SERVE_MODE=physics_ensemble bash scripts/serve_all.sh start
-#   ONE vLLM :18000 = BASE Qwen3.5-4B + --lora-modules sft=<adapter> (ids base+sft).
-#   CUDA graphs on by default for this mode + a warmup request. Gateway :9000 /predict.
+# FULL competition stack — both task types, per-type models, sleep-swap:
+HF_TOKEN=hf_... SERVE_MODE=combined bash scripts/serve_all.sh start
+#   grafts fol/qa -> composite (idempotent), serves physics base+LoRA :18000 +
+#   fol :18001 + qa :18002 (all sleep-mode), gateway :9000 (/predict + /v1/models),
+#   warms BOTH types. Committee: GET <url>/v1/models lists base,sft,fol,qa.
+
+# Physics-only (testing): SERVE_MODE=physics_ensemble (CUDA graphs, no swap).
 ```
-Models: BASE=`Qwen/Qwen3.5-4B`, SFT adapter=`Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b`
-(the adapter, NOT the `-merged` repo). Knobs in [`app/core/config.py`](../../app/core/config.py)
-(`vllm_model=sft`, `judge_model=base`, both `:18000`, `ensemble_k`). The single `/v1/models`
-on `:18000` lists both ids for committee verification.
+Models: physics BASE=`Qwen/Qwen3.5-4B` + adapter `Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b`;
+logic `fol`=`Laplaces-Red-Devils/fol-pretrain-malls-qwen3.5-4b`, `qa`=`Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4`
+(both grafted on-box). Knobs in [`app/core/config.py`](../../app/core/config.py). The
+gateway `/v1/models` proxy lists all four ids for committee verification.
 
 ## Quickstart (Colab)
 

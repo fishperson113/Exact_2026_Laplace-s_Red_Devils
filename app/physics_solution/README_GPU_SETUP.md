@@ -85,15 +85,15 @@ curl -s -X POST localhost:9000/predict -H "Content-Type: application/json" -d '{
 - **Luc serve, model nam o VRAM** (khong phai /dev/shm). HF cache mac dinh `/dev/shm`
   (RAM) cho load nhanh; de disk cung chay y het, chi cham lan load dau. shm bi cap =
   container_RAM/2 — muon to hon thi set `--shm-size` trong custom template.
-- **`SERVE_MODE=physics_ensemble`** (Type-2 hien tai): **1 vLLM :18000 = BASE Qwen3.5-4B +
-  SFT lam LoRA adapter** (`--enable-lora`, ids `base`+`sft`). ~4B tong (<8B), CUDA graphs ON
-  (default mode nay) + warmup. Xem muc rieng ben duoi. Type-1 tam route qua endpoint nay.
+- **`SERVE_MODE=combined`** (FULL stack — CA 2 task type, dung cho submit): physics group
+  (base+LoRA :18000) + logic group (`fol` :18001 + `qa` :18002, deu la full Qwen3.5-4B da
+  **graft** sang composite), sleep-swap theo `type`. Xem muc rieng ben duoi.
+- **`SERVE_MODE=physics_ensemble`** (chi Type-2, de test/benchmark): 1 vLLM :18000 = BASE +
+  SFT-LoRA, CUDA graphs ON, KHONG swap. Xem muc rieng.
 - **`SERVE_MODE=shared`**: 1 con Qwen3.5-4B ~19GB VRAM lo ca 3 role (placeholder `physics-v04`).
-- **Khi co 3 model finetune rieng** -> dung `SERVE_MODE=triple` (sleep-mode swap) o duoi.
-- **Expose BTC (CAN 2 URL):** `/predict` (gateway :9000) **VA** `/v1/models` (vLLM :18000, de
-  verify model). `setup_env.sh`/`serve_all.sh` bat cloudflared cho :9000. Cho :18000 them 1
-  tunnel nua, HOAC (gon hon) them route proxy `/v1/models` trong gateway -> 1 tunnel lo ca hai.
-  URL cloudflared **doi** moi lan restart. Fallback rate-limit: reverse-SSH sang VPS:
+- **Expose BTC = CHI 1 URL (xong):** gateway :9000 proxy ca `/v1/models` (`app/api/routes/models.py`,
+  gom tat ca engine -> liet ke base,sft,fol,qa) LAN `/predict`. cloudflared chi can 1 tunnel toi
+  :9000. URL cloudflared **doi** moi lan restart. Fallback rate-limit: reverse-SSH sang VPS:
   ```bash
   ssh -fN -R <VPS_PORT>:localhost:9000 <user>@<vps_ip>
   # BTC goi: http://<vps_ip>:<VPS_PORT>/predict   (mo <VPS_PORT> tren firewall VPS)
@@ -101,7 +101,36 @@ curl -s -X POST localhost:9000/predict -H "Content-Type: application/json" -d '{
 
 ---
 
-## SERVE_MODE=physics_ensemble — BASE + SFT-LoRA tren 1 vLLM (Type 2 hien tai)
+## SERVE_MODE=combined — FULL stack ca 2 task type (DUNG CHO SUBMIT)
+
+Mot GPU, 3 vLLM engine, sleep-swap theo `type` field cua `/predict`:
+
+| Group (type) | Engine | Model | VRAM khi awake |
+|---|---|---|---|
+| physics (type2) | :18000 | base `Qwen3.5-4B` + LoRA `sft` | ~4B |
+| logic (type1) | :18001 + :18002 | `fol` + `qa` (2 full Qwen3.5-4B) | ~8B (BTC cho 2×4B) |
+
+**GRAFT (mau chot):** ca 3 model finetune (physics-merged, fol-pretrain, qa) deu la arch
+text-only `Qwen3_5ForCausalLM` -> vLLM 0.22.1 KHONG serve duoc. Physics SFT serve = LoRA tren
+composite base. 2 model logic la full finetune (ko share base) -> **graft sang composite** bang
+`scripts/graft_text_to_composite.py`: giu base's `model.visual.*`+mtp+config, ghi de 426
+`model.language_model.*` bang weights cua finetune (keys khop 1:1) -> composite hop le, serve
+text-only ngon. `serve_all.sh combined` chay tu dong (idempotent -> `/dev/shm/models/{fol,qa}-composite`).
+
+```bash
+HF_TOKEN=hf_... SERVE_MODE=combined bash scripts/serve_all.sh start
+# env tuy chon (mac dinh):
+#   BASE_REPO=Qwen/Qwen3.5-4B  SFT_ADAPTER=Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b
+#   FOL_FT=Laplaces-Red-Devils/fol-pretrain-malls-qwen3.5-4b
+#   QA_FT=Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4
+#   GPU_UTIL=0.85 (physics awake) FOL_GPU=QA_GPU=0.45 (logic awake = 0.9)
+```
+Gateway env: `SLEEP_SWAP_ENABLED=1`, VLLM_MODEL=sft/:18000, FOL=fol/:18001, QA=qa/:18002.
+Start order = fol→sleep→qa→sleep→physics(awake); warmup CA 2 type. Eager (swap-safe) -> physics
+~17-18s, type1 ~2.6s ke ca swap. Verify: `curl :9000/v1/models` (base,sft,fol,qa) +
+`curl :9000/predict -d '{"type":"type1",...}'` / `'{"type":"type2",...}'`.
+
+## SERVE_MODE=physics_ensemble — BASE + SFT-LoRA tren 1 vLLM (chi Type 2, test)
 
 **1 vLLM serve BASE `Qwen/Qwen3.5-4B` + SFT (v07c) lam LoRA adapter** (`--enable-lora
 --lora-modules sft=<adapter>`). vLLM 0.22.1 KHONG serve duoc merged (arch `Qwen3_5ForCausalLM`/
