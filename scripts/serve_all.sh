@@ -74,7 +74,7 @@ health_ok() { curl -sf -m 3 "http://127.0.0.1:$1/health" >/dev/null 2>&1; }
 
 stop_all() {
     log "Stopping gateway + vLLM + tunnel..."
-    for name in gateway vllm vllm_fol vllm_qa vllm_physics tunnel; do
+    for name in gateway vllm vllm_fol vllm_qa vllm_physics vllm_base tunnel; do
         pidf="$RUN_DIR/$name.pid"; [ -f "$pidf" ] || continue
         pid="$(cat "$pidf" 2>/dev/null)"
         [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null && { kill "$pid" 2>/dev/null && log "  killed $name ($pid)"; }
@@ -91,6 +91,8 @@ stop_all() {
 status_all() {
     if [ "$SERVE_MODE" = "triple" ]; then
         local pairs="physics:$PHYSICS_PORT fol:$FOL_PORT qa:$QA_PORT gateway:$API_PORT"
+    elif [ "$SERVE_MODE" = "physics_ensemble" ]; then
+        local pairs="sft:$VLLM_PORT base:${ENS_BASE_PORT:-18004} gateway:$API_PORT"
     else
         local pairs="vllm:$VLLM_PORT gateway:$API_PORT"
     fi
@@ -165,7 +167,24 @@ load_hf_token
 # ---------------------------------------------------------------------------
 # Launch vLLM server(s)
 # ---------------------------------------------------------------------------
-if [ "$SERVE_MODE" = "triple" ]; then
+if [ "$SERVE_MODE" = "physics_ensemble" ]; then
+    # Two 4B physics models resident IN PARALLEL (BTC: 2x4B = 8B active). SFT is the
+    # primary solver; BASE is the second voter AND the judge. No sleep-swap.
+    SFT_REPO="${SFT_REPO:-Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b-merged}"
+    BASE_REPO="${BASE_REPO:-Qwen/Qwen3.5-4B}"
+    SFT_GPU="${SFT_GPU:-0.45}"; BASE_GPU="${BASE_GPU:-0.45}"
+    ENS_BASE_PORT="${ENS_BASE_PORT:-18004}"
+    log "SERVE_MODE=physics_ensemble — SFT($SFT_REPO):$VLLM_PORT + BASE($BASE_REPO):$ENS_BASE_PORT"
+    start_vllm vllm_physics "$SFT_REPO"  "$VLLM_PORT"     "$SFT_GPU"  0 physics || { err "SFT failed";  exit 1; }
+    start_vllm vllm_base    "$BASE_REPO" "$ENS_BASE_PORT" "$BASE_GPU" 0 base    || { err "BASE failed"; exit 1; }
+    log "Both physics models resident (SFT + BASE). vLLM /v1/models on :$VLLM_PORT and :$ENS_BASE_PORT."
+    GW_ENV=(PIPELINE_VERSION=v07_ensemble_vLLM
+            VLLM_MODEL=physics VLLM_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
+            JUDGE_MODEL=base   JUDGE_BASE_URL="http://127.0.0.1:$ENS_BASE_PORT/v1"
+            FOL_MODEL=physics  FOL_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
+            QA_MODEL=physics   QA_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
+            SLEEP_SWAP_ENABLED=0)
+elif [ "$SERVE_MODE" = "triple" ]; then
     log "SERVE_MODE=triple — 3 distinct models with sleep-swap."
     # Start sequentially; SLEEP each right after it loads so the next sees free VRAM.
     start_vllm vllm_fol     "$FOL_REPO"     "$FOL_PORT"     "$FOL_GPU"     1 fol     || { err "fol failed";     exit 1; }

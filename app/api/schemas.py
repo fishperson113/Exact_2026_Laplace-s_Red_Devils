@@ -3,6 +3,34 @@ from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
 # ============================================================== #
+#  BTC 2026 unified /predict schema (Submission Guide §3, §4)    #
+# ============================================================== #
+
+class PredictRequest(BaseModel):
+    """Unified competition input. Every field always present; inapplicable ones
+    are empty ("" / []). Route by ``type`` ("type1" | "type2")."""
+
+    model_config = ConfigDict(populate_by_name=True, extra="ignore")
+
+    query_id: str = ""
+    type: str = ""                                   # "type1" | "type2"
+    query: str = ""
+    premises: list[str] = Field(default_factory=list)
+    options: list[str] = Field(default_factory=list)
+
+
+class PredictResult(BaseModel):
+    """One result object. The endpoint returns a LIST of these (one per query)."""
+
+    query_id: str
+    answer: str
+    unit: str = ""                                   # "" for Type 1
+    explanation: str                                 # required, non-empty, not scored this round
+    premises_used: list[int] = Field(default_factory=list)   # [] for Type 2
+    reasoning: Optional[dict] = None                 # {"type": "cot|fol|proof", "steps": [...]}
+
+
+# ============================================================== #
 #  Unified request — single /ask endpoint for BOTH task types    #
 # ============================================================== #
 

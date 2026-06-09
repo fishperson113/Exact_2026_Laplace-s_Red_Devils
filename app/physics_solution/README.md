@@ -88,13 +88,50 @@ HF repos: `Laplaces-Red-Devils/physics-v{NN:02d}-{strategy}-{base}`.
 
 | Version | Tag | Status |
 |---|---|---|
-| v01 | `zeroshot` | **Done** — Qwen3.5-4B base, no examples |
-| v02 | `fewshot` | **Done** — K examples per domain prefix |
-| v03 | `rag` | Planned — formula KB + retriever |
-| v04 | `lora` | Planned — LoRA fine-tune on golden CoT |
-| v05 | `lora-rag` | Planned — stack |
-| v06 | `pot` | Planned — Program-of-Thought (Python tool) |
-| v07 | `lora-rag-pot` | Planned — full stack |
+| v01 | `zeroshot` | Done — Qwen3.5-4B base, no examples |
+| v02 | `fewshot` | Done — K examples per domain prefix |
+| v05_best | `best` | Done — classify → codegen → execute → parse (58.3% on 60 golden) |
+| v05_best_vLLM | `best_vLLM` | Done — v05_best served async over vLLM (`pipeline.py::solve`) |
+| v06_finetune | `pot` | Done — SFT data pipeline (PoT trajectories) |
+| v07_final_version | `self-sft` | Done — SFT Qwen3.5-4B (v07c merged); eval/self-consistency harness |
+| **v07_ensemble_vLLM** | **`ensemble_vLLM`** | **CURRENT serving** — SFT + BASE in parallel, BASE judges (see below) |
+
+## Production serving — BTC `/predict` + physics ensemble (CURRENT)
+
+The competition endpoint is **`POST /predict`** (BTC 2026 Submission Guide): one
+endpoint, route by the `type` field, return a JSON **list** of result objects
+(`{query_id, answer, unit, explanation, premises_used, reasoning}`). Implemented in
+[`app/api/routes/predict.py`](../../app/api/routes/predict.py) (`type2` → physics
+ensemble; `type1` → logic, output shaped best-effort). Legacy `/ask` kept for tooling.
+
+**Type 2 ensemble** ([`versions/v07_ensemble_vLLM/pipeline.py`](versions/v07_ensemble_vLLM/pipeline.py)):
+two 4B models served **in parallel** (BTC allows 2×4B = 8B active) —
+
+1. **classify** → (domain, answer_type)  [one fast BASE call]
+2. **SFT (v07c) and BASE (Qwen3.5-4B) each self-consistency-sample K=5 in parallel**
+   (`asyncio.gather` over two vLLM servers → wall-time ≈ max, not sum), execute each
+   sample's code, majority-vote each model's answer.
+3. **agree** (scorer-equivalent) → done; else **BASE judges** which final answer is
+   correct (text only, **no code, no vote counts shown**) → pick SFT or BASE.
+4. explanation + CoT `reasoning.steps` built from the chosen solution (no extra call).
+
+Deadline-safe: if the 60 s budget is nearly spent after sampling, skip the judge and
+fall back to the SFT vote. The judge reuses the already-running BASE model (no extra
+params). *Offline finding:* the ensemble is a recall ("vét") play — self-consistency
+ties the single models (~0.875 val), oracle ceiling only +3 on golden; the real lever
+is better DATA on the ~13 both-fail problems. Offline harness (non-serving):
+[`versions/v07_final_version/ensemble.py`](versions/v07_final_version/ensemble.py).
+
+**Bring-up** (RTX 5090 32 GB or any CUDA-13 box):
+```bash
+SERVE_MODE=physics_ensemble bash scripts/serve_all.sh start
+#   SFT  :18000 (served "physics")  +  BASE :18004 (served "base"), both resident,
+#   --gpu-memory-utilization 0.45 each, no sleep-swap. Gateway :9000 /predict.
+```
+Endpoints/config: SFT=`Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b-merged`,
+BASE=`Qwen/Qwen3.5-4B`; knobs in [`app/core/config.py`](../../app/core/config.py)
+(`vllm_*` = SFT, `judge_*` = BASE+judge, `ensemble_k`). Each vLLM exposes its own
+`/v1/models` for committee verification.
 
 ## Quickstart (Colab)
 

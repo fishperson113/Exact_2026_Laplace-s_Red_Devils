@@ -14,9 +14,21 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     # ---- Physics (Task Type 2) — kept VLLM_* names for back-compat ----
+    # Primary physics model = the SFT (v07c). The ensemble pipeline also queries a
+    # second BASE model (Qwen3.5-4B) which doubles as the JUDGE; 2x4B = 8B active,
+    # both resident on one GPU (BTC allows parallel models summing to <=8B).
     vllm_model: str = "Laplaces-Red-Devils/physics-v04-optimized_routing-qwen3.5-4b"
     vllm_base_url: str = "http://localhost:18000/v1"
     vllm_api_key: str = "dummy"
+
+    # ---- Physics ensemble: BASE model + JUDGE (same endpoint) ----
+    judge_model: str = "base"                       # served-model-name of the base vLLM
+    judge_base_url: str = "http://localhost:18004/v1"
+    # ensemble sampling knobs (self-consistency K + judge)
+    ensemble_k: int = 5
+    ensemble_temperature: float = 0.7
+    ensemble_top_p: float = 0.95
+    ensemble_max_tokens: int = 2048
 
     # ---- Logic (Task Type 1) — two vLLM servers, FOL then QA ----
     fol_model: str = "Laplaces-Red-Devils/fol-v05-cot-augmented-fol-pretrain-malls-qwen2.5-3"
@@ -30,7 +42,7 @@ class Settings(BaseSettings):
     qa_max_tokens: int = 400
 
     # ---- Pipeline routing ----
-    pipeline_version: str = "v05_best_vLLM"   # physics batch/serving version
+    pipeline_version: str = "v07_ensemble_vLLM"   # physics serving version
     question_timeout_s: float = 60.0
 
     # ---- Sleep-mode swap (SERVE_MODE=triple) ----
