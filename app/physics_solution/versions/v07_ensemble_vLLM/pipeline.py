@@ -104,27 +104,32 @@ def _sol_block(r: dict, max_chars: int = 1200) -> str:
     return f"{(r['comp'] or '').strip()[:max_chars]}\n>>> Computed: {_final_lines(r['stdout'])}"
 
 
-async def _judge(question: str, a: dict, b: dict) -> str:
-    """BASE picks the physically-correct final answer. Returns 'A' (sft) or 'B' (base)."""
-    user = (
-        "Two independent physics solutions reached DIFFERENT final answers. Decide which "
-        "FINAL ANSWER is physically correct. Reason briefly, but DO NOT run or simulate "
-        "code — judge from the physics and the reported results.\n\n"
-        f"PROBLEM:\n{question.strip()}\n\n"
-        f"=== Solution A ===\n{_sol_block(a)}\n\n=== Solution B ===\n{_sol_block(b)}\n\n"
-        "Which final answer is correct? Respond with EXACTLY one letter on the last line: A or B."
-    )
-    try:
-        out = await physics_base_llm.chat([{"role": "user", "content": user}],
-                                          temperature=0.0, max_tokens=256)
-        hits = _AB.findall(out.upper())
-        return hits[-1] if hits else "A"          # default to SFT on parse-fail
-    except Exception:  # noqa: BLE001
-        return "A"
+def _cluster(rows: list[dict]) -> list[dict]:
+    """Cluster sample rows by answer equivalence, largest cluster first. Each cluster:
+    {key, rows}. Numeric: scorer tolerance; else exact normalized text."""
+    rows = [r for r in rows if _has_answer(r)]
+    numeric = [r for r in rows if r["num"] is not None]
+    text = [r for r in rows if r["num"] is None and r["txt"]]
+    clusters: list[dict] = []
+    if numeric and len(numeric) >= len(text):
+        for r in numeric:
+            for cl in clusters:
+                if evaluator.numeric_close(r["num"], cl["key"]):
+                    cl["rows"].append(r)
+                    break
+            else:
+                clusters.append({"key": r["num"], "rows": [r]})
+    elif text:
+        groups: dict = {}
+        for r in text:
+            groups.setdefault(r["txt"], []).append(r)
+        clusters = [{"key": k, "rows": v} for k, v in groups.items()]
+    clusters.sort(key=lambda c: len(c["rows"]), reverse=True)
+    return clusters
 
 
 # --------------------------------------------------------------------------- #
-#  explanation / reasoning (built from the chosen solution — no extra call)   #
+#  explanation / CoT — written by the BASE model (the judge, repurposed)      #
 # --------------------------------------------------------------------------- #
 def _reasoning_steps(comp: str, limit: int = 10) -> list[str]:
     head = (comp or "").split("```")[0]                # text before the code fence
@@ -135,6 +140,36 @@ def _reasoning_steps(comp: str, limit: int = 10) -> list[str]:
             continue
         out.append(s)
     return out[:limit]
+
+
+def _split_steps(text: str, limit: int = 12) -> list[str]:
+    out = []
+    for ln in (text or "").replace("\r", "").split("\n"):
+        s = ln.strip(" -*\t")
+        if s:
+            out.append(s)
+    return out[:limit]
+
+
+async def _explain(question: str, rep: dict, deadline: float) -> tuple[str, list[str]]:
+    """BASE model writes a clear explanation + CoT for the already-chosen answer (does
+    NOT change it). Falls back to the chosen solution's own reasoning if out of time."""
+    if time.time() >= deadline:
+        steps = _reasoning_steps(rep["comp"])
+        return (" ".join(steps) + f" Final answer: {rep['ans']} {rep['unit'] or '-'}.").strip(), steps
+    user = (
+        f"PROBLEM:\n{question.strip()}\n\nA verified computation produced this result:\n"
+        f"{_sol_block(rep)}\n\nWrite a clear, concise physics EXPLANATION followed by numbered "
+        "step-by-step reasoning (CoT) that justifies THIS exact final answer. Do NOT change the "
+        "answer or its unit. Keep it tight (<=10 short steps)."
+    )
+    try:
+        out = await physics_base_llm.chat([{"role": "user", "content": user}],
+                                          temperature=0.0, max_tokens=512)
+        return out.strip(), _split_steps(out)
+    except Exception:  # noqa: BLE001
+        steps = _reasoning_steps(rep["comp"])
+        return (" ".join(steps)).strip(), steps
 
 
 # --------------------------------------------------------------------------- #
@@ -168,36 +203,35 @@ async def solve(question: str, client, deadline: float) -> dict:
                                        temperature=0.0)]
         base_comps = []
 
-    # 3. execute + vote ----------------------------------------------------------
+    # 3. execute all samples -----------------------------------------------------
     sft_rows = list(await asyncio.gather(*[_exec_one(c) for c in sft_comps])) if sft_comps else []
     base_rows = list(await asyncio.gather(*[_exec_one(c) for c in base_comps])) if base_comps else []
     sft_rep, sft_votes = _vote(sft_rows)
     base_rep, base_votes = _vote(base_rows)
 
-    # 4. choose ------------------------------------------------------------------
-    if not _has_answer(base_rep):
-        chosen, method, conf = sft_rep, "sft_only", 0.7
-    elif not _has_answer(sft_rep):
-        chosen, method, conf = base_rep, "base_only", 0.6
-    elif _agree(sft_rep, base_rep):
-        chosen, method, conf = sft_rep, "ensemble_agree", 0.9
-    elif time.time() < deadline:
-        choice = await _judge(question, sft_rep, base_rep)
-        chosen = sft_rep if choice == "A" else base_rep
-        method, conf = f"ensemble_judge_{choice}", 0.6
+    # 4. POOLED vote — combine all 5+5 samples into ONE vote, majority wins -------
+    all_rows = sft_rows + base_rows
+    clusters = _cluster(all_rows)
+    agree = _has_answer(sft_rep) and _has_answer(base_rep) and _agree(sft_rep, base_rep)
+    if clusters:
+        winner = clusters[0]
+        chosen = winner["rows"][0]
+        winner_votes = len(winner["rows"])
+        method = "pool_agree" if agree else "pool_majority"
+        conf = round(winner_votes / max(1, len(all_rows)), 2)
     else:
-        chosen, method, conf = sft_rep, "judge_skipped_deadline", 0.4
+        chosen, winner_votes, method, conf = sft_rep, 0, "no_answer", 0.0
 
-    # 5. build result ------------------------------------------------------------
+    # 5. explanation + CoT written by the BASE model -----------------------------
     answer = chosen["ans"]
     unit = chosen["unit"] or "-"
-    steps = _reasoning_steps(chosen["comp"])
-    explanation = (" ".join(steps) if steps else f"Solved via {route.domain}.").strip()
-    explanation = f"{explanation} Final answer: {answer} {unit}.".strip()
+    explanation, steps = await _explain(question, chosen, deadline)
+    if not explanation:
+        explanation = f"Computed answer: {answer} {unit}."
     return {
         "answer": answer,
         "unit": unit,
-        "explanation": explanation or "Computed by the physics ensemble.",
+        "explanation": explanation,
         "cot": chosen["comp"],
         "reasoning_steps": steps,
         "confidence": conf,
@@ -206,5 +240,12 @@ async def solve(question: str, client, deadline: float) -> dict:
         "domain": route.domain,
         "answer_type": route.answer_type,
         "execution_stdout": chosen["stdout"],
-        "votes": {"sft": f"{sft_votes}/{len(sft_rows)}", "base": f"{base_votes}/{len(base_rows)}"},
+        "agree": agree,
+        "votes": {"winner": f"{winner_votes}/{len(all_rows)}",
+                  "sft": f"{sft_votes}/{len(sft_rows)}", "base": f"{base_votes}/{len(base_rows)}"},
+        # debug for analysis: pooled clusters + each model's own voted answer
+        "pool": [{"answer": c["rows"][0]["ans"], "unit": c["rows"][0]["unit"] or "-",
+                  "votes": len(c["rows"])} for c in clusters],
+        "sft_pred": {"answer": sft_rep["ans"], "unit": sft_rep["unit"] or "-"},
+        "base_pred": {"answer": base_rep["ans"], "unit": base_rep["unit"] or "-"},
     }

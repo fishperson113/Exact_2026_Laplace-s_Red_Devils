@@ -104,34 +104,59 @@ endpoint, route by the `type` field, return a JSON **list** of result objects
 [`app/api/routes/predict.py`](../../app/api/routes/predict.py) (`type2` → physics
 ensemble; `type1` → logic, output shaped best-effort). Legacy `/ask` kept for tooling.
 
-**Type 2 ensemble** ([`versions/v07_ensemble_vLLM/pipeline.py`](versions/v07_ensemble_vLLM/pipeline.py)):
-two 4B models served **in parallel** (BTC allows 2×4B = 8B active) —
+**Type 2 ensemble** ([`versions/v07_ensemble_vLLM/pipeline.py`](versions/v07_ensemble_vLLM/pipeline.py)) —
+**ONE vLLM hosts the BASE `Qwen/Qwen3.5-4B` + the SFT (v07c) as a LoRA adapter** (`--enable-lora`,
+ids `base`+`sft` on one `/v1/models`; ~4B total ≪ 8B). The text-only MERGED checkpoint is arch
+`Qwen3_5ForCausalLM`/`qwen3_5_text` which **vLLM 0.22.1 cannot serve** (only the composite
+`Qwen3_5ForConditionalGeneration`); the adapter's keys match the composite base, so LoRA serving
+is the working path. Per query:
 
 1. **classify** → (domain, answer_type)  [one fast BASE call]
-2. **SFT (v07c) and BASE (Qwen3.5-4B) each self-consistency-sample K=5 in parallel**
-   (`asyncio.gather` over two vLLM servers → wall-time ≈ max, not sum), execute each
-   sample's code, majority-vote each model's answer.
-3. **agree** (scorer-equivalent) → done; else **BASE judges** which final answer is
-   correct (text only, **no code, no vote counts shown**) → pick SFT or BASE.
-4. explanation + CoT `reasoning.steps` built from the chosen solution (no extra call).
+2. **BASE and SFT each sample K=5 concurrently** (`asyncio.gather` → one engine, vLLM
+   continuous-batches all 10 sequences together), execute each sample's code.
+3. **Pooled vote**: cluster all 10 answers (scorer tolerance), **majority cluster wins**.
+4. **explanation + CoT** written by the BASE model for the chosen answer (does NOT change it).
 
-Deadline-safe: if the 60 s budget is nearly spent after sampling, skip the judge and
-fall back to the SFT vote. The judge reuses the already-running BASE model (no extra
-params). *Offline finding:* the ensemble is a recall ("vét") play — self-consistency
-ties the single models (~0.875 val), oracle ceiling only +3 on golden; the real lever
-is better DATA on the ~13 both-fail problems. Offline harness (non-serving):
-[`versions/v07_final_version/ensemble.py`](versions/v07_final_version/ensemble.py).
+Deadline-safe (skip explanation → use the chosen solution's own reasoning if the 60 s budget is
+nearly spent).
 
-**Bring-up** (RTX 5090 32 GB or any CUDA-13 box):
+### Results & the hard finding (RTX 5090, matches offline)
+
+| config | val_56 | golden_60 | latency median / max |
+|---|---|---|---|
+| single SFT (SC K=5) | 0.875 | 0.78–0.82* | — |
+| single BASE (SC K=5) | 0.875 | 0.75–0.80* | — |
+| **pooled ensemble (10-vote)** | **0.875** | **0.733** | **~9–11 s / ~23 s** |
+
+*single-model SC bounces ±4 problems run-to-run (temp 0.7 sampling variance).
+
+**The ensemble does NOT beat a single model**, and **majority voting leaves a lot on the table**:
+- An LLM **judge cannot select** the right answer — anonymous framing 4/13, self-review framing
+  3/13 on disagreements (both **below random**); a same-class 4B can't adjudicate physics it
+  couldn't solve. The judge is therefore used **only to write the explanation/CoT**, not to pick.
+- **Pooled-10 golden: accuracy 0.733 but ORACLE 0.917** (55/60 problems have ≥1 correct sample),
+  and **minority-lost = 11** — in 11 problems the majority cluster is WRONG while a *minority*
+  cluster holds the correct answer (a systematic error, e.g. a rounding habit, dominates the vote).
+  → **The bottleneck is SELECTION, not voting.** The model already reaches the answer ~92% of the
+  time; the lever is making the correct method the *majority* — i.e. **better DATA / training**
+  (teacher-residual on the systematic-error problems) or an **external verifier** — NOT more
+  voting or judging.
+
+Offline harness (non-serving) + measurement scripts:
+[`versions/v07_final_version/ensemble.py`](versions/v07_final_version/ensemble.py),
+[`versions/v07_ensemble_vLLM/measure_pool.py`](versions/v07_ensemble_vLLM/measure_pool.py),
+`investigate_ensemble.py`.
+
+**Bring-up** (RTX 5090 32 GB or any CUDA-13 box; **transformers 5.10 + vLLM 0.22.1**):
 ```bash
 SERVE_MODE=physics_ensemble bash scripts/serve_all.sh start
-#   SFT  :18000 (served "physics")  +  BASE :18004 (served "base"), both resident,
-#   --gpu-memory-utilization 0.45 each, no sleep-swap. Gateway :9000 /predict.
+#   ONE vLLM :18000 = BASE Qwen3.5-4B + --lora-modules sft=<adapter> (ids base+sft).
+#   CUDA graphs on by default for this mode + a warmup request. Gateway :9000 /predict.
 ```
-Endpoints/config: SFT=`Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b-merged`,
-BASE=`Qwen/Qwen3.5-4B`; knobs in [`app/core/config.py`](../../app/core/config.py)
-(`vllm_*` = SFT, `judge_*` = BASE+judge, `ensemble_k`). Each vLLM exposes its own
-`/v1/models` for committee verification.
+Models: BASE=`Qwen/Qwen3.5-4B`, SFT adapter=`Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b`
+(the adapter, NOT the `-merged` repo). Knobs in [`app/core/config.py`](../../app/core/config.py)
+(`vllm_model=sft`, `judge_model=base`, both `:18000`, `ensemble_k`). The single `/v1/models`
+on `:18000` lists both ids for committee verification.
 
 ## Quickstart (Colab)
 

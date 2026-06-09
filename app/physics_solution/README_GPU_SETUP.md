@@ -85,48 +85,52 @@ curl -s -X POST localhost:9000/predict -H "Content-Type: application/json" -d '{
 - **Luc serve, model nam o VRAM** (khong phai /dev/shm). HF cache mac dinh `/dev/shm`
   (RAM) cho load nhanh; de disk cung chay y het, chi cham lan load dau. shm bi cap =
   container_RAM/2 — muon to hon thi set `--shm-size` trong custom template.
-- **`SERVE_MODE=physics_ensemble`** (Type-2 hien tai): SFT(:18000) + BASE(:18004) **resident
-  song song**, `--gpu-memory-utilization 0.45` moi con (~29GB tren 32GB), KHONG sleep-swap.
-  Xem muc rieng ben duoi. Type-1 tam route qua SFT endpoint (chinh sau).
+- **`SERVE_MODE=physics_ensemble`** (Type-2 hien tai): **1 vLLM :18000 = BASE Qwen3.5-4B +
+  SFT lam LoRA adapter** (`--enable-lora`, ids `base`+`sft`). ~4B tong (<8B), CUDA graphs ON
+  (default mode nay) + warmup. Xem muc rieng ben duoi. Type-1 tam route qua endpoint nay.
 - **`SERVE_MODE=shared`**: 1 con Qwen3.5-4B ~19GB VRAM lo ca 3 role (placeholder `physics-v04`).
 - **Khi co 3 model finetune rieng** -> dung `SERVE_MODE=triple` (sleep-mode swap) o duoi.
-- **Expose BTC:** `setup_env.sh` tu bat cloudflared -> in public `/ask` URL. URL **doi**
-  moi lan tunnel restart. Neu IP host (xai chung) bi cloudflared rate-limit, fallback
-  reverse-SSH cong FastAPI sang VPS rieng:
+- **Expose BTC (CAN 2 URL):** `/predict` (gateway :9000) **VA** `/v1/models` (vLLM :18000, de
+  verify model). `setup_env.sh`/`serve_all.sh` bat cloudflared cho :9000. Cho :18000 them 1
+  tunnel nua, HOAC (gon hon) them route proxy `/v1/models` trong gateway -> 1 tunnel lo ca hai.
+  URL cloudflared **doi** moi lan restart. Fallback rate-limit: reverse-SSH sang VPS:
   ```bash
   ssh -fN -R <VPS_PORT>:localhost:9000 <user>@<vps_ip>
-  # BTC goi: http://<vps_ip>:<VPS_PORT>/ask   (mo <VPS_PORT> tren firewall VPS)
+  # BTC goi: http://<vps_ip>:<VPS_PORT>/predict   (mo <VPS_PORT> tren firewall VPS)
   ```
 
 ---
 
-## SERVE_MODE=physics_ensemble — SFT + BASE song song (Type 2 hien tai)
+## SERVE_MODE=physics_ensemble — BASE + SFT-LoRA tren 1 vLLM (Type 2 hien tai)
 
-Hai model 4B nam **cung luc** tren 1 GPU (2x4B = 8B active, BTC cho phep — Q3): SFT la
-solver chinh, BASE la voter #2 **va** judge. KHONG sleep-swap (chay song song de toi uu
-deadline 60s: wall-time ≈ max(2 con) chu khong phai tong).
+**1 vLLM serve BASE `Qwen/Qwen3.5-4B` + SFT (v07c) lam LoRA adapter** (`--enable-lora
+--lora-modules sft=<adapter>`). vLLM 0.22.1 KHONG serve duoc merged (arch `Qwen3_5ForCausalLM`/
+`qwen3_5_text`); chi serve composite `Qwen3_5ForConditionalGeneration` = base. Adapter co keys
+khop `model.language_model.*` cua base -> LoRA chay ngon. `/v1/models` liet ke ca `base`+`sft`,
+~4B tong (1 base + adapter nho) << 8B. **Can transformers 5.10 + vLLM 0.22.1** (tf4.56 fail: ko
+biet qwen3_5_text; 2 model composite roi se >8B vi vision tower -> LoRA la dung).
 
 **Bat:**
 ```bash
 SERVE_MODE=physics_ensemble bash scripts/serve_all.sh start
 # env tuy chon (mac dinh):
-#   SFT_REPO=Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b-merged   # :18000 served "physics"
-#   BASE_REPO=Qwen/Qwen3.5-4B                                          # :18004 served "base"
-#   SFT_GPU=0.45  BASE_GPU=0.45  ENS_BASE_PORT=18004
+#   BASE_REPO=Qwen/Qwen3.5-4B
+#   SFT_ADAPTER=Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b   # ADAPTER, khong phai -merged
+#   GPU_UTIL=0.85  MAX_LORA_RANK=16
 ```
-`serve_all.sh` start SFT (:18000) roi BASE (:18004), ca 2 resident (KHONG ngu). Gateway
-set `PIPELINE_VERSION=v07_ensemble_vLLM`, `VLLM_*`=SFT, `JUDGE_*`=BASE. Moi vLLM co
-`/v1/models` rieng (`physics` / `base`) cho BTC verify.
+Gateway set `PIPELINE_VERSION=v07_ensemble_vLLM`, `VLLM_MODEL=sft` + `JUDGE_MODEL=base` (cung
+:18000). CUDA graphs ON (default mode nay) + serve_all gui 1 warmup /predict.
 
-**Pipeline** (`versions/v07_ensemble_vLLM/pipeline.py`): classify -> SFT.chat_n(K=5) ∥
-BASE.chat_n(K=5) (asyncio.gather, 2 server song song) -> exec + vote moi con -> trung
-(scorer) thi xong / lech thi BASE judge A/B (chi doc text, KHONG chay code, KHONG thay so
-phieu) -> explanation+CoT dung tu bai giai da chon (khong ton call). Het gio -> bo judge,
-fallback ve vote SFT.
+**Pipeline** (`versions/v07_ensemble_vLLM/pipeline.py`): classify -> BASE.chat_n(K=5) ∥
+SFT.chat_n(K=5) (asyncio.gather, **concurrent, vLLM batch chung 10 seq tren 1 engine**) -> exec
+het -> **POOL 10 mau vote chung, da so thang** -> BASE viet explanation+CoT cho dap an da chon
+(judge BO khoi viec chon vi 3-4/13 < ngau nhien). Het gio -> dung reasoning cua bai chon.
 
-> **VRAM 32GB (5090):** 0.45+0.45 = ~29GB, du headroom. Neu OOM (KV cache chat / seq dai),
-> giam `SFT_GPU`/`BASE_GPU` xuong 0.42 hoac `MAX_MODEL_LEN`. Stop: `serve_all.sh stop`
-> (da kill ca 2 vLLM + GPU worker).
+**Ket qua (5090):** val_56 0.875, golden_60 0.733, latency median ~9-11s / max ~23s. Ensemble
+KHONG hon single model; golden ORACLE 0.917 / minority-lost 11 -> nut that la SELECTION (data
+lever), khong phai voting. Do bang `measure_pool.py` / `investigate_ensemble.py`.
+
+> **VRAM 32GB (5090):** 1 base (~9GB) + KV cache lon (concurrency ~57x). Stop: `serve_all.sh stop`.
 
 ---
 
