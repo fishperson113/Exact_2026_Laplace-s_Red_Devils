@@ -75,8 +75,9 @@ err() { echo -e "\033[0;31m[serve_all] ERROR:\033[0m $*" >&2; }
 health_ok() { curl -sf -m 3 "http://127.0.0.1:$1/health" >/dev/null 2>&1; }
 
 stop_all() {
-    log "Stopping gateway + vLLM + tunnel..."
-    for name in gateway vllm vllm_fol vllm_qa vllm_physics vllm_base tunnel; do
+    log "Stopping gateway + vLLM + tunnels..."
+    for name in gateway vllm vllm_fol vllm_qa vllm_physics vllm_base \
+                tunnel cf_gateway cf_vllm0 cf_vllm1 cf_vllm2; do
         pidf="$RUN_DIR/$name.pid"; [ -f "$pidf" ] || continue
         pid="$(cat "$pidf" 2>/dev/null)"
         [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null && { kill "$pid" 2>/dev/null && log "  killed $name ($pid)"; }
@@ -313,18 +314,52 @@ echo; log "=== STACK UP (mode=$SERVE_MODE) ==="; status_all
 echo; log "Test from laptop:  ssh -p <PORT> root@<HOST> -L $API_PORT:localhost:$API_PORT  then http://localhost:$API_PORT/docs"
 
 # ---------------------------------------------------------------------------
-# optional public tunnel for BTC
+# optional public tunnel(s) for BTC
+#   BTC §3 wants the prediction URL + EVERY vLLM /v1/models URL (one per server) in
+#   urls.txt. combined/triple -> 1 gateway tunnel (/predict) + one per vLLM engine
+#   (/v1/models, vLLM auto-exposes it). Else -> single gateway tunnel.
 # ---------------------------------------------------------------------------
 if [ "${SKIP_TUNNEL:-1}" = "1" ]; then log "SKIP_TUNNEL=1 — no public tunnel."; exit 0; fi
 command -v cloudflared >/dev/null 2>&1 || { err "cloudflared not installed; skipping tunnel."; exit 0; }
-TPID="$(cat "$RUN_DIR/tunnel.pid" 2>/dev/null || true)"
-if [ -n "$TPID" ] && kill -0 "$TPID" 2>/dev/null; then
-    log "cloudflared running: $(grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' "$LOG_DIR/cloudflared.log" 2>/dev/null | head -1)/ask"; exit 0
+
+# Start a quick tunnel to a local port; print its public URL (waits for it to REGISTER,
+# since trycloudflare prints the hostname before the edge connection is live).
+start_tunnel() {  # logname localport -> echoes URL
+    local name="$1" port="$2" lg="$LOG_DIR/cf_$name.log"
+    local old; old="$(cat "$RUN_DIR/cf_$name.pid" 2>/dev/null || true)"
+    [ -n "$old" ] && kill "$old" 2>/dev/null
+    : > "$lg"
+    setsid cloudflared tunnel --url "http://localhost:$port" --no-autoupdate >"$lg" 2>&1 </dev/null &
+    echo $! > "$RUN_DIR/cf_$name.pid"; disown 2>/dev/null || true
+    local url=""
+    for _ in $(seq 1 30); do
+        url="$(grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' "$lg" | head -1)"
+        [ -n "$url" ] && grep -q "Registered tunnel connection" "$lg" && break
+        sleep 2
+    done
+    echo "$url"
+}
+
+SUB_DIR="$PROJECT_ROOT/submission"; mkdir -p "$SUB_DIR"
+if [ "$SERVE_MODE" = "combined" ] || [ "$SERVE_MODE" = "triple" ]; then
+    GW="$(start_tunnel gateway "$API_PORT")"
+    U0="$(start_tunnel vllm0 "$VLLM_PORT")"
+    U1="$(start_tunnel vllm1 "$FOL_PORT")"
+    U2="$(start_tunnel vllm2 "$QA_PORT")"
+    {
+        echo "# EXACT 2026 — endpoint URLs (BTC §3). trycloudflare URLs change per restart."
+        echo "# One GPU; sleep-swap by type keeps <=8B GPU-resident at any moment."
+        echo "$GW/predict"
+        echo "$U0/v1/models   # :$VLLM_PORT base+sft (physics)"
+        echo "$U1/v1/models   # :$FOL_PORT fol (logic stage 1)"
+        echo "$U2/v1/models   # :$QA_PORT qa (logic stage 2)"
+    } > "$SUB_DIR/urls.txt"
+    log "=== PUBLIC URLs (BTC) written to $SUB_DIR/urls.txt ==="; cat "$SUB_DIR/urls.txt"
+    [ -n "$GW$U0$U1$U2" ] || err "some tunnels empty (shared-IP rate limit) — re-run or use a named tunnel/VPS."
+else
+    URL="$(start_tunnel gateway "$API_PORT")"
+    { echo "$URL/predict"; echo "$URL/v1/models   # gateway proxy (aggregates engines)"; } > "$SUB_DIR/urls.txt"
+    [ -n "$URL" ] && log "=== PUBLIC ENDPOINT (give BTC) ===  $URL/predict  (urls.txt written)" \
+                  || err "No tunnel URL yet (shared-IP rate limit?). Fallback: reverse-SSH :$API_PORT to your VPS."
 fi
-: > "$LOG_DIR/cloudflared.log"
-setsid cloudflared tunnel --url "http://localhost:$API_PORT" --no-autoupdate >"$LOG_DIR/cloudflared.log" 2>&1 </dev/null &
-echo $! > "$RUN_DIR/tunnel.pid"; disown 2>/dev/null || true
-URL=""; for _ in $(seq 1 20); do URL="$(grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' "$LOG_DIR/cloudflared.log" | head -1)"; [ -n "$URL" ] && break; sleep 2; done
-[ -n "$URL" ] && log "=== PUBLIC ENDPOINT (give BTC) ===  $URL/ask" \
-              || err "No tunnel URL yet (shared-IP rate limit?). Fallback: reverse-SSH :$API_PORT to your VPS."
 exit 0
