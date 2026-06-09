@@ -110,6 +110,12 @@ def main():
             f"Total:{out.total_latency_sec:.1f}s{warn}",
             flush=True,
         )
+        # Observability: hiện CoT model vừa sinh (reasoning.steps + raw think nếu có)
+        steps = out.reasoning.get("steps", [])
+        if steps:
+            print(f"         reasoning[{out.reasoning.get('type')}] {len(steps)} steps:", flush=True)
+            for j, step in enumerate(steps, 1):
+                print(f"           {j}. {step}", flush=True)
 
     # ── Save output ────────────────────────────────────────────────────────────
     output_path = args.output or str(ROOT / "outputs" / "results.json")

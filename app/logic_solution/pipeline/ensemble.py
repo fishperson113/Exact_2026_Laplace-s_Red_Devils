@@ -26,6 +26,9 @@ class PipelineOutput:
     explanation: str
     fol:         str          # FOL premises join bằng "\n"
 
+    # reasoning object (BTC §4.4): {"type": "cot"|"fol", "steps": [...]}
+    reasoning:   dict = field(default_factory=lambda: {"type": "fol", "steps": []})
+
     # Metadata (không nằm trong output BTC)
     fol_latency_sec:   float = 0.0
     qa_latency_sec:    float = 0.0
@@ -51,10 +54,23 @@ class EnsemblePipeline:
         inf_cfg = cfg.get("inference", {})
         load_8bit = inf_cfg.get("load_in_8bit", True)
 
+        qa_thinking = qa_cfg.get("enable_thinking", False)
+
         self.fol_model       = FOLModel(fol_cfg["hub_repo_id"], load_in_8bit=load_8bit)
-        self.qa_model        = QAModel(qa_cfg["hub_repo_id"],   load_in_8bit=load_8bit)
+        self.qa_model        = QAModel(
+            qa_cfg["hub_repo_id"],
+            load_in_8bit    = load_8bit,
+            enable_thinking = qa_thinking,
+            temperature     = qa_cfg.get("temperature", 0.6),
+            top_p           = qa_cfg.get("top_p", 0.95),
+            top_k           = qa_cfg.get("top_k", 20),
+        )
         self.fol_max_tokens  = fol_cfg.get("max_new_tokens", 400)
-        self.qa_max_tokens   = qa_cfg.get("max_new_tokens", 200)
+        # Think mode cần nhiều token hơn (think + JSON answer).
+        self.qa_max_tokens   = (
+            qa_cfg.get("thinking_max_new_tokens", 1024) if qa_thinking
+            else qa_cfg.get("max_new_tokens", 200)
+        )
 
     def run(self, premises_nl: list[str], question: str) -> PipelineOutput:
         """
@@ -84,6 +100,7 @@ class EnsemblePipeline:
             answer      = qa_out["answer"],
             explanation = qa_out["explanation"],
             fol         = fol_str,
+            reasoning   = qa_out.get("reasoning", {"type": "fol", "steps": []}),
             fol_latency_sec   = round(fol_latency, 3),
             qa_latency_sec    = round(qa_latency,  3),
             total_latency_sec = round(total,        3),

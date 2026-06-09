@@ -19,3 +19,4 @@ data/external/MALLS-v0/
 # Checkpoint / adapter cục bộ
 models/checkpoints/
 notebooks/output/
+z3_full_pipeline.ipynb

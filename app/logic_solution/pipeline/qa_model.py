@@ -19,9 +19,23 @@ from prompts import SYSTEM_PROMPT_QA, USER_TEMPLATE_QA, format_nl_block, format_
 class QAModel:
     """Load QA LoRA adapter từ HF Hub và sinh answer + explanation."""
 
-    def __init__(self, hub_repo_id: str, load_in_8bit: bool = True):
+    def __init__(
+        self,
+        hub_repo_id: str,
+        load_in_8bit: bool = True,
+        enable_thinking: bool = False,
+        temperature: float = 0.6,
+        top_p: float = 0.95,
+        top_k: int = 20,
+    ):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"[QA] Loading adapter: {hub_repo_id}")
+        # Chế độ B — native thinking: stage 2 sinh <think>…</think> CoT trước JSON.
+        # Qwen3 think mode KHÔNG được greedy (lặp vô hạn) → bắt buộc sampling.
+        self.enable_thinking = enable_thinking
+        self.temperature = temperature
+        self.top_p = top_p
+        self.top_k = top_k
+        print(f"[QA] Loading adapter: {hub_repo_id}  (thinking={enable_thinking})")
 
         load_kwargs: dict = {"trust_remote_code": True, "device_map": "auto"}
         if load_in_8bit and self.device == "cuda":
@@ -51,10 +65,14 @@ class QAModel:
         premises_fol: list[str],
         question:     str,
         max_new_tokens: int = 200,
-    ) -> dict[str, str]:
+    ) -> dict:
         """
         Input : premises_nl, premises_fol, question
-        Output: {"answer": "...", "explanation": "..."}
+        Output: {"answer", "explanation", "reasoning": {"type", "steps"}, "thinking"}
+
+        Khi enable_thinking=True (Chế độ B): model sinh <think>…</think> CoT trước,
+        nội dung think trở thành reasoning.steps (type="cot"). JSON answer được
+        parse SAU khi đã strip think → tránh dấu ngoặc trong think làm vỡ parser.
         """
         user_content = USER_TEMPLATE_QA.format(
             premises_nl_block  = format_nl_block(premises_nl),
@@ -65,11 +83,10 @@ class QAModel:
             {"role": "system", "content": SYSTEM_PROMPT_QA},
             {"role": "user",   "content": user_content},
         ]
-        # enable_thinking=False: khớp lúc train (no-think) → đầu ra là JSON thuần,
-        # tránh <think> ăn token budget làm cắt JSON.
         try:
             text = self.tokenizer.apply_chat_template(
-                messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+                messages, tokenize=False, add_generation_prompt=True,
+                enable_thinking=self.enable_thinking,
             )
         except TypeError:
             text = self.tokenizer.apply_chat_template(
@@ -79,17 +96,67 @@ class QAModel:
             text, return_tensors="pt", truncation=True, max_length=4096
         ).to(self.model.device)
 
-        with torch.no_grad():
-            out = self.model.generate(
-                **inputs, max_new_tokens=max_new_tokens, do_sample=False,
+        # Sampling theo chế độ: think → sampling (Qwen3), no-think → greedy.
+        gen_kwargs: dict = {"max_new_tokens": max_new_tokens}
+        if self.enable_thinking:
+            gen_kwargs.update(
+                do_sample=True,
+                temperature=self.temperature,
+                top_p=self.top_p,
+                top_k=self.top_k,
             )
+        else:
+            gen_kwargs.update(do_sample=False)
+
+        with torch.no_grad():
+            out = self.model.generate(**inputs, **gen_kwargs)
         raw = self.tokenizer.decode(
             out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
         ).strip()
 
-        return self._parse_output(raw)
+        # Tách <think>…</think> trước khi parse JSON.
+        think_text, answer_text = self._split_thinking(raw)
+        parsed = self._parse_output(answer_text)
+
+        # reasoning.steps: ưu tiên CoT trong <think>; fallback về explanation.
+        steps = self._steps_from_text(think_text)
+        reasoning_type = "cot" if steps else "fol"
+        if not steps:
+            steps = self._steps_from_text(parsed["explanation"])
+
+        return {
+            "answer":      parsed["answer"],
+            "explanation": parsed["explanation"],
+            "reasoning":   {"type": reasoning_type, "steps": steps},
+        }
 
     # ── private ────────────────────────────────────────────────────────────────
+
+    @staticmethod
+    def _split_thinking(raw: str) -> tuple[str, str]:
+        """Tách (think_text, answer_text) từ output thô.
+
+        - Có '</think>'         → think = trước nó, answer = sau nó.
+        - Bắt đầu '<think>' mà KHÔNG đóng (think bị cắt vì hết token) → toàn bộ
+          là think, answer rỗng (parser sẽ fallback Unknown — đúng ý: think tràn budget).
+        - Không có think         → answer = toàn bộ.
+        """
+        if "</think>" in raw:
+            think, _, after = raw.partition("</think>")
+            return think.replace("<think>", "").strip(), after.strip()
+        if raw.lstrip().startswith("<think>"):
+            return raw.replace("<think>", "").strip(), ""
+        return "", raw.strip()
+
+    @staticmethod
+    def _steps_from_text(text: str, max_steps: int = 12) -> list[str]:
+        """Tách văn bản reasoning thành list bước (theo dòng / câu)."""
+        if not text:
+            return []
+        parts = re.split(r"\n+|(?<=[.。!?])\s+", text)
+        steps = [p.strip(" \t-•*>").strip() for p in parts]
+        steps = [s for s in steps if len(s) > 1]
+        return steps[:max_steps]
 
     @staticmethod
     def _parse_output(text: str) -> dict[str, str]:

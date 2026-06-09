@@ -9,6 +9,16 @@ qa_model:
   hub_repo_id: Laplaces-Red-Devils/v02-QA-CoT
   max_new_tokens: 256       # khớp gen_max_new_tokens lúc train QA (no-think)
 
+  # ── Native thinking (Chế độ B) ──────────────────────────────────────────────
+  # enable_thinking=true → stage 2 sinh <think>…</think> CoT rồi mới ra JSON.
+  # LƯU Ý: muốn think THẬT phải dùng adapter đã SFT có think; bật trên adapter
+  # no-think thường ra <think> rỗng. Qwen3 think mode BẮT BUỘC sampling (không greedy).
+  enable_thinking: false
+  thinking_max_new_tokens: 1024   # ngân sách token khi think (think + JSON answer)
+  temperature: 0.6                # Qwen3 thinking-mode recommended
+  top_p: 0.95
+  top_k: 20
+
 inference:
   load_in_8bit: true        # true = tiết kiệm VRAM, false = nhanh hơn nếu đủ RAM
   slow_threshold_sec: 60    # cảnh báo nếu 1 sample vượt ngưỡng này (giây)
