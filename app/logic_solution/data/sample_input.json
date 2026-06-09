@@ -17,5 +17,12 @@
       "Everyone is eligible for a promotion."
     ],
     "question": "Do all employees receive a bonus?"
+  },
+  {
+  "premises-NL": [
+    "A student with >= 120 credits is eligible.",
+    "Student A has 118 credits."
+  ],
+  "question": "How many more credits does Student A need to graduate?"
   }
 ]
