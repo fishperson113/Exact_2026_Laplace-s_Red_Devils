@@ -76,6 +76,9 @@ def main() -> None:
     ap.add_argument("--base", default="Qwen/Qwen3.5-4B")
     ap.add_argument("--finetune", required=True)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--rm-finetune", action="store_true",
+                    help="delete the finetune's HF cache after grafting (frees RAM/disk; "
+                         "serving uses the composite --out dir, not the finetune). Base is kept.")
     args = ap.parse_args()
 
     out = Path(args.out)
@@ -120,6 +123,16 @@ def main() -> None:
 
     (out / ".graft_done").write_text("ok\n")
     print(f"[graft] DONE -> {out}  (arch {cfg['architectures']}, model_type {cfg['model_type']})")
+
+    # Free the finetune's HF cache — serving uses <out>, not the finetune. (Only when the
+    # finetune was a hub repo we downloaded, not a local path.) The base is kept (the
+    # physics engine still serves it from cache).
+    if args.rm_finetune and not Path(args.finetune).exists():
+        for p in ft_dir.parents:
+            if p.name.startswith("models--"):
+                shutil.rmtree(p, ignore_errors=True)
+                print(f"[graft] removed finetune cache {p}")
+                break
 
 
 if __name__ == "__main__":

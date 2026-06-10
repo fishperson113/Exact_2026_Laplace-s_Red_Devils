@@ -59,8 +59,22 @@ MAX_NUM_SEQS="${MAX_NUM_SEQS:-16}"
 _EAGER_DEFAULT=1; [ "$SERVE_MODE" = "physics_ensemble" ] && _EAGER_DEFAULT=0
 ENFORCE_EAGER="${ENFORCE_EAGER:-$_EAGER_DEFAULT}"
 
-export HF_HOME="${HF_HOME:-/dev/shm/hf}"
+# Model storage: these Vast boxes often have a TINY disk (e.g. 32GB overlay, mostly
+# eaten by the vLLM install) but a big /dev/shm (RAM). The box may also preset HF_HOME
+# to a small-disk path. So put the HF cache on /dev/shm unless the chosen path has
+# >=45GB free. Models in RAM also load faster. Override with HF_HOME to force a path.
+_fs_free_g() { df -BG --output=avail "$1" 2>/dev/null | tail -1 | tr -dc '0-9'; }
+_HF_CAND="${HF_HOME:-/dev/shm/hf}"; mkdir -p "$_HF_CAND" 2>/dev/null
+_HF_FREE="$(_fs_free_g "$_HF_CAND")"
+if [ -z "$_HF_FREE" ] || [ "$_HF_FREE" -lt 45 ]; then
+    [ "$_HF_CAND" != "/dev/shm/hf" ] && echo "[serve_all] HF_HOME '$_HF_CAND' has only ${_HF_FREE:-?}GB free -> using /dev/shm/hf (RAM)."
+    _HF_CAND="/dev/shm/hf"
+fi
+export HF_HOME="$_HF_CAND"
 export HF_HUB_ENABLE_HF_TRANSFER="${HF_HUB_ENABLE_HF_TRANSFER:-1}"
+# xet stages chunks to HF_HOME/xet AND assembles -> ~2x transient space; on a tight
+# RAM disk that overflows. Plain download (resumable) is safer here.
+export HF_HUB_DISABLE_XET="${HF_HUB_DISABLE_XET:-1}"
 export TOKENIZERS_PARALLELISM=false
 export VLLM_USE_FLASHINFER_SAMPLER="${VLLM_USE_FLASHINFER_SAMPLER:-0}"
 
@@ -222,7 +236,7 @@ elif [ "$SERVE_MODE" = "combined" ]; then
         name="${spec%%:*}"; repo="${spec#*:}"
         HF_HOME="$HF_HOME" HF_TOKEN="${HF_TOKEN:-}" HUGGING_FACE_HUB_TOKEN="${HF_TOKEN:-}" \
         "$PY" "$PROJECT_ROOT/scripts/graft_text_to_composite.py" \
-            --base "$BASE_REPO" --finetune "$repo" --out "$MODELS_DIR/$name-composite" \
+            --base "$BASE_REPO" --finetune "$repo" --out "$MODELS_DIR/$name-composite" --rm-finetune \
             >>"$LOG_DIR/graft.log" 2>&1 \
           || { err "graft of $name failed — see $LOG_DIR/graft.log"; exit 1; }
         log "  $name -> $MODELS_DIR/$name-composite ready"
