@@ -6,7 +6,7 @@
 # Designed to be called from Vast's **On-start Script** via a raw GitHub URL:
 #
 #     curl -fsSL -o setup_env.sh \
-#       https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/submition_v1/setup_env.sh
+#       https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/Final/setup_env.sh
 #     chmod +x setup_env.sh && bash setup_env.sh
 #
 # What it does (idempotent — safe to re-run):
@@ -28,7 +28,7 @@
 set -uo pipefail
 
 REPO_URL="${REPO_URL:-https://github.com/fishperson113/Exact_2026_Laplace-s_Red_Devils.git}"
-REPO_BRANCH="${REPO_BRANCH:-Nguyen/submition_v1}"
+REPO_BRANCH="${REPO_BRANCH:-Nguyen/Final}"
 PROJECT_DIR="${PROJECT_DIR:-/workspace/project}"
 VENV="${VENV:-/venv/main}"
 PY="$VENV/bin/python"
