@@ -234,11 +234,16 @@ elif [ "$SERVE_MODE" = "combined" ]; then
     sleep_server "$QA_PORT"
 
     # physics base+LoRA on :18000 (sleep-mode), left AWAKE as the default group.
+    # CUDA graphs ON for physics (PHYSICS_EAGER=0 default): the engine has plenty of
+    # headroom (fol/qa asleep hold only ~0.7GB each, KV ~16GB) and graphs are a HUGE
+    # decode win — eager makes the 10-sample pooled vote 48-59s (≈timeout) on hard
+    # problems vs ~9-22s with graphs. fol/qa stay eager (logic is short, ~2.6s).
+    PHYSICS_EAGER="${PHYSICS_EAGER:-0}"
     if ! health_ok "$VLLM_PORT"; then
         export VLLM_SERVER_DEV_MODE=1
         extra="--enable-sleep-mode --enable-lora --max-lora-rank $MAX_LORA_RANK --lora-modules sft=$SFT_ADAPTER"
-        [ "$ENFORCE_EAGER" = "1" ] && extra="$extra --enforce-eager"
-        log "Starting physics base+LoRA ($BASE_REPO + sft=$SFT_ADAPTER) :$VLLM_PORT util=$GPU_UTIL sleep=1 eager=$ENFORCE_EAGER"
+        [ "$PHYSICS_EAGER" = "1" ] && extra="$extra --enforce-eager"
+        log "Starting physics base+LoRA ($BASE_REPO + sft=$SFT_ADAPTER) :$VLLM_PORT util=$GPU_UTIL sleep=1 eager=$PHYSICS_EAGER(graphs)"
         OMP_NUM_THREADS=8 nohup "$VLLM_BIN" serve "$BASE_REPO" --served-model-name base \
             --host 0.0.0.0 --port "$VLLM_PORT" --dtype bfloat16 \
             --gpu-memory-utilization "$GPU_UTIL" --max-model-len "$MAX_MODEL_LEN" \
