@@ -71,10 +71,11 @@ if [ -z "$_HF_FREE" ] || [ "$_HF_FREE" -lt 45 ]; then
     _HF_CAND="/dev/shm/hf"
 fi
 export HF_HOME="$_HF_CAND"
-export HF_HUB_ENABLE_HF_TRANSFER="${HF_HUB_ENABLE_HF_TRANSFER:-1}"
-# xet stages chunks to HF_HOME/xet AND assembles -> ~2x transient space; on a tight
-# RAM disk that overflows. Plain download (resumable) is safer here.
-export HF_HUB_DISABLE_XET="${HF_HUB_DISABLE_XET:-1}"
+# xet is the ONLY fast HF download path now (hf_transfer is deprecated/ignored). It
+# stages chunks to HF_HOME/xet — which is on /dev/shm above, so it's fast AND fits.
+# (Disabling xet fell back to plain HTTP = painfully slow / looks hung.) Keep it ON.
+export HF_HUB_DISABLE_XET="${HF_HUB_DISABLE_XET:-0}"
+export HF_XET_HIGH_PERFORMANCE="${HF_XET_HIGH_PERFORMANCE:-1}"
 export TOKENIZERS_PARALLELISM=false
 export VLLM_USE_FLASHINFER_SAMPLER="${VLLM_USE_FLASHINFER_SAMPLER:-0}"
 
