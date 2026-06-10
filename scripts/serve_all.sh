@@ -30,7 +30,8 @@ VENV="${VENV:-/venv/main}"
 PY="$VENV/bin/python"
 VLLM_BIN="$VENV/bin/vllm"
 
-SERVE_MODE="${SERVE_MODE:-shared}"
+# combined = full competition stack (both task types). shared/triple kept for testing.
+SERVE_MODE="${SERVE_MODE:-combined}"
 SERVE_MODEL="${SERVE_MODEL:-Laplaces-Red-Devils/physics-v04-optimized_routing-qwen3.5-4b}"
 SERVED_NAME="${SERVED_NAME:-physics}"
 
