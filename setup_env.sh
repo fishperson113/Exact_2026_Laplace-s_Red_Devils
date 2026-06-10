@@ -13,8 +13,9 @@
 #   1. install vLLM (latest, CUDA-13) + gateway/code-exec deps into /venv/main
 #      (via `uv` — resilient on flaky links; falls back to pip)
 #   2. git clone/pull this repo to /workspace/project
-#   3. launch the stack: one Qwen3.5-4B vLLM (:18000) + FastAPI gateway (:9000)
-#      + a cloudflared quick tunnel (public /ask URL for BTC)
+#   3. launch the FULL competition stack (SERVE_MODE=combined): physics base+LoRA
+#      (:18000) + logic fol/qa grafted-composite (:18001/:18002), FastAPI gateway
+#      (:9000, POST /predict), one cloudflared tunnel per service + urls.txt (BTC §3)
 #
 # vLLM has its OWN GDN / causal-conv1d kernels, so serving Qwen3.5-4B needs NO
 # `fla` / `causal-conv1d` / transformers spells (those are only for finetuning).
@@ -104,8 +105,9 @@ if ! command -v cloudflared >/dev/null 2>&1; then
         && chmod +x /usr/local/bin/cloudflared || err "cloudflared install failed (tunnel optional)."
 fi
 
-log "Launching the serving stack ..."
+log "Launching the serving stack (SERVE_MODE=${SERVE_MODE:-combined}) ..."
 PROJECT_ROOT="$PROJECT_DIR" VENV="$VENV" SKIP_TUNNEL="${SKIP_TUNNEL:-0}" \
+    SERVE_MODE="${SERVE_MODE:-combined}" HF_TOKEN="${HF_TOKEN:-}" \
     bash "$PROJECT_DIR/scripts/serve_all.sh" start
 
 log "Done. Logs in /workspace/logs/. Public /ask URL printed above (if tunnel started)."
