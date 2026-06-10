@@ -55,15 +55,19 @@ def _snapshot(repo: str) -> Path:
     return Path(snapshot_download(repo))
 
 
+def _shards(d: Path):
+    files = sorted(d.glob("*.safetensors")) + sorted(d.glob("*.safetensors-*"))
+    seen, out = set(), []
+    for f in files:
+        if f.name not in seen:
+            seen.add(f.name); out.append(f)
+    return out
+
+
 def _load_safetensors_dir(d: Path, want) -> dict[str, torch.Tensor]:
     """Load tensors whose key passes ``want(key)`` from every *.safetensors in d."""
     out: dict[str, torch.Tensor] = {}
-    files = sorted(d.glob("*.safetensors")) + sorted(d.glob("*.safetensors-*"))
-    seen = set()
-    for f in files:
-        if f.name in seen:
-            continue
-        seen.add(f.name)
+    for f in _shards(d):
         with safe_open(str(f), framework="pt") as s:
             for k in s.keys():
                 if want(k):
@@ -71,11 +75,23 @@ def _load_safetensors_dir(d: Path, want) -> dict[str, torch.Tensor]:
     return out
 
 
+def _keys_in_dir(d: Path, want) -> set[str]:
+    """Just the KEYS passing ``want`` — no tensor materialization (cheap)."""
+    ks: set[str] = set()
+    for f in _shards(d):
+        with safe_open(str(f), framework="pt") as s:
+            ks.update(k for k in s.keys() if want(k))
+    return ks
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", default="Qwen/Qwen3.5-4B")
     ap.add_argument("--finetune", required=True)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--rm-finetune", action="store_true",
+                    help="delete the finetune's HF cache after grafting (frees RAM/disk; "
+                         "serving uses the composite --out dir, not the finetune). Base is kept.")
     args = ap.parse_args()
 
     out = Path(args.out)
@@ -92,7 +108,7 @@ def main() -> None:
     ft_lm = _load_safetensors_dir(ft_dir, lambda k: k.startswith(LM_PREFIX))
     # base: everything EXCEPT language_model (visual tower + mtp head + any extras)
     base_rest = _load_safetensors_dir(base_dir, lambda k: not k.startswith(LM_PREFIX))
-    base_lm_keys = set(_load_safetensors_dir(base_dir, lambda k: k.startswith(LM_PREFIX)).keys())
+    base_lm_keys = _keys_in_dir(base_dir, lambda k: k.startswith(LM_PREFIX))   # keys only, no 9GB load
 
     missing = base_lm_keys - set(ft_lm)
     extra = set(ft_lm) - base_lm_keys
@@ -120,6 +136,16 @@ def main() -> None:
 
     (out / ".graft_done").write_text("ok\n")
     print(f"[graft] DONE -> {out}  (arch {cfg['architectures']}, model_type {cfg['model_type']})")
+
+    # Free the finetune's HF cache — serving uses <out>, not the finetune. (Only when the
+    # finetune was a hub repo we downloaded, not a local path.) The base is kept (the
+    # physics engine still serves it from cache).
+    if args.rm_finetune and not Path(args.finetune).exists():
+        for p in ft_dir.parents:
+            if p.name.startswith("models--"):
+                shutil.rmtree(p, ignore_errors=True)
+                print(f"[graft] removed finetune cache {p}")
+                break
 
 
 if __name__ == "__main__":

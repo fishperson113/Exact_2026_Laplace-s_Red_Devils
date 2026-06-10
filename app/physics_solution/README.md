@@ -153,32 +153,38 @@ is the working path. Per query:
 Deadline-safe (skip explanation → use the chosen solution's own reasoning if the 60 s budget is
 nearly spent).
 
-### Results & the hard finding (RTX 5090, matches offline)
+### Results — final 3-run experiment (RTX 5090, CUDA graphs)
 
-| config | val_56 | golden_60 | latency median / max |
-|---|---|---|---|
-| single SFT (SC K=5) | 0.875 | 0.78–0.82* | — |
-| single BASE (SC K=5) | 0.875 | 0.75–0.80* | — |
-| **pooled ensemble (10-vote)** | **0.875** | **0.733** | **~9–11 s / ~23 s** |
+Each config run **3×** on both sets with **identical samples feeding all 3 configs per run**, so the
+only difference is the voting strategy (full report + per-problem log:
+[`output/FINAL_EXPERIMENT.md`](versions/v07_ensemble_vLLM/output/FINAL_EXPERIMENT.md)):
 
-*single-model SC bounces ±4 problems run-to-run (temp 0.7 sampling variance).
+| config | val_56 (mean [min..max]) | golden_60 (mean [min..max]) |
+|---|---|---|
+| single SFT (K=5) | 0.863 [0.839..0.893] | 0.783 [0.767..0.800] |
+| single BASE (K=5) | 0.833 [0.786..0.875] | 0.778 [0.767..0.800] |
+| **pooled ENSEMBLE (10-vote)** | **0.869 [0.857..0.893]** | **0.789 [0.783..0.800]** |
 
-**The ensemble does NOT beat a single model**, and **majority voting leaves a lot on the table**:
-- An LLM **judge cannot select** the right answer — anonymous framing 4/13, self-review framing
-  3/13 on disagreements (both **below random**); a same-class 4B can't adjudicate physics it
-  couldn't solve. The judge is therefore used **only to write the explanation/CoT**, not to pick.
-- **Pooled-10 golden: accuracy 0.733 but ORACLE 0.917** (55/60 problems have ≥1 correct sample),
-  and **minority-lost = 11** — in 11 problems the majority cluster is WRONG while a *minority*
-  cluster holds the correct answer (a systematic error, e.g. a rounding habit, dominates the vote).
-  → **The bottleneck is SELECTION, not voting.** The model already reaches the answer ~92% of the
-  time; the lever is making the correct method the *majority* — i.e. **better DATA / training**
-  (teacher-residual on the systematic-error problems) or an **external verifier** — NOT more
-  voting or judging.
+Latency (ensemble, graphs): median **6.5 s**, p90 14.9 s, max 20.3 s — all ≪ 60 s.
 
-Offline harness (non-serving) + measurement scripts:
-[`versions/v07_final_version/ensemble.py`](versions/v07_final_version/ensemble.py),
-[`versions/v07_ensemble_vLLM/measure_pool.py`](versions/v07_ensemble_vLLM/measure_pool.py),
-`investigate_ensemble.py`.
+**Decision: KEEP the ensemble** — but know it's a near-tie, not a win:
+- Ensemble beats the best single model by only **+0.6pt** (within run variance). We keep it because
+  it is **nearly free** (BASE is already loaded as the explainer; its 5 samples batch in parallel
+  with SFT's on the one engine) and gives a slightly **higher floor** (golden min 0.783 vs SFT 0.767).
+- **SFT ≥ BASE everywhere** (so SFT is the better single model). Domain split: SFT clearly stronger on
+  **DDT (+0.07), TD (+0.10)**, tie elsewhere; the val-LDDT BASE edge is n=6 noise (golden LDDT n=60 is
+  tied). → **domain-weighting collapses to "use SFT"; not worth it.**
+- The two models are **87–92% redundant** (both produce a correct sample); the complementary slice is
+  ~3–6% and **5–7% are `none`** (neither solves). An LLM **judge cannot pick** the right answer
+  (anonymous 4/13, self-review 3/13 on disagreements, both below random) → judge writes the
+  explanation/CoT only, never selects.
+- **The real lever is DATA/coverage**, not voting: pooled-10 golden ORACLE ≈ 0.92 but the vote often
+  picks a systematic-error majority over a correct minority. (Consistent across the oracle-0.917 /
+  minority-lost finding and the 3-run experiment.)
+
+Measurement scripts: [`final_experiment.py`](versions/v07_ensemble_vLLM/final_experiment.py) (the
+3-run report), [`measure_pool.py`](versions/v07_ensemble_vLLM/measure_pool.py),
+[`versions/v07_final_version/ensemble.py`](versions/v07_final_version/ensemble.py).
 
 **Bring-up** (RTX 5090 32 GB or any CUDA-13 box; **transformers 5.10 + vLLM 0.22.1**):
 ```bash

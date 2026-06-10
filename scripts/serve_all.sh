@@ -30,7 +30,8 @@ VENV="${VENV:-/venv/main}"
 PY="$VENV/bin/python"
 VLLM_BIN="$VENV/bin/vllm"
 
-SERVE_MODE="${SERVE_MODE:-shared}"
+# combined = full competition stack (both task types). shared/triple kept for testing.
+SERVE_MODE="${SERVE_MODE:-combined}"
 SERVE_MODEL="${SERVE_MODEL:-Laplaces-Red-Devils/physics-v04-optimized_routing-qwen3.5-4b}"
 SERVED_NAME="${SERVED_NAME:-physics}"
 
@@ -58,8 +59,23 @@ MAX_NUM_SEQS="${MAX_NUM_SEQS:-16}"
 _EAGER_DEFAULT=1; [ "$SERVE_MODE" = "physics_ensemble" ] && _EAGER_DEFAULT=0
 ENFORCE_EAGER="${ENFORCE_EAGER:-$_EAGER_DEFAULT}"
 
-export HF_HOME="${HF_HOME:-/dev/shm/hf}"
-export HF_HUB_ENABLE_HF_TRANSFER="${HF_HUB_ENABLE_HF_TRANSFER:-1}"
+# Model storage: these Vast boxes often have a TINY disk (e.g. 32GB overlay, mostly
+# eaten by the vLLM install) but a big /dev/shm (RAM). The box may also preset HF_HOME
+# to a small-disk path. So put the HF cache on /dev/shm unless the chosen path has
+# >=45GB free. Models in RAM also load faster. Override with HF_HOME to force a path.
+_fs_free_g() { df -BG --output=avail "$1" 2>/dev/null | tail -1 | tr -dc '0-9'; }
+_HF_CAND="${HF_HOME:-/dev/shm/hf}"; mkdir -p "$_HF_CAND" 2>/dev/null
+_HF_FREE="$(_fs_free_g "$_HF_CAND")"
+if [ -z "$_HF_FREE" ] || [ "$_HF_FREE" -lt 45 ]; then
+    [ "$_HF_CAND" != "/dev/shm/hf" ] && echo "[serve_all] HF_HOME '$_HF_CAND' has only ${_HF_FREE:-?}GB free -> using /dev/shm/hf (RAM)."
+    _HF_CAND="/dev/shm/hf"
+fi
+export HF_HOME="$_HF_CAND"
+# xet is the ONLY fast HF download path now (hf_transfer is deprecated/ignored). It
+# stages chunks to HF_HOME/xet — which is on /dev/shm above, so it's fast AND fits.
+# (Disabling xet fell back to plain HTTP = painfully slow / looks hung.) Keep it ON.
+export HF_HUB_DISABLE_XET="${HF_HUB_DISABLE_XET:-0}"
+export HF_XET_HIGH_PERFORMANCE="${HF_XET_HIGH_PERFORMANCE:-1}"
 export TOKENIZERS_PARALLELISM=false
 export VLLM_USE_FLASHINFER_SAMPLER="${VLLM_USE_FLASHINFER_SAMPLER:-0}"
 
@@ -221,7 +237,7 @@ elif [ "$SERVE_MODE" = "combined" ]; then
         name="${spec%%:*}"; repo="${spec#*:}"
         HF_HOME="$HF_HOME" HF_TOKEN="${HF_TOKEN:-}" HUGGING_FACE_HUB_TOKEN="${HF_TOKEN:-}" \
         "$PY" "$PROJECT_ROOT/scripts/graft_text_to_composite.py" \
-            --base "$BASE_REPO" --finetune "$repo" --out "$MODELS_DIR/$name-composite" \
+            --base "$BASE_REPO" --finetune "$repo" --out "$MODELS_DIR/$name-composite" --rm-finetune \
             >>"$LOG_DIR/graft.log" 2>&1 \
           || { err "graft of $name failed — see $LOG_DIR/graft.log"; exit 1; }
         log "  $name -> $MODELS_DIR/$name-composite ready"
@@ -234,11 +250,16 @@ elif [ "$SERVE_MODE" = "combined" ]; then
     sleep_server "$QA_PORT"
 
     # physics base+LoRA on :18000 (sleep-mode), left AWAKE as the default group.
+    # CUDA graphs ON for physics (PHYSICS_EAGER=0 default): the engine has plenty of
+    # headroom (fol/qa asleep hold only ~0.7GB each, KV ~16GB) and graphs are a HUGE
+    # decode win — eager makes the 10-sample pooled vote 48-59s (≈timeout) on hard
+    # problems vs ~9-22s with graphs. fol/qa stay eager (logic is short, ~2.6s).
+    PHYSICS_EAGER="${PHYSICS_EAGER:-0}"
     if ! health_ok "$VLLM_PORT"; then
         export VLLM_SERVER_DEV_MODE=1
         extra="--enable-sleep-mode --enable-lora --max-lora-rank $MAX_LORA_RANK --lora-modules sft=$SFT_ADAPTER"
-        [ "$ENFORCE_EAGER" = "1" ] && extra="$extra --enforce-eager"
-        log "Starting physics base+LoRA ($BASE_REPO + sft=$SFT_ADAPTER) :$VLLM_PORT util=$GPU_UTIL sleep=1 eager=$ENFORCE_EAGER"
+        [ "$PHYSICS_EAGER" = "1" ] && extra="$extra --enforce-eager"
+        log "Starting physics base+LoRA ($BASE_REPO + sft=$SFT_ADAPTER) :$VLLM_PORT util=$GPU_UTIL sleep=1 eager=$PHYSICS_EAGER(graphs)"
         OMP_NUM_THREADS=8 nohup "$VLLM_BIN" serve "$BASE_REPO" --served-model-name base \
             --host 0.0.0.0 --port "$VLLM_PORT" --dtype bfloat16 \
             --gpu-memory-utilization "$GPU_UTIL" --max-model-len "$MAX_MODEL_LEN" \
