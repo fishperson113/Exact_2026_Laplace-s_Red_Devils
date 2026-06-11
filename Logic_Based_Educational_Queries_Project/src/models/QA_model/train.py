@@ -404,9 +404,10 @@ def compute_accuracy_on_split(
                 "idx": i,
                 "correct": is_correct,
                 "input": {
-                    "premises_nl": parsed_input["premises_nl"],
+                    "query": parsed_input["question"],
+                    "premises": parsed_input["premises_nl"],
                     "premises_fol": parsed_input["premises_fol"],
-                    "question": parsed_input["question"],
+                    "options": parsed_input.get("options", []),
                 },
                 "gold": {
                     "answer": gold_parsed["answer"],

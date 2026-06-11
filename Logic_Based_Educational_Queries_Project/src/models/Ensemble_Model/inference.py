@@ -548,9 +548,10 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
             "idx": i,
             "correct": is_correct,
             "input": {
-                "premises_nl": premises_nl_list[i],
+                "query": questions[i],
+                "premises": premises_nl_list[i],
+                "options": options_list[i],
                 "premises_fol_gold": fol_golds[i],
-                "question": questions[i],
             },
             "fol_generated": fol_results[i]["premises_fol"],
             "gold": {
@@ -590,9 +591,10 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
                 "idx": r["idx"],
                 "correct": r["correct"],
                 "input": {
-                    "premises_nl": r["input"]["premises_nl"],
+                    "query": r["input"]["query"],
+                    "premises": r["input"]["premises"],
+                    "options": r["input"]["options"],
                     "premises_fol": r["input"]["premises_fol_gold"],
-                    "question": r["input"]["question"],
                 },
                 "fol_prediction": r["fol_generated"],
                 "gold": r["gold"],
@@ -838,8 +840,9 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
 
         results.append({
             "idx": i,
-            "premises_nl": premises_nl_list[i],
-            "question": questions[i],
+            "query": questions[i],
+            "premises": premises_nl_list[i],
+            "options": options_list[i],
             "answer": qa_results[i]["answer"],
             "premises_used": qa_results[i].get("premises_used", []),
             "reasoning_steps": qa_results[i].get("reasoning_steps", []),
@@ -863,8 +866,9 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
             detail = {
                 "idx": r["idx"],
                 "input": {
-                    "premises_nl": r["premises_nl"],
-                    "question": r["question"],
+                    "query": r["query"],
+                    "premises": r["premises"],
+                    "options": r["options"],
                 },
                 "fol_prediction": r["premises_fol_generated"],
                 "prediction": {
