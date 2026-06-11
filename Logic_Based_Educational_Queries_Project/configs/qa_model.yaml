@@ -4,8 +4,10 @@
 model:
   name: Qwen/Qwen3.5-4B
   trust_remote_code: true
-  max_seq_length: 3500
-  gen_max_new_tokens: 256
+  max_seq_length: 3000
+  # reasoning steps + JSON cuối (answer LAST). Vì answer ở cuối, cắt sớm = MẤT answer.
+  # Phân phối assistant target: P95~480, P99~600, max~793 token → 768 phủ ~99.x% an toàn.
+  gen_max_new_tokens: 1000
 
 lora:
   r: 8
@@ -54,12 +56,12 @@ eval:
 inference:
   # After training, set this to the merged model path or Hub repo
   model_path: null  # Will use model.name as fallback
-  max_new_tokens: 256
+  max_new_tokens: 768   # answer LAST → phải đủ rộng kẻo cắt mất answer (P99~600, max~793)
   load_in_8bit: true
 
 hub:
   org: Laplaces-Red-Devils
-  repo_version: v02
+  repo_version: v03
   type: QA
   method: CoT
   push_to_hub: true

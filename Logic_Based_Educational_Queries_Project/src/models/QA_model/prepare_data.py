@@ -1,9 +1,13 @@
-"""Prepare SFT dataset for QA Stage 2: NL + FOL → COT answer + explanation.
+"""Prepare SFT dataset for QA Stage 2: NL + FOL → reasoning steps → answer (last).
 
-Load processed CSVs (normalized FOL) → build chat messages (system/user/assistant) → save as HF Dataset.
+Nguồn = data/processed/{train,dev,test}.csv (cột list/dict lưu JSON: premises_nl,
+premises_fol, premises_used, reasoning; đã 0-based). Sinh bởi cell "Export
+train/dev/test CSV" trong notebooks/eda_reasoning_flat.ipynb.
+→ build chat messages (system/user/assistant) → save as HF Dataset.
 
 Usage:
-    python -m models.QA_model.prepare_data --config configs/qa_model.yaml
+    # B1: chạy cell Export trong notebooks/eda_reasoning_flat.ipynb → *.csv
+    python -m models.QA_model.prepare_data --config configs/qa_model.yaml  # B2
 """
 from __future__ import annotations
 
@@ -17,106 +21,18 @@ from datasets import Dataset, DatasetDict
 
 SYSTEM_PROMPT_QA_COT = """\
 ### Role
-You are a logic-based educational QA system. You receive natural-language premises, \
-their First-Order Logic (FOL) translations, and a question. Your job is to reason \
-step-by-step through the logical structure and answer the question.
+You are a logic-based educational QA system. You are given natural-language premises, their First-Order Logic (FOL) translations, and a question. Premises are indexed from 0.
 
-### Chain of Thought — Follow these steps
-
-**Step 1: IDENTIFY LOGICAL CHAINS**
-- Read the FOL premises to identify implication chains (A → B → C → ...).
-- Group related premises into chains. Note which premises belong to which chain.
-
-**Step 2: DETERMINE QUESTION TYPE**
-- Multiple choice (A/B/C/D) → evaluate each option against the logical chains.
-- Yes/No → determine if the statement follows from, is contradicted by, or cannot be determined from the premises.
-- Numeric / Short-answer → the question asks for a specific value (a number, a name, or a short phrase) that the premises determine or that can be computed from them (e.g. "how many more", "what is the minimum", "which course"). No options are listed.
-
-**Step 3: EVALUATE & REASON**
-- For MCQ: check each option — does it follow from a chain? Is it a valid contrapositive? Does it conflate separate chains?
-- For Yes/No: trace whether the full chain connects the antecedent to the consequent without gaps.
-- For Numeric/Short-answer: extract the relevant quantities or entities from the premises, perform the required arithmetic or lookup, and state the resulting value. Show the computation explicitly (e.g. 120 − 118 = 2).
-- Cite specific premise numbers in your reasoning.
-
-**Step 4: ANSWER**
-- MCQ → exactly one of: A, B, C, D, or Unknown.
-- Yes/No → exactly one of: Yes, No, or Unknown.
-- Numeric/Short-answer → the exact value as a string (e.g. "2", "Course C", "$15"). For a number, output digits only and omit units unless the unit is essential to disambiguate the answer.
-- Use "Unknown" ONLY when premises are genuinely insufficient.
-
-### Output Format
-Output ONLY a JSON object:
-{"answer": "<label>", "explanation": "<your step-by-step reasoning citing premises>"}
-
-### Few-shot Examples
-#### Example 1 — Yes/No
-Premises (NL):
-1. If a student completes Course A, they can enroll in Course B.
-2. If a student enrolls in Course B and passes it, they can enroll in Course C.
-3. Enrollment in Course C makes a student eligible for the internship program.
-4. David has completed Course A.
-5. David has enrolled in and passed Course B.
-
-Premises (FOL):
-1. ∀x (complete(x, A) → enroll(x, B))
-2. ∀x ((enroll(x, B) ∧ pass(x, B)) → enroll(x, C))
-3. ∀x (enroll(x, C) → eligible_internship(x))
-4. complete(david, A)
-5. enroll(david, B) ∧ pass(david, B)
-
-Question:
-Does the logical progression demonstrate that David meets all requirements for the internship?
-
-Output:
-{"answer": "Yes", "explanation": "The requirements for the internship per premise 3 involve enrolling in Course C, which per premise 2 requires enrolling in and passing Course B. Premise 5 confirms David enrolled in and passed Course B, enabling Course C enrollment and thus internship eligibility."}
-
-#### Example 2 — Multiple Choice
-Premises (NL):
-1. If a driver has passed vehicle inspection and has the appropriate license, they can transport standard goods.
-2. If a driver can transport standard goods and has completed hazmat training and received a safety endorsement, they can transport hazardous materials.
-3. If a driver can transport hazardous materials and has an interstate permit, they can cross state lines with hazardous cargo.
-4. John has passed vehicle inspection.
-5. John has the appropriate license.
-6. John has completed hazmat training.
-7. John has not received a safety endorsement.
-8. John has an interstate permit.
-
-Premises (FOL):
-1. ∀x ((passed_vehicle_inspection(x) ∧ has_appropriate_license(x)) → can_transport_standard_goods(x))
-2. ∀x ((can_transport_standard_goods(x) ∧ completed_hazmat_training(x) ∧ received_safety_endorsement(x)) → can_transport_hazardous_materials(x))
-3. ∀x ((can_transport_hazardous_materials(x) ∧ has_interstate_permit(x)) → can_cross_state_lines(x))
-4. passed_vehicle_inspection(John)
-5. has_appropriate_license(John)
-6. completed_hazmat_training(John)
-7. ¬received_safety_endorsement(John)
-8. has_interstate_permit(John)
-
-Question:
-Based on the premises, which conclusion about John is justified?
-A. John can transport standard goods.
-B. John can transport hazardous materials.
-C. John can cross state lines with hazardous cargo.
-D. John cannot transport standard goods.
-
-Output:
-{"answer": "A", "explanation": "Premises 4 and 5 confirm John passed vehicle inspection and has the appropriate license, so premise 1 derives that he can transport standard goods — option A is justified. Option B requires a safety endorsement (antecedent of premise 2), but premise 7 states John has NOT received one, so premise 2 never fires and we cannot derive that he can transport hazardous materials. This makes B unknown: the premises provide no rule proving he cannot, they merely fail to prove he can, so the claim is unsupported rather than false. Option C depends on first being able to transport hazardous materials (premise 3), so it inherits the same unknown status as B and has no basis for conclusion. Option D directly contradicts the derivation establishing A. Therefore the only justified answer is A, while B and C remain undeterminable from the given premises."}
-
-#### Example 3 — Numeric / Short-answer
-Premises (NL):
-1. A student with at least 120 credits is eligible to graduate.
-2. Student A has 118 credits.
-
-Premises (FOL):
-1. ∀x (credits(x) ≥ 120 → eligible_graduate(x))
-2. credits(StudentA) = 118
-
-Question:
-How many more credits does Student A need to graduate?
-
-Output:
-{"answer": "2", "explanation": "Premise 1 sets the graduation threshold at 120 credits. Premise 2 states Student A currently has 118 credits. The shortfall is 120 − 118 = 2, so Student A needs 2 more credits. If premise 2 had not given a concrete credit count, the value would be undeterminable and the answer would be Unknown."}
-
-No markdown fences, no text outside the JSON.
+### Output
+First, reason in ordered steps, working over the First-Order Logic (FOL) premises — reason on the FOL formulas, not the natural-language text. Each step starts with exactly one prefix:
+- Rule:        a conditional/quantified FOL formula taken from a given FOL premise.
+- Fact:        a ground FOL fact taken from a given FOL premise.
+- Derive:      an intermediate FOL inference (contrapositive, modus ponens, a numeric comparison, or combining earlier steps).
+- Conclusion:  the final result — exactly one, as the last step.
+Write every Rule:/Fact:/Derive: step in FOL notation (∀ ∃ → ¬ ∧ ∨ ↔ < > =). Every Rule:/Fact: must be taken from the given FOL premises only — never invent one. The "premises_used" list must contain exactly the 0-based indices of the FOL premises you cited in your Rule:/Fact: steps.
+Then, on the final line, output ONE JSON object with the "answer" field LAST:
+{"premises_used": [<0-based indices of premises used>], "explanation": "<concise justification>", "answer": "<label>"}
+answer: exactly one option letter for multiple-choice; Yes or No for yes/no; the exact value for numeric/short-answer; Unknown only when premises are genuinely insufficient.
 """
 
 USER_TEMPLATE_QA_COT = """\
@@ -130,8 +46,13 @@ Question:
 {question}
 """
 
+ADDED_NEWLINE = "\n"
+
+# Target = reasoning steps (mỗi dòng 1 step Rule:/Fact:/Derive:/Conclusion:) rồi
+# dòng cuối là JSON với "answer" ĐỨNG CUỐI → model reason trước, chốt answer sau.
 ASSISTANT_TEMPLATE_QA_COT = """\
-{{"answer": "{answer}", "explanation": "{explanation}"}}\
+{steps_block}
+{{"premises_used": {premises_used}, "explanation": "{explanation}", "answer": "{answer}"}}\
 """
 
 
@@ -159,11 +80,13 @@ def parse_list_field(value: str) -> list[str]:
 
 
 def format_premises_nl(premises: list[str]) -> str:
-    return "\n".join(f"{i}. {p}" for i, p in enumerate(premises, 1))
+    # 0-based: khớp với premises_used (0-based) để model không lệch chỉ số.
+    return "\n".join(f"{i}. {p}" for i, p in enumerate(premises))
 
 
 def format_premises_fol(premises: list[str]) -> str:
-    return "\n".join(f"{i}. {p}" for i, p in enumerate(premises, 1))
+    # 0-based: khớp với premises_used (0-based).
+    return "\n".join(f"{i}. {p}" for i, p in enumerate(premises))
 
 
 def escape_json_string(s: str) -> str:
@@ -177,16 +100,25 @@ def build_messages_for_sample(
     question: str,
     answer: str,
     explanation: str,
+    reasoning_steps: list[str],
+    premises_used: list[int],
 ) -> list[dict[str, str]]:
-    """Build chat messages [system, user, assistant] for one QA sample."""
+    """Build chat messages [system, user, assistant] for one QA sample.
+
+    Assistant target = reasoning steps (Rule:/Fact:/Derive:/Conclusion:) rồi JSON
+    cuối với "answer" đứng cuối → model reason trước, chốt answer sau.
+    """
     user_content = USER_TEMPLATE_QA_COT.format(
         premises_nl_block=format_premises_nl(premises_nl),
         premises_fol_block=format_premises_fol(premises_fol),
         question=question,
     )
+    steps_block = "\n".join(reasoning_steps)
     assistant_content = ASSISTANT_TEMPLATE_QA_COT.format(
-        answer=escape_json_string(answer),
+        steps_block=steps_block,
+        premises_used=json.dumps(premises_used),
         explanation=escape_json_string(explanation),
+        answer=escape_json_string(answer),
     )
     return [
         {"role": "system", "content": SYSTEM_PROMPT_QA_COT},
@@ -195,35 +127,91 @@ def build_messages_for_sample(
     ]
 
 
-def build_samples_from_csv(df: pd.DataFrame) -> list[dict]:
-    """Convert CSV DataFrame → list of chat message samples."""
-    samples = []
-    for _, row in df.iterrows():
-        premises_nl = parse_list_field(row["premises_nl"])
-        premises_fol = parse_list_field(row["premises_fol"])
-        question = str(row["question"])
-        answer = str(row["answer"])
-        explanation = str(row["explanation"])
+def _json_cell(v, default):
+    """Parse 1 ô CSV dạng JSON (list/dict). Robust: thử json rồi ast."""
+    if v is None or (isinstance(v, float) and pd.isna(v)):
+        return default
+    if not isinstance(v, str):
+        return v
+    try:
+        return json.loads(v)
+    except (TypeError, json.JSONDecodeError):
+        import ast as _ast
+        try:
+            return _ast.literal_eval(v)
+        except (ValueError, SyntaxError):
+            return default
 
+
+def load_qa_split(data_dir: Path, split: str) -> list[dict]:
+    """Nạp 1 split QA từ data/processed/{split}.csv (sinh bởi notebook eda_reasoning_flat).
+
+    Cột list/dict (premises_nl, premises_fol, premises_used, reasoning) lưu dạng JSON string.
+    Trả về list dict đủ field: premises_nl, premises_fol, query, answer,
+    premises_used (0-based), explanation (0-based), reasoning{type,steps}.
+    """
+    path = data_dir / "processed" / f"{split}.csv"
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"Thiếu {path}. Chạy cell 'Export train/dev/test CSV' trong notebooks/eda_reasoning_flat.ipynb."
+        )
+    df = pd.read_csv(path, encoding="utf-8")
+
+    def _s(v):
+        return "" if (v is None or (isinstance(v, float) and pd.isna(v))) else str(v)
+
+    rows = []
+    for _, r in df.iterrows():
+        rows.append({
+            "record_id": int(r["record_id"]),
+            "q_idx": int(r["q_idx"]),
+            "premises_nl": _json_cell(r.get("premises_nl"), []),
+            "premises_fol": _json_cell(r.get("premises_fol"), []),
+            "query": _s(r.get("question") if "question" in df.columns else r.get("query")),
+            "answer": _s(r.get("answer")),
+            "premises_used": _json_cell(r.get("premises_used"), []),
+            "explanation": _s(r.get("explanation")),
+            "reasoning": _json_cell(r.get("reasoning"), None),
+        })
+    return rows
+
+
+def build_samples_from_split(rows: list[dict]) -> tuple[list[dict], int]:
+    """Flat reasoning rows → chat message samples. Bỏ qua row không có reasoning."""
+    samples = []
+    skipped = 0
+    for r in rows:
+        reasoning = r.get("reasoning")
+        if not reasoning:  # source thiếu premises_used → không có reasoning để train
+            skipped += 1
+            continue
         messages = build_messages_for_sample(
-            premises_nl=premises_nl,
-            premises_fol=premises_fol,
-            question=question,
-            answer=answer,
-            explanation=explanation,
+            # robust hyphen (BTC: premises-NL) vs underscore (premises_nl)
+            premises_nl=list(r.get("premises_nl") or r.get("premises-NL") or []),
+            premises_fol=list(r.get("premises_fol") or r.get("premises-FOL") or []),
+            question=str(r.get("query") or r.get("question") or ""),
+            answer=str(r["answer"]),
+            explanation=str(r.get("explanation", "")),
+            reasoning_steps=reasoning["steps"],
+            premises_used=r.get("premises_used", []),
         )
         samples.append({"messages": messages})
-    return samples
+    return samples, skipped
 
 
 def build_qa_dataset_dict(data_dir: Path) -> DatasetDict:
-    """Build train/dev/test DatasetDict from processed CSVs (normalized FOL)."""
+    """Build train/dev/test DatasetDict từ data/processed/{train,dev,test}.csv.
+
+    Nguồn DUY NHẤT = CSV reasoning đã export (đủ field input + target). Sinh bởi cell
+    "Export train/dev/test CSV" trong notebooks/eda_reasoning_flat.ipynb.
+    """
     splits = {}
     for split_name in ["train", "dev", "test"]:
-        df = load_split_csv(data_dir, split_name)
-        samples = build_samples_from_csv(df)
+        rows = load_qa_split(data_dir, split_name)
+        samples, skipped = build_samples_from_split(rows)
         splits[split_name] = Dataset.from_list(samples)
-        print(f"  [{split_name}] {len(df)} rows → {len(samples)} QA samples")
+        note = f" (skip {skipped} thiếu reasoning)" if skipped else ""
+        print(f"  [{split_name}] {len(rows)} rows → {len(samples)} QA samples{note}")
 
     return DatasetDict(splits)
 

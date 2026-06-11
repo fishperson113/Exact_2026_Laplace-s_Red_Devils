@@ -39,6 +39,8 @@ from .prepare_data import (
 class QAResult:
     answer: str
     explanation: str
+    premises_used: list[int]
+    reasoning_steps: list[str]
     raw_output: str
     latency_sec: float = 0.0
 
@@ -112,10 +114,9 @@ class QACOTInference:
         )
         t0 = time.perf_counter()
         with torch.no_grad():
-            try:
-                out = self.model.generate(**gen_kwargs, tokenizer=self.tokenizer, stop_strings=["}"])
-            except TypeError:
-                out = self.model.generate(**gen_kwargs)
+            # KHÔNG stop ở "}" nữa: reasoning steps đứng trước JSON, answer ở JSON cuối.
+            # Dừng sớm ở "}" sẽ cắt mất phần reasoning. Để model sinh hết steps + JSON.
+            out = self.model.generate(**gen_kwargs)
         latency = time.perf_counter() - t0
 
         generated = self.tokenizer.decode(
@@ -126,48 +127,90 @@ class QACOTInference:
         return QAResult(
             answer=parsed["answer"],
             explanation=parsed["explanation"],
+            premises_used=parsed["premises_used"],
+            reasoning_steps=parsed["reasoning_steps"],
             raw_output=generated,
             latency_sec=latency,
         )
 
-    @staticmethod
-    def _parse_output(text: str) -> dict[str, str]:
-        """Parse JSON {"answer": "...", "explanation": "..."} from model output."""
-        # 1. JSON object đầy đủ
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
-            try:
-                parsed = json.loads(match.group())
-                if "answer" in parsed:
-                    return {
-                        "answer": str(parsed["answer"]).strip(),
-                        "explanation": str(parsed.get("explanation", "")).strip(),
-                    }
-            except json.JSONDecodeError:
-                pass
+    _STEP_PREFIXES = ("Rule:", "Fact:", "Derive:", "Conclusion:")
 
-        # 2. JSON cụt/lỗi: moi "answer": "..." (và explanation nếu có)
+    @classmethod
+    def _extract_steps(cls, text: str) -> list[str]:
+        """Lấy các dòng reasoning (Rule:/Fact:/Derive:/Conclusion:) trước JSON cuối."""
+        steps = []
+        for line in text.split("\n"):
+            s = line.strip()
+            if s.startswith(cls._STEP_PREFIXES):
+                steps.append(s)
+        return steps
+
+    @classmethod
+    def _parse_output(cls, text: str) -> dict:
+        """Parse output dạng: <reasoning steps> + JSON cuối.
+
+        JSON = {"premises_used": [...], "explanation": "...", "answer": "..."} (answer cuối).
+        Trả về dict: answer, explanation, premises_used, reasoning_steps.
+        """
+        reasoning_steps = cls._extract_steps(text)
+
+        def _premises(parsed) -> list[int]:
+            pu = parsed.get("premises_used", [])
+            if isinstance(pu, list):
+                out = []
+                for v in pu:
+                    try:
+                        out.append(int(v))
+                    except (ValueError, TypeError):
+                        pass
+                return out
+            return []
+
+        # 1. JSON cuối cùng có "answer" (lấy match cuối, vì reasoning đứng trước)
+        matches = list(re.finditer(r"\{.*?\}", text, re.DOTALL))
+        for m in reversed(matches):
+            try:
+                parsed = json.loads(m.group())
+            except json.JSONDecodeError:
+                continue
+            if "answer" in parsed:
+                return {
+                    "answer": str(parsed["answer"]).strip(),
+                    "explanation": str(parsed.get("explanation", "")).strip(),
+                    "premises_used": _premises(parsed),
+                    "reasoning_steps": reasoning_steps,
+                }
+
+        # 2. JSON cụt/lỗi: moi từng trường bằng regex
         m = re.search(r'"answer"\s*:\s*"([^"]+)"', text)
         if m:
             answer = m.group(1).strip()
-            em = re.search(r'"explanation"\s*:\s*"(.*)', text, re.DOTALL)
-            explanation = em.group(1).strip().rstrip('"}').strip() if em else ""
-            return {"answer": answer, "explanation": explanation}
+            em = re.search(r'"explanation"\s*:\s*"(.*?)"\s*[,}]', text, re.DOTALL)
+            explanation = em.group(1).strip() if em else ""
+            pm = re.search(r'"premises_used"\s*:\s*\[([^\]]*)\]', text)
+            premises_used = [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else []
+            return {
+                "answer": answer, "explanation": explanation,
+                "premises_used": premises_used, "reasoning_steps": reasoning_steps,
+            }
 
-        # 3. Last-resort (KHÔNG dump text thô, KHÔNG đoán bừa chữ "A" trong văn xuôi):
-        #    a) label đi kèm cue "answer/đáp án/conclusion"
-        m2 = re.search(
-            r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
-            text, re.I,
-        )
+        # 3. Last-resort: lấy label từ Conclusion: hoặc cue, KHÔNG đoán bừa A/B/C/D
+        concl = next((s for s in reversed(reasoning_steps) if s.startswith("Conclusion:")), "")
+        m2 = re.search(r"\b(Yes|No|Unknown|[ABCD])\b\s*$", concl)
+        if not m2:
+            m2 = re.search(
+                r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
+                text, re.I,
+            )
         if m2:
-            return {"answer": m2.group(1), "explanation": ""}
-        #    b) Yes/No/Unknown đứng độc lập
+            return {"answer": m2.group(1), "explanation": "",
+                    "premises_used": [], "reasoning_steps": reasoning_steps}
         for label in ("Unknown", "Yes", "No"):
             if re.search(rf"\b{label}\b", text):
-                return {"answer": label, "explanation": ""}
-        #    c) Không rõ → Unknown (không gán bừa A/B/C/D)
-        return {"answer": "Unknown", "explanation": ""}
+                return {"answer": label, "explanation": "",
+                        "premises_used": [], "reasoning_steps": reasoning_steps}
+        return {"answer": "Unknown", "explanation": "",
+                "premises_used": [], "reasoning_steps": reasoning_steps}
 
 
 # ─── Evaluation ──────────────────────────────────────────────────────────────
