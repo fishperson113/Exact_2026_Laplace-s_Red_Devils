@@ -1,0 +1,87 @@
+[
+  {
+    "query_id": "T1_0001",
+    "answer": "He can teach undergraduate courses",
+    "unit": "",
+    "explanation": "Premise 3 states Dr. John has a PhD, and premise 2 says a PhD is higher than a Master's. Premise 1 says a degree higher than a Master's qualifies for teaching, and premise 0 says a Master's also qualifies. Thus, Dr. John can teach undergraduate courses (Option A).",
+    "premises_used": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "reasoning": {
+      "type": "fol",
+      "steps": [
+        "Rule: ∀x (M(x) → L(x))",
+        "Rule: ∀x (H(x) → L(x))",
+        "Rule: ∀x (D(x) → H(x))",
+        "Fact: Q(John)",
+        "Derive: Q(John) ∧ D(John) ⟹ D(John) → H(John) ⟹ H(John)",
+        "Derive: H(John) → L(John) ⟹ John can teach undergrad courses",
+        "Conclusion: He can teach undergraduate courses ≡ Option A"
+      ]
+    }
+  },
+  {
+    "query_id": "T1_0002",
+    "answer": "Yes",
+    "unit": "",
+    "explanation": "Premise 4 states that everyone is eligible for a promotion, and premise 3 says that eligibility leads to a bonus. Thus, all employees receive a bonus.",
+    "premises_used": [
+      3,
+      4
+    ],
+    "reasoning": {
+      "type": "fol",
+      "steps": [
+        "Fact: ∀x (E(x))",
+        "Rule: ∀x (E(x) → B(x))",
+        "Derive: ∀x (E(x)) ∧ ∀x (E(x) → B(x)) ⟹ ∀x B(x) by universal instantiation and modus ponens",
+        "Conclusion: ∀x B(x) entailed ⟹ Yes"
+      ]
+    }
+  },
+  {
+    "query_id": "T1_0003",
+    "answer": "2",
+    "unit": "",
+    "explanation": "Student A has 118 credits (premise 1), and the eligibility rule requires ≥ 120 credits (premise 0). The difference is 120 − 118 = 2 credits.",
+    "premises_used": [
+      0,
+      1
+    ],
+    "reasoning": {
+      "type": "fol",
+      "steps": [
+        "Fact: credits(A) = 118",
+        "Rule: ∀x (credits(x) ≥ 120 → eligible(x))",
+        "Derive: 118 < 120 ⟹ credits(A) ≥ 120 is false ⟹ eligible(A) is not guaranteed",
+        "Derive: required = 120 − 118 = 2",
+        "Conclusion: Student A needs 2 more credits"
+      ]
+    }
+  },
+  {
+    "query_id": "T1_0004",
+    "answer": "Minh can be assigned to Route X on Monday",
+    "unit": "",
+    "explanation": "Minh has a motorcycle license (premise 3) and is available on Monday (premise 4), so he can take Route X (premise 1). Lan is not available on Monday (premise 6), so neither can be assigned.",
+    "premises_used": [
+      3,
+      4,
+      1
+    ],
+    "reasoning": {
+      "type": "fol",
+      "steps": [
+        "Fact: MotorcycleLicense(Minh)",
+        "Fact: Available(Minh, Monday)",
+        "Rule: ∀c (MotorcycleLicense(c) → CanTakeRouteX(c))",
+        "Derive: MotorcycleLicense(Minh) ⟹ CanTakeRouteX(Minh) by modus ponens",
+        "Derive: Available(Minh, Monday) ∧ CanTakeRouteX(Minh) ⟹ Assigned(Minh, Route X) by rule 0",
+        "Conclusion: Minh can be assigned to Route X on Monday"
+      ]
+    }
+  }
+]
