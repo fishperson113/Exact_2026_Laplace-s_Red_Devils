@@ -76,6 +76,8 @@ class EnsembleResult:
     answer: str
     explanation: str
     premises_fol: list[str]
+    premises_used: list[int] = field(default_factory=list)
+    reasoning_steps: list[str] = field(default_factory=list)
     fol_latency_sec: float = 0.0
     qa_latency_sec: float = 0.0
     total_latency_sec: float = 0.0
@@ -280,37 +282,72 @@ class QAModel:
             res.append(self._parse_output(raw))
         return res
 
-    @staticmethod
-    def _parse_output(text: str) -> dict[str, str]:
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
+    _STEP_PREFIXES = ("Rule:", "Fact:", "Derive:", "Conclusion:")
+
+    @classmethod
+    def _parse_output(cls, text: str) -> dict:
+        """Parse output dạng <reasoning steps> + JSON cuối {premises_used, explanation, answer}.
+
+        ĐỒNG NHẤT với QA_model/inference.py + train.py: trả answer, explanation,
+        premises_used, reasoning_steps (robust với JSON cụt/lỗi).
+        """
+        reasoning_steps = [ln.strip() for ln in text.split("\n")
+                           if ln.strip().startswith(cls._STEP_PREFIXES)]
+
+        def _premises(parsed) -> list:
+            pu = parsed.get("premises_used", [])
+            out = []
+            if isinstance(pu, list):
+                for v in pu:
+                    try:
+                        out.append(int(v))
+                    except (ValueError, TypeError):
+                        pass
+            return out
+
+        # 1. JSON CUỐI cùng có "answer"
+        for m in reversed(list(re.finditer(r"\{.*?\}", text, re.DOTALL))):
             try:
-                parsed = json.loads(match.group())
-                if "answer" in parsed:
-                    return {
-                        "answer": str(parsed["answer"]).strip(),
-                        "explanation": str(parsed.get("explanation", "")).strip(),
-                    }
+                parsed = json.loads(m.group())
             except json.JSONDecodeError:
-                pass
-        # JSON cụt/lỗi: moi "answer": "..." (và explanation nếu có)
+                continue
+            if "answer" in parsed:
+                return {
+                    "answer": str(parsed["answer"]).strip(),
+                    "explanation": str(parsed.get("explanation", "")).strip(),
+                    "premises_used": _premises(parsed),
+                    "reasoning_steps": reasoning_steps,
+                }
+
+        # 2. JSON cụt/lỗi: moi từng trường (explanation NON-GREEDY → hết rác)
         m = re.search(r'"answer"\s*:\s*"([^"]+)"', text)
         if m:
-            ans = m.group(1).strip()
-            em = re.search(r'"explanation"\s*:\s*"(.*)', text, re.DOTALL)
-            explanation = em.group(1).strip().rstrip('"}').strip() if em else ""
-            return {"answer": ans, "explanation": explanation}
-        # Last-resort: word-boundary + cue, KHÔNG đoán bừa chữ "A" trong văn xuôi
-        m2 = re.search(
-            r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
-            text, re.I,
-        )
+            em = re.search(r'"explanation"\s*:\s*"(.*?)"\s*[,}]', text, re.DOTALL)
+            pm = re.search(r'"premises_used"\s*:\s*\[([^\]]*)\]', text)
+            return {
+                "answer": m.group(1).strip(),
+                "explanation": em.group(1).strip() if em else "",
+                "premises_used": [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else [],
+                "reasoning_steps": reasoning_steps,
+            }
+
+        # 3. Last-resort: Conclusion hoặc cue, KHÔNG đoán bừa A/B/C/D
+        concl = next((s for s in reversed(reasoning_steps) if s.startswith("Conclusion:")), "")
+        m2 = re.search(r"\b(Yes|No|Unknown|[ABCD])\b\s*$", concl)
+        if not m2:
+            m2 = re.search(
+                r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
+                text, re.I,
+            )
         if m2:
-            return {"answer": m2.group(1), "explanation": ""}
+            return {"answer": m2.group(1), "explanation": "",
+                    "premises_used": [], "reasoning_steps": reasoning_steps}
         for label in ("Unknown", "Yes", "No"):
             if re.search(rf"\b{label}\b", text):
-                return {"answer": label, "explanation": ""}
-        return {"answer": "Unknown", "explanation": ""}
+                return {"answer": label, "explanation": "",
+                        "premises_used": [], "reasoning_steps": reasoning_steps}
+        return {"answer": "Unknown", "explanation": "",
+                "premises_used": [], "reasoning_steps": reasoning_steps}
 
 
 # ─── Ensemble Pipeline ────────────────────────────────────────────────────────
@@ -514,6 +551,8 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
             },
             "prediction": {
                 "answer": pred,
+                "premises_used": qa_results[i].get("premises_used", []),
+                "reasoning_steps": qa_results[i].get("reasoning_steps", []),
                 "explanation": expl,
             },
             "latency": {
@@ -793,6 +832,8 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
             "premises_nl": premises_nl_list[i],
             "question": questions[i],
             "answer": qa_results[i]["answer"],
+            "premises_used": qa_results[i].get("premises_used", []),
+            "reasoning_steps": qa_results[i].get("reasoning_steps", []),
             "explanation": qa_results[i]["explanation"],
             "premises_fol_generated": fol_results[i]["premises_fol"],
             "fol_latency_sec": round(fol_lat, 3),
@@ -819,6 +860,8 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
                 "fol_prediction": r["premises_fol_generated"],
                 "prediction": {
                     "answer": r["answer"],
+                    "premises_used": r.get("premises_used", []),
+                    "reasoning_steps": r.get("reasoning_steps", []),
                     "explanation": r["explanation"],
                 },
             }

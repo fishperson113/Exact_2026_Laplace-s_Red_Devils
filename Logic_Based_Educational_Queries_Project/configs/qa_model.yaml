@@ -48,9 +48,9 @@ training:
 
 eval:
   # Số mẫu dev tối đa để tính accuracy mỗi epoch (null = cả dev, chậm)
-  eval_accuracy_max_samples: 50
+  eval_accuracy_max_samples: null
   # Số mẫu random in full JSON mỗi epoch (NL, FOL, question, gold, prediction)
-  eval_print_samples: 6
+  eval_print_samples: 50
   # Latency benchmark sau training
   inference_latency_benchmark_n: 50
   inference_latency_warmup: 2
