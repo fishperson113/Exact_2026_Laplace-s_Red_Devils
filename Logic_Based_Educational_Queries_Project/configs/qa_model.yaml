@@ -59,12 +59,12 @@ eval:
 inference:
   # After training, set this to the merged model path or Hub repo
   model_path: null  # Will use model.name as fallback
-  max_new_tokens: 768   # answer LAST → phải đủ rộng kẻo cắt mất answer (P99~600, max~793)
+  max_new_tokens: 1000   # answer LAST → phải đủ rộng kẻo cắt mất answer (P99~600, max~793)
   load_in_8bit: true
 
 hub:
   org: Laplaces-Red-Devils
-  repo_version: v04
+  repo_version: v03
   type: QA
   method: CoT
   push_to_hub: true

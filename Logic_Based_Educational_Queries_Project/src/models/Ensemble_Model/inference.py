@@ -41,6 +41,7 @@ from data.prompts import (
 from models.QA_model.prepare_data import (
     SYSTEM_PROMPT_QA_COT,
     USER_TEMPLATE_QA_COT,
+    format_options,
     format_premises_fol,
     format_premises_nl,
 )
@@ -217,11 +218,13 @@ class QAModel:
         print(f"[QA] Loaded on {self.device}")
 
     def generate(self, premises_nl: list[str], premises_fol: list[str], question: str,
+                 options: list[str] | None = None,
                  max_new_tokens: int = 200) -> dict[str, str]:
-        """NL + FOL + question → {"answer": "...", "explanation": "..."}."""
+        """NL + FOL + options + question → {answer, explanation, premises_used, reasoning_steps}."""
         user_content = USER_TEMPLATE_QA_COT.format(
             premises_nl_block=format_premises_nl(premises_nl),
             premises_fol_block=format_premises_fol(premises_fol),
+            options_block=format_options(options or []),
             question=question,
         )
         messages = [
@@ -259,10 +262,13 @@ class QAModel:
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         texts = []
-        for nl, fol, q in items:
+        for item in items:
+            nl, fol, q = item[0], item[1], item[2]
+            options = item[3] if len(item) > 3 else []   # (nl, fol, q, options) — options có thể rỗng
             user_content = USER_TEMPLATE_QA_COT.format(
                 premises_nl_block=format_premises_nl(nl),
                 premises_fol_block=format_premises_fol(fol),
+                options_block=format_options(options or []),
                 question=q,
             )
             messages = [
@@ -490,18 +496,19 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
     print(f"  Slow threshold: {slow_threshold}s")
     print(f"{'='*70}\n")
 
-    # Gom input
-    premises_nl_list, questions, golds, gold_expls, fol_golds = [], [], [], [], []
+    # Gom input — tên BTC: premises/query/options (fallback tên cũ premises_nl/question)
+    premises_nl_list, questions, options_list, golds, gold_expls, fol_golds = [], [], [], [], [], []
     for _, row in df.iterrows():
-        premises_nl_list.append(parse_list_field(row["premises_nl"]))
-        questions.append(str(row["question"]))
+        premises_nl_list.append(parse_list_field(row.get("premises", row.get("premises_nl"))))
+        questions.append(str(row.get("query", row.get("question", ""))))
+        options_list.append(parse_list_field(row.get("options", "[]")))
         golds.append(str(row["answer"]).strip())
         gold_expls.append(str(row.get("explanation", "")))
         fol_golds.append(parse_list_field(row.get("premises_fol", "[]")))
 
     # PHA 1: FOL (chỉ FOL trong VRAM) → PHA 2: QA (FOL đã unload, chỉ QA trong VRAM)
     fol_results = pipeline.run_fol_stage(premises_nl_list)
-    items = [(premises_nl_list[i], fol_results[i]["premises_fol"], questions[i]) for i in range(n)]
+    items = [(premises_nl_list[i], fol_results[i]["premises_fol"], questions[i], options_list[i]) for i in range(n)]
     qa_results = pipeline.answer_all(items)
 
     # Tổng hợp + log + accuracy (format giữ nguyên)
@@ -521,7 +528,8 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
         expl = qa_results[i]["explanation"]
         gold_answer = golds[i]
 
-        is_correct = pred.strip().upper() == gold_answer.upper()
+        _na = lambda s: re.sub(r"\s+", " ", str(s).strip().lower()).rstrip(" .;:!?")
+        is_correct = _na(pred) == _na(gold_answer)
         correct += int(is_correct)
 
         status = "✓" if is_correct else "✗"
@@ -799,14 +807,15 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
     print(f"  ENSEMBLE INFERENCE — {len(data)} samples")
     print(f"{'='*70}\n")
 
-    # Gom input
-    premises_nl_list = [item["premises_nl"] for item in data]
-    questions = [item["question"] for item in data]
+    # Gom input — BTC: query/premises/options (fallback tên cũ)
+    premises_nl_list = [item.get("premises", item.get("premises_nl")) for item in data]
+    questions = [item.get("query", item.get("question", "")) for item in data]
+    options_list = [item.get("options", []) for item in data]
     n = len(data)
 
     # 2 PHA — mỗi thời điểm chỉ 1 LLM trong VRAM (tuân thủ luật BTC)
     fol_results = pipeline.run_fol_stage(premises_nl_list)
-    items = [(premises_nl_list[i], fol_results[i]["premises_fol"], questions[i]) for i in range(n)]
+    items = [(premises_nl_list[i], fol_results[i]["premises_fol"], questions[i], options_list[i]) for i in range(n)]
     qa_results = pipeline.answer_all(items)
 
     results = []

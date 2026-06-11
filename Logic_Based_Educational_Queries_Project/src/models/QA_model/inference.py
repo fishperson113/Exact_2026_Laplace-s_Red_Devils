@@ -30,6 +30,7 @@ from .prepare_data import (
     SYSTEM_PROMPT_QA_COT,
     USER_TEMPLATE_QA_COT,
     build_qa_dataset_dict,
+    format_options,
     format_premises_fol,
     format_premises_nl,
 )
@@ -81,11 +82,13 @@ class QACOTInference:
 
         return cls(model_path=model_path, max_new_tokens=max_new_tokens, load_in_8bit=load_in_8bit)
 
-    def predict(self, premises_nl: list[str], premises_fol: list[str], question: str) -> QAResult:
-        """Generate answer + explanation from NL + FOL + question."""
+    def predict(self, premises_nl: list[str], premises_fol: list[str], question: str,
+                options: list[str] | None = None) -> QAResult:
+        """Generate answer + explanation from NL + FOL + options + question."""
         user_content = USER_TEMPLATE_QA_COT.format(
             premises_nl_block=format_premises_nl(premises_nl),
             premises_fol_block=format_premises_fol(premises_fol),
+            options_block=format_options(options or []),
             question=question,
         )
         messages = [
@@ -240,11 +243,12 @@ def evaluate_split(qa: QACOTInference, data_dir: Path, split: str = "test", max_
         gold_parsed = qa._parse_output(gold_msg)
         gold_answer = gold_parsed["answer"]
 
-        # Parse user content to extract NL, FOL, question
-        nl_lines, fol_lines, question = _parse_user_content(user_msg)
+        # Parse user content to extract NL, FOL, options, question
+        nl_lines, fol_lines, options, question = _parse_user_content(user_msg)
 
-        result = qa.predict(nl_lines, fol_lines, question)
-        is_correct = result.answer.strip().upper() == gold_answer.strip().upper()
+        result = qa.predict(nl_lines, fol_lines, question, options=options)
+        _na = lambda s: re.sub(r"\s+", " ", str(s).strip().lower()).rstrip(" .;:!?")
+        is_correct = _na(result.answer) == _na(gold_answer)
         correct += int(is_correct)
         total += 1
 
@@ -271,13 +275,11 @@ def evaluate_split(qa: QACOTInference, data_dir: Path, split: str = "test", max_
     return {"accuracy": accuracy, "correct": correct, "total": total, "results": results}
 
 
-def _parse_user_content(user_content: str) -> tuple[list[str], list[str], str]:
-    """Extract NL premises, FOL premises, question from user message."""
-    sections = re.split(r"\n(?=Premises \((?:NL|FOL)\):|Question:)", user_content)
+def _parse_user_content(user_content: str) -> tuple[list[str], list[str], list[str], str]:
+    """Extract NL premises, FOL premises, options, question from user message."""
+    sections = re.split(r"\n(?=Premises \((?:NL|FOL)\):|Options:|Question:)", user_content)
 
-    nl_lines = []
-    fol_lines = []
-    question = ""
+    nl_lines, fol_lines, options, question = [], [], [], ""
 
     for section in sections:
         section = section.strip()
@@ -293,10 +295,16 @@ def _parse_user_content(user_content: str) -> tuple[list[str], list[str], str]:
                 m = re.match(r"^\d+\.\s*(.+)$", line.strip())
                 if m:
                     fol_lines.append(m.group(1))
+        elif section.startswith("Options:"):
+            body = section[len("Options:"):].strip()
+            for line in body.split("\n"):
+                m = re.match(r"^[A-J]\.\s*(.+)$", line.strip())
+                if m:
+                    options.append(m.group(1))
         elif section.startswith("Question:"):
             question = section[len("Question:"):].strip()
 
-    return nl_lines, fol_lines, question
+    return nl_lines, fol_lines, options, question
 
 
 # ─── CLI ─────────────────────────────────────────────────────────────────────

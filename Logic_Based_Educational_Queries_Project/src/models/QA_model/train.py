@@ -146,10 +146,17 @@ def parse_qa_output(text: str) -> str:
     return "Unknown"
 
 
+def _norm_answer(s: str) -> str:
+    """Chuẩn hoá answer để so khớp (full-text MCQ / Yes-No-Uncertain / number-text).
+    lowercase + gộp khoảng trắng + bỏ dấu câu cuối → robust hơn exact-match."""
+    s = re.sub(r"\s+", " ", str(s).strip().lower())
+    return s.rstrip(" .;:!?")
+
+
 def _parse_user_content(user_content: str) -> dict[str, Any]:
-    """Extract NL, FOL, question từ user message → dict cho display."""
-    sections = re.split(r"\n(?=Premises \((?:NL|FOL)\):|Question:)", user_content)
-    nl_lines, fol_lines, question = [], [], ""
+    """Extract NL, FOL, options, question từ user message → dict cho display."""
+    sections = re.split(r"\n(?=Premises \((?:NL|FOL)\):|Options:|Question:)", user_content)
+    nl_lines, fol_lines, options, question = [], [], [], ""
     for section in sections:
         section = section.strip()
         if section.startswith("Premises (NL):"):
@@ -164,9 +171,15 @@ def _parse_user_content(user_content: str) -> dict[str, Any]:
                 m = re.match(r"^\d+\.\s*(.+)$", line.strip())
                 if m:
                     fol_lines.append(m.group(1))
+        elif section.startswith("Options:"):
+            body = section[len("Options:"):].strip()
+            for line in body.split("\n"):
+                m = re.match(r"^[A-J]\.\s*(.+)$", line.strip())
+                if m:
+                    options.append(m.group(1))
         elif section.startswith("Question:"):
             question = section[len("Question:"):].strip()
-    return {"premises_nl": nl_lines, "premises_fol": fol_lines, "question": question}
+    return {"premises_nl": nl_lines, "premises_fol": fol_lines, "options": options, "question": question}
 
 
 _STEP_PREFIXES = ("Rule:", "Fact:", "Derive:", "Conclusion:")
@@ -372,7 +385,7 @@ def compute_accuracy_on_split(
     for i in range(n_total):
         gold_parsed = all_gold[i]
         pred_parsed = _parse_full_output(all_generated[i])
-        is_correct = pred_parsed["answer"].strip().upper() == gold_parsed["answer"].strip().upper()
+        is_correct = _norm_answer(pred_parsed["answer"]) == _norm_answer(gold_parsed["answer"])
         correct += int(is_correct)
 
         all_results.append({

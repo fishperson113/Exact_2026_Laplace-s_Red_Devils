@@ -21,7 +21,12 @@ from datasets import Dataset, DatasetDict
 
 SYSTEM_PROMPT_QA_COT = """\
 ### Role
-You are a logic-based educational QA system. You are given natural-language premises, their First-Order Logic (FOL) translations, and a question. Premises are indexed from 0.
+You are a logic-based educational QA system. You are given natural-language premises (indexed from 0), their First-Order Logic (FOL) translations, the answer options, and a question.
+
+### How to read options (follow this convention ABSOLUTELY)
+- If options is non-empty, it is a choice question. Your answer must be exactly one of the listed options (copy the full option text verbatim — NOT the letter).
+- If options is empty ([]), the answer is free-form (a number or a short text). Return the value directly in answer.
+For a yes/no question the options are ["Yes", "No", "Uncertain"]; choose "Uncertain" only when the premises are genuinely insufficient.
 
 ### Output
 First, reason in ordered steps, working over the First-Order Logic (FOL) premises — reason on the FOL formulas, not the natural-language text. Each step starts with exactly one prefix:
@@ -31,8 +36,8 @@ First, reason in ordered steps, working over the First-Order Logic (FOL) premise
 - Conclusion:  the final result — exactly one, as the last step.
 Write every Rule:/Fact:/Derive: step in FOL notation (∀ ∃ → ¬ ∧ ∨ ↔ < > =). Every Rule:/Fact: must be taken from the given FOL premises only — never invent one. The "premises_used" list must contain exactly the 0-based indices of the FOL premises you cited in your Rule:/Fact: steps.
 Then, on the final line, output ONE JSON object with the "answer" field LAST:
-{"premises_used": [<0-based indices of premises used>], "explanation": "<concise justification>", "answer": "<label>"}
-answer: exactly one option letter for multiple-choice; Yes or No for yes/no; the exact value for numeric/short-answer; Unknown only when premises are genuinely insufficient.
+{"premises_used": [<0-based indices of premises used>], "explanation": "<concise justification>", "answer": "<answer>"}
+The "answer" MUST follow the "How to read options" convention above.
 """
 
 USER_TEMPLATE_QA_COT = """\
@@ -41,6 +46,9 @@ Premises (NL):
 
 Premises (FOL):
 {premises_fol_block}
+
+Options:
+{options_block}
 
 Question:
 {question}
@@ -89,6 +97,17 @@ def format_premises_fol(premises: list[str]) -> str:
     return "\n".join(f"{i}. {p}" for i, p in enumerate(premises))
 
 
+_OPT_LETTERS = "ABCDEFGHIJ"
+
+
+def format_options(options: list[str]) -> str:
+    """Hiển thị options có letter (A./B./...) cho model dễ tham chiếu trong reasoning.
+    options RỖNG → ghi rõ free-form (đúng quy ước BTC: answer là number/text)."""
+    if not options:
+        return "(empty — choice set is empty; the answer is free-form: a number or a short text)"
+    return "\n".join(f"{_OPT_LETTERS[i]}. {o}" for i, o in enumerate(options))
+
+
 def escape_json_string(s: str) -> str:
     """Escape quotes and backslashes for embedding in JSON string."""
     return s.replace("\\", "\\\\").replace('"', '\\"')
@@ -102,15 +121,18 @@ def build_messages_for_sample(
     explanation: str,
     reasoning_steps: list[str],
     premises_used: list[int],
+    options: list[str] | None = None,
 ) -> list[dict[str, str]]:
     """Build chat messages [system, user, assistant] for one QA sample.
 
-    Assistant target = reasoning steps (Rule:/Fact:/Derive:/Conclusion:) rồi JSON
-    cuối với "answer" đứng cuối → model reason trước, chốt answer sau.
+    Input cho model: premises (NL) + FOL + options + question (đúng 3 trường BTC
+    query/premises/options, FOL do Model 1 sinh). Assistant target = reasoning steps
+    (Rule:/Fact:/Derive:/Conclusion:) rồi JSON cuối với "answer" ĐỨNG CUỐI.
     """
     user_content = USER_TEMPLATE_QA_COT.format(
         premises_nl_block=format_premises_nl(premises_nl),
         premises_fol_block=format_premises_fol(premises_fol),
+        options_block=format_options(options or []),
         question=question,
     )
     steps_block = "\n".join(reasoning_steps)
@@ -160,14 +182,17 @@ def load_qa_split(data_dir: Path, split: str) -> list[dict]:
     def _s(v):
         return "" if (v is None or (isinstance(v, float) and pd.isna(v))) else str(v)
 
+    cols = set(df.columns)
     rows = []
     for _, r in df.iterrows():
         rows.append({
             "record_id": int(r["record_id"]),
             "q_idx": int(r["q_idx"]),
-            "premises_nl": _json_cell(r.get("premises_nl"), []),
+            # tên BTC: premises / query / options (fallback tên cũ premises_nl / question)
+            "premises_nl": _json_cell(r.get("premises") if "premises" in cols else r.get("premises_nl"), []),
             "premises_fol": _json_cell(r.get("premises_fol"), []),
-            "query": _s(r.get("question") if "question" in df.columns else r.get("query")),
+            "query": _s(r.get("query") if "query" in cols else r.get("question")),
+            "options": _json_cell(r.get("options"), []),
             "answer": _s(r.get("answer")),
             "premises_used": _json_cell(r.get("premises_used"), []),
             "explanation": _s(r.get("explanation")),
@@ -186,14 +211,15 @@ def build_samples_from_split(rows: list[dict]) -> tuple[list[dict], int]:
             skipped += 1
             continue
         messages = build_messages_for_sample(
-            # robust hyphen (BTC: premises-NL) vs underscore (premises_nl)
-            premises_nl=list(r.get("premises_nl") or r.get("premises-NL") or []),
+            # robust: tên BTC (premises/query) hoặc tên cũ (premises_nl/question)
+            premises_nl=list(r.get("premises_nl") or r.get("premises") or r.get("premises-NL") or []),
             premises_fol=list(r.get("premises_fol") or r.get("premises-FOL") or []),
             question=str(r.get("query") or r.get("question") or ""),
             answer=str(r["answer"]),
             explanation=str(r.get("explanation", "")),
             reasoning_steps=reasoning["steps"],
             premises_used=r.get("premises_used", []),
+            options=list(r.get("options") or []),
         )
         samples.append({"messages": messages})
     return samples, skipped
