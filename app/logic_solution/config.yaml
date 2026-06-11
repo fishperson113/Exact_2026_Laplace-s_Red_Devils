@@ -7,7 +7,10 @@ fol_model:
 
 qa_model:
   hub_repo_id: Laplaces-Red-Devils/v02-QA-CoT
-  max_new_tokens: 256       # khớp gen_max_new_tokens lúc train QA (no-think)
+  # QA v3: reasoning steps + JSON cuối, answer ĐỨNG CUỐI → cắt sớm = MẤT answer.
+  # Phân phối assistant target: P95~480, P99~600, max~793 token → 1000 an toàn
+  # (khớp gen_max_new_tokens trong configs/qa_model.yaml lúc train).
+  max_new_tokens: 1000
 
   # ── Native thinking (Chế độ B) ──────────────────────────────────────────────
   # enable_thinking=true → stage 2 sinh <think>…</think> CoT rồi mới ra JSON.

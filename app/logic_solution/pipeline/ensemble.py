@@ -4,11 +4,12 @@ pipeline/ensemble.py
 EnsemblePipeline: gộp FOLModel + QAModel thành 1 pipeline hoàn chỉnh.
 
 Flow:
-  premises_nl + question
-        ↓  Stage 1 (FOLModel)
-    fol_list
-        ↓  Stage 2 (QAModel)
-  {"answer", "explanation", "fol"}   ← chuẩn output BTC
+  premises + options + query
+        ↓  Stage 1 (FOLModel):  premises (NL) → fol_list
+        ↓  Stage 2 (QAModel):   NL + FOL + options + query → steps + JSON
+  Unified Output Schema (BTC §4.1):
+  {"query_id", "answer", "unit", "explanation", "premises_used",
+   "reasoning": {"type": "fol", "steps": [...]}}
 """
 from __future__ import annotations
 
@@ -21,13 +22,12 @@ from pipeline.qa_model  import QAModel
 
 @dataclass
 class PipelineOutput:
-    """Kết quả đầu ra theo đúng thứ tự field BTC yêu cầu."""
-    answer:      str
-    explanation: str
-    fol:         str          # FOL premises join bằng "\n"
-
-    # reasoning object (BTC §4.4): {"type": "cot"|"fol", "steps": [...]}
-    reasoning:   dict = field(default_factory=lambda: {"type": "fol", "steps": []})
+    """Kết quả 1 query — đủ nguyên liệu cho Unified Output Schema BTC."""
+    answer:        str
+    explanation:   str
+    premises_used: list[int] = field(default_factory=list)
+    reasoning:     dict = field(default_factory=lambda: {"type": "fol", "steps": []})
+    unit:          str = ""    # trường của Type 2 (physics) — logic luôn để rỗng
 
     # Metadata (không nằm trong output BTC)
     fol_latency_sec:   float = 0.0
@@ -36,17 +36,9 @@ class PipelineOutput:
     fol_raw:           str   = ""
     fol_list:          list[str] = field(default_factory=list)
 
-    def to_submission(self) -> dict:
-        """Trả về dict đúng format nộp BTC: answer → explanation → fol."""
-        return {
-            "answer":      self.answer,
-            "explanation": self.explanation,
-            "fol":         self.fol,
-        }
-
 
 class EnsemblePipeline:
-    """FOLModel + QAModel — nhận (premises_nl, question) → PipelineOutput."""
+    """FOLModel + QAModel — nhận (premises_nl, question, options) → PipelineOutput."""
 
     def __init__(self, cfg: dict):
         fol_cfg = cfg["fol_model"]
@@ -65,19 +57,26 @@ class EnsemblePipeline:
             top_p           = qa_cfg.get("top_p", 0.95),
             top_k           = qa_cfg.get("top_k", 20),
         )
-        self.fol_max_tokens  = fol_cfg.get("max_new_tokens", 400)
-        # Think mode cần nhiều token hơn (think + JSON answer).
+        self.fol_max_tokens  = fol_cfg.get("max_new_tokens", 768)
+        # QA v3: answer ĐỨNG CUỐI sau reasoning steps → budget phải đủ rộng
+        # (phân phối target: P95~480, P99~600, max~793) kẻo cắt mất answer.
         self.qa_max_tokens   = (
             qa_cfg.get("thinking_max_new_tokens", 1024) if qa_thinking
-            else qa_cfg.get("max_new_tokens", 200)
+            else qa_cfg.get("max_new_tokens", 1000)
         )
 
-    def run(self, premises_nl: list[str], question: str) -> PipelineOutput:
+    def run(
+        self,
+        premises_nl: list[str],
+        question:    str,
+        options:     list[str] | None = None,
+    ) -> PipelineOutput:
         """
         Full 2-stage inference.
 
         Stage 1 — FOLModel:  premises_nl → fol_list
-        Stage 2 — QAModel:   premises_nl + fol_list + question → answer + explanation
+        Stage 2 — QAModel:   premises_nl + fol_list + options + question
+                             → answer + explanation + premises_used + reasoning
         """
         t_start = time.perf_counter()
 
@@ -86,21 +85,21 @@ class EnsemblePipeline:
         fol_list, fol_raw = self.fol_model.generate(premises_nl, self.fol_max_tokens)
         fol_latency = time.perf_counter() - t0
 
-        # ── Stage 2: NL + FOL + Q → answer + explanation ──────────────────────
+        # ── Stage 2: NL + FOL + options + Q → steps + JSON ────────────────────
         t0 = time.perf_counter()
-        qa_out = self.qa_model.generate(premises_nl, fol_list, question, self.qa_max_tokens)
+        qa_out = self.qa_model.generate(
+            premises_nl, fol_list, question,
+            options=options, max_new_tokens=self.qa_max_tokens,
+        )
         qa_latency = time.perf_counter() - t0
 
         total = time.perf_counter() - t_start
 
-        # ── Assemble output (thứ tự: answer → explanation → fol) ──────────────
-        fol_str = "\n".join(fol_list)   # list → string cho field "fol"
-
         return PipelineOutput(
-            answer      = qa_out["answer"],
-            explanation = qa_out["explanation"],
-            fol         = fol_str,
-            reasoning   = qa_out.get("reasoning", {"type": "fol", "steps": []}),
+            answer        = qa_out["answer"],
+            explanation   = qa_out["explanation"],
+            premises_used = qa_out["premises_used"],
+            reasoning     = qa_out["reasoning"],
             fol_latency_sec   = round(fol_latency, 3),
             qa_latency_sec    = round(qa_latency,  3),
             total_latency_sec = round(total,        3),

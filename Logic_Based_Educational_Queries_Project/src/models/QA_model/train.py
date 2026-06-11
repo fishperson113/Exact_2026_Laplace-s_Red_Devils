@@ -333,6 +333,11 @@ def compute_accuracy_on_split(
     Returns: {"accuracy": float, "correct": int, "total": int, "avg_latency_sec": float, "samples": list}
     """
     model.eval()
+    # gradient_checkpointing set use_cache=False → generate recompute attention mỗi
+    # token (chậm gấp nhiều lần). Bật cache khi generate, restore sau khi eval xong
+    # để không ảnh hưởng training epoch kế tiếp.
+    _prev_use_cache = getattr(model.config, "use_cache", True)
+    model.config.use_cache = True
     if max_samples:
         dataset = dataset.select(range(min(max_samples, len(dataset))))
 
@@ -432,6 +437,7 @@ def compute_accuracy_on_split(
         "avg_latency_sec": avg_latency,
         "total_time_sec": round(total_time, 2),
         "samples": all_results,
+        "detail_samples": detail_samples,
     }
 
     # In full detail JSON cho các mẫu random
@@ -447,9 +453,11 @@ def compute_accuracy_on_split(
 
     # Ghi log file
     if log_file:
-        log_entry = {**result, "detail_samples": detail_samples}
-        log_file.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
+        log_file.write(json.dumps(result, ensure_ascii=False) + "\n")
         log_file.flush()
+
+    # Restore use_cache như trước khi eval (training với gradient checkpointing cần False)
+    model.config.use_cache = _prev_use_cache
 
     return result
 
@@ -570,24 +578,45 @@ def benchmark_latency(model, tokenizer, dataset, cfg: dict):
 # ─── Full Evaluation (train + dev + test) ────────────────────────────────────
 
 def evaluate_all_splits(model, tokenizer, ds_dict: DatasetDict, cfg: dict, output_dir: Path):
-    """Tính accuracy trên cả 3 splits, ghi kết quả JSON."""
+    """Tính accuracy các splits, ghi kết quả JSON (kèm per-sample predictions cho dev/test).
+
+    Eval là generation-based (~500 token/mẫu) nên RẤT đắt — thiết kế để không chờ vô ích:
+      - Thứ tự test → dev → train: con số cần nhất (test) có TRƯỚC TIÊN.
+      - train chỉ sample `eval_train_sample` mẫu (default 50): đủ tín hiệu overfit-gap
+        (so với dev), không đốt 2+ giờ generate lại 620 mẫu đã học thuộc.
+      - dev/test lưu đầy đủ samples + detail_samples vào eval_results.json để soi lỗi.
+    """
     max_new_tokens = cfg["model"].get("gen_max_new_tokens", 512)
-    print_n = cfg.get("eval", {}).get("eval_print_samples", 5)
+    eval_cfg = cfg.get("eval", {})
+    print_n = eval_cfg.get("eval_print_samples", 5)
+    train_sample_n = eval_cfg.get("eval_train_sample", 50)
+    eval_batch_size = cfg.get("training", {}).get("per_device_eval_batch_size", 8)
+
+    # gradient_checkpointing lúc train tắt use_cache → generate không cache thì
+    # chậm thảm họa (recompute attention mỗi token). Bật lại trước khi eval.
+    model.config.use_cache = True
+
+    # (split, max_samples) — test trước để có con số quan trọng nhất sớm nhất
+    plan = [("test", None), ("dev", None), ("train", train_sample_n)]
 
     results = {}
-    for split_name in ["train", "dev", "test"]:
+    eval_path = output_dir / "eval_results.json"
+    for split_name, max_samples in plan:
         if split_name not in ds_dict:
             continue
+        n_show = min(max_samples or len(ds_dict[split_name]), len(ds_dict[split_name]))
         print(f"\n{'='*60}")
-        print(f"  Final Accuracy — [{split_name}] ({len(ds_dict[split_name])} samples)")
+        print(f"  Final Accuracy — [{split_name}] ({n_show}/{len(ds_dict[split_name])} samples, batch={eval_batch_size})")
         print(f"{'='*60}")
 
         result = compute_accuracy_on_split(
             model=model,
             tokenizer=tokenizer,
             dataset=ds_dict[split_name],
+            max_samples=max_samples,
             max_new_tokens=max_new_tokens,
             print_n=print_n if split_name != "train" else 3,
+            eval_batch_size=eval_batch_size,
         )
         results[split_name] = {
             "accuracy": result["accuracy"],
@@ -595,20 +624,24 @@ def evaluate_all_splits(model, tokenizer, ds_dict: DatasetDict, cfg: dict, outpu
             "total": result["total"],
             "avg_latency_sec": result["avg_latency_sec"],
         }
+        # dev/test: giữ per-sample predictions + detail để phân tích lỗi offline
+        if split_name in ("dev", "test"):
+            results[split_name]["samples"] = result["samples"]
+            results[split_name]["detail_samples"] = result["detail_samples"]
         print(f"  → {split_name}: {result['correct']}/{result['total']} = {result['accuracy']:.1%}")
+
+        # Ghi ngay sau mỗi split — lỡ bị ngắt giữa chừng vẫn còn kết quả test
+        with open(eval_path, "w", encoding="utf-8") as f:
+            json.dump(results, f, ensure_ascii=False, indent=2)
 
     # Summary
     print(f"\n{'='*60}")
     print(f"  FINAL ACCURACY SUMMARY")
     print(f"{'='*60}")
     for split_name, r in results.items():
-        print(f"  {split_name:5s}: {r['accuracy']:.1%} ({r['correct']}/{r['total']}), avg {r['avg_latency_sec']:.2f}s/sample")
+        note = f" (sampled {train_sample_n})" if split_name == "train" else ""
+        print(f"  {split_name:5s}: {r['accuracy']:.1%} ({r['correct']}/{r['total']}){note}, avg {r['avg_latency_sec']:.2f}s/sample")
     print(f"{'='*60}\n")
-
-    # Save
-    eval_path = output_dir / "eval_results.json"
-    with open(eval_path, "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
     print(f"[Eval] Results saved to: {eval_path}")
 
     return results

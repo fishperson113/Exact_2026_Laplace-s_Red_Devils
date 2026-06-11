@@ -1,23 +1,32 @@
 """
 pipeline/qa_model.py
 --------------------
-Stage 2: Load QA model (base + LoRA adapter) từ HF Hub,
-nhận NL + FOL + question → sinh {"answer": "...", "explanation": "..."}.
+Stage 2: Load QA model (base + LoRA adapter) từ HF Hub.
+Nhận NL + FOL + options + question → sinh:
+  <reasoning steps Rule:/Fact:/Derive:/Conclusion:>
+  {"premises_used": [...], "explanation": "...", "answer": "..."}   (answer ĐỨNG CUỐI)
+
+ĐỒNG BỘ 1:1 với luồng train QA v3 (src/models/QA_model/prepare_data.py + train.py):
+prompt có Options block, premises 0-indexed, MCQ trả VERBATIM option text.
 """
 from __future__ import annotations
-
-import json
-import re
 
 import torch
 from peft import PeftConfig, PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-from prompts import SYSTEM_PROMPT_QA, USER_TEMPLATE_QA, format_nl_block, format_fol_block
+from prompts import (
+    SYSTEM_PROMPT_QA,
+    USER_TEMPLATE_QA,
+    format_premises_nl,
+    format_premises_fol,
+    format_options,
+)
+from parsing import parse_qa_output
 
 
 class QAModel:
-    """Load QA LoRA adapter từ HF Hub và sinh answer + explanation."""
+    """Load QA LoRA adapter từ HF Hub và sinh reasoning steps + answer."""
 
     def __init__(
         self,
@@ -29,8 +38,8 @@ class QAModel:
         top_k: int = 20,
     ):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        # Chế độ B — native thinking: stage 2 sinh <think>…</think> CoT trước JSON.
-        # Qwen3 think mode KHÔNG được greedy (lặp vô hạn) → bắt buộc sampling.
+        # QA v3 được train no-think → mặc định enable_thinking=False (greedy).
+        # Qwen3 think mode KHÔNG được greedy (lặp vô hạn) → nếu bật phải sampling.
         self.enable_thinking = enable_thinking
         self.temperature = temperature
         self.top_p = top_p
@@ -64,19 +73,21 @@ class QAModel:
         premises_nl:  list[str],
         premises_fol: list[str],
         question:     str,
-        max_new_tokens: int = 200,
+        options:      list[str] | None = None,
+        max_new_tokens: int = 1000,
     ) -> dict:
         """
-        Input : premises_nl, premises_fol, question
-        Output: {"answer", "explanation", "reasoning": {"type", "steps"}, "thinking"}
+        Input : premises_nl, premises_fol, question, options
+        Output: {"answer", "explanation", "premises_used",
+                 "reasoning": {"type": "fol", "steps": [...]}}
 
-        Khi enable_thinking=True (Chế độ B): model sinh <think>…</think> CoT trước,
-        nội dung think trở thành reasoning.steps (type="cot"). JSON answer được
-        parse SAU khi đã strip think → tránh dấu ngoặc trong think làm vỡ parser.
+        reasoning.steps = NGUYÊN VĂN các dòng Rule:/Fact:/Derive:/Conclusion: model
+        sinh ra (không cắt câu lại). reasoning.type LUÔN là "fol" (schema BTC).
         """
         user_content = USER_TEMPLATE_QA.format(
-            premises_nl_block  = format_nl_block(premises_nl),
-            premises_fol_block = format_fol_block(premises_fol),
+            premises_nl_block  = format_premises_nl(premises_nl),
+            premises_fol_block = format_premises_fol(premises_fol),
+            options_block      = format_options(options or []),
             question           = question,
         )
         messages = [
@@ -96,7 +107,7 @@ class QAModel:
             text, return_tensors="pt", truncation=True, max_length=4096
         ).to(self.model.device)
 
-        # Sampling theo chế độ: think → sampling (Qwen3), no-think → greedy.
+        # Sampling theo chế độ: think → sampling (Qwen3), no-think → greedy (khớp eval train).
         gen_kwargs: dict = {"max_new_tokens": max_new_tokens}
         if self.enable_thinking:
             gen_kwargs.update(
@@ -114,20 +125,16 @@ class QAModel:
             out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
         ).strip()
 
-        # Tách <think>…</think> trước khi parse JSON.
-        think_text, answer_text = self._split_thinking(raw)
-        parsed = self._parse_output(answer_text)
-
-        # reasoning.steps: ưu tiên CoT trong <think>; fallback về explanation.
-        steps = self._steps_from_text(think_text)
-        reasoning_type = "cot" if steps else "fol"
-        if not steps:
-            steps = self._steps_from_text(parsed["explanation"])
+        # Tách <think>…</think> (nếu có) trước khi parse — tránh ngoặc trong think vỡ parser.
+        _think, answer_text = self._split_thinking(raw)
+        parsed = parse_qa_output(answer_text)
 
         return {
-            "answer":      parsed["answer"],
-            "explanation": parsed["explanation"],
-            "reasoning":   {"type": reasoning_type, "steps": steps},
+            "answer":        parsed["answer"],
+            "explanation":   parsed["explanation"],
+            "premises_used": parsed["premises_used"],
+            # type LUÔN "fol" theo schema BTC; steps nguyên bản từ model.
+            "reasoning":     {"type": "fol", "steps": parsed["reasoning_steps"]},
         }
 
     # ── private ────────────────────────────────────────────────────────────────
@@ -138,7 +145,7 @@ class QAModel:
 
         - Có '</think>'         → think = trước nó, answer = sau nó.
         - Bắt đầu '<think>' mà KHÔNG đóng (think bị cắt vì hết token) → toàn bộ
-          là think, answer rỗng (parser sẽ fallback Unknown — đúng ý: think tràn budget).
+          là think, answer rỗng (parser sẽ fallback — đúng ý: think tràn budget).
         - Không có think         → answer = toàn bộ.
         """
         if "</think>" in raw:
@@ -147,46 +154,3 @@ class QAModel:
         if raw.lstrip().startswith("<think>"):
             return raw.replace("<think>", "").strip(), ""
         return "", raw.strip()
-
-    @staticmethod
-    def _steps_from_text(text: str, max_steps: int = 12) -> list[str]:
-        """Tách văn bản reasoning thành list bước (theo dòng / câu)."""
-        if not text:
-            return []
-        parts = re.split(r"\n+|(?<=[.。!?])\s+", text)
-        steps = [p.strip(" \t-•*>").strip() for p in parts]
-        steps = [s for s in steps if len(s) > 1]
-        return steps[:max_steps]
-
-    @staticmethod
-    def _parse_output(text: str) -> dict[str, str]:
-        """Parse JSON {"answer": ..., "explanation": ...} với fallback."""
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
-            try:
-                parsed = json.loads(match.group())
-                if "answer" in parsed:
-                    return {
-                        "answer":      str(parsed["answer"]).strip(),
-                        "explanation": str(parsed.get("explanation", "")).strip(),
-                    }
-            except json.JSONDecodeError:
-                pass
-        # JSON cụt/lỗi: moi "answer": "..." (và explanation nếu có)
-        m = re.search(r'"answer"\s*:\s*"([^"]+)"', text)
-        if m:
-            ans = m.group(1).strip()
-            em = re.search(r'"explanation"\s*:\s*"(.*)', text, re.DOTALL)
-            explanation = em.group(1).strip().rstrip('"}').strip() if em else ""
-            return {"answer": ans, "explanation": explanation}
-        # Last-resort: word-boundary + cue, KHÔNG đoán bừa chữ "A" trong văn xuôi
-        m2 = re.search(
-            r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
-            text, re.I,
-        )
-        if m2:
-            return {"answer": m2.group(1), "explanation": ""}
-        for label in ("Unknown", "Yes", "No"):
-            if re.search(rf"\b{label}\b", text):
-                return {"answer": label, "explanation": ""}
-        return {"answer": "Unknown", "explanation": ""}

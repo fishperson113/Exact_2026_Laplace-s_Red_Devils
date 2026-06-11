@@ -11,11 +11,14 @@ Usage:
     # Dùng config khác
     python run.py --input data/sample_input.json --config config.yaml
 
-Input format (Type 1 — BTC):
-    [{"premises-NL": ["...", "..."], "question": "..."}]
+Input format (BTC — đủ 5 trường):
+    [{"query_id": "T1_0001", "type": "type1", "query": "...",
+      "premises": ["...", "..."], "options": ["...", ...]}]
 
-Output format (BTC):
-    [{"answer": "A", "explanation": "...", "fol": "..."}]
+Output format (BTC Unified Output Schema §4.1 — LUÔN là JSON list, đủ 6 trường):
+    [{"query_id": "T1_0001", "answer": "No", "unit": "",
+      "explanation": "...", "premises_used": [0, 1],
+      "reasoning": {"type": "fol", "steps": ["Rule: ...", "Fact: ...", "Conclusion: ..."]}}]
 """
 from __future__ import annotations
 
@@ -53,7 +56,7 @@ def main():
     )
     parser.add_argument(
         "--input",  type=str, required=True,
-        help="Path to input JSON file (list of {premises-NL, question})"
+        help="Path to input JSON file (list of {query_id, type, query, premises, options})"
     )
     parser.add_argument(
         "--output", type=str, default=None,
@@ -71,7 +74,7 @@ def main():
 
     slow_threshold = cfg.get("inference", {}).get("slow_threshold_sec", 60)
 
-    # ── Load input ─────────────────────────────────────────────────────────────
+    # ── Load input (format BTC, 5 trường) ──────────────────────────────────────
     samples = load_input(args.input)
     print(f"\n{'='*60}")
     print(f"  LOGIC SOLUTION — {len(samples)} samples")
@@ -86,38 +89,45 @@ def main():
     results = []
 
     for i, sample in enumerate(samples):
-        premises_nl = sample["premises_nl"]
-        question    = sample["question"]
+        query_id = sample["query_id"]
+        premises = sample["premises"]
+        query    = sample["query"]
+        options  = sample["options"]
 
-        print(f"[{i+1:3d}/{len(samples)}] Running...", flush=True)
+        print(f"[{i+1:3d}/{len(samples)}] {query_id} Running...", flush=True)
 
-        out = pipeline.run(premises_nl, question)
+        out = pipeline.run(premises, query, options=options)
 
-        # Đảm bảo đúng format BTC: answer → explanation → fol
+        # Unified Output Schema BTC: query_id → answer → unit → explanation
+        #                            → premises_used → reasoning{type, steps}
         submission = format_submission(
-            answer      = out.answer,
-            explanation = out.explanation,
-            fol         = out.fol,
+            query_id        = query_id,
+            answer          = out.answer,
+            explanation     = out.explanation,
+            premises_used   = out.premises_used,
+            reasoning_steps = out.reasoning.get("steps", []),
+            options         = options,
+            unit            = out.unit,
         )
         results.append(submission)
 
         # Log tiến độ
         warn = " !! SLOW" if out.total_latency_sec > slow_threshold else ""
         print(
-            f"         answer={submission['answer']:8s} "
+            f"         answer={submission['answer'][:40]:40s} "
             f"| FOL:{out.fol_latency_sec:.1f}s  "
             f"QA:{out.qa_latency_sec:.1f}s  "
             f"Total:{out.total_latency_sec:.1f}s{warn}",
             flush=True,
         )
-        # Observability: hiện CoT model vừa sinh (reasoning.steps + raw think nếu có)
-        steps = out.reasoning.get("steps", [])
+        # Observability: hiện reasoning steps model vừa sinh (nguyên văn)
+        steps = submission["reasoning"]["steps"]
         if steps:
-            print(f"         reasoning[{out.reasoning.get('type')}] {len(steps)} steps:", flush=True)
+            print(f"         reasoning[fol] {len(steps)} steps:", flush=True)
             for j, step in enumerate(steps, 1):
                 print(f"           {j}. {step}", flush=True)
 
-    # ── Save output ────────────────────────────────────────────────────────────
+    # ── Save output (LUÔN là JSON list — kể cả 1 query) ────────────────────────
     output_path = args.output or str(ROOT / "outputs" / "results.json")
     save_output(results, output_path)
 
