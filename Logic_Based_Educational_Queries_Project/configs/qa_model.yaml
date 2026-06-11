@@ -16,6 +16,9 @@ lora:
   target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
 
 training:
+  # Số mẫu TRAIN dùng để chạy thử nhanh (chỉ cắt split train; dev/test giữ nguyên).
+  # null = train full sample. Ví dụ 50 → chỉ train 50 mẫu đầu.
+  train_sample: null
   num_train_epochs: 20
   # OOM fix: logits tensor = [batch, seq_len, vocab~152k] là chỗ ngốn VRAM nhất.
   # Hạ batch → giữ effective batch = 1×8 = 8 (bằng 4×2 cũ) qua grad accumulation.

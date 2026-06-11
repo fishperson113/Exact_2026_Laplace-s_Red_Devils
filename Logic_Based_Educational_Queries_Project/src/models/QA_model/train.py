@@ -581,6 +581,14 @@ def train(cfg: dict, debug_max_samples: int | None = None):
             ds_dict[split] = ds_dict[split].select(range(n))
         print(f"[Debug] Limited to {debug_max_samples} samples per split")
 
+    # train_sample: giới hạn SỐ MẪU TRAIN (chỉ split train) để chạy thử nhanh.
+    # null/0 = train full. dev/test luôn giữ nguyên để đánh giá không đổi.
+    train_sample = train_cfg.get("train_sample")
+    if train_sample:
+        n = min(int(train_sample), len(ds_dict["train"]))
+        ds_dict["train"] = ds_dict["train"].select(range(n))
+        print(f"[train_sample] Giới hạn train → {n} mẫu (dev/test giữ nguyên)")
+
     print(f"[Data] Train: {len(ds_dict['train'])}, Dev: {len(ds_dict['dev'])}, Test: {len(ds_dict['test'])}")
 
     # 2. Model
