@@ -6,21 +6,25 @@ fol_model:
   max_new_tokens: 768       # đủ cho JSON premises_fol nhiều mệnh đề (no-think)
 
 qa_model:
-  hub_repo_id: Laplaces-Red-Devils/v02-QA-CoT
+  hub_repo_id: Laplaces-Red-Devils/v04-QA-CoT
   # QA v3: reasoning steps + JSON cuối, answer ĐỨNG CUỐI → cắt sớm = MẤT answer.
   # Phân phối assistant target: P95~480, P99~600, max~793 token → 1000 an toàn
   # (khớp gen_max_new_tokens trong configs/qa_model.yaml lúc train).
   max_new_tokens: 1000
 
-  # ── Native thinking (Chế độ B) ──────────────────────────────────────────────
-  # enable_thinking=true → stage 2 sinh <think>…</think> CoT rồi mới ra JSON.
-  # LƯU Ý: muốn think THẬT phải dùng adapter đã SFT có think; bật trên adapter
-  # no-think thường ra <think> rỗng. Qwen3 think mode BẮT BUỘC sampling (không greedy).
+  # ── Decoding (MẶC ĐỊNH = khớp flow Ensemble khi train/eval) ─────────────────
+  # Greedy (do_sample=False) + no-think, giống src/models/Ensemble_Model/inference.py.
+  # Model được train no-think → giữ nguyên để inference khớp phân phối train.
   enable_thinking: false
-  thinking_max_new_tokens: 1024   # ngân sách token khi think (think + JSON answer)
-  temperature: 0.6                # Qwen3 thinking-mode recommended
-  top_p: 0.95
-  top_k: 20
+
+  # ── Native thinking (Chế độ B — TÙY CHỌN, mặc định KHÔNG dùng) ──────────────
+  # Chỉ bật nếu adapter đã SFT có think; bật trên adapter no-think thường ra
+  # <think> rỗng. Qwen3 think mode BẮT BUỘC sampling (không greedy).
+  # Bỏ comment các dòng dưới khi đổi enable_thinking: true:
+  # thinking_max_new_tokens: 1024   # ngân sách token khi think (think + JSON answer)
+  # temperature: 0.6                # Qwen3 thinking-mode recommended
+  # top_p: 0.95
+  # top_k: 20
 
 inference:
   load_in_8bit: true        # true = tiết kiệm VRAM, false = nhanh hơn nếu đủ RAM
