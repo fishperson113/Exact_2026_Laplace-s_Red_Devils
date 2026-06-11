@@ -64,7 +64,7 @@ inference:
 
 hub:
   org: Laplaces-Red-Devils
-  repo_version: v03
+  repo_version: v04
   type: QA
   method: CoT
   push_to_hub: true
