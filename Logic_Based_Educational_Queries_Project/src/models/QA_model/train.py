@@ -169,42 +169,75 @@ def _parse_user_content(user_content: str) -> dict[str, Any]:
     return {"premises_nl": nl_lines, "premises_fol": fol_lines, "question": question}
 
 
-def _parse_full_output(text: str) -> dict[str, str]:
-    """Extract answer + explanation từ model output (robust với JSON cụt/lỗi)."""
-    # 1. JSON object đầy đủ
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if match:
-        try:
-            parsed = json.loads(match.group())
-            return {
-                "answer": str(parsed.get("answer", "Unknown")).strip(),
-                "explanation": str(parsed.get("explanation", "")).strip(),
-            }
-        except json.JSONDecodeError:
-            pass
+_STEP_PREFIXES = ("Rule:", "Fact:", "Derive:", "Conclusion:")
 
-    # 2. JSON cụt/lỗi: vẫn moi được "answer": "..." (và explanation nếu có)
+
+def _extract_steps(text: str) -> list[str]:
+    """Gom các dòng reasoning (Rule:/Fact:/Derive:/Conclusion:) trước JSON cuối."""
+    return [ln.strip() for ln in text.split("\n") if ln.strip().startswith(_STEP_PREFIXES)]
+
+
+def _parse_full_output(text: str) -> dict:
+    """Parse output dạng <reasoning steps> + JSON cuối {premises_used, explanation, answer}.
+
+    Khớp định dạng target mới (answer ở cuối). Trả: answer, explanation,
+    premises_used, reasoning_steps. Robust với JSON cụt/lỗi.
+    """
+    reasoning_steps = _extract_steps(text)
+
+    def _premises(parsed) -> list[int]:
+        pu = parsed.get("premises_used", [])
+        out = []
+        if isinstance(pu, list):
+            for v in pu:
+                try:
+                    out.append(int(v))
+                except (ValueError, TypeError):
+                    pass
+        return out
+
+    # 1. JSON CUỐI cùng có "answer" (reasoning đứng trước → lấy match cuối)
+    for m in reversed(list(re.finditer(r"\{.*?\}", text, re.DOTALL))):
+        try:
+            parsed = json.loads(m.group())
+        except json.JSONDecodeError:
+            continue
+        if "answer" in parsed:
+            return {
+                "answer": str(parsed["answer"]).strip(),
+                "explanation": str(parsed.get("explanation", "")).strip(),
+                "premises_used": _premises(parsed),
+                "reasoning_steps": reasoning_steps,
+            }
+
+    # 2. JSON cụt/lỗi: moi từng trường (explanation NON-GREEDY → hết rác)
     m = re.search(r'"answer"\s*:\s*"([^"]+)"', text)
     if m:
         answer = m.group(1).strip()
-        em = re.search(r'"explanation"\s*:\s*"(.*)', text, re.DOTALL)
-        explanation = em.group(1).strip().rstrip('"}').strip() if em else ""
-        return {"answer": answer, "explanation": explanation}
+        em = re.search(r'"explanation"\s*:\s*"(.*?)"\s*[,}]', text, re.DOTALL)
+        explanation = em.group(1).strip() if em else ""
+        pm = re.search(r'"premises_used"\s*:\s*\[([^\]]*)\]', text)
+        premises_used = [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else []
+        return {"answer": answer, "explanation": explanation,
+                "premises_used": premises_used, "reasoning_steps": reasoning_steps}
 
-    # 3. Last-resort (KHÔNG dump text thô, KHÔNG đoán bừa chữ "A" trong văn xuôi):
-    #    a) label đi kèm cue "answer/đáp án/conclusion" — đáng tin nhất
-    m2 = re.search(
-        r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
-        text, re.I,
-    )
+    # 3. Last-resort: từ Conclusion: hoặc cue, KHÔNG đoán bừa A/B/C/D
+    concl = next((s for s in reversed(reasoning_steps) if s.startswith("Conclusion:")), "")
+    m2 = re.search(r"\b(Yes|No|Unknown|[ABCD])\b\s*$", concl)
+    if not m2:
+        m2 = re.search(
+            r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
+            text, re.I,
+        )
     if m2:
-        return {"answer": m2.group(1), "explanation": ""}
-    #    b) Yes/No/Unknown đứng độc lập (an toàn với word-boundary)
+        return {"answer": m2.group(1), "explanation": "",
+                "premises_used": [], "reasoning_steps": reasoning_steps}
     for label in ("Unknown", "Yes", "No"):
         if re.search(rf"\b{label}\b", text):
-            return {"answer": label, "explanation": ""}
-    #    c) Không có cứ liệu rõ ràng → Unknown (không gán bừa A/B/C/D)
-    return {"answer": "Unknown", "explanation": ""}
+            return {"answer": label, "explanation": "",
+                    "premises_used": [], "reasoning_steps": reasoning_steps}
+    return {"answer": "Unknown", "explanation": "",
+            "premises_used": [], "reasoning_steps": reasoning_steps}
 
 
 def _apply_chat_template_no_think(
@@ -364,10 +397,14 @@ def compute_accuracy_on_split(
                 },
                 "gold": {
                     "answer": gold_parsed["answer"],
+                    "premises_used": gold_parsed.get("premises_used", []),
+                    "reasoning_steps": gold_parsed.get("reasoning_steps", []),
                     "explanation": gold_parsed["explanation"],
                 },
                 "prediction": {
                     "answer": pred_parsed["answer"],
+                    "premises_used": pred_parsed.get("premises_used", []),
+                    "reasoning_steps": pred_parsed.get("reasoning_steps", []),
                     "explanation": pred_parsed["explanation"],
                 },
             })
