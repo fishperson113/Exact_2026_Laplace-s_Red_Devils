@@ -1,16 +1,17 @@
 # logic_solution/config.yaml
-# Cấu hình pipeline — chỉnh model hoặc token limit tại đây
+# ĐỒNG NHẤT với configs/ensemble_model.yaml (bản train/eval) — bản chất 2 cấu hình
+# là MỘT (cùng pipeline FOL → QA). Chỉnh ở đây PHẢI khớp ensemble.
+# KHÁC DUY NHẤT: logic_solution KHÔNG có giai đoạn push kết quả lên HF Hub.
 
 fol_model:
+  # HF Hub repo chứa FOL model đã merge
   hub_repo_id: Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4
-  max_new_tokens: 768       # đủ cho JSON premises_fol nhiều mệnh đề (no-think)
+  max_new_tokens: 768   # đủ cho JSON premises_fol nhiều mệnh đề (no-think)
 
 qa_model:
+  # HF Hub repo chứa LoRA adapter (base model tự đọc từ adapter_config.json)
   hub_repo_id: Laplaces-Red-Devils/v04-QA-CoT
-  # QA v3: reasoning steps + JSON cuối, answer ĐỨNG CUỐI → cắt sớm = MẤT answer.
-  # Phân phối assistant target: P95~480, P99~600, max~793 token → 1000 an toàn
-  # (khớp gen_max_new_tokens trong configs/qa_model.yaml lúc train).
-  max_new_tokens: 1000
+  max_new_tokens: 1000   # khớp gen_max_new_tokens lúc train QA (no-think)
 
   # ── Decoding (MẶC ĐỊNH = khớp flow Ensemble khi train/eval) ─────────────────
   # Greedy (do_sample=False) + no-think, giống src/models/Ensemble_Model/inference.py.
@@ -27,5 +28,16 @@ qa_model:
   # top_k: 20
 
 inference:
-  load_in_8bit: false       # bf16 chạy thẳng tensor core → NHANH hơn; 8-bit chỉ tiết kiệm VRAM (overhead dequant)
-  slow_threshold_sec: 60    # cảnh báo nếu 1 sample vượt ngưỡng này (giây)
+  # KHỚP ensemble: bf16 chạy thẳng tensor core → NHANH hơn; 8-bit chỉ tiết kiệm VRAM (overhead dequant)
+  load_in_8bit: false
+  # Cảnh báo nếu 1 sample vượt ngưỡng này (giây)
+  slow_threshold_sec: 60
+
+  # Các knob vận hành dưới đây logic_solution hành xử CỐ ĐỊNH đúng bằng default của
+  # ensemble (code đã chạy như vậy nên không cần khai báo):
+  #   load_both_models: true   — nạp cả 2 model, giữ resident giữa các lượt
+  #   use_fol: true            — luôn chạy đủ pipeline FOL → QA
+  #   batch_size: 1            — xử lý từng query (đo latency thật, an toàn luật 60s/query)
+
+# KHÔNG có khối `hub:` — push kết quả lên HF Hub là phần RIÊNG của ensemble (train/eval).
+# logic_solution chỉ ghi output JSON ra file qua tham số --output.
