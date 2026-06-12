@@ -108,7 +108,9 @@ stop_all() {
 }
 
 status_all() {
-    if [ "$SERVE_MODE" = "triple" ] || [ "$SERVE_MODE" = "combined" ]; then
+    if [ "$SERVE_MODE" = "combined" ]; then
+        local pairs="base(sft+qa):$VLLM_PORT fol:$FOL_PORT gateway:$API_PORT"
+    elif [ "$SERVE_MODE" = "triple" ]; then
         local pairs="physics(base+sft):$VLLM_PORT fol:$FOL_PORT qa:$QA_PORT gateway:$API_PORT"
     elif [ "$SERVE_MODE" = "physics_ensemble" ]; then
         local pairs="vllm(base+sft):$VLLM_PORT gateway:$API_PORT"
@@ -217,64 +219,79 @@ if [ "$SERVE_MODE" = "physics_ensemble" ]; then
             QA_MODEL=base    QA_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
             SLEEP_SWAP_ENABLED=0)
 elif [ "$SERVE_MODE" = "combined" ]; then
-    # FULL competition stack on ONE GPU, both task types, sleep-swap by type:
-    #   physics group : ONE vLLM :18000 = BASE Qwen3.5-4B + LoRA(sft)  (ids base, sft)  ~4B
-    #   logic   group : fol-composite :18001 + qa-composite :18002     (ids fol, qa)    ~8B
-    # All three engines run --enable-sleep-mode; the gateway wakes the needed group and
-    # sleeps the rest (ensure_awake), so only ≤8B is GPU-resident at any moment.
+    # FULL competition stack on ONE GPU, both task types. Model layout matches the
+    # authoritative logic config (app/logic_solution/config.yaml):
+    #   :18000 base Qwen3.5-4B + LoRA(sft=physics) + LoRA(qa=v04-QA-CoT)   ids: base, sft, qa
+    #          Serves physics (sft) AND logic stage-2 QA (qa adapter).
+    #   :18001 fol = fol-v06-cot-augmented (full finetune, grafted)        id: fol  (logic stage 1)
     #
-    # The logic models ship as text-only Qwen3_5ForCausalLM (NOT vLLM-servable); we graft
-    # each onto the composite base first (idempotent) and serve the local composite dir.
+    # Peak GPU residency is ~8B EITHER WAY (base 4B + fol 4B; sft/qa are tiny LoRA deltas),
+    # which already satisfies the ≤8B rule. So RESIDENT_ALL=1 (DEFAULT): keep BOTH engines
+    # awake on the 32GB GPU — no sleep/wake, no per-type swap cost, fewer failure modes.
+    # RESIDENT_ALL=0 falls back to sleep-swap (fol slept during type2 -> base alone 4B) for
+    # tighter GPUs. The qa LoRA shares :18000 with physics, so swap only ever toggles fol.
+    #
+    # FOL ships as text-only Qwen3_5ForCausalLM (NOT vLLM-servable) -> graft onto the
+    # composite base first (idempotent). QA ships as a LoRA adapter -> served on the base
+    # engine exactly like the physics sft adapter (no graft).
     BASE_REPO="${BASE_REPO:-Qwen/Qwen3.5-4B}"
     SFT_ADAPTER="${SFT_ADAPTER:-Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b}"
-    MAX_LORA_RANK="${MAX_LORA_RANK:-16}"
-    FOL_FT="${FOL_FT:-Laplaces-Red-Devils/fol-pretrain-malls-qwen3.5-4b}"
-    QA_FT="${QA_FT:-Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4}"
+    QA_ADAPTER="${QA_ADAPTER:-Laplaces-Red-Devils/v04-QA-CoT}"
+    MAX_LORA_RANK="${MAX_LORA_RANK:-32}"     # must cover BOTH adapters (sft + qa)
+    MAX_LORAS="${MAX_LORAS:-2}"              # 2 registered adapters on one base engine
+    FOL_FT="${FOL_FT:-Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4}"
     MODELS_DIR="${MODELS_DIR:-/dev/shm/models}"
+    PHYSICS_EAGER="${PHYSICS_EAGER:-0}"      # base: CUDA graphs ON (big decode win for ensemble)
+    RESIDENT_ALL="${RESIDENT_ALL:-1}"
 
-    log "SERVE_MODE=combined — grafting logic models -> composite (idempotent)..."
-    for spec in "fol:$FOL_FT" "qa:$QA_FT"; do
-        name="${spec%%:*}"; repo="${spec#*:}"
-        HF_HOME="$HF_HOME" HF_TOKEN="${HF_TOKEN:-}" HUGGING_FACE_HUB_TOKEN="${HF_TOKEN:-}" \
-        "$PY" "$PROJECT_ROOT/scripts/graft_text_to_composite.py" \
-            --base "$BASE_REPO" --finetune "$repo" --out "$MODELS_DIR/$name-composite" --rm-finetune \
-            >>"$LOG_DIR/graft.log" 2>&1 \
-          || { err "graft of $name failed — see $LOG_DIR/graft.log"; exit 1; }
-        log "  $name -> $MODELS_DIR/$name-composite ready"
-    done
+    if [ "$RESIDENT_ALL" = "1" ]; then
+        # Both engines AWAKE together. Co-resident utils must leave room for BOTH on 32GB:
+        # fol ~0.40 (eager, weights 8GB + small KV) + base ~0.48 -> ~28GB, ~4GB headroom.
+        FOL_UTIL="${FOL_GPU_RESIDENT:-0.40}"; BASE_UTIL="${GPU_UTIL_RESIDENT:-0.48}"
+        SLEEPMODE=0; SWAP=0
+    else
+        # Sleep-swap fol by type; base keeps the big KV (fol asleep frees VRAM).
+        FOL_UTIL="$FOL_GPU"; BASE_UTIL="$GPU_UTIL"
+        SLEEPMODE=1; SWAP=1
+    fi
 
-    # logic servers first; SLEEP each after load so the next sees free VRAM.
-    start_vllm vllm_fol "$MODELS_DIR/fol-composite" "$FOL_PORT" "$FOL_GPU" 1 fol || { err "fol failed"; exit 1; }
-    sleep_server "$FOL_PORT"
-    start_vllm vllm_qa  "$MODELS_DIR/qa-composite"  "$QA_PORT"  "$QA_GPU"  1 qa  || { err "qa failed";  exit 1; }
-    sleep_server "$QA_PORT"
+    log "SERVE_MODE=combined (resident_all=$RESIDENT_ALL) — grafting FOL -> composite (idempotent)..."
+    HF_HOME="$HF_HOME" HF_TOKEN="${HF_TOKEN:-}" HUGGING_FACE_HUB_TOKEN="${HF_TOKEN:-}" \
+    "$PY" "$PROJECT_ROOT/scripts/graft_text_to_composite.py" \
+        --base "$BASE_REPO" --finetune "$FOL_FT" --out "$MODELS_DIR/fol-composite" --rm-finetune \
+        >>"$LOG_DIR/graft.log" 2>&1 \
+      || { err "graft of fol failed — see $LOG_DIR/graft.log"; exit 1; }
+    log "  fol -> $MODELS_DIR/fol-composite ready"
 
-    # physics base+LoRA on :18000 (sleep-mode), left AWAKE as the default group.
-    # CUDA graphs ON for physics (PHYSICS_EAGER=0 default): the engine has plenty of
-    # headroom (fol/qa asleep hold only ~0.7GB each, KV ~16GB) and graphs are a HUGE
-    # decode win — eager makes the 10-sample pooled vote 48-59s (≈timeout) on hard
-    # problems vs ~9-22s with graphs. fol/qa stay eager (logic is short, ~2.6s).
-    PHYSICS_EAGER="${PHYSICS_EAGER:-0}"
+    # FOL server. resident: stays awake. swap: sleep it after load so base sees free VRAM.
+    start_vllm vllm_fol "$MODELS_DIR/fol-composite" "$FOL_PORT" "$FOL_UTIL" "$SLEEPMODE" fol || { err "fol failed"; exit 1; }
+    [ "$SWAP" = "1" ] && sleep_server "$FOL_PORT"
+
+    # base + 2 LoRA adapters (sft=physics, qa=logic) on :18000.
     if ! health_ok "$VLLM_PORT"; then
-        export VLLM_SERVER_DEV_MODE=1
-        extra="--enable-sleep-mode --enable-lora --max-lora-rank $MAX_LORA_RANK --lora-modules sft=$SFT_ADAPTER"
+        extra="--enable-lora --max-lora-rank $MAX_LORA_RANK --max-loras $MAX_LORAS --lora-modules sft=$SFT_ADAPTER qa=$QA_ADAPTER"
+        [ "$SWAP" = "1" ] && { export VLLM_SERVER_DEV_MODE=1; extra="--enable-sleep-mode $extra"; }
         [ "$PHYSICS_EAGER" = "1" ] && extra="$extra --enforce-eager"
-        log "Starting physics base+LoRA ($BASE_REPO + sft=$SFT_ADAPTER) :$VLLM_PORT util=$GPU_UTIL sleep=1 eager=$PHYSICS_EAGER(graphs)"
+        log "Starting base+LoRA ($BASE_REPO + sft=$SFT_ADAPTER + qa=$QA_ADAPTER) :$VLLM_PORT util=$BASE_UTIL swap=$SWAP eager=$PHYSICS_EAGER"
         OMP_NUM_THREADS=8 nohup "$VLLM_BIN" serve "$BASE_REPO" --served-model-name base \
             --host 0.0.0.0 --port "$VLLM_PORT" --dtype bfloat16 \
-            --gpu-memory-utilization "$GPU_UTIL" --max-model-len "$MAX_MODEL_LEN" \
+            --gpu-memory-utilization "$BASE_UTIL" --max-model-len "$MAX_MODEL_LEN" \
             --max-num-seqs "$MAX_NUM_SEQS" $extra \
             </dev/null >"$LOG_DIR/vllm_physics.log" 2>&1 &
         echo $! > "$RUN_DIR/vllm_physics.pid"; disown 2>/dev/null || true
-        wait_health vllm_physics "$VLLM_PORT" || { err "physics base+LoRA failed."; exit 1; }
+        wait_health vllm_physics "$VLLM_PORT" || { err "base+LoRA failed."; exit 1; }
     fi
-    log "Combined stack: physics(base+sft):$VLLM_PORT awake; fol:$FOL_PORT qa:$QA_PORT asleep. Gateway swaps by type."
+    if [ "$SWAP" = "1" ]; then
+        log "Combined stack (swap): base(sft+qa):$VLLM_PORT awake; fol:$FOL_PORT asleep. Gateway wakes fol on type1."
+    else
+        log "Combined stack (resident): base(sft+qa):$VLLM_PORT + fol:$FOL_PORT both awake (~8B peak). No swap."
+    fi
     GW_ENV=(PIPELINE_VERSION=v07_ensemble_vLLM
             VLLM_MODEL=sft   VLLM_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
             JUDGE_MODEL=base JUDGE_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
             FOL_MODEL=fol    FOL_BASE_URL="http://127.0.0.1:$FOL_PORT/v1"
-            QA_MODEL=qa      QA_BASE_URL="http://127.0.0.1:$QA_PORT/v1"
-            SLEEP_SWAP_ENABLED=1)
+            QA_MODEL=qa      QA_BASE_URL="http://127.0.0.1:$VLLM_PORT/v1"
+            SLEEP_SWAP_ENABLED=$SWAP)
 elif [ "$SERVE_MODE" = "triple" ]; then
     log "SERVE_MODE=triple — 3 distinct models with sleep-swap."
     # Start sequentially; SLEEP each right after it loads so the next sees free VRAM.
@@ -362,7 +379,21 @@ start_tunnel() {  # logname localport -> echoes URL
 }
 
 SUB_DIR="$PROJECT_ROOT/submission"; mkdir -p "$SUB_DIR"
-if [ "$SERVE_MODE" = "combined" ] || [ "$SERVE_MODE" = "triple" ]; then
+if [ "$SERVE_MODE" = "combined" ]; then
+    # 2 vLLM engines now: :18000 (base+sft+qa) + :18001 (fol). qa is a LoRA on :18000.
+    GW="$(start_tunnel gateway "$API_PORT")"
+    U0="$(start_tunnel vllm0 "$VLLM_PORT")"
+    U1="$(start_tunnel vllm1 "$FOL_PORT")"
+    {
+        echo "# EXACT 2026 — endpoint URLs (BTC §3). trycloudflare URLs change per restart."
+        echo "# One GPU; sleep-swap keeps <=8B GPU-resident at any moment (type2: base 4B; type1: base+fol 8B)."
+        echo "$GW/predict"
+        echo "$U0/v1/models   # :$VLLM_PORT base + sft(physics) + qa(logic stage 2) LoRA adapters"
+        echo "$U1/v1/models   # :$FOL_PORT fol (logic stage 1)"
+    } > "$SUB_DIR/urls.txt"
+    log "=== PUBLIC URLs (BTC) written to $SUB_DIR/urls.txt ==="; cat "$SUB_DIR/urls.txt"
+    [ -n "$GW$U0$U1" ] || err "some tunnels empty (shared-IP rate limit) — re-run or use a named tunnel/VPS."
+elif [ "$SERVE_MODE" = "triple" ]; then
     GW="$(start_tunnel gateway "$API_PORT")"
     U0="$(start_tunnel vllm0 "$VLLM_PORT")"
     U1="$(start_tunnel vllm1 "$FOL_PORT")"

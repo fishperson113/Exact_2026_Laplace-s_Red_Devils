@@ -33,16 +33,21 @@ class VLLMClient:
         messages: list[dict],
         temperature: float = 0.0,
         max_tokens: int = 2000,
+        repetition_penalty: float | None = None,
     ) -> str:
-        """Send a structured message list to vLLM, return completion text."""
+        """Send a structured message list to vLLM, return completion text.
+
+        ``repetition_penalty`` mirrors the in-process logic models (FOL uses 1.2 to
+        avoid degenerate loops); omitted -> vLLM default (1.0)."""
+        extra_body: dict = {"chat_template_kwargs": {"enable_thinking": False}}
+        if repetition_penalty is not None:
+            extra_body["repetition_penalty"] = repetition_penalty
         response = await self._get_client().chat.completions.create(
             model=self._model,
             messages=messages,
             temperature=temperature,
             max_tokens=max_tokens,
-            extra_body={
-                "chat_template_kwargs": {"enable_thinking": False},
-            },
+            extra_body=extra_body,
         )
         return response.choices[0].message.content or ""
 

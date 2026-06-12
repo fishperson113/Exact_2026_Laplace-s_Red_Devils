@@ -28,7 +28,7 @@
 set -uo pipefail
 
 REPO_URL="${REPO_URL:-https://github.com/fishperson113/Exact_2026_Laplace-s_Red_Devils.git}"
-REPO_BRANCH="${REPO_BRANCH:-Nguyen/Final}"
+REPO_BRANCH="${REPO_BRANCH:-Nguyen/Submission_v02}"
 PROJECT_DIR="${PROJECT_DIR:-/workspace/project}"
 VENV="${VENV:-/venv/main}"
 PY="$VENV/bin/python"

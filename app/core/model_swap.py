@@ -1,17 +1,18 @@
 """Sleep-mode swap manager (SERVE_MODE=combined or triple).
 
-The full per-type model set is more than the ≤8B that may be GPU-resident at once
-(physics base+adapter on :18000, plus fol :18001 + qa :18002 = ~14B), so each vLLM
-runs with ``--enable-sleep-mode`` (+ ``VLLM_SERVER_DEV_MODE=1``). Before routing a
-request, the gateway calls :func:`ensure_awake` to wake the server(s) that task
-needs and sleep the rest, so only one "active group" holds VRAM:
+Two engines run with ``--enable-sleep-mode`` (+ ``VLLM_SERVER_DEV_MODE=1``):
+:18000 (base Qwen3.5-4B + LoRA sft=physics + LoRA qa=logic-stage-2) and :18001
+(fol, a full finetune). Before routing a request the gateway calls
+:func:`ensure_awake` to wake what the task needs and sleep the rest, keeping
+≤8B GPU-resident:
 
-    logic   -> {fol, qa}   (both awake together for the FOL then QA stages; ~8B)
-    physics -> {physics}   (base Qwen3.5-4B + LoRA(sft) on one engine; ~4B)
+    logic   -> {fol, qa}   (fol :18001 woken + qa adapter on :18000; base+fol ~8B)
+    physics -> {physics}   (base :18000 + LoRA sft; fol slept; ~4B)
 
-The physics group is a single engine (:18000) that exposes BOTH the "base" and
-"sft" ids; sleeping/waking it by server_root covers both (and the judge/base
-client that shares the same endpoint).
+Both ``qa_llm`` and ``physics_llm`` bind the SAME :18000 endpoint (qa is a LoRA
+there), so they share a ``server_root``. That's load-bearing: when waking the
+logic group, :18000 is in ``target_roots`` and is therefore NOT slept — only fol
+(:18001) toggles. Sleeping/waking by ``server_root`` de-dups per engine.
 
 A swap happens only when the task TYPE changes (a few seconds: sleep the old
 group's GPU memory, then wake the new group). At competition concurrency 1 this

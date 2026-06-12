@@ -1,13 +1,14 @@
 """BTC-required ``GET /v1/models`` proxy on the gateway.
 
 The Submission Guide asks the committee to verify the served models via an
-OpenAI-compatible ``/v1/models`` endpoint. Our stack runs up to three vLLM
-engines on internal ports (physics base+sft :18000, fol :18001, qa :18002), some
-asleep at any moment. This route aggregates every engine's ``/v1/models`` into
+OpenAI-compatible ``/v1/models`` endpoint. Our stack runs TWO vLLM engines:
+:18000 (base + sft + qa LoRA adapters — physics + logic stage 2) and :18001
+(fol — logic stage 1). This route aggregates every engine's ``/v1/models`` into
 ONE list so a single public URL (the gateway) exposes both ``POST /predict`` and
-``GET /v1/models`` — no second tunnel needed. A sleeping engine still answers
-``/v1/models`` (process alive, weights offloaded), so the list is complete
-regardless of which group is awake.
+``GET /v1/models`` — no second tunnel needed. ``qa_base_url`` resolves to the same
+:18000 root as physics, so the set below dedups to the two real engines. A
+sleeping engine still answers ``/v1/models`` (process alive, weights offloaded),
+so the list is complete regardless of which group is awake.
 """
 
 from __future__ import annotations

@@ -22,6 +22,7 @@ from app.core.config import settings
 from app.core.model_swap import ensure_awake
 from app.core.pipeline import solve_physics
 from app.core.pipeline_logic import run_logic_pipeline
+from app.physics_solution.shared.eval.normalizer import normalize_answer, normalize_unit
 
 router = APIRouter()
 
@@ -36,7 +37,9 @@ async def predict(request: PredictRequest) -> list[dict]:
     try:
         if is_logic:
             await ensure_awake("logic")            # no-op unless sleep-swap on
-            res = await run_logic_pipeline(request.premises, request.query, deadline)
+            res = await run_logic_pipeline(
+                request.premises, request.query, request.options, deadline
+            )
             return [_shape_type1(qid, res, request.premises, request.options)]
         await ensure_awake("physics")
         res = await solve_physics(request.query, deadline)
@@ -79,12 +82,19 @@ def _coerce_to_option(answer: str, options: list[str]) -> str:
 
 def _shape_type1(qid: str, res: dict, premises: list[str], options: list[str]) -> dict:
     answer = _coerce_to_option(res.get("answer", ""), options)
-    fol = res.get("fol", "") or ""
-    steps = _steps_from_text(fol) or _steps_from_text(res.get("cot", ""))
-    # premises_used: no symbolic solver tracks this yet -> heuristic = all premises.
-    # (Better than empty for P2 when most premises are load-bearing; flagged for a
-    # real used-premise tracker.)
-    premises_used = list(range(len(premises))) if premises else []
+    # reasoning.steps: the QA model emits Rule:/Fact:/Derive:/Conclusion: lines; use
+    # them verbatim, falling back to the FOL block or explanation if it emitted none.
+    steps = (
+        res.get("reasoning_steps")
+        or _steps_from_text(res.get("fol", "") or "")
+        or _steps_from_text(res.get("cot", ""))
+    )
+    # premises_used: the QA model is trained to emit the 0-based indices it cited.
+    # Use those; fall back to "all premises" only when the model returned none (better
+    # than empty for the 50%-weighted premises_used score when premises are load-bearing).
+    premises_used = res.get("premises_used") or (
+        list(range(len(premises))) if premises else []
+    )
     return {
         "query_id": qid,
         "answer": answer,
@@ -97,10 +107,12 @@ def _shape_type1(qid: str, res: dict, premises: list[str], options: list[str]) -
 
 def _shape_type2(qid: str, res: dict) -> dict:
     steps = res.get("reasoning_steps") or _steps_from_text(res.get("cot", ""))
+    # Canonicalize to the convention declared in submission/notation_mapping.csv:
+    # value -> plain decimal / e-notation, unit -> ASCII (ohm, uF, deg), no-unit -> "N/A".
     return {
         "query_id": qid,
-        "answer": res.get("answer", "") or "",
-        "unit": res.get("unit", "") or "",
+        "answer": normalize_answer(res.get("answer", "") or ""),
+        "unit": normalize_unit(res.get("unit", "") or ""),
         "explanation": res.get("explanation") or "No explanation produced.",
         "premises_used": [],
         "reasoning": {"type": "cot", "steps": steps} if steps else None,
