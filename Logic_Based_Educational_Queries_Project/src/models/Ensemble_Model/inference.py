@@ -45,6 +45,7 @@ from models.QA_model.prepare_data import (
     format_premises_fol,
     format_premises_nl,
 )
+from models.QA_model.postprocess import clean_explanation, snap_answer_to_options
 
 
 # ─── Config ──────────────────────────────────────────────────────────────────
@@ -339,20 +340,20 @@ class QAModel:
 
         # 3. Last-resort: Conclusion hoặc cue, KHÔNG đoán bừa A/B/C/D
         concl = next((s for s in reversed(reasoning_steps) if s.startswith("Conclusion:")), "")
-        m2 = re.search(r"\b(Yes|No|Unknown|[ABCD])\b\s*$", concl)
+        m2 = re.search(r"\b(Yes|No|Unknown|Uncertain|[ABCD])\b\s*$", concl)
         if not m2:
             m2 = re.search(
-                r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
+                r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|Uncertain|[ABCD])\b",
                 text, re.I,
             )
         if m2:
             return {"answer": m2.group(1), "explanation": "",
                     "premises_used": [], "reasoning_steps": reasoning_steps}
-        for label in ("Unknown", "Yes", "No"):
+        for label in ("Uncertain", "Unknown", "Yes", "No"):
             if re.search(rf"\b{label}\b", text):
                 return {"answer": label, "explanation": "",
                         "premises_used": [], "reasoning_steps": reasoning_steps}
-        return {"answer": "Unknown", "explanation": "",
+        return {"answer": "Uncertain", "explanation": "",
                 "premises_used": [], "reasoning_steps": reasoning_steps}
 
 
@@ -600,8 +601,8 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
         fol_lat = fol_results[i]["fol_latency_sec"]
         qa_lat = qa_results[i]["qa_latency_sec"]
         total_lat = fol_lat + qa_lat
-        pred = qa_results[i]["answer"]
-        expl = qa_results[i]["explanation"]
+        pred = snap_answer_to_options(qa_results[i]["answer"], options_list[i])
+        expl = clean_explanation(qa_results[i]["explanation"])
         gold_answer = golds[i]
 
         _na = lambda s: re.sub(r"\s+", " ", str(s).strip().lower()).rstrip(" .;:!?")
@@ -907,10 +908,10 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
             "query": questions[i],
             "premises": premises_nl_list[i],
             "options": options_list[i],
-            "answer": qa_results[i]["answer"],
+            "answer": snap_answer_to_options(qa_results[i]["answer"], options_list[i]),
             "premises_used": qa_results[i].get("premises_used", []),
             "reasoning_steps": qa_results[i].get("reasoning_steps", []),
-            "explanation": qa_results[i]["explanation"],
+            "explanation": clean_explanation(qa_results[i]["explanation"]),
             "premises_fol_generated": fol_results[i]["premises_fol"],
             "fol_latency_sec": round(fol_lat, 3),
             "qa_latency_sec": round(qa_lat, 3),
