@@ -474,6 +474,63 @@ class EnsemblePipeline:
             print(f"[VRAM] sau khi GIẢI PHÓNG QA: {self._vram_gb():.2f} GB")
         return out
 
+    # ───── Chế độ INTERLEAVE: load CẢ 2 model, mỗi mẫu FOL→QA liền mạch ─────
+    def load_models(self) -> None:
+        """Nạp CẢ 2 model 1 lần, giữ resident (BTC cho phép). Gọi trước khi inference."""
+        if self.use_fol and self._fol is None:
+            print("[LOAD] FOL model…")
+            self._fol = FOLModel(self.fol_repo, self.load_8bit)
+            print(f"[VRAM] sau khi nạp FOL: {self._vram_gb():.2f} GB")
+        if self._qa is None:
+            print("[LOAD] QA model…")
+            self._qa = QAModel(self.qa_repo, self.load_8bit)
+            print(f"[VRAM] CẢ 2 model resident: {self._vram_gb():.2f} GB")
+
+    def process_one(self, premises_nl: list[str], question: str,
+                    options: list[str] | None = None) -> dict:
+        """1 mẫu: FOL → QA liền mạch (như /predict thật). Trả kèm fol/qa latency riêng."""
+        self.load_models()
+        t0 = time.perf_counter()
+        if self.use_fol:
+            fol, fol_raw = self._fol.generate(premises_nl, self.fol_max_new_tokens)
+        else:
+            fol, fol_raw = [], ""
+        fol_time = time.perf_counter() - t0
+        t1 = time.perf_counter()
+        qa = self._qa.generate(premises_nl, fol, question, options=options,
+                               max_new_tokens=self.qa_max_new_tokens)
+        qa_time = time.perf_counter() - t1
+        return {
+            "premises_fol": fol, "fol_raw": fol_raw,
+            "answer": qa["answer"], "explanation": qa["explanation"],
+            "premises_used": qa.get("premises_used", []),
+            "reasoning_steps": qa.get("reasoning_steps", []),
+            "fol_latency_sec": fol_time, "qa_latency_sec": qa_time,
+        }
+
+    def run_interleaved(self, premises_nl_list: list[list[str]], questions: list[str],
+                        options_list: list[list[str]], slow_threshold: float = 60.0):
+        """Mỗi mẫu FOL→QA liền, IN time ngay khi xong (giống logic_solution + /predict).
+        Trả (fol_results, qa_results) cùng cấu trúc 2-pha → downstream dùng y nguyên."""
+        self.load_models()
+        n = len(premises_nl_list)
+        print(f"\n[INTERLEAVE] {n} mẫu — mỗi mẫu FOL→QA liền (2 model resident)")
+        fol_results, qa_results = [], []
+        for i in range(n):
+            opts = options_list[i] if i < len(options_list) else []
+            r = self.process_one(premises_nl_list[i], questions[i], opts)
+            fol_results.append({"premises_fol": r["premises_fol"], "fol_raw": r["fol_raw"],
+                                "fol_latency_sec": r["fol_latency_sec"]})
+            qa_results.append({"answer": r["answer"], "explanation": r["explanation"],
+                               "premises_used": r["premises_used"],
+                               "reasoning_steps": r["reasoning_steps"],
+                               "qa_latency_sec": r["qa_latency_sec"]})
+            tot = r["fol_latency_sec"] + r["qa_latency_sec"]
+            warn = " ⚠️ SLOW" if tot > slow_threshold else ""
+            print(f"  [{i + 1:3d}/{n}] FOL:{r['fol_latency_sec']:5.1f}s  QA:{r['qa_latency_sec']:5.1f}s  "
+                  f"Total:{tot:5.1f}s{warn} | answer={str(r['answer'])[:45]}", flush=True)
+        return fol_results, qa_results
+
 
 # ─── Data Loading ─────────────────────────────────────────────────────────────
 
@@ -526,10 +583,9 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
         gold_expls.append(str(row.get("explanation", "")))
         fol_golds.append(parse_list_field(row.get("premises_fol", "[]")))
 
-    # PHA 1: FOL (chỉ FOL trong VRAM) → PHA 2: QA (FOL đã unload, chỉ QA trong VRAM)
-    fol_results = pipeline.run_fol_stage(premises_nl_list)
-    items = [(premises_nl_list[i], fol_results[i]["premises_fol"], questions[i], options_list[i]) for i in range(n)]
-    qa_results = pipeline.answer_all(items)
+    # INTERLEAVE: load CẢ 2 model, mỗi mẫu FOL→QA liền mạch + in time ngay (giống logic_solution)
+    fol_results, qa_results = pipeline.run_interleaved(
+        premises_nl_list, questions, options_list, slow_threshold)
 
     # Tổng hợp + log + accuracy (format giữ nguyên)
     correct = 0
@@ -553,16 +609,11 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
         correct += int(is_correct)
 
         status = "✓" if is_correct else "✗"
-        latency_warn = ""
         if total_lat > slow_threshold:
-            latency_warn = " SLOW"
             slow_samples.append(i)
-
-        print(
-            f"  [{i+1:3d}/{n}] {status} pred={pred:8s} gold={gold_answer:8s} "
-            f"| FOL:{fol_lat:.1f}s QA:{qa_lat:.1f}s Total:{total_lat:.1f}s{latency_warn}",
-            flush=True,
-        )
+        # time đã in live ở run_interleaved → đây chỉ tổng hợp đúng/sai (answer full-text → cắt 35)
+        print(f"  [{i+1:3d}/{n}] {status} pred={str(pred)[:35]:35s} gold={str(gold_answer)[:35]}",
+              flush=True)
 
         sample_record = {
             "idx": i,
@@ -835,10 +886,9 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
     options_list = [item.get("options", []) for item in data]
     n = len(data)
 
-    # 2 PHA — mỗi thời điểm chỉ 1 LLM trong VRAM (tuân thủ luật BTC)
-    fol_results = pipeline.run_fol_stage(premises_nl_list)
-    items = [(premises_nl_list[i], fol_results[i]["premises_fol"], questions[i], options_list[i]) for i in range(n)]
-    qa_results = pipeline.answer_all(items)
+    # INTERLEAVE: load CẢ 2 model, mỗi mẫu FOL→QA liền mạch + in time ngay (giống logic_solution)
+    fol_results, qa_results = pipeline.run_interleaved(
+        premises_nl_list, questions, options_list, slow_threshold)
 
     results = []
     slow_samples = []
@@ -848,15 +898,9 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
         qa_lat = qa_results[i]["qa_latency_sec"]
         total_lat = fol_lat + qa_lat
 
-        latency_warn = ""
         if total_lat > slow_threshold:
-            latency_warn = " ⚠️ SLOW"
             slow_samples.append(i)
-
-        print(
-            f"  [{i+1:3d}/{n}] answer={qa_results[i]['answer']:8s} "
-            f"| FOL:{fol_lat:.1f}s QA:{qa_lat:.1f}s Total:{total_lat:.1f}s{latency_warn}"
-        )
+        # (đã in time live trong run_interleaved — không in lại ở đây)
 
         results.append({
             "idx": i,
