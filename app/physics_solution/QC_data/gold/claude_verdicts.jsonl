@@ -1,0 +1,41 @@
+{"id": "CH083", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH068", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH073", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH076", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH090", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance f=1/(2pi*sqrt(LC)) => L=1/(4pi²f²C); convert H to mH"}
+{"id": "CH079", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH089", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH067", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH069", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH084", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH081", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH086", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH066", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; L in mH"}
+{"id": "CH063", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH074", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH099", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH061", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH092", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH085", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH349", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH080", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH087", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH096", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH078", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH353", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH064", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH065", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH350", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH355", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH075", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH354", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH082", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH077", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH088", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH351", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH072", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH356", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH091", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH071", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH062", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}
+{"id": "CH352", "verdict": "CLEAN", "fixed_question": null, "reason": "LC resonance; solve for C in μF"}

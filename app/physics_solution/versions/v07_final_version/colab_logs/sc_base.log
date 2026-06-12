@@ -1,0 +1,35 @@
+##### BASE self-consistency K=5 temp=0.7 (think-off) #####
+Skipping import of cpp extensions due to incompatible torch version. Please upgrade to torch >= 2.11.0 (found 2.10.0+cu128).
+Fetching 2 files: 100%|██████████| 2/2 [00:00<00:00, 17119.61it/s]
+The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights: 100%|██████████| 426/426 [00:02<00:00, 199.55it/s]
+[sc] model=Qwen/Qwen3.5-4B K=5 temp=0.7 top_p=0.95 thinking=False prob_batch=6
+  [val_56] 6/56 acc=1.000
+  [val_56] 12/56 acc=1.000
+  [val_56] 18/56 acc=1.000
+  [val_56] 24/56 acc=1.000
+  [val_56] 30/56 acc=1.000
+  [val_56] 36/56 acc=0.944
+  [val_56] 42/56 acc=0.905
+  [val_56] 48/56 acc=0.917
+  [val_56] 54/56 acc=0.870
+  [val_56] 56/56 acc=0.875
+[sc] val_56: 49/56 = 0.875
+  [golden_60] 6/60 acc=1.000
+  [golden_60] 12/60 acc=0.917
+  [golden_60] 18/60 acc=0.889
+  [golden_60] 24/60 acc=0.750
+  [golden_60] 30/60 acc=0.733
+  [golden_60] 36/60 acc=0.722
+  [golden_60] 42/60 acc=0.738
+  [golden_60] 48/60 acc=0.750
+  [golden_60] 54/60 acc=0.759
+  [golden_60] 60/60 acc=0.783
+[sc] golden_60: 47/60 = 0.783
+[sc] DONE val_56=0.875 golden_60=0.7833
+===== SC BASE DONE =====
+
+# NOTE: this is the only raw log recovered — the Colab box was terminated before the bulk
+# scp of /content/*.log finished, so the other run logs (v07b/v07c train, eval, sc_v07c)
+# were lost. Their numbers are preserved in the README Results section and in the committed
+# JSON dumps (train/runs/*.json). Model weights are safe on the Hub (physics-v07c-*).

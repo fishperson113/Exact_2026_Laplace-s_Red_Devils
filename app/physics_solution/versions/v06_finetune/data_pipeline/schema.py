@@ -27,7 +27,9 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Iterable, Iterator, Literal
 
-Route = Literal["self_gen", "teacher_residual", "teacher_rewrite"]
+# self_gen_hinted: on-policy Qwen output produced WITH a reference solve shown (the QC
+# hint_code) — still Qwen's own reasoning+code, but guided, so declare the hint's origin.
+Route = Literal["self_gen", "self_gen_hinted", "teacher_residual", "teacher_rewrite"]
 DatasetSource = Literal["btc_golden", "vietjack"]
 
 
@@ -67,6 +69,7 @@ class Provenance:
     retry_count: int = 0            # input-feedback retries before success
     sample_idx: int = 0             # which of the K self-gen samples this was
     created_at: str = ""
+    hint_source: str = ""           # for self_gen_hinted: origin of the shown hint (qc_stage1|deepseek|claude|...)
 
     def to_dict(self) -> dict:
         return asdict(self)

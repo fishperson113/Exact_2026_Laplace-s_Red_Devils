@@ -1,12 +1,17 @@
-"""Sleep-mode swap manager (SERVE_MODE=triple).
+"""Sleep-mode swap manager (SERVE_MODE=combined or triple).
 
-When the 3 distinct Qwen3.5-4B models can't co-reside on one 24GB GPU, each vLLM
-server runs with ``--enable-sleep-mode`` (+ ``VLLM_SERVER_DEV_MODE=1``). Before
-routing a request, the gateway calls :func:`ensure_awake` to wake the server(s)
-that task needs and sleep the rest, so only one "active group" holds VRAM:
+The full per-type model set is more than the ≤8B that may be GPU-resident at once
+(physics base+adapter on :18000, plus fol :18001 + qa :18002 = ~14B), so each vLLM
+runs with ``--enable-sleep-mode`` (+ ``VLLM_SERVER_DEV_MODE=1``). Before routing a
+request, the gateway calls :func:`ensure_awake` to wake the server(s) that task
+needs and sleep the rest, so only one "active group" holds VRAM:
 
-    logic   -> {fol, qa}   (both awake together for the FOL then QA stages)
-    physics -> {physics}
+    logic   -> {fol, qa}   (both awake together for the FOL then QA stages; ~8B)
+    physics -> {physics}   (base Qwen3.5-4B + LoRA(sft) on one engine; ~4B)
+
+The physics group is a single engine (:18000) that exposes BOTH the "base" and
+"sft" ids; sleeping/waking it by server_root covers both (and the judge/base
+client that shares the same endpoint).
 
 A swap happens only when the task TYPE changes (a few seconds: sleep the old
 group's GPU memory, then wake the new group). At competition concurrency 1 this

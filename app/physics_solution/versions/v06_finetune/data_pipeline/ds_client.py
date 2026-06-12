@@ -54,14 +54,20 @@ async def complete(
     model: str = COMMERCIAL_MODEL_FLASH,
     temperature: float = 0.0,
     thinking_off: bool = True,
+    timeout: float | None = None,
 ) -> str:
-    """Single chat completion -> text. Empty string on a returned None content."""
+    """Single chat completion -> text. Empty string on a returned None content.
+
+    `timeout` (seconds) bounds the request so a hung server can't block a worker
+    forever; None uses the SDK default. On timeout the SDK raises (callers retry).
+    """
     extra_body = dict(_THINKING_OFF) if thinking_off else {}
     resp = await client.chat.completions.create(
         model=model,
         messages=messages,
         temperature=temperature,
         extra_body=extra_body,
+        timeout=timeout,
     )
     return resp.choices[0].message.content or ""
 
@@ -78,6 +84,7 @@ async def run_batch(
     on_progress: Callable[[list[Any]], None] | None = None,
     save_every: int = 50,
     provider: str = COMMERCIAL_PROVIDER,
+    thinking_off: bool = True,
 ) -> list[Any]:
     """Run `build_messages -> complete -> parse` over items with bounded concurrency.
 

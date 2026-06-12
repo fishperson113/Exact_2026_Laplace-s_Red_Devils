@@ -23,6 +23,7 @@ Run:
 from __future__ import annotations
 
 import argparse
+import difflib
 import re
 from collections import Counter, defaultdict
 
@@ -32,7 +33,8 @@ from app.physics_solution.versions.v06_finetune.data_pipeline import pot_common
 from app.physics_solution.versions.v06_finetune.data_pipeline.schema import write_jsonl
 
 IN_SELFGEN = "app/physics_solution/versions/v06_finetune/output/trajectories_selfgen.jsonl"
-IN_TEACHER = "app/physics_solution/versions/v06_finetune/output/trajectories_teacher.jsonl"
+IN_HINTED = "app/physics_solution/versions/v06_finetune/output/trajectories_hinted.jsonl"
+IN_TEACHER = "app/physics_solution/versions/v06_finetune/output/trajectories_teacher.jsonl"  # legacy (deprecated)
 OUT_SFT = "app/physics_solution/versions/v06_finetune/output/trajectories_sft.jsonl"
 OUT_REJECTED = "app/physics_solution/versions/v06_finetune/output/guards_rejected.jsonl"
 
@@ -153,8 +155,9 @@ def spurious_reason(traj: dict, rel_tol: float) -> str | None:
     return None
 
 
-# preference order when capping: on-policy first, then cleaner (low temp / few retries)
-_ROUTE_RANK = {"self_gen": 0, "teacher_residual": 1, "teacher_rewrite": 1}
+# preference order when capping: pure on-policy first, then hinted (still Qwen, but guided),
+# then any legacy teacher; within a route, lower temperature / fewer retries is cleaner.
+_ROUTE_RANK = {"self_gen": 0, "self_gen_hinted": 1, "teacher_residual": 2, "teacher_rewrite": 2}
 
 
 def _sort_key(traj: dict) -> tuple:
@@ -166,13 +169,43 @@ def _sort_key(traj: dict) -> tuple:
     )
 
 
-def run(cap: int, rel_tol: float) -> None:
+def _select_diverse(group_sorted: list[dict], cap: int) -> tuple[list[dict], list[dict]]:
+    """Keep `cap` trajectories that are as DIFFERENT as possible (method diversity).
+
+    `group_sorted` is already sorted best-first by `_sort_key` and deduped. Anchor #1 =
+    the cleanest solution (on-policy, low temp, few retries). Each further pick maximizes
+    code dissimilarity to the already-chosen set (greedy max-min on normalized code), so
+    for cap=2 we get the cleanest solve + the most different valid solve (often a hotter
+    temp / different method). Returns (kept, dropped).
+    """
+    if len(group_sorted) <= cap:
+        return group_sorted, []
+    norms = [pot_common.normalize_code(t.get("code", "")) for t in group_sorted]
+    chosen = [0]  # anchor: best by _sort_key
+    while len(chosen) < cap:
+        # pick the candidate whose nearest already-chosen neighbour is the FARTHEST away
+        best_i, best_sim = None, 2.0
+        for i in range(len(group_sorted)):
+            if i in chosen:
+                continue
+            nearest = max(difflib.SequenceMatcher(None, norms[i], norms[j]).ratio()
+                          for j in chosen)
+            if nearest < best_sim:
+                best_sim, best_i = nearest, i
+        chosen.append(best_i)
+    chosen_set = set(chosen)
+    kept = [group_sorted[i] for i in chosen]
+    dropped = [group_sorted[i] for i in range(len(group_sorted)) if i not in chosen_set]
+    return kept, dropped
+
+
+def run(cap: int, rel_tol: float, select: str = "diverse") -> None:
     root = repo_root()
     candidates: list[dict] = []
-    for path in (IN_SELFGEN, IN_TEACHER):
+    for path in (IN_SELFGEN, IN_HINTED, IN_TEACHER):
         candidates.extend(pot_common.load_jsonl_if_exists(root / path))
     print(f"Loaded {len(candidates)} candidate trajectories "
-          f"(self_gen + teacher).")
+          f"(self_gen + hinted [+ legacy teacher]).")
     if not candidates:
         raise SystemExit("No candidate trajectories. Run selfgen.py / teacher.py first.")
 
@@ -209,10 +242,13 @@ def run(cap: int, rel_tol: float) -> None:
             seen_hashes.add(h)
             deduped.append(t)
         if len(deduped) > cap:
-            for t in deduped[cap:]:
+            if select == "diverse":
+                deduped, over = _select_diverse(deduped, cap)
+            else:  # "clean": keep the top-`cap` by _sort_key (on-policy, low temp)
+                deduped, over = deduped[:cap], deduped[cap:]
+            for t in over:
                 rejected.append({**t, "_reject_reason": "over_cap"})
-            n_capped += len(deduped) - cap
-            deduped = deduped[:cap]
+            n_capped += len(over)
         final.extend(deduped)
 
     write_jsonl(root / OUT_SFT, final)
@@ -246,10 +282,13 @@ def _report(candidates, final, spurious_reasons, n_dup, n_capped) -> None:
 def main() -> None:
     p = argparse.ArgumentParser(description="Phase-2 guards: spurious-reject + dedup + cap")
     p.add_argument("--cap", type=int, default=4, help="max trajectories kept per problem")
+    p.add_argument("--select", choices=("diverse", "clean"), default="diverse",
+                   help="when capping: 'diverse' keeps the cleanest + most code-different "
+                        "solves (method diversity); 'clean' keeps the top-cap by route/temp")
     p.add_argument("--spurious-rel-tol", type=float, default=1e-4,
                    help="tolerance for flagging a gold value baked in as a literal")
     args = p.parse_args()
-    run(args.cap, args.spurious_rel_tol)
+    run(args.cap, args.spurious_rel_tol, args.select)
 
 
 if __name__ == "__main__":

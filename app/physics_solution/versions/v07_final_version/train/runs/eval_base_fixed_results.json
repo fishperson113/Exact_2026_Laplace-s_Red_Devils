@@ -1,0 +1,26 @@
+{
+  "model": "Qwen/Qwen3.5-4B",
+  "val_56": {
+    "name": "val_56",
+    "n": 56,
+    "correct": 46,
+    "accuracy": 0.8214,
+    "buckets": {
+      "ok": 46,
+      "wrong_answer": 8,
+      "exec_failed": 2
+    }
+  },
+  "golden_60": {
+    "name": "golden_60",
+    "n": 60,
+    "correct": 41,
+    "accuracy": 0.6833,
+    "buckets": {
+      "ok": 41,
+      "wrong_answer": 16,
+      "no_code": 1,
+      "exec_failed": 2
+    }
+  }
+}

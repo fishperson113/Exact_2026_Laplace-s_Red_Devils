@@ -1,0 +1,567 @@
+{
+  "n": 56,
+  "correct": 49,
+  "accuracy": 0.875,
+  "rows": [
+    {
+      "id": "DT001",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "LDDT",
+      "gold": "0",
+      "gold_unit": "V/m",
+      "pred": "0.0"
+    },
+    {
+      "id": "DT002",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "numeric",
+      "domain": "LDDT",
+      "gold": "640000",
+      "gold_unit": "V/m",
+      "pred": "640000.0"
+    },
+    {
+      "id": "DT003",
+      "correct": true,
+      "votes": "3/5",
+      "answer_type": "numeric",
+      "domain": "LDDT",
+      "gold": "351000",
+      "gold_unit": "V/m",
+      "pred": "351281.0"
+    },
+    {
+      "id": "DT004",
+      "correct": true,
+      "votes": "3/5",
+      "answer_type": "numeric",
+      "domain": "LDDT",
+      "gold": "0.7",
+      "gold_unit": "N",
+      "pred": "0.702562"
+    },
+    {
+      "id": "DT005",
+      "correct": false,
+      "votes": "2/5",
+      "answer_type": "numeric",
+      "domain": "LDDT",
+      "gold": "0.094",
+      "gold_unit": "N",
+      "pred": "0.204538"
+    },
+    {
+      "id": "CH001",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "CH",
+      "gold": "40",
+      "gold_unit": "Ω",
+      "pred": "40.0"
+    },
+    {
+      "id": "CH002",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "CH",
+      "gold": "80",
+      "gold_unit": "Ω",
+      "pred": "80.0"
+    },
+    {
+      "id": "CH003",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "CH",
+      "gold": "120",
+      "gold_unit": "Ω",
+      "pred": "120.0"
+    },
+    {
+      "id": "CH004",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "CH",
+      "gold": "60",
+      "gold_unit": "Ω",
+      "pred": "60.0"
+    },
+    {
+      "id": "CH005",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "CH",
+      "gold": "25",
+      "gold_unit": "Ω",
+      "pred": "25.0"
+    },
+    {
+      "id": "NL001",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "NL",
+      "gold": "100.00",
+      "gold_unit": "mJ",
+      "pred": "100.0"
+    },
+    {
+      "id": "NL002",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "NL",
+      "gold": "90.00",
+      "gold_unit": "mJ",
+      "pred": "90.0"
+    },
+    {
+      "id": "NL003",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "NL",
+      "gold": "900.00",
+      "gold_unit": "mJ",
+      "pred": "900.0"
+    },
+    {
+      "id": "NL004",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "NL",
+      "gold": "1000.00",
+      "gold_unit": "mJ",
+      "pred": "1000.0"
+    },
+    {
+      "id": "NL005",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "NL",
+      "gold": "9.49",
+      "gold_unit": "V",
+      "pred": "9.49"
+    },
+    {
+      "id": "TD001",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "TD",
+      "gold": "150",
+      "gold_unit": "V",
+      "pred": "150.0"
+    },
+    {
+      "id": "TD002",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "numeric",
+      "domain": "TD",
+      "gold": "300",
+      "gold_unit": "V",
+      "pred": "300.0"
+    },
+    {
+      "id": "DDT131",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "DDT",
+      "gold": "0.005",
+      "gold_unit": "T",
+      "pred": "0.00502655"
+    },
+    {
+      "id": "DDT132",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "DDT",
+      "gold": "0.00754",
+      "gold_unit": "T",
+      "pred": "0.00753982"
+    },
+    {
+      "id": "DDT134",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "DDT",
+      "gold": "0.001",
+      "gold_unit": "J",
+      "pred": "0.001"
+    },
+    {
+      "id": "DDT135",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "DDT",
+      "gold": "2000",
+      "gold_unit": "turns/m",
+      "pred": "2000.0"
+    },
+    {
+      "id": "THCB001",
+      "correct": false,
+      "votes": "4/5",
+      "answer_type": "numeric",
+      "domain": "THCB",
+      "gold": "0.1",
+      "gold_unit": "A",
+      "pred": "0.05"
+    },
+    {
+      "id": "THCB002",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "numeric",
+      "domain": "THCB",
+      "gold": "3.57",
+      "gold_unit": "%",
+      "pred": "3.57143"
+    },
+    {
+      "id": "THCB003",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "numeric",
+      "domain": "THCB",
+      "gold": "1.0",
+      "gold_unit": "Ω",
+      "pred": "1.0"
+    },
+    {
+      "id": "THCB004",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "THCB",
+      "gold": "0.26",
+      "gold_unit": "A",
+      "pred": "0.26"
+    },
+    {
+      "id": "THCB005",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "numeric",
+      "domain": "THCB",
+      "gold": "4.21",
+      "gold_unit": "%",
+      "pred": "4.21053"
+    },
+    {
+      "id": "CHLT001",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "yes_no",
+      "domain": "CH",
+      "gold": "No",
+      "gold_unit": "-",
+      "pred": "no"
+    },
+    {
+      "id": "CHLT005",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "yes_no",
+      "domain": "CH",
+      "gold": "No",
+      "gold_unit": "N/A",
+      "pred": "no"
+    },
+    {
+      "id": "CHLT007",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "yes_no",
+      "domain": "CH",
+      "gold": "No",
+      "gold_unit": "N/A",
+      "pred": "no"
+    },
+    {
+      "id": "DDT340",
+      "correct": false,
+      "votes": "5/5",
+      "answer_type": "multi_value",
+      "domain": "DDT",
+      "gold": "38.16; 0.30",
+      "gold_unit": "—",
+      "pred": "[33.1573, 0.3]"
+    },
+    {
+      "id": "TD374",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "multi_value",
+      "domain": "TD",
+      "gold": "0; 0",
+      "gold_unit": "μC; μJ",
+      "pred": "[0.0, 0.0]"
+    },
+    {
+      "id": "THCB076",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "multi_value",
+      "domain": "THCB",
+      "gold": "0.5; 1.0",
+      "gold_unit": "A; A",
+      "pred": "[0.5, 1.0]"
+    },
+    {
+      "id": "THCB087",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "multi_value",
+      "domain": "THCB",
+      "gold": "0.6; 1.2",
+      "gold_unit": "cm; %",
+      "pred": "[0.6, 1.2]"
+    },
+    {
+      "id": "THCB088",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "multi_value",
+      "domain": "THCB",
+      "gold": "10.2; 0.067",
+      "gold_unit": "cm; cm",
+      "pred": "[10.2, 0.0666667]"
+    },
+    {
+      "id": "THCB090",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "multi_value",
+      "domain": "THCB",
+      "gold": "0.05; 2.94",
+      "gold_unit": "m; %",
+      "pred": "[0.05, 2.94118]"
+    },
+    {
+      "id": "vj_l11_0002",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "DDT",
+      "gold": "2 x 10^-5",
+      "gold_unit": "T",
+      "pred": "3.1622800000000005e-05"
+    },
+    {
+      "id": "vj_l11_0006",
+      "correct": true,
+      "votes": "2/5",
+      "answer_type": "text",
+      "domain": "LDDT",
+      "gold": "kq / (a sqrt(L^2 + a^2))",
+      "gold_unit": "N/A",
+      "pred": "2.0"
+    },
+    {
+      "id": "DDT209",
+      "correct": false,
+      "votes": "1/5",
+      "answer_type": "text",
+      "domain": "DDT",
+      "gold": "Magnetic induction $B$",
+      "gold_unit": "—",
+      "pred": "I"
+    },
+    {
+      "id": "DDT138",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "DDT",
+      "gold": "5.654",
+      "gold_unit": "mT",
+      "pred": "0.00565487"
+    },
+    {
+      "id": "TD006",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "numeric",
+      "domain": "TD",
+      "gold": "1",
+      "gold_unit": "pF",
+      "pred": "1.0"
+    },
+    {
+      "id": "TD007",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "TD",
+      "gold": "1200",
+      "gold_unit": "V",
+      "pred": "1200.0"
+    },
+    {
+      "id": "TD008",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "TD",
+      "gold": "600",
+      "gold_unit": "V",
+      "pred": "600.0"
+    },
+    {
+      "id": "DDT139",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "DDT",
+      "gold": "2.51",
+      "gold_unit": "J/m³",
+      "pred": "2.51327"
+    },
+    {
+      "id": "CHLT009",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "yes_no",
+      "domain": "CH",
+      "gold": "No",
+      "gold_unit": "N/A",
+      "pred": "no"
+    },
+    {
+      "id": "CHLT010",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "yes_no",
+      "domain": "CH",
+      "gold": "Yes",
+      "gold_unit": "N/A",
+      "pred": "yes"
+    },
+    {
+      "id": "CHLT011",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "yes_no",
+      "domain": "CH",
+      "gold": "No",
+      "gold_unit": "-",
+      "pred": "no"
+    },
+    {
+      "id": "CHLT012",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "yes_no",
+      "domain": "CH",
+      "gold": "Yes",
+      "gold_unit": "N/A",
+      "pred": "yes"
+    },
+    {
+      "id": "CHLT013",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "yes_no",
+      "domain": "CH",
+      "gold": "No",
+      "gold_unit": "N/A",
+      "pred": "no"
+    },
+    {
+      "id": "vj_l11_0026",
+      "correct": false,
+      "votes": "4/5",
+      "answer_type": "multi_value",
+      "domain": "TD",
+      "gold": "2; 4 × 10^(-3)",
+      "gold_unit": "N/A; μF",
+      "pred": "[2.0, 4.000000000000001]"
+    },
+    {
+      "id": "THCB094",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "multi_value",
+      "domain": "THCB",
+      "gold": "100.2; 0.133",
+      "gold_unit": "g; g",
+      "pred": "[100.2, 0.133333]"
+    },
+    {
+      "id": "vj_l12_0027",
+      "correct": false,
+      "votes": "3/5",
+      "answer_type": "text",
+      "domain": "CH",
+      "gold": "f2 = f1 / sqrt(2)",
+      "gold_unit": "N/A",
+      "pred": "1.0"
+    },
+    {
+      "id": "DDT216",
+      "correct": false,
+      "votes": "3/5",
+      "answer_type": "text",
+      "domain": "DDT",
+      "gold": "Increases in proportion to the square of the number of turns",
+      "gold_unit": "—",
+      "pred": "4"
+    },
+    {
+      "id": "DDT330",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "text",
+      "domain": "DDT",
+      "gold": "the circuit exhibits an inductive characteristic",
+      "gold_unit": "—",
+      "pred": "Inductive"
+    },
+    {
+      "id": "DDT350",
+      "correct": true,
+      "votes": "4/5",
+      "answer_type": "text",
+      "domain": "DDT",
+      "gold": "The circuit exhibits an inductive characteristic.",
+      "gold_unit": "—",
+      "pred": "Inductive"
+    },
+    {
+      "id": "DDT141",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "DDT",
+      "gold": "0.003",
+      "gold_unit": "Wb",
+      "pred": "0.003"
+    },
+    {
+      "id": "DDT142",
+      "correct": true,
+      "votes": "5/5",
+      "answer_type": "numeric",
+      "domain": "DDT",
+      "gold": "60",
+      "gold_unit": "V",
+      "pred": "60.0"
+    }
+  ]
+}

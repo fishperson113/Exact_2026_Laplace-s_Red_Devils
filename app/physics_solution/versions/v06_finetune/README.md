@@ -1,5 +1,13 @@
 # v06_finetune
 
+> ⚠️ **DEPRECATED — see [v07](../v07_final-version/README.md).** This folder did the data
+> prep + QC (done). The architecture moved on since this was written: the **DeepSeek teacher
+> is replaced by an on-policy hinted route** (`data_pipeline/hinted.py`), the generation
+> prompt now requires a **5–10 line reasoning preamble** (`data_pipeline/prompts.py`), and
+> the single canonical dataset is **`input/self_gen_dataset.jsonl`** (1584 problems +
+> `hint_code`). The **data-gen code in `data_pipeline/` is still current and reused** — only
+> the prose below (and `V06_HANDOFF_PROMPT.md`) is stale. Run/eval guidance lives in v07.
+
 Fine-tune **Qwen3.5-4B** (Unsloth QLoRA) so it natively emits **Program-of-Thought
 code-gen** — a short reason + one self-contained Python script that prints
 `FINAL ANSWER:` / `UNIT:` — without long prompts or few-shot examples. Target:

@@ -1,0 +1,34 @@
+{"id": "LD295", "answer_type": "numeric", "gold_answer": "43.30 * 10^{-3}"}
+{"id": "TD046", "answer_type": "numeric", "gold_answer": "124.36"}
+{"id": "TD166", "answer_type": "numeric", "gold_answer": "3.005"}
+{"id": "DDT158", "answer_type": "numeric", "gold_answer": "8"}
+{"id": "vj_l11_0043", "answer_type": "numeric", "gold_answer": "10"}
+{"id": "vj_l11_0237", "answer_type": "multi_value", "gold_answer": "2; 1/2"}
+{"id": "vj_l11_0107", "answer_type": "multi_value", "gold_answer": "1.5 cm; 4.5 cm; -3.375"}
+{"id": "vj_l11_0104", "answer_type": "multi_value", "gold_answer": "30 cm from A; 15 cm from B"}
+{"id": "vj_l12_0239", "answer_type": "numeric", "gold_answer": "20√3"}
+{"id": "vj_l12_0265", "answer_type": "numeric", "gold_answer": "2 × 10^(-4)"}
+{"id": "vj_l12_0121", "answer_type": "numeric", "gold_answer": "1/4"}
+{"id": "vj_l11_0257", "answer_type": "multi_value", "gold_answer": "8 cm from A, 4 cm from B; Yes; 0"}
+{"id": "vj_l12_0363", "answer_type": "multi_value", "gold_answer": "20 nF; 2.25e-8 J"}
+{"id": "vj_l12_0456", "answer_type": "multi_value", "gold_answer": "20 nF; 2.25e-8 J"}
+{"id": "vj_l12_0517", "answer_type": "numeric", "gold_answer": "1/2π"}
+{"id": "vj_l12_0667", "answer_type": "numeric", "gold_answer": "sqrt(1.5)"}
+{"id": "vj_l12_0658", "answer_type": "numeric", "gold_answer": "1/2"}
+{"id": "vj_l12_0742", "answer_type": "multi_value", "gold_answer": "2.4 cm from A and 2.6 cm from B (inside AB); 52.4 cm from A and 57.4 cm from B (outside AB, closer to A)"}
+{"id": "vj_l12_0604", "answer_type": "text", "gold_answer": "C lies on the extension of AB beyond A such that A is the midpoint of BC; BC = 2 AC, with AB = 8 cm, so AC = 8 cm, BC = 16 cm"}
+{"id": "vj_l12_0522", "answer_type": "numeric", "gold_answer": "300√3"}
+{"id": "vj_l12_0014", "answer_type": "numeric", "gold_answer": "90√5"}
+{"id": "vj_l12_0497", "answer_type": "multi_value", "gold_answer": "5×10^-6; 8.1×10^-6"}
+{"id": "vj_l12_0783", "answer_type": "numeric", "gold_answer": "50√10"}
+{"id": "vj_l12_0747", "answer_type": "multi_value", "gold_answer": "6 cm from q1 (outside AB, on the side of A); 12 cm from q2"}
+{"id": "vj_l11_0035", "answer_type": "numeric", "gold_answer": "0.2"}
+{"id": "vj_l12_0775", "answer_type": "multi_value", "gold_answer": "1 Ω; 9 Ω; 18.75%; 56.25%; 3 Ω; 12 W"}
+{"id": "vj_l12_0477", "answer_type": "numeric", "gold_answer": "48√3 x 10^4"}
+{"id": "vj_l12_0858", "answer_type": "numeric", "gold_answer": "50/π"}
+{"id": "vj_l12_1017", "answer_type": "multi_value", "gold_answer": "0.96 x 10^-6; -5.58 x 10^-6"}
+{"id": "vj_l12_0864", "answer_type": "numeric", "gold_answer": "3/4"}
+{"id": "vj_l12_1004", "answer_type": "multi_value", "gold_answer": "20 nF; 2.25e-8 J"}
+{"id": "vj_l11_0057", "answer_type": "numeric", "gold_answer": "0.14"}
+{"id": "vj_l12_0826", "answer_type": "multi_value", "gold_answer": "4.999911e-5 C; 8.9e-10 C or -4.999911e-5 C; -8.9e-10 C"}
+{"id": "vj_l12_0849", "answer_type": "multi_value", "gold_answer": "Bulb 2 (40 W) glows brighter; 102960 J or 0.0286 kWh"}
