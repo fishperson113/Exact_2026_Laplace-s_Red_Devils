@@ -363,7 +363,10 @@ command -v cloudflared >/dev/null 2>&1 || { err "cloudflared not installed; skip
 # Start a quick tunnel to a local port; print its public URL (waits for it to REGISTER,
 # since trycloudflare prints the hostname before the edge connection is live).
 start_tunnel() {  # logname localport -> echoes URL
-    local name="$1" port="$2" lg="$LOG_DIR/cf_$name.log"
+    # NOTE: split across two `local` statements — a single `local name=$1 lg=..$name..`
+    # expands $name before it's assigned, which dies under `set -u` (empty URLs).
+    local name="$1" port="$2"
+    local lg="$LOG_DIR/cf_$name.log"
     local old; old="$(cat "$RUN_DIR/cf_$name.pid" 2>/dev/null || true)"
     [ -n "$old" ] && kill "$old" 2>/dev/null
     : > "$lg"
