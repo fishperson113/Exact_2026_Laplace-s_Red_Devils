@@ -1,14 +1,41 @@
 {
   "train": {
-    "n_records": 328,
-    "n_questions": 620
+    "n_records": 326,
+    "n_questions": 620,
+    "labels": {
+      "A": 149,
+      "B": 53,
+      "C": 45,
+      "D": 21,
+      "Yes": 303,
+      "No": 28,
+      "Uncertain": 21
+    }
   },
   "dev": {
-    "n_records": 41,
-    "n_questions": 79
+    "n_records": 42,
+    "n_questions": 78,
+    "labels": {
+      "A": 19,
+      "B": 7,
+      "C": 5,
+      "D": 2,
+      "Yes": 38,
+      "No": 4,
+      "Uncertain": 3
+    }
   },
   "test": {
-    "n_records": 41,
-    "n_questions": 77
+    "n_records": 42,
+    "n_questions": 78,
+    "labels": {
+      "A": 19,
+      "B": 7,
+      "C": 6,
+      "D": 3,
+      "Yes": 38,
+      "No": 3,
+      "Uncertain": 2
+    }
   }
 }

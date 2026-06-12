@@ -15,6 +15,7 @@ You are a logic-based educational QA system. You receive NL premises, their FOL 
 1. MCQ → answer A, B, C, D, or Unknown. Yes/No → answer Yes, No, or Unknown.
 2. Z3 entailment meanings: "entailed"→proved true, "contradicted"→proved false, "unknown"→undetermined, "empty"→concept not in premises.
 3. For MCQ: check Options entailment. If exactly 1 entailed → choose it. If all unknown/empty → Unknown. If 3+ entailed → suspicious, answer Unknown.
+3b. If one option TEXT itself says the result is uncertain / cannot be determined (e.g. "It is uncertain whether X", "Cannot be determined") — its FOL is usually "" — and NO other option is entailed, then CHOOSE that uncertain option. Do NOT answer a bare "Unknown" when such an option is offered; the uncertain option IS the intended answer.
 4. For Yes/No: "entailed"→Yes, "contradicted"→No, "unknown"→reason from NL.
 5. "suspicious_all_entailed"/"suspicious_all_empty"/"suspicious_many_entailed" → FOL likely wrong → answer Unknown.
 6. ALWAYS cross-check Z3 with NL premises. If Z3 says entailed but NL doesn't support it → prioritize NL reasoning.
@@ -134,6 +135,10 @@ step-by-step through the logical structure and answer the question.
 - MCQ → exactly one of: A, B, C, D, or Unknown.
 - Yes/No → exactly one of: Yes, No, or Unknown.
 - Use "Unknown" ONLY when premises are genuinely insufficient.
+- IMPORTANT — uncertain OPTION: if one of the options ITSELF states the result is uncertain /
+  cannot be determined (e.g. "It is uncertain whether X", "Cannot be determined from the
+  premises"), and the relevant claim X indeed cannot be proven nor disproven, then CHOOSE that
+  option's letter — do NOT answer "Unknown" when such an option is provided.
 
 ### Output Format
 Output ONLY a JSON object:
@@ -192,6 +197,30 @@ D. Some students do not attend class regularly
 
 Output:
 {"answer": "Unknown", "explanation": "Option A: only ∃x (some) complete exercises (Premise 1), not ∀x (all) — cannot infer. Option B: Premise 4 says seeking help → completing exercises, but we cannot reverse this to conclude anyone seeks help. Option C: study routine → attendance (Premise 3) but we cannot infer everyone has a routine. Option D: contradicted by Premise 2 (all attend). No option can be confirmed, so Unknown."}
+
+#### Example 3 — MCQ with an explicit "uncertain" option → pick that option (NOT bare Unknown)
+Premises (NL):
+1. Students who present too long get an F for the assignment.
+2. Students who get an F must redo the assignment.
+3. When redoing, a student who is absent fails the course; otherwise they pass.
+4. Yashiro presents too long and attended on presentation day.
+
+Premises (FOL):
+1. ∀x (Present_Too_Long(x) → F_Assignment(x))
+2. ∀x (F_Assignment(x) → Redo_Assignment(x))
+3. ∀x (Redo_Assignment(x) ∧ Absent(x) → Fail_Course(x))
+4. ∀x (Redo_Assignment(x) ∧ ¬Fail_Course(x) → Pass_Course(x))
+5. Present_Too_Long(Yashiro) ∧ ¬Absent_Presentation(Yashiro)
+
+Question:
+Which statement can be inferred about Yashiro?
+A. Yashiro passed the course.
+B. Yashiro failed the course.
+C. Yashiro did not redo the assignment.
+D. It is uncertain whether Yashiro passed the course.
+
+Output:
+{"answer": "D", "explanation": "Premise 5 + 1 give F_Assignment(Yashiro), so Premise 2 forces Redo — option C (did NOT redo) is contradicted. Whether Yashiro fails depends on Absent/Read_Scripts when redoing, which are unknown, so Pass (A) and Fail (B) can neither be proven nor disproven. Since passing is undetermined, the correct option is D, which explicitly states this uncertainty — not a bare Unknown."}
 """
 
 USER_TEMPLATE_QA_COT = """\
@@ -338,6 +367,10 @@ You are given the FOL premises for context — reuse the SAME predicate names an
 - Each formula must be a STATEMENT that can be checked for entailment.
 - Reuse predicate names from the premises exactly — do NOT invent new predicates.
 - If an option introduces concepts NOT in the premises, use empty string "".
+- META options about CERTAINTY/PROVABILITY are NOT logical statements → output "". They say
+  the result cannot be determined, e.g. "It is uncertain whether X", "Cannot be determined",
+  "Not enough information", "Indeterminate", "Undetermined". Do NOT translate them into
+  ¬(...) or any formula — leave "". (Downstream picks them when no other option is entailed.)
 - No markdown fences, no explanation outside the JSON.
 
 ### Examples
@@ -370,6 +403,20 @@ D. Some students are not employed
 
 Output:
 {"A": "∀x (Student(x) → Employed(x))", "B": "∀x (Student(x) → ¬Graduated(x))", "C": "∀x (Employed(x) → Graduated(x))", "D": "∃x (Student(x) ∧ ¬Employed(x))"}
+
+#### Example 3 — META "uncertain / cannot determine" option → empty string ""
+Premises (FOL):
+1. ∀x (Present_Too_Long(x) → F_Assignment(x))
+2. ∀x (F_Assignment(x) → Redo_Assignment(x))
+3. Present_Too_Long(Yashiro)
+
+Options:
+A. Yashiro passed the course
+B. Yashiro did not redo the assignment
+C. It is uncertain whether Yashiro passed the course
+
+Output:
+{"A": "Pass_Course(Yashiro)", "B": "¬Redo_Assignment(Yashiro)", "C": ""}
 """
 
 USER_TEMPLATE_OPTIONS2FOL = """\

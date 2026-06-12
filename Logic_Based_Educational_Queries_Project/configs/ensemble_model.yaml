@@ -10,13 +10,22 @@ fol_model:
 
 qa_model:
   # HF Hub repo chứa LoRA adapter (base model tự đọc từ adapter_config.json)
-  hub_repo_id: Laplaces-Red-Devils/v02-QA-CoT
-  max_new_tokens: 256   # khớp gen_max_new_tokens lúc train QA (no-think)
+  hub_repo_id: Laplaces-Red-Devils/v04-QA-CoT
+  max_new_tokens: 1000   # khớp gen_max_new_tokens lúc train QA (no-think)
 
 inference:
-  load_in_8bit: true
-  # Số mẫu sinh cùng lúc mỗi pha (FOL/QA) — tăng để chạy nhanh hơn, giảm nếu OOM.
-  batch_size: 4
+  load_in_8bit: false   # bf16 nhanh hơn (tensor core); 8-bit chỉ tiết kiệm VRAM (overhead dequant)
+  # Nạp CẢ 2 model cùng lúc, giữ resident (BTC cho phép) → KHÔNG unload/reload giữa
+  # FOL↔QA và giữa các lượt /predict → nhanh khi serving. false = 2-pha (thiếu VRAM).
+  load_both_models: true
+  # Ablation: false = BỎ pha FOL, QA chỉ nhận NL + FOL rỗng (cùng prompt train).
+  # true (mặc định) = pipeline đầy đủ FOL → QA.
+  use_fol: true
+  # batch_size=1 → ĐO per-query CHÍNH XÁC (fol_time + qa_time thật từng mẫu) + an toàn
+  # luật 60s/query (latency thật từng câu). Batch>1 chỉ cho throughput, nhưng dt/N là
+  # TRUNG BÌNH amortize — KHÔNG phản ánh latency thật (cả batch trả cùng lúc = mỗi query
+  # chịu wall-clock cả batch → dễ vượt 60s). Đặt 1 để benchmark/nộp khách quan.
+  batch_size: 1
   # Cảnh báo nếu 1 sample vượt ngưỡng (giây)
   slow_threshold_sec: 60
   # In chi tiết JSON từng mẫu ra stdout (giống QA, kèm fol_prediction). 0 = in TẤT CẢ.
@@ -27,6 +36,6 @@ output_dir: outputs/ensemble
 
 hub:
   org: Laplaces-Red-Devils
-  repo_name: Logic-Final-Result-V02
+  repo_name: Logic-Final-Result-V04
   push_results: true
-  private: false
+  private: true

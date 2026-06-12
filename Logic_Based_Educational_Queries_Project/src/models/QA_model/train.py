@@ -146,10 +146,17 @@ def parse_qa_output(text: str) -> str:
     return "Unknown"
 
 
+def _norm_answer(s: str) -> str:
+    """Chuẩn hoá answer để so khớp (full-text MCQ / Yes-No-Uncertain / number-text).
+    lowercase + gộp khoảng trắng + bỏ dấu câu cuối → robust hơn exact-match."""
+    s = re.sub(r"\s+", " ", str(s).strip().lower())
+    return s.rstrip(" .;:!?")
+
+
 def _parse_user_content(user_content: str) -> dict[str, Any]:
-    """Extract NL, FOL, question từ user message → dict cho display."""
-    sections = re.split(r"\n(?=Premises \((?:NL|FOL)\):|Question:)", user_content)
-    nl_lines, fol_lines, question = [], [], ""
+    """Extract NL, FOL, options, question từ user message → dict cho display."""
+    sections = re.split(r"\n(?=Premises \((?:NL|FOL)\):|Options:|Question:)", user_content)
+    nl_lines, fol_lines, options, question = [], [], [], ""
     for section in sections:
         section = section.strip()
         if section.startswith("Premises (NL):"):
@@ -164,47 +171,86 @@ def _parse_user_content(user_content: str) -> dict[str, Any]:
                 m = re.match(r"^\d+\.\s*(.+)$", line.strip())
                 if m:
                     fol_lines.append(m.group(1))
+        elif section.startswith("Options:"):
+            body = section[len("Options:"):].strip()
+            for line in body.split("\n"):
+                m = re.match(r"^[A-J]\.\s*(.+)$", line.strip())
+                if m:
+                    options.append(m.group(1))
         elif section.startswith("Question:"):
             question = section[len("Question:"):].strip()
-    return {"premises_nl": nl_lines, "premises_fol": fol_lines, "question": question}
+    return {"premises_nl": nl_lines, "premises_fol": fol_lines, "options": options, "question": question}
 
 
-def _parse_full_output(text: str) -> dict[str, str]:
-    """Extract answer + explanation từ model output (robust với JSON cụt/lỗi)."""
-    # 1. JSON object đầy đủ
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if match:
+_STEP_PREFIXES = ("Rule:", "Fact:", "Derive:", "Conclusion:")
+
+
+def _extract_steps(text: str) -> list[str]:
+    """Gom các dòng reasoning (Rule:/Fact:/Derive:/Conclusion:) trước JSON cuối."""
+    return [ln.strip() for ln in text.split("\n") if ln.strip().startswith(_STEP_PREFIXES)]
+
+
+def _parse_full_output(text: str) -> dict:
+    """Parse output dạng <reasoning steps> + JSON cuối {premises_used, explanation, answer}.
+
+    Khớp định dạng target mới (answer ở cuối). Trả: answer, explanation,
+    premises_used, reasoning_steps. Robust với JSON cụt/lỗi.
+    """
+    reasoning_steps = _extract_steps(text)
+
+    def _premises(parsed) -> list[int]:
+        pu = parsed.get("premises_used", [])
+        out = []
+        if isinstance(pu, list):
+            for v in pu:
+                try:
+                    out.append(int(v))
+                except (ValueError, TypeError):
+                    pass
+        return out
+
+    # 1. JSON CUỐI cùng có "answer" (reasoning đứng trước → lấy match cuối)
+    for m in reversed(list(re.finditer(r"\{.*?\}", text, re.DOTALL))):
         try:
-            parsed = json.loads(match.group())
-            return {
-                "answer": str(parsed.get("answer", "Unknown")).strip(),
-                "explanation": str(parsed.get("explanation", "")).strip(),
-            }
+            parsed = json.loads(m.group())
         except json.JSONDecodeError:
-            pass
+            continue
+        if "answer" in parsed:
+            return {
+                "answer": str(parsed["answer"]).strip(),
+                "explanation": str(parsed.get("explanation", "")).strip(),
+                "premises_used": _premises(parsed),
+                "reasoning_steps": reasoning_steps,
+            }
 
-    # 2. JSON cụt/lỗi: vẫn moi được "answer": "..." (và explanation nếu có)
+    # 2. JSON cụt/lỗi: moi từng trường (explanation NON-GREEDY → hết rác)
     m = re.search(r'"answer"\s*:\s*"([^"]+)"', text)
     if m:
         answer = m.group(1).strip()
-        em = re.search(r'"explanation"\s*:\s*"(.*)', text, re.DOTALL)
-        explanation = em.group(1).strip().rstrip('"}').strip() if em else ""
-        return {"answer": answer, "explanation": explanation}
+        em = re.search(r'"explanation"\s*:\s*"(.*?)"\s*[,}]', text, re.DOTALL)
+        explanation = em.group(1).strip() if em else ""
+        pm = re.search(r'"premises_used"\s*:\s*\[([^\]]*)\]', text)
+        premises_used = [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else []
+        return {"answer": answer, "explanation": explanation,
+                "premises_used": premises_used, "reasoning_steps": reasoning_steps}
 
-    # 3. Last-resort (KHÔNG dump text thô, KHÔNG đoán bừa chữ "A" trong văn xuôi):
-    #    a) label đi kèm cue "answer/đáp án/conclusion" — đáng tin nhất
-    m2 = re.search(
-        r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
-        text, re.I,
-    )
+    # 3. Last-resort: từ Conclusion: hoặc cue, KHÔNG đoán bừa A/B/C/D
+    concl = next((s for s in reversed(reasoning_steps) if s.startswith("Conclusion:")), "")
+    m2 = re.search(r"\b(Yes|No|Unknown|[ABCD])\b\s*$", concl)
+    if not m2:
+        m2 = re.search(
+            r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
+            text, re.I,
+        )
     if m2:
-        return {"answer": m2.group(1), "explanation": ""}
-    #    b) Yes/No/Unknown đứng độc lập (an toàn với word-boundary)
+        return {"answer": m2.group(1), "explanation": "",
+                "premises_used": [], "reasoning_steps": reasoning_steps}
     for label in ("Unknown", "Yes", "No"):
         if re.search(rf"\b{label}\b", text):
-            return {"answer": label, "explanation": ""}
-    #    c) Không có cứ liệu rõ ràng → Unknown (không gán bừa A/B/C/D)
-    return {"answer": "Unknown", "explanation": ""}
+            return {"answer": label, "explanation": "",
+                    "premises_used": [], "reasoning_steps": reasoning_steps}
+    return {"answer": "Unknown", "explanation": "",
+            "premises_used": [], "reasoning_steps": reasoning_steps}
 
 
 def _apply_chat_template_no_think(
@@ -287,6 +333,11 @@ def compute_accuracy_on_split(
     Returns: {"accuracy": float, "correct": int, "total": int, "avg_latency_sec": float, "samples": list}
     """
     model.eval()
+    # gradient_checkpointing set use_cache=False → generate recompute attention mỗi
+    # token (chậm gấp nhiều lần). Bật cache khi generate, restore sau khi eval xong
+    # để không ảnh hưởng training epoch kế tiếp.
+    _prev_use_cache = getattr(model.config, "use_cache", True)
+    model.config.use_cache = True
     if max_samples:
         dataset = dataset.select(range(min(max_samples, len(dataset))))
 
@@ -339,7 +390,7 @@ def compute_accuracy_on_split(
     for i in range(n_total):
         gold_parsed = all_gold[i]
         pred_parsed = _parse_full_output(all_generated[i])
-        is_correct = pred_parsed["answer"].strip().upper() == gold_parsed["answer"].strip().upper()
+        is_correct = _norm_answer(pred_parsed["answer"]) == _norm_answer(gold_parsed["answer"])
         correct += int(is_correct)
 
         all_results.append({
@@ -358,16 +409,21 @@ def compute_accuracy_on_split(
                 "idx": i,
                 "correct": is_correct,
                 "input": {
-                    "premises_nl": parsed_input["premises_nl"],
+                    "query": parsed_input["question"],
+                    "premises": parsed_input["premises_nl"],
                     "premises_fol": parsed_input["premises_fol"],
-                    "question": parsed_input["question"],
+                    "options": parsed_input.get("options", []),
                 },
                 "gold": {
                     "answer": gold_parsed["answer"],
+                    "premises_used": gold_parsed.get("premises_used", []),
+                    "reasoning_steps": gold_parsed.get("reasoning_steps", []),
                     "explanation": gold_parsed["explanation"],
                 },
                 "prediction": {
                     "answer": pred_parsed["answer"],
+                    "premises_used": pred_parsed.get("premises_used", []),
+                    "reasoning_steps": pred_parsed.get("reasoning_steps", []),
                     "explanation": pred_parsed["explanation"],
                 },
             })
@@ -381,6 +437,7 @@ def compute_accuracy_on_split(
         "avg_latency_sec": avg_latency,
         "total_time_sec": round(total_time, 2),
         "samples": all_results,
+        "detail_samples": detail_samples,
     }
 
     # In full detail JSON cho các mẫu random
@@ -396,9 +453,11 @@ def compute_accuracy_on_split(
 
     # Ghi log file
     if log_file:
-        log_entry = {**result, "detail_samples": detail_samples}
-        log_file.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
+        log_file.write(json.dumps(result, ensure_ascii=False) + "\n")
         log_file.flush()
+
+    # Restore use_cache như trước khi eval (training với gradient checkpointing cần False)
+    model.config.use_cache = _prev_use_cache
 
     return result
 
@@ -519,24 +578,45 @@ def benchmark_latency(model, tokenizer, dataset, cfg: dict):
 # ─── Full Evaluation (train + dev + test) ────────────────────────────────────
 
 def evaluate_all_splits(model, tokenizer, ds_dict: DatasetDict, cfg: dict, output_dir: Path):
-    """Tính accuracy trên cả 3 splits, ghi kết quả JSON."""
+    """Tính accuracy các splits, ghi kết quả JSON (kèm per-sample predictions cho dev/test).
+
+    Eval là generation-based (~500 token/mẫu) nên RẤT đắt — thiết kế để không chờ vô ích:
+      - Thứ tự test → dev → train: con số cần nhất (test) có TRƯỚC TIÊN.
+      - train chỉ sample `eval_train_sample` mẫu (default 50): đủ tín hiệu overfit-gap
+        (so với dev), không đốt 2+ giờ generate lại 620 mẫu đã học thuộc.
+      - dev/test lưu đầy đủ samples + detail_samples vào eval_results.json để soi lỗi.
+    """
     max_new_tokens = cfg["model"].get("gen_max_new_tokens", 512)
-    print_n = cfg.get("eval", {}).get("eval_print_samples", 5)
+    eval_cfg = cfg.get("eval", {})
+    print_n = eval_cfg.get("eval_print_samples", 5)
+    train_sample_n = eval_cfg.get("eval_train_sample", 50)
+    eval_batch_size = cfg.get("training", {}).get("per_device_eval_batch_size", 8)
+
+    # gradient_checkpointing lúc train tắt use_cache → generate không cache thì
+    # chậm thảm họa (recompute attention mỗi token). Bật lại trước khi eval.
+    model.config.use_cache = True
+
+    # (split, max_samples) — test trước để có con số quan trọng nhất sớm nhất
+    plan = [("test", None), ("dev", None), ("train", train_sample_n)]
 
     results = {}
-    for split_name in ["train", "dev", "test"]:
+    eval_path = output_dir / "eval_results.json"
+    for split_name, max_samples in plan:
         if split_name not in ds_dict:
             continue
+        n_show = min(max_samples or len(ds_dict[split_name]), len(ds_dict[split_name]))
         print(f"\n{'='*60}")
-        print(f"  Final Accuracy — [{split_name}] ({len(ds_dict[split_name])} samples)")
+        print(f"  Final Accuracy — [{split_name}] ({n_show}/{len(ds_dict[split_name])} samples, batch={eval_batch_size})")
         print(f"{'='*60}")
 
         result = compute_accuracy_on_split(
             model=model,
             tokenizer=tokenizer,
             dataset=ds_dict[split_name],
+            max_samples=max_samples,
             max_new_tokens=max_new_tokens,
             print_n=print_n if split_name != "train" else 3,
+            eval_batch_size=eval_batch_size,
         )
         results[split_name] = {
             "accuracy": result["accuracy"],
@@ -544,20 +624,24 @@ def evaluate_all_splits(model, tokenizer, ds_dict: DatasetDict, cfg: dict, outpu
             "total": result["total"],
             "avg_latency_sec": result["avg_latency_sec"],
         }
+        # dev/test: giữ per-sample predictions + detail để phân tích lỗi offline
+        if split_name in ("dev", "test"):
+            results[split_name]["samples"] = result["samples"]
+            results[split_name]["detail_samples"] = result["detail_samples"]
         print(f"  → {split_name}: {result['correct']}/{result['total']} = {result['accuracy']:.1%}")
+
+        # Ghi ngay sau mỗi split — lỡ bị ngắt giữa chừng vẫn còn kết quả test
+        with open(eval_path, "w", encoding="utf-8") as f:
+            json.dump(results, f, ensure_ascii=False, indent=2)
 
     # Summary
     print(f"\n{'='*60}")
     print(f"  FINAL ACCURACY SUMMARY")
     print(f"{'='*60}")
     for split_name, r in results.items():
-        print(f"  {split_name:5s}: {r['accuracy']:.1%} ({r['correct']}/{r['total']}), avg {r['avg_latency_sec']:.2f}s/sample")
+        note = f" (sampled {train_sample_n})" if split_name == "train" else ""
+        print(f"  {split_name:5s}: {r['accuracy']:.1%} ({r['correct']}/{r['total']}){note}, avg {r['avg_latency_sec']:.2f}s/sample")
     print(f"{'='*60}\n")
-
-    # Save
-    eval_path = output_dir / "eval_results.json"
-    with open(eval_path, "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
     print(f"[Eval] Results saved to: {eval_path}")
 
     return results
@@ -580,6 +664,14 @@ def train(cfg: dict, debug_max_samples: int | None = None):
             n = min(debug_max_samples, len(ds_dict[split]))
             ds_dict[split] = ds_dict[split].select(range(n))
         print(f"[Debug] Limited to {debug_max_samples} samples per split")
+
+    # train_sample: giới hạn SỐ MẪU TRAIN (chỉ split train) để chạy thử nhanh.
+    # null/0 = train full. dev/test luôn giữ nguyên để đánh giá không đổi.
+    train_sample = train_cfg.get("train_sample")
+    if train_sample:
+        n = min(int(train_sample), len(ds_dict["train"]))
+        ds_dict["train"] = ds_dict["train"].select(range(n))
+        print(f"[train_sample] Giới hạn train → {n} mẫu (dev/test giữ nguyên)")
 
     print(f"[Data] Train: {len(ds_dict['train'])}, Dev: {len(ds_dict['dev'])}, Test: {len(ds_dict['test'])}")
 

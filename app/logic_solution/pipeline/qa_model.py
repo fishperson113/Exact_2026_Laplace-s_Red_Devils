@@ -1,27 +1,50 @@
 """
 pipeline/qa_model.py
 --------------------
-Stage 2: Load QA model (base + LoRA adapter) từ HF Hub,
-nhận NL + FOL + question → sinh {"answer": "...", "explanation": "..."}.
+Stage 2: Load QA model (base + LoRA adapter) từ HF Hub.
+Nhận NL + FOL + options + question → sinh:
+  <reasoning steps Rule:/Fact:/Derive:/Conclusion:>
+  {"premises_used": [...], "explanation": "...", "answer": "..."}   (answer ĐỨNG CUỐI)
+
+ĐỒNG BỘ 1:1 với luồng train QA v3 (src/models/QA_model/prepare_data.py + train.py):
+prompt có Options block, premises 0-indexed, MCQ trả VERBATIM option text.
 """
 from __future__ import annotations
-
-import json
-import re
 
 import torch
 from peft import PeftConfig, PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-from prompts import SYSTEM_PROMPT_QA, USER_TEMPLATE_QA, format_nl_block, format_fol_block
+from prompts import (
+    SYSTEM_PROMPT_QA,
+    USER_TEMPLATE_QA,
+    format_premises_nl,
+    format_premises_fol,
+    format_options,
+)
+from parsing import parse_qa_output
 
 
 class QAModel:
-    """Load QA LoRA adapter từ HF Hub và sinh answer + explanation."""
+    """Load QA LoRA adapter từ HF Hub và sinh reasoning steps + answer."""
 
-    def __init__(self, hub_repo_id: str, load_in_8bit: bool = True):
+    def __init__(
+        self,
+        hub_repo_id: str,
+        load_in_8bit: bool = True,
+        enable_thinking: bool = False,
+        temperature: float = 0.6,
+        top_p: float = 0.95,
+        top_k: int = 20,
+    ):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        print(f"[QA] Loading adapter: {hub_repo_id}")
+        # QA v3 được train no-think → mặc định enable_thinking=False (greedy).
+        # Qwen3 think mode KHÔNG được greedy (lặp vô hạn) → nếu bật phải sampling.
+        self.enable_thinking = enable_thinking
+        self.temperature = temperature
+        self.top_p = top_p
+        self.top_k = top_k
+        print(f"[QA] Loading adapter: {hub_repo_id}  (thinking={enable_thinking})")
 
         load_kwargs: dict = {"trust_remote_code": True, "device_map": "auto"}
         if load_in_8bit and self.device == "cuda":
@@ -50,26 +73,31 @@ class QAModel:
         premises_nl:  list[str],
         premises_fol: list[str],
         question:     str,
-        max_new_tokens: int = 200,
-    ) -> dict[str, str]:
+        options:      list[str] | None = None,
+        max_new_tokens: int = 1000,
+    ) -> dict:
         """
-        Input : premises_nl, premises_fol, question
-        Output: {"answer": "...", "explanation": "..."}
+        Input : premises_nl, premises_fol, question, options
+        Output: {"answer", "explanation", "premises_used",
+                 "reasoning": {"type": "fol", "steps": [...]}}
+
+        reasoning.steps = NGUYÊN VĂN các dòng Rule:/Fact:/Derive:/Conclusion: model
+        sinh ra (không cắt câu lại). reasoning.type LUÔN là "fol" (schema BTC).
         """
         user_content = USER_TEMPLATE_QA.format(
-            premises_nl_block  = format_nl_block(premises_nl),
-            premises_fol_block = format_fol_block(premises_fol),
+            premises_nl_block  = format_premises_nl(premises_nl),
+            premises_fol_block = format_premises_fol(premises_fol),
+            options_block      = format_options(options or []),
             question           = question,
         )
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT_QA},
             {"role": "user",   "content": user_content},
         ]
-        # enable_thinking=False: khớp lúc train (no-think) → đầu ra là JSON thuần,
-        # tránh <think> ăn token budget làm cắt JSON.
         try:
             text = self.tokenizer.apply_chat_template(
-                messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+                messages, tokenize=False, add_generation_prompt=True,
+                enable_thinking=self.enable_thinking,
             )
         except TypeError:
             text = self.tokenizer.apply_chat_template(
@@ -79,47 +107,50 @@ class QAModel:
             text, return_tensors="pt", truncation=True, max_length=4096
         ).to(self.model.device)
 
-        with torch.no_grad():
-            out = self.model.generate(
-                **inputs, max_new_tokens=max_new_tokens, do_sample=False,
+        # Sampling theo chế độ: think → sampling (Qwen3), no-think → greedy (khớp eval train).
+        gen_kwargs: dict = {"max_new_tokens": max_new_tokens}
+        if self.enable_thinking:
+            gen_kwargs.update(
+                do_sample=True,
+                temperature=self.temperature,
+                top_p=self.top_p,
+                top_k=self.top_k,
             )
+        else:
+            gen_kwargs.update(do_sample=False)
+
+        with torch.no_grad():
+            out = self.model.generate(**inputs, **gen_kwargs)
         raw = self.tokenizer.decode(
             out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True
         ).strip()
 
-        return self._parse_output(raw)
+        # Tách <think>…</think> (nếu có) trước khi parse — tránh ngoặc trong think vỡ parser.
+        _think, answer_text = self._split_thinking(raw)
+        parsed = parse_qa_output(answer_text)
+
+        return {
+            "answer":        parsed["answer"],
+            "explanation":   parsed["explanation"],
+            "premises_used": parsed["premises_used"],
+            # type LUÔN "fol" theo schema BTC; steps nguyên bản từ model.
+            "reasoning":     {"type": "fol", "steps": parsed["reasoning_steps"]},
+        }
 
     # ── private ────────────────────────────────────────────────────────────────
 
     @staticmethod
-    def _parse_output(text: str) -> dict[str, str]:
-        """Parse JSON {"answer": ..., "explanation": ...} với fallback."""
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
-            try:
-                parsed = json.loads(match.group())
-                if "answer" in parsed:
-                    return {
-                        "answer":      str(parsed["answer"]).strip(),
-                        "explanation": str(parsed.get("explanation", "")).strip(),
-                    }
-            except json.JSONDecodeError:
-                pass
-        # JSON cụt/lỗi: moi "answer": "..." (và explanation nếu có)
-        m = re.search(r'"answer"\s*:\s*"([^"]+)"', text)
-        if m:
-            ans = m.group(1).strip()
-            em = re.search(r'"explanation"\s*:\s*"(.*)', text, re.DOTALL)
-            explanation = em.group(1).strip().rstrip('"}').strip() if em else ""
-            return {"answer": ans, "explanation": explanation}
-        # Last-resort: word-boundary + cue, KHÔNG đoán bừa chữ "A" trong văn xuôi
-        m2 = re.search(
-            r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
-            text, re.I,
-        )
-        if m2:
-            return {"answer": m2.group(1), "explanation": ""}
-        for label in ("Unknown", "Yes", "No"):
-            if re.search(rf"\b{label}\b", text):
-                return {"answer": label, "explanation": ""}
-        return {"answer": "Unknown", "explanation": ""}
+    def _split_thinking(raw: str) -> tuple[str, str]:
+        """Tách (think_text, answer_text) từ output thô.
+
+        - Có '</think>'         → think = trước nó, answer = sau nó.
+        - Bắt đầu '<think>' mà KHÔNG đóng (think bị cắt vì hết token) → toàn bộ
+          là think, answer rỗng (parser sẽ fallback — đúng ý: think tràn budget).
+        - Không có think         → answer = toàn bộ.
+        """
+        if "</think>" in raw:
+            think, _, after = raw.partition("</think>")
+            return think.replace("<think>", "").strip(), after.strip()
+        if raw.lstrip().startswith("<think>"):
+            return raw.replace("<think>", "").strip(), ""
+        return "", raw.strip()

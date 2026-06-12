@@ -41,6 +41,7 @@ from data.prompts import (
 from models.QA_model.prepare_data import (
     SYSTEM_PROMPT_QA_COT,
     USER_TEMPLATE_QA_COT,
+    format_options,
     format_premises_fol,
     format_premises_nl,
 )
@@ -76,6 +77,8 @@ class EnsembleResult:
     answer: str
     explanation: str
     premises_fol: list[str]
+    premises_used: list[int] = field(default_factory=list)
+    reasoning_steps: list[str] = field(default_factory=list)
     fol_latency_sec: float = 0.0
     qa_latency_sec: float = 0.0
     total_latency_sec: float = 0.0
@@ -215,11 +218,13 @@ class QAModel:
         print(f"[QA] Loaded on {self.device}")
 
     def generate(self, premises_nl: list[str], premises_fol: list[str], question: str,
+                 options: list[str] | None = None,
                  max_new_tokens: int = 200) -> dict[str, str]:
-        """NL + FOL + question → {"answer": "...", "explanation": "..."}."""
+        """NL + FOL + options + question → {answer, explanation, premises_used, reasoning_steps}."""
         user_content = USER_TEMPLATE_QA_COT.format(
             premises_nl_block=format_premises_nl(premises_nl),
             premises_fol_block=format_premises_fol(premises_fol),
+            options_block=format_options(options or []),
             question=question,
         )
         messages = [
@@ -257,10 +262,13 @@ class QAModel:
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         texts = []
-        for nl, fol, q in items:
+        for item in items:
+            nl, fol, q = item[0], item[1], item[2]
+            options = item[3] if len(item) > 3 else []   # (nl, fol, q, options) — options có thể rỗng
             user_content = USER_TEMPLATE_QA_COT.format(
                 premises_nl_block=format_premises_nl(nl),
                 premises_fol_block=format_premises_fol(fol),
+                options_block=format_options(options or []),
                 question=q,
             )
             messages = [
@@ -280,49 +288,86 @@ class QAModel:
             res.append(self._parse_output(raw))
         return res
 
-    @staticmethod
-    def _parse_output(text: str) -> dict[str, str]:
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
+    _STEP_PREFIXES = ("Rule:", "Fact:", "Derive:", "Conclusion:")
+
+    @classmethod
+    def _parse_output(cls, text: str) -> dict:
+        """Parse output dạng <reasoning steps> + JSON cuối {premises_used, explanation, answer}.
+
+        ĐỒNG NHẤT với QA_model/inference.py + train.py: trả answer, explanation,
+        premises_used, reasoning_steps (robust với JSON cụt/lỗi).
+        """
+        reasoning_steps = [ln.strip() for ln in text.split("\n")
+                           if ln.strip().startswith(cls._STEP_PREFIXES)]
+
+        def _premises(parsed) -> list:
+            pu = parsed.get("premises_used", [])
+            out = []
+            if isinstance(pu, list):
+                for v in pu:
+                    try:
+                        out.append(int(v))
+                    except (ValueError, TypeError):
+                        pass
+            return out
+
+        # 1. JSON CUỐI cùng có "answer"
+        for m in reversed(list(re.finditer(r"\{.*?\}", text, re.DOTALL))):
             try:
-                parsed = json.loads(match.group())
-                if "answer" in parsed:
-                    return {
-                        "answer": str(parsed["answer"]).strip(),
-                        "explanation": str(parsed.get("explanation", "")).strip(),
-                    }
+                parsed = json.loads(m.group())
             except json.JSONDecodeError:
-                pass
-        # JSON cụt/lỗi: moi "answer": "..." (và explanation nếu có)
+                continue
+            if "answer" in parsed:
+                return {
+                    "answer": str(parsed["answer"]).strip(),
+                    "explanation": str(parsed.get("explanation", "")).strip(),
+                    "premises_used": _premises(parsed),
+                    "reasoning_steps": reasoning_steps,
+                }
+
+        # 2. JSON cụt/lỗi: moi từng trường (explanation NON-GREEDY → hết rác)
         m = re.search(r'"answer"\s*:\s*"([^"]+)"', text)
         if m:
-            ans = m.group(1).strip()
-            em = re.search(r'"explanation"\s*:\s*"(.*)', text, re.DOTALL)
-            explanation = em.group(1).strip().rstrip('"}').strip() if em else ""
-            return {"answer": ans, "explanation": explanation}
-        # Last-resort: word-boundary + cue, KHÔNG đoán bừa chữ "A" trong văn xuôi
-        m2 = re.search(
-            r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
-            text, re.I,
-        )
+            em = re.search(r'"explanation"\s*:\s*"(.*?)"\s*[,}]', text, re.DOTALL)
+            pm = re.search(r'"premises_used"\s*:\s*\[([^\]]*)\]', text)
+            return {
+                "answer": m.group(1).strip(),
+                "explanation": em.group(1).strip() if em else "",
+                "premises_used": [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else [],
+                "reasoning_steps": reasoning_steps,
+            }
+
+        # 3. Last-resort: Conclusion hoặc cue, KHÔNG đoán bừa A/B/C/D
+        concl = next((s for s in reversed(reasoning_steps) if s.startswith("Conclusion:")), "")
+        m2 = re.search(r"\b(Yes|No|Unknown|[ABCD])\b\s*$", concl)
+        if not m2:
+            m2 = re.search(
+                r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
+                text, re.I,
+            )
         if m2:
-            return {"answer": m2.group(1), "explanation": ""}
+            return {"answer": m2.group(1), "explanation": "",
+                    "premises_used": [], "reasoning_steps": reasoning_steps}
         for label in ("Unknown", "Yes", "No"):
             if re.search(rf"\b{label}\b", text):
-                return {"answer": label, "explanation": ""}
-        return {"answer": "Unknown", "explanation": ""}
+                return {"answer": label, "explanation": "",
+                        "premises_used": [], "reasoning_steps": reasoning_steps}
+        return {"answer": "Unknown", "explanation": "",
+                "premises_used": [], "reasoning_steps": reasoning_steps}
 
 
 # ─── Ensemble Pipeline ────────────────────────────────────────────────────────
 
 class EnsemblePipeline:
-    """FOL Model + QA Model chạy theo 2 PHA — mỗi thời điểm CHỈ 1 LLM trong VRAM.
+    """FOL Model + QA Model. 2 chế độ nạp (config inference.load_both_models):
 
-    Tuân thủ luật BTC (EXACT 2026): không để 2 LLM cùng resident trên GPU.
-      - PHA 1: nạp FOL → sinh FOL cho TOÀN BỘ mẫu → GIẢI PHÓNG GPU.
-      - PHA 2: nạp QA → sinh đáp án (dùng FOL đã sinh) → giải phóng GPU.
-    `generate_fol_all` / `answer_all` tự quản lý vòng đời model + log VRAM để
-    chứng minh tại mọi thời điểm chỉ có một model ≤8B được nạp.
+      - load_both_models=True (MẶC ĐỊNH): nạp CẢ 2 model 1 lần, GIỮ resident
+        (BTC cho phép 2 LLM/VRAM). FOL sinh hết → QA sinh hết, KHÔNG unload/reload.
+        Nhanh hơn nhiều khi serving (nhiều lượt /predict không phải nạp lại model).
+      - load_both_models=False: 2-pha cũ — nạp FOL → unload → nạp QA (máy thiếu VRAM).
+
+    `generate_fol_all` / `answer_all` cache model (`self._fol`, `self._qa`) → tái dùng
+    qua nhiều lượt gọi. Tốc độ thật do BATCH generation + giữ model resident.
     """
 
     def __init__(self, cfg: dict):
@@ -336,6 +381,15 @@ class EnsemblePipeline:
         self.fol_max_new_tokens = fol_cfg.get("max_new_tokens", 650)
         self.qa_max_new_tokens = qa_cfg.get("max_new_tokens", 200)
         self.batch_size = max(1, int(inf_cfg.get("batch_size", 4)))
+        # Ablation: use_fol=False → BỎ pha FOL, QA nhận NL + FOL RỖNG (cùng prompt train)
+        # → đo đóng góp thuần của FOL mà KHÔNG đổi prompt (so sánh công bằng).
+        self.use_fol = bool(inf_cfg.get("use_fol", True))
+        # load_both_models=True → nạp CẢ 2 model, GIỮ resident (BTC cho phép 2 LLM/VRAM).
+        # Tránh unload/reload giữa pha & giữa các lượt /predict → nhanh hơn nhiều khi serving.
+        # False → 2-pha cũ (load FOL → unload → load QA) cho máy thiếu VRAM.
+        self.load_both = bool(inf_cfg.get("load_both_models", True))
+        self._fol = None   # cache model đã nạp (None = chưa nạp)
+        self._qa = None
 
     @staticmethod
     def _vram_gb() -> float:
@@ -358,9 +412,11 @@ class EnsemblePipeline:
     def generate_fol_all(self, premises_nl_list: list[list[str]]) -> list[dict]:
         n = len(premises_nl_list)
         bs = self.batch_size
-        print(f"\n[PHA 1] Nạp FOL model (chỉ 1 LLM trong VRAM)… batch_size={bs}")
-        fol_model = FOLModel(self.fol_repo, self.load_8bit)
-        print(f"[VRAM] sau khi nạp FOL: {self._vram_gb():.2f} GB")
+        if self._fol is None:
+            print(f"\n[FOL] Nạp FOL model… batch_size={bs} (load_both={self.load_both})")
+            self._fol = FOLModel(self.fol_repo, self.load_8bit)
+            print(f"[VRAM] sau khi nạp FOL: {self._vram_gb():.2f} GB")
+        fol_model = self._fol
         out: list[dict] = []
         for s in range(0, n, bs):
             chunk = premises_nl_list[s:s + bs]
@@ -371,17 +427,33 @@ class EnsemblePipeline:
             for fol, raw in batch_res:
                 out.append({"premises_fol": fol, "fol_raw": raw, "fol_latency_sec": per})
             print(f"  [FOL {min(s + bs, n):3d}/{n}] batch {len(chunk)} → {dt:.1f}s ({per:.1f}s/mẫu)", flush=True)
-        self._unload(fol_model)
-        print(f"[VRAM] sau khi GIẢI PHÓNG FOL: {self._vram_gb():.2f} GB  (đã unload trước khi nạp QA)")
+        if not self.load_both:   # 2-pha: giải phóng FOL trước khi nạp QA
+            self._unload(fol_model); self._fol = None
+            print(f"[VRAM] sau khi GIẢI PHÓNG FOL: {self._vram_gb():.2f} GB")
         return out
+
+    def run_fol_stage(self, premises_nl_list: list[list[str]]) -> list[dict]:
+        """PHA 1 — sinh FOL (use_fol=True) HOẶC bỏ FOL cho ablation (use_fol=False).
+
+        Ablation: KHÔNG nạp FOL model, trả FOL rỗng → QA dùng ĐÚNG prompt train
+        nhưng block FOL trống. Chỉ đổi 1 biến (có/không FOL), prompt giữ nguyên.
+        """
+        if self.use_fol:
+            return self.generate_fol_all(premises_nl_list)
+        print("\n[ABLATION] use_fol=False → BỎ pha FOL. QA nhận NL + FOL RỖNG (prompt train giữ nguyên).")
+        return [{"premises_fol": [], "fol_raw": "", "fol_latency_sec": 0.0}
+                for _ in premises_nl_list]
 
     # ───── PHA 2: chỉ QA trong VRAM ─────
     def answer_all(self, items: list[tuple]) -> list[dict]:
         n = len(items)
         bs = self.batch_size
-        print(f"\n[PHA 2] Nạp QA model (FOL đã unload; chỉ 1 LLM trong VRAM)… batch_size={bs}")
-        qa_model = QAModel(self.qa_repo, self.load_8bit)
-        print(f"[VRAM] sau khi nạp QA: {self._vram_gb():.2f} GB")
+        if self._qa is None:
+            print(f"\n[QA] Nạp QA model… batch_size={bs} (load_both={self.load_both})")
+            self._qa = QAModel(self.qa_repo, self.load_8bit)
+            print(f"[VRAM] sau khi nạp QA: {self._vram_gb():.2f} GB"
+                  + ("  (cả FOL+QA cùng resident)" if self.load_both and self._fol is not None else ""))
+        qa_model = self._qa
         out: list[dict] = []
         for s in range(0, n, bs):
             chunk = items[s:s + bs]
@@ -390,11 +462,74 @@ class EnsemblePipeline:
             dt = time.perf_counter() - t0
             per = dt / len(chunk)
             for res in batch_res:
-                out.append({"answer": res["answer"], "explanation": res["explanation"], "qa_latency_sec": per})
+                out.append({
+                    "answer": res["answer"], "explanation": res["explanation"],
+                    "premises_used": res.get("premises_used", []),
+                    "reasoning_steps": res.get("reasoning_steps", []),
+                    "qa_latency_sec": per,
+                })
             print(f"  [QA {min(s + bs, n):3d}/{n}] batch {len(chunk)} → {dt:.1f}s ({per:.1f}s/mẫu)", flush=True)
-        self._unload(qa_model)
-        print(f"[VRAM] sau khi GIẢI PHÓNG QA: {self._vram_gb():.2f} GB")
+        if not self.load_both:
+            self._unload(qa_model); self._qa = None
+            print(f"[VRAM] sau khi GIẢI PHÓNG QA: {self._vram_gb():.2f} GB")
         return out
+
+    # ───── Chế độ INTERLEAVE: load CẢ 2 model, mỗi mẫu FOL→QA liền mạch ─────
+    def load_models(self) -> None:
+        """Nạp CẢ 2 model 1 lần, giữ resident (BTC cho phép). Gọi trước khi inference."""
+        if self.use_fol and self._fol is None:
+            print("[LOAD] FOL model…")
+            self._fol = FOLModel(self.fol_repo, self.load_8bit)
+            print(f"[VRAM] sau khi nạp FOL: {self._vram_gb():.2f} GB")
+        if self._qa is None:
+            print("[LOAD] QA model…")
+            self._qa = QAModel(self.qa_repo, self.load_8bit)
+            print(f"[VRAM] CẢ 2 model resident: {self._vram_gb():.2f} GB")
+
+    def process_one(self, premises_nl: list[str], question: str,
+                    options: list[str] | None = None) -> dict:
+        """1 mẫu: FOL → QA liền mạch (như /predict thật). Trả kèm fol/qa latency riêng."""
+        self.load_models()
+        t0 = time.perf_counter()
+        if self.use_fol:
+            fol, fol_raw = self._fol.generate(premises_nl, self.fol_max_new_tokens)
+        else:
+            fol, fol_raw = [], ""
+        fol_time = time.perf_counter() - t0
+        t1 = time.perf_counter()
+        qa = self._qa.generate(premises_nl, fol, question, options=options,
+                               max_new_tokens=self.qa_max_new_tokens)
+        qa_time = time.perf_counter() - t1
+        return {
+            "premises_fol": fol, "fol_raw": fol_raw,
+            "answer": qa["answer"], "explanation": qa["explanation"],
+            "premises_used": qa.get("premises_used", []),
+            "reasoning_steps": qa.get("reasoning_steps", []),
+            "fol_latency_sec": fol_time, "qa_latency_sec": qa_time,
+        }
+
+    def run_interleaved(self, premises_nl_list: list[list[str]], questions: list[str],
+                        options_list: list[list[str]], slow_threshold: float = 60.0):
+        """Mỗi mẫu FOL→QA liền, IN time ngay khi xong (giống logic_solution + /predict).
+        Trả (fol_results, qa_results) cùng cấu trúc 2-pha → downstream dùng y nguyên."""
+        self.load_models()
+        n = len(premises_nl_list)
+        print(f"\n[INTERLEAVE] {n} mẫu — mỗi mẫu FOL→QA liền (2 model resident)")
+        fol_results, qa_results = [], []
+        for i in range(n):
+            opts = options_list[i] if i < len(options_list) else []
+            r = self.process_one(premises_nl_list[i], questions[i], opts)
+            fol_results.append({"premises_fol": r["premises_fol"], "fol_raw": r["fol_raw"],
+                                "fol_latency_sec": r["fol_latency_sec"]})
+            qa_results.append({"answer": r["answer"], "explanation": r["explanation"],
+                               "premises_used": r["premises_used"],
+                               "reasoning_steps": r["reasoning_steps"],
+                               "qa_latency_sec": r["qa_latency_sec"]})
+            tot = r["fol_latency_sec"] + r["qa_latency_sec"]
+            warn = " ⚠️ SLOW" if tot > slow_threshold else ""
+            print(f"  [{i + 1:3d}/{n}] FOL:{r['fol_latency_sec']:5.1f}s  QA:{r['qa_latency_sec']:5.1f}s  "
+                  f"Total:{tot:5.1f}s{warn} | answer={str(r['answer'])[:45]}", flush=True)
+        return fol_results, qa_results
 
 
 # ─── Data Loading ─────────────────────────────────────────────────────────────
@@ -438,19 +573,19 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
     print(f"  Slow threshold: {slow_threshold}s")
     print(f"{'='*70}\n")
 
-    # Gom input
-    premises_nl_list, questions, golds, gold_expls, fol_golds = [], [], [], [], []
+    # Gom input — tên BTC: premises/query/options (fallback tên cũ premises_nl/question)
+    premises_nl_list, questions, options_list, golds, gold_expls, fol_golds = [], [], [], [], [], []
     for _, row in df.iterrows():
-        premises_nl_list.append(parse_list_field(row["premises_nl"]))
-        questions.append(str(row["question"]))
+        premises_nl_list.append(parse_list_field(row.get("premises", row.get("premises_nl"))))
+        questions.append(str(row.get("query", row.get("question", ""))))
+        options_list.append(parse_list_field(row.get("options", "[]")))
         golds.append(str(row["answer"]).strip())
         gold_expls.append(str(row.get("explanation", "")))
         fol_golds.append(parse_list_field(row.get("premises_fol", "[]")))
 
-    # PHA 1: FOL (chỉ FOL trong VRAM) → PHA 2: QA (FOL đã unload, chỉ QA trong VRAM)
-    fol_results = pipeline.generate_fol_all(premises_nl_list)
-    items = [(premises_nl_list[i], fol_results[i]["premises_fol"], questions[i]) for i in range(n)]
-    qa_results = pipeline.answer_all(items)
+    # INTERLEAVE: load CẢ 2 model, mỗi mẫu FOL→QA liền mạch + in time ngay (giống logic_solution)
+    fol_results, qa_results = pipeline.run_interleaved(
+        premises_nl_list, questions, options_list, slow_threshold)
 
     # Tổng hợp + log + accuracy (format giữ nguyên)
     correct = 0
@@ -469,28 +604,25 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
         expl = qa_results[i]["explanation"]
         gold_answer = golds[i]
 
-        is_correct = pred.strip().upper() == gold_answer.upper()
+        _na = lambda s: re.sub(r"\s+", " ", str(s).strip().lower()).rstrip(" .;:!?")
+        is_correct = _na(pred) == _na(gold_answer)
         correct += int(is_correct)
 
         status = "✓" if is_correct else "✗"
-        latency_warn = ""
         if total_lat > slow_threshold:
-            latency_warn = " SLOW"
             slow_samples.append(i)
-
-        print(
-            f"  [{i+1:3d}/{n}] {status} pred={pred:8s} gold={gold_answer:8s} "
-            f"| FOL:{fol_lat:.1f}s QA:{qa_lat:.1f}s Total:{total_lat:.1f}s{latency_warn}",
-            flush=True,
-        )
+        # time đã in live ở run_interleaved → đây chỉ tổng hợp đúng/sai (answer full-text → cắt 35)
+        print(f"  [{i+1:3d}/{n}] {status} pred={str(pred)[:35]:35s} gold={str(gold_answer)[:35]}",
+              flush=True)
 
         sample_record = {
             "idx": i,
             "correct": is_correct,
             "input": {
-                "premises_nl": premises_nl_list[i],
+                "query": questions[i],
+                "premises": premises_nl_list[i],
+                "options": options_list[i],
                 "premises_fol_gold": fol_golds[i],
-                "question": questions[i],
             },
             "fol_generated": fol_results[i]["premises_fol"],
             "gold": {
@@ -499,6 +631,8 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
             },
             "prediction": {
                 "answer": pred,
+                "premises_used": qa_results[i].get("premises_used", []),
+                "reasoning_steps": qa_results[i].get("reasoning_steps", []),
                 "explanation": expl,
             },
             "latency": {
@@ -528,9 +662,10 @@ def evaluate(pipeline: EnsemblePipeline, cfg: dict):
                 "idx": r["idx"],
                 "correct": r["correct"],
                 "input": {
-                    "premises_nl": r["input"]["premises_nl"],
+                    "query": r["input"]["query"],
+                    "premises": r["input"]["premises"],
+                    "options": r["input"]["options"],
                     "premises_fol": r["input"]["premises_fol_gold"],
-                    "question": r["input"]["question"],
                 },
                 "fol_prediction": r["fol_generated"],
                 "gold": r["gold"],
@@ -745,15 +880,15 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
     print(f"  ENSEMBLE INFERENCE — {len(data)} samples")
     print(f"{'='*70}\n")
 
-    # Gom input
-    premises_nl_list = [item["premises_nl"] for item in data]
-    questions = [item["question"] for item in data]
+    # Gom input — BTC: query/premises/options (fallback tên cũ)
+    premises_nl_list = [item.get("premises", item.get("premises_nl")) for item in data]
+    questions = [item.get("query", item.get("question", "")) for item in data]
+    options_list = [item.get("options", []) for item in data]
     n = len(data)
 
-    # 2 PHA — mỗi thời điểm chỉ 1 LLM trong VRAM (tuân thủ luật BTC)
-    fol_results = pipeline.generate_fol_all(premises_nl_list)
-    items = [(premises_nl_list[i], fol_results[i]["premises_fol"], questions[i]) for i in range(n)]
-    qa_results = pipeline.answer_all(items)
+    # INTERLEAVE: load CẢ 2 model, mỗi mẫu FOL→QA liền mạch + in time ngay (giống logic_solution)
+    fol_results, qa_results = pipeline.run_interleaved(
+        premises_nl_list, questions, options_list, slow_threshold)
 
     results = []
     slow_samples = []
@@ -763,21 +898,18 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
         qa_lat = qa_results[i]["qa_latency_sec"]
         total_lat = fol_lat + qa_lat
 
-        latency_warn = ""
         if total_lat > slow_threshold:
-            latency_warn = " ⚠️ SLOW"
             slow_samples.append(i)
-
-        print(
-            f"  [{i+1:3d}/{n}] answer={qa_results[i]['answer']:8s} "
-            f"| FOL:{fol_lat:.1f}s QA:{qa_lat:.1f}s Total:{total_lat:.1f}s{latency_warn}"
-        )
+        # (đã in time live trong run_interleaved — không in lại ở đây)
 
         results.append({
             "idx": i,
-            "premises_nl": premises_nl_list[i],
-            "question": questions[i],
+            "query": questions[i],
+            "premises": premises_nl_list[i],
+            "options": options_list[i],
             "answer": qa_results[i]["answer"],
+            "premises_used": qa_results[i].get("premises_used", []),
+            "reasoning_steps": qa_results[i].get("reasoning_steps", []),
             "explanation": qa_results[i]["explanation"],
             "premises_fol_generated": fol_results[i]["premises_fol"],
             "fol_latency_sec": round(fol_lat, 3),
@@ -798,12 +930,15 @@ def inference(pipeline: EnsemblePipeline, input_path: str, cfg: dict):
             detail = {
                 "idx": r["idx"],
                 "input": {
-                    "premises_nl": r["premises_nl"],
-                    "question": r["question"],
+                    "query": r["query"],
+                    "premises": r["premises"],
+                    "options": r["options"],
                 },
                 "fol_prediction": r["premises_fol_generated"],
                 "prediction": {
                     "answer": r["answer"],
+                    "premises_used": r.get("premises_used", []),
+                    "reasoning_steps": r.get("reasoning_steps", []),
                     "explanation": r["explanation"],
                 },
             }

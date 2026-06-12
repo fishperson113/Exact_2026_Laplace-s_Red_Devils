@@ -24,7 +24,7 @@ z3:
 
 inference:
   device: auto            # auto | cuda | cpu
-  load_in_8bit: true
+  load_in_8bit: false     # bf16 nhanh hơn (tensor core); 8-bit chỉ tiết kiệm VRAM (overhead dequant)
   trust_remote_code: true
   batch_size: 8
 

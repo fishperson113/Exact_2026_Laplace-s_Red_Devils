@@ -4,8 +4,10 @@
 model:
   name: Qwen/Qwen3.5-4B
   trust_remote_code: true
-  max_seq_length: 3500
-  gen_max_new_tokens: 256
+  max_seq_length: 3000
+  # reasoning steps + JSON cuối (answer LAST). Vì answer ở cuối, cắt sớm = MẤT answer.
+  # Phân phối assistant target: P95~480, P99~600, max~793 token → 768 phủ ~99.x% an toàn.
+  gen_max_new_tokens: 1000
 
 lora:
   r: 8
@@ -14,7 +16,10 @@ lora:
   target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
 
 training:
-  num_train_epochs: 20
+  # Số mẫu TRAIN dùng để chạy thử nhanh (chỉ cắt split train; dev/test giữ nguyên).
+  # null = train full sample. Ví dụ 50 → chỉ train 50 mẫu đầu.
+  train_sample: null
+  num_train_epochs: 10
   # OOM fix: logits tensor = [batch, seq_len, vocab~152k] là chỗ ngốn VRAM nhất.
   # Hạ batch → giữ effective batch = 1×8 = 8 (bằng 4×2 cũ) qua grad accumulation.
   per_device_train_batch_size: 2
@@ -43,9 +48,9 @@ training:
 
 eval:
   # Số mẫu dev tối đa để tính accuracy mỗi epoch (null = cả dev, chậm)
-  eval_accuracy_max_samples: 50
+  eval_accuracy_max_samples: null
   # Số mẫu random in full JSON mỗi epoch (NL, FOL, question, gold, prediction)
-  eval_print_samples: 6
+  eval_print_samples: 50
   # Latency benchmark sau training
   inference_latency_benchmark_n: 50
   inference_latency_warmup: 2
@@ -54,12 +59,12 @@ eval:
 inference:
   # After training, set this to the merged model path or Hub repo
   model_path: null  # Will use model.name as fallback
-  max_new_tokens: 256
+  max_new_tokens: 1000   # answer LAST → phải đủ rộng kẻo cắt mất answer (P99~600, max~793)
   load_in_8bit: true
 
 hub:
   org: Laplaces-Red-Devils
-  repo_version: v02
+  repo_version: v03
   type: QA
   method: CoT
   push_to_hub: true

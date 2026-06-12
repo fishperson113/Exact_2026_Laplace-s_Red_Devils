@@ -89,6 +89,7 @@ def export_from_records(
     split_seed: int = 42,
     expected_questions: int | None = None,
     stratify: bool = True,
+    require_hard_label: bool = True,
 ) -> None:
     """Flatten list record → chuẩn 7 nhãn → split theo record_id → `out_dir/*.csv` + metadata JSON.
 
@@ -101,6 +102,10 @@ def export_from_records(
         (mcq / yesno / unknown) để đảm bảo phân phối nhãn đồng đều.
     expected_questions : int | None
         Nếu None thì bỏ qua kiểm tra; nếu int thì raise nếu lệch.
+    require_hard_label : bool
+        Nếu True (mặc định) → answer phải thuộc 7 nhãn cứng {A,B,C,D,Yes,No,Unknown},
+        sai sẽ raise. Nếu False → chấp nhận answer tự do (vd "Other": số, văn bản,
+        A/B/C/D trên câu non-MCQ) — chỉ strip + lấy dòng đầu, không kiểm tra tập nhãn.
     """
     import re
 
@@ -137,7 +142,11 @@ def export_from_records(
                     "q_idx": qi,
                     "n_premises_used": len(idx_used),
                     "question": q,
-                    "answer": require_answer_label(str(a)),
+                    "answer": (
+                        require_answer_label(str(a))
+                        if require_hard_label
+                        else str(a).strip().split("\n", 1)[0].strip()
+                    ),
                     "explanation": exp,
                     "premises_nl": list(rec["premises-NL"]),
                     "premises_fol": fol,
