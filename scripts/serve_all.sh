@@ -263,13 +263,27 @@ elif [ "$SERVE_MODE" = "combined" ]; then
       || { err "graft of fol failed — see $LOG_DIR/graft.log"; exit 1; }
     log "  fol -> $MODELS_DIR/fol-composite ready"
 
+    # Re-key the LoRA adapters to the COMPOSITE namespace (idempotent). A LoRA trained on the
+    # text-only Qwen3.5-4B exports keys without `language_model`, which vLLM silently binds to
+    # nothing on the composite base = a NO-OP (serving id == base output). v04-QA-CoT needs this;
+    # physics-v07c-sft is already composite-namespace (0 keys re-keyed). Serve the local dirs.
+    for spec in "sft:$SFT_ADAPTER" "qa:$QA_ADAPTER"; do
+        nm="${spec%%:*}"; rp="${spec#*:}"
+        HF_HOME="$HF_HOME" HF_TOKEN="${HF_TOKEN:-}" HUGGING_FACE_HUB_TOKEN="${HF_TOKEN:-}" \
+        "$PY" "$PROJECT_ROOT/scripts/rekey_lora_to_composite.py" \
+            --adapter "$rp" --out "$MODELS_DIR/$nm-lora" >>"$LOG_DIR/graft.log" 2>&1 \
+          || { err "re-key of $nm adapter failed — see $LOG_DIR/graft.log"; exit 1; }
+        log "  $nm adapter -> $MODELS_DIR/$nm-lora ready"
+    done
+    SFT_LORA="$MODELS_DIR/sft-lora"; QA_LORA="$MODELS_DIR/qa-lora"
+
     # FOL server. resident: stays awake. swap: sleep it after load so base sees free VRAM.
     start_vllm vllm_fol "$MODELS_DIR/fol-composite" "$FOL_PORT" "$FOL_UTIL" "$SLEEPMODE" fol || { err "fol failed"; exit 1; }
     [ "$SWAP" = "1" ] && sleep_server "$FOL_PORT"
 
     # base + 2 LoRA adapters (sft=physics, qa=logic) on :18000.
     if ! health_ok "$VLLM_PORT"; then
-        extra="--enable-lora --max-lora-rank $MAX_LORA_RANK --max-loras $MAX_LORAS --lora-modules sft=$SFT_ADAPTER qa=$QA_ADAPTER"
+        extra="--enable-lora --max-lora-rank $MAX_LORA_RANK --max-loras $MAX_LORAS --lora-modules sft=$SFT_LORA qa=$QA_LORA"
         [ "$SWAP" = "1" ] && { export VLLM_SERVER_DEV_MODE=1; extra="--enable-sleep-mode $extra"; }
         [ "$PHYSICS_EAGER" = "1" ] && extra="$extra --enforce-eager"
         log "Starting base+LoRA ($BASE_REPO + sft=$SFT_ADAPTER + qa=$QA_ADAPTER) :$VLLM_PORT util=$BASE_UTIL swap=$SWAP eager=$PHYSICS_EAGER"

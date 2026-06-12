@@ -12,6 +12,7 @@ schema-valid empty-answer result (a 500 during the slot = lost points).
 
 from __future__ import annotations
 
+import re
 import time
 import traceback
 
@@ -40,7 +41,7 @@ async def predict(request: PredictRequest) -> list[dict]:
             res = await run_logic_pipeline(
                 request.premises, request.query, request.options, deadline
             )
-            return [_shape_type1(qid, res, request.premises, request.options)]
+            return [_shape_type1(qid, res, request.premises, request.options, request.query)]
         await ensure_awake("physics")
         res = await solve_physics(request.query, deadline)
         return [_shape_type2(qid, res)]
@@ -61,8 +62,18 @@ def _steps_from_text(text: str, limit: int = 12) -> list[str]:
     return steps[:limit]
 
 
-def _coerce_to_option(answer: str, options: list[str]) -> str:
-    """Type-1 choice answer MUST be exactly one of the options. Best-effort match."""
+_LABEL_RE = re.compile(r"^\s*(?:option\s*)?([A-Za-z])\s*[.):]?\s*$", re.I)
+
+
+def _coerce_to_option(answer: str, options: list[str], query: str = "") -> str:
+    """Type-1 choice answer MUST be exactly one of the options. Best-effort match.
+
+    Handles the common case where options are bare letter labels (["A","B","C","D"]) while
+    the full statements live in the query: the QA model copies the chosen statement verbatim,
+    so we map that text back to its letter via the "X. <statement>" lines in the query. Plain
+    substring containment is restricted to options >=3 chars, so a single-letter option like
+    "A" can't false-match the letter 'a' inside any English answer (that bug returned "A" for
+    a correct statement-answer)."""
     if not options:
         return answer
     a = (answer or "").strip()
@@ -73,15 +84,46 @@ def _coerce_to_option(answer: str, options: list[str]) -> str:
     for o in options:                                   # case-insensitive
         if al == o.lower():
             return o
-    for o in options:                                   # containment either way
-        ol = o.lower()
-        if ol and (ol in al or al in ol):
+    # "Option B" / "B." / "B)" / bare "B" -> the matching letter option
+    m = _LABEL_RE.match(a)
+    if m:
+        for o in options:
+            if o.strip().lower() == m.group(1).lower():
+                return o
+
+    def _pick_letter(letter: str) -> str | None:
+        for o in options:
+            if o.strip().lower() == letter.lower():
+                return o
+        return None
+
+    # letter-label options + a statement answer -> map via the query's "A. <stmt>" lines
+    if query and all(re.fullmatch(r"[A-Za-z]", o.strip() or " ") for o in options):
+        ar = al.rstrip(". ")
+        labeled = [
+            (L, s.strip().lower().rstrip(". "))
+            for L, s in re.findall(r"(?mi)^\s*([A-Za-z])[.)]\s+(.+?)\s*$", query)
+        ]
+        for L, sl in labeled:                           # 1) exact statement match wins
+            if sl and sl == ar and _pick_letter(L):
+                return _pick_letter(L)
+        best, best_len = None, 10**9                     # 2) else SHORTEST containing stmt
+        for L, sl in labeled:                            #    (avoids "...false that <B>" wrapper)
+            if sl and (sl in al or ar in sl) and len(sl) < best_len:
+                best, best_len = L, len(sl)
+        if best and _pick_letter(best):
+            return _pick_letter(best)
+    # word-boundary containment for multi-char options (Yes/No/Uncertain/full statements);
+    # single-letter options are excluded here so 'a' can't match inside any English text.
+    for o in options:
+        ol = o.lower().strip()
+        if len(ol) >= 2 and re.search(r"\b" + re.escape(ol) + r"\b", al):
             return o
     return options[0]                                   # last resort: never empty
 
 
-def _shape_type1(qid: str, res: dict, premises: list[str], options: list[str]) -> dict:
-    answer = _coerce_to_option(res.get("answer", ""), options)
+def _shape_type1(qid: str, res: dict, premises: list[str], options: list[str], query: str = "") -> dict:
+    answer = _coerce_to_option(res.get("answer", ""), options, query)
     # reasoning.steps: the QA model emits Rule:/Fact:/Derive:/Conclusion: lines; use
     # them verbatim, falling back to the FOL block or explanation if it emitted none.
     steps = (
