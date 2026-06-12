@@ -359,13 +359,15 @@ class QAModel:
 # ─── Ensemble Pipeline ────────────────────────────────────────────────────────
 
 class EnsemblePipeline:
-    """FOL Model + QA Model chạy theo 2 PHA — mỗi thời điểm CHỈ 1 LLM trong VRAM.
+    """FOL Model + QA Model. 2 chế độ nạp (config inference.load_both_models):
 
-    Tuân thủ luật BTC (EXACT 2026): không để 2 LLM cùng resident trên GPU.
-      - PHA 1: nạp FOL → sinh FOL cho TOÀN BỘ mẫu → GIẢI PHÓNG GPU.
-      - PHA 2: nạp QA → sinh đáp án (dùng FOL đã sinh) → giải phóng GPU.
-    `generate_fol_all` / `answer_all` tự quản lý vòng đời model + log VRAM để
-    chứng minh tại mọi thời điểm chỉ có một model ≤8B được nạp.
+      - load_both_models=True (MẶC ĐỊNH): nạp CẢ 2 model 1 lần, GIỮ resident
+        (BTC cho phép 2 LLM/VRAM). FOL sinh hết → QA sinh hết, KHÔNG unload/reload.
+        Nhanh hơn nhiều khi serving (nhiều lượt /predict không phải nạp lại model).
+      - load_both_models=False: 2-pha cũ — nạp FOL → unload → nạp QA (máy thiếu VRAM).
+
+    `generate_fol_all` / `answer_all` cache model (`self._fol`, `self._qa`) → tái dùng
+    qua nhiều lượt gọi. Tốc độ thật do BATCH generation + giữ model resident.
     """
 
     def __init__(self, cfg: dict):
@@ -382,6 +384,12 @@ class EnsemblePipeline:
         # Ablation: use_fol=False → BỎ pha FOL, QA nhận NL + FOL RỖNG (cùng prompt train)
         # → đo đóng góp thuần của FOL mà KHÔNG đổi prompt (so sánh công bằng).
         self.use_fol = bool(inf_cfg.get("use_fol", True))
+        # load_both_models=True → nạp CẢ 2 model, GIỮ resident (BTC cho phép 2 LLM/VRAM).
+        # Tránh unload/reload giữa pha & giữa các lượt /predict → nhanh hơn nhiều khi serving.
+        # False → 2-pha cũ (load FOL → unload → load QA) cho máy thiếu VRAM.
+        self.load_both = bool(inf_cfg.get("load_both_models", True))
+        self._fol = None   # cache model đã nạp (None = chưa nạp)
+        self._qa = None
 
     @staticmethod
     def _vram_gb() -> float:
@@ -404,9 +412,11 @@ class EnsemblePipeline:
     def generate_fol_all(self, premises_nl_list: list[list[str]]) -> list[dict]:
         n = len(premises_nl_list)
         bs = self.batch_size
-        print(f"\n[PHA 1] Nạp FOL model (chỉ 1 LLM trong VRAM)… batch_size={bs}")
-        fol_model = FOLModel(self.fol_repo, self.load_8bit)
-        print(f"[VRAM] sau khi nạp FOL: {self._vram_gb():.2f} GB")
+        if self._fol is None:
+            print(f"\n[FOL] Nạp FOL model… batch_size={bs} (load_both={self.load_both})")
+            self._fol = FOLModel(self.fol_repo, self.load_8bit)
+            print(f"[VRAM] sau khi nạp FOL: {self._vram_gb():.2f} GB")
+        fol_model = self._fol
         out: list[dict] = []
         for s in range(0, n, bs):
             chunk = premises_nl_list[s:s + bs]
@@ -417,8 +427,9 @@ class EnsemblePipeline:
             for fol, raw in batch_res:
                 out.append({"premises_fol": fol, "fol_raw": raw, "fol_latency_sec": per})
             print(f"  [FOL {min(s + bs, n):3d}/{n}] batch {len(chunk)} → {dt:.1f}s ({per:.1f}s/mẫu)", flush=True)
-        self._unload(fol_model)
-        print(f"[VRAM] sau khi GIẢI PHÓNG FOL: {self._vram_gb():.2f} GB  (đã unload trước khi nạp QA)")
+        if not self.load_both:   # 2-pha: giải phóng FOL trước khi nạp QA
+            self._unload(fol_model); self._fol = None
+            print(f"[VRAM] sau khi GIẢI PHÓNG FOL: {self._vram_gb():.2f} GB")
         return out
 
     def run_fol_stage(self, premises_nl_list: list[list[str]]) -> list[dict]:
@@ -437,9 +448,12 @@ class EnsemblePipeline:
     def answer_all(self, items: list[tuple]) -> list[dict]:
         n = len(items)
         bs = self.batch_size
-        print(f"\n[PHA 2] Nạp QA model (FOL đã unload; chỉ 1 LLM trong VRAM)… batch_size={bs}")
-        qa_model = QAModel(self.qa_repo, self.load_8bit)
-        print(f"[VRAM] sau khi nạp QA: {self._vram_gb():.2f} GB")
+        if self._qa is None:
+            print(f"\n[QA] Nạp QA model… batch_size={bs} (load_both={self.load_both})")
+            self._qa = QAModel(self.qa_repo, self.load_8bit)
+            print(f"[VRAM] sau khi nạp QA: {self._vram_gb():.2f} GB"
+                  + ("  (cả FOL+QA cùng resident)" if self.load_both and self._fol is not None else ""))
+        qa_model = self._qa
         out: list[dict] = []
         for s in range(0, n, bs):
             chunk = items[s:s + bs]
@@ -448,10 +462,16 @@ class EnsemblePipeline:
             dt = time.perf_counter() - t0
             per = dt / len(chunk)
             for res in batch_res:
-                out.append({"answer": res["answer"], "explanation": res["explanation"], "qa_latency_sec": per})
+                out.append({
+                    "answer": res["answer"], "explanation": res["explanation"],
+                    "premises_used": res.get("premises_used", []),
+                    "reasoning_steps": res.get("reasoning_steps", []),
+                    "qa_latency_sec": per,
+                })
             print(f"  [QA {min(s + bs, n):3d}/{n}] batch {len(chunk)} → {dt:.1f}s ({per:.1f}s/mẫu)", flush=True)
-        self._unload(qa_model)
-        print(f"[VRAM] sau khi GIẢI PHÓNG QA: {self._vram_gb():.2f} GB")
+        if not self.load_both:
+            self._unload(qa_model); self._qa = None
+            print(f"[VRAM] sau khi GIẢI PHÓNG QA: {self._vram_gb():.2f} GB")
         return out
 
 

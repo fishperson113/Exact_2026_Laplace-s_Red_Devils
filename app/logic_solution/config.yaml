@@ -27,5 +27,5 @@ qa_model:
   # top_k: 20
 
 inference:
-  load_in_8bit: true        # true = tiết kiệm VRAM, false = nhanh hơn nếu đủ RAM
+  load_in_8bit: false       # bf16 chạy thẳng tensor core → NHANH hơn; 8-bit chỉ tiết kiệm VRAM (overhead dequant)
   slow_threshold_sec: 60    # cảnh báo nếu 1 sample vượt ngưỡng này (giây)
