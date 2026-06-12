@@ -26,6 +26,7 @@ import torch
 import yaml
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
+from .postprocess import clean_explanation, snap_answer_to_options
 from .prepare_data import (
     SYSTEM_PROMPT_QA_COT,
     USER_TEMPLATE_QA_COT,
@@ -199,20 +200,20 @@ class QACOTInference:
 
         # 3. Last-resort: lấy label từ Conclusion: hoặc cue, KHÔNG đoán bừa A/B/C/D
         concl = next((s for s in reversed(reasoning_steps) if s.startswith("Conclusion:")), "")
-        m2 = re.search(r"\b(Yes|No|Unknown|[ABCD])\b\s*$", concl)
+        m2 = re.search(r"\b(Yes|No|Unknown|Uncertain|[ABCD])\b\s*$", concl)
         if not m2:
             m2 = re.search(
-                r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|[ABCD])\b",
+                r"(?:answer|final answer|đáp án|conclusion)\D{0,15}\b(Yes|No|Unknown|Uncertain|[ABCD])\b",
                 text, re.I,
             )
         if m2:
             return {"answer": m2.group(1), "explanation": "",
                     "premises_used": [], "reasoning_steps": reasoning_steps}
-        for label in ("Unknown", "Yes", "No"):
+        for label in ("Uncertain", "Unknown", "Yes", "No"):
             if re.search(rf"\b{label}\b", text):
                 return {"answer": label, "explanation": "",
                         "premises_used": [], "reasoning_steps": reasoning_steps}
-        return {"answer": "Unknown", "explanation": "",
+        return {"answer": "Uncertain", "explanation": "",
                 "premises_used": [], "reasoning_steps": reasoning_steps}
 
 
@@ -247,20 +248,23 @@ def evaluate_split(qa: QACOTInference, data_dir: Path, split: str = "test", max_
         nl_lines, fol_lines, options, question = _parse_user_content(user_msg)
 
         result = qa.predict(nl_lines, fol_lines, question, options=options)
+        # Lưới an toàn: ép answer về verbatim option + gỡ explanation bọc JSON (khớp app)
+        pred_answer = snap_answer_to_options(result.answer, options)
+        pred_expl = clean_explanation(result.explanation)
         _na = lambda s: re.sub(r"\s+", " ", str(s).strip().lower()).rstrip(" .;:!?")
-        is_correct = _na(result.answer) == _na(gold_answer)
+        is_correct = _na(pred_answer) == _na(gold_answer)
         correct += int(is_correct)
         total += 1
 
         status = "✓" if is_correct else "✗"
-        print(f"  [{i+1:3d}] {status} pred={result.answer:8s} gold={gold_answer:8s} ({result.latency_sec:.2f}s)")
+        print(f"  [{i+1:3d}] {status} pred={pred_answer:8s} gold={gold_answer:8s} ({result.latency_sec:.2f}s)")
 
         results.append({
             "idx": i,
-            "predicted": result.answer,
+            "predicted": pred_answer,
             "gold": gold_answer,
             "correct": is_correct,
-            "explanation": result.explanation,
+            "explanation": pred_expl,
             "latency_sec": result.latency_sec,
         })
 

@@ -2,11 +2,15 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Serving-side config. One gateway fronts THREE vLLM servers (one GPU):
+    """Serving-side config. One gateway fronts TWO vLLM engines (one GPU):
 
-        physics  -> :18000   Task Type 2 (code-exec pipeline)
-        fol      -> :18001   Task Type 1, stage 1 (NL -> FOL)
-        qa       -> :18002   Task Type 1, stage 2 (FOL+NL+Q -> answer), LoRA
+        :18000   base Qwen3.5-4B + LoRA(sft=physics) + LoRA(qa=logic stage 2)
+                   -> ids: base, sft, qa  (Task Type 2 + Task Type 1 stage 2)
+        :18001   fol (full finetune, grafted)  -> Task Type 1, stage 1 (NL -> FOL)
+
+    The qa LoRA shares :18000 with physics, so the gateway only sleep-swaps fol
+    (:18001) by type; :18000 stays awake. Model set matches app/logic_solution/
+    config.yaml (fol=fol-v06-cot-augmented, qa=v04-QA-CoT adapter).
 
     Override any field via env var (UPPER_SNAKE of the field name) or .env.
     """
@@ -30,19 +34,20 @@ class Settings(BaseSettings):
     ensemble_top_p: float = 0.95
     ensemble_max_tokens: int = 2048
 
-    # ---- Logic (Task Type 1) — two vLLM servers, FOL then QA ----
-    # Both are FULL Qwen3.5-4B finetunes (fol-pretrain = continued-pretrain; qa =
-    # cot-augmented SFT on top). They ship as the text-only arch Qwen3_5ForCausalLM,
-    # which vLLM 0.22.1 CANNOT serve — serve_all grafts each onto the composite base
-    # (scripts/graft_text_to_composite.py) and serves the local composite dir. These
-    # are the vLLM served-model-NAMES ("fol"/"qa"), not repo ids.
+    # ---- Logic (Task Type 1) — two-stage FOL -> QA ----
+    # FOL (stage 1, NL->FOL) is a FULL finetune (fol-v06-cot-augmented) grafted onto
+    # the composite base and served standalone on :18001 (text-only Qwen3_5ForCausalLM
+    # isn't vLLM-servable; the graft makes it composite). QA (stage 2) is a LoRA adapter
+    # (v04-QA-CoT) served on the SAME :18000 engine as physics — so qa_base_url == the
+    # physics endpoint and only fol gets sleep-swapped. Values are vLLM served-model
+    # NAMES ("fol"/"qa"), not repo ids. max_tokens match app/logic_solution/config.yaml.
     fol_model: str = "fol"
     fol_base_url: str = "http://localhost:18001/v1"
-    fol_max_tokens: int = 400
+    fol_max_tokens: int = 768
 
     qa_model: str = "qa"
-    qa_base_url: str = "http://localhost:18002/v1"
-    qa_max_tokens: int = 400
+    qa_base_url: str = "http://localhost:18000/v1"
+    qa_max_tokens: int = 1000
 
     # ---- Pipeline routing ----
     pipeline_version: str = "v07_ensemble_vLLM"   # physics serving version

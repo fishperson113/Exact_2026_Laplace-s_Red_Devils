@@ -6,16 +6,17 @@
 # Designed to be called from Vast's **On-start Script** via a raw GitHub URL:
 #
 #     curl -fsSL -o setup_env.sh \
-#       https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/Final/setup_env.sh
+#       https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/Submission_v02/setup_env.sh
 #     chmod +x setup_env.sh && bash setup_env.sh
 #
 # What it does (idempotent — safe to re-run):
 #   1. install vLLM (latest, CUDA-13) + gateway/code-exec deps into /venv/main
 #      (via `uv` — resilient on flaky links; falls back to pip)
 #   2. git clone/pull this repo to /workspace/project
-#   3. launch the FULL competition stack (SERVE_MODE=combined): physics base+LoRA
-#      (:18000) + logic fol/qa grafted-composite (:18001/:18002), FastAPI gateway
-#      (:9000, POST /predict), one cloudflared tunnel per service + urls.txt (BTC §3)
+#   3. launch the FULL competition stack (SERVE_MODE=combined): ONE base Qwen3.5-4B
+#      with two LoRA adapters (sft=physics, qa=logic stage 2) on :18000 + the FOL
+#      model (grafted composite) on :18001 + FastAPI gateway (:9000, POST /predict),
+#      one cloudflared tunnel per vLLM server + the gateway -> urls.txt (BTC §3/§6.3)
 #
 # vLLM has its OWN GDN / causal-conv1d kernels, so serving Qwen3.5-4B needs NO
 # `fla` / `causal-conv1d` / transformers spells (those are only for finetuning).
@@ -28,7 +29,7 @@
 set -uo pipefail
 
 REPO_URL="${REPO_URL:-https://github.com/fishperson113/Exact_2026_Laplace-s_Red_Devils.git}"
-REPO_BRANCH="${REPO_BRANCH:-Nguyen/Final}"
+REPO_BRANCH="${REPO_BRANCH:-Nguyen/Submission_v02}"
 PROJECT_DIR="${PROJECT_DIR:-/workspace/project}"
 VENV="${VENV:-/venv/main}"
 PY="$VENV/bin/python"
