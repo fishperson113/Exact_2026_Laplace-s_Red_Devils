@@ -1,0 +1,118 @@
+[
+  {
+    "query_id": "T1_0001",
+    "type": "type1",
+    "query": "Based on Dr. John's qualifications, which statement is correct?",
+    "premises": [
+      "Lecturers with a Master's degree can teach undergraduate courses.",
+      "Lecturers with a degree higher than a Master's can teach undergraduate courses.",
+      "A PhD is higher than a Master's degree.",
+      "Dr. John is a department head with a PhD."
+    ],
+    "options": [
+      "He can teach undergraduate courses",
+      "He qualifies as department head but cannot teach",
+      "He needs a Master's degree to teach undergraduates",
+      "His PhD is insufficient for teaching"
+    ]
+  },
+  {
+    "query_id": "T1_0002",
+    "type": "type1",
+    "query": "Do all employees receive a bonus?",
+    "premises": [
+      "If a person has a research background, then they have strong qualifications.",
+      "If a person has strong qualifications, then they are suitable for a senior role.",
+      "Every person has a research background.",
+      "If a person is eligible for a promotion, then they will receive a bonus.",
+      "Everyone is eligible for a promotion."
+    ],
+    "options": ["Yes", "No", "Uncertain"]
+  },
+  {
+    "query_id": "T1_0003",
+    "type": "type1",
+    "query": "Based on the above premises, which statement can be inferred?\nA. Every student attends office hours.\nB. There exists a student with no good chance to pass the exam.\nC. There exists a student likely to pass the exam.\nD. Every student participates in a study group.",
+    "premises": [
+      "There exists at least one student who asks questions during class.",
+      "If a student does not engage in class discussions, then they do not understand the material.",
+      "Not every student participates in a study group.",
+      "If a student does not submit assignments on time, then they do not receive full credit.",
+      "If a student attends office hours, then they understand the material better.",
+      "If a student completes all coursework, then they have a good chance to pass the exam.",
+      "If a student attends office hours, then they are likely to pass the exam.",
+      "There exists at least one student who attends office hours.",
+      "If a student completes the project, then they are prepared for the final exam."
+    ],
+    "options": ["A", "B", "C", "D"]
+  },
+  {
+    "query_id": "T1_0003b",
+    "type": "type1",
+    "query": "How many more credits does Student A need to graduate?",
+    "premises": [
+      "A student with >= 120 credits is eligible.",
+      "Student A has 118 credits."
+    ],
+    "options": []
+  },
+  {
+    "query_id": "T1_0004",
+    "type": "type1",
+    "query": "Which courier can be assigned to a route on Monday, and which route?",
+    "premises": [
+      "A courier is assigned to a route if they have a valid license and are available on that day.",
+      "Route X requires a motorcycle license.",
+      "Route Y requires a car license.",
+      "Courier Minh has a motorcycle license.",
+      "Courier Minh is available on Monday.",
+      "Courier Lan has a car license.",
+      "Courier Lan is not available on Monday."
+    ],
+    "options": []
+  },
+  {
+    "query_id": "T1_0408",
+    "type": "type1",
+    "query": "Based on the above premises, which statement can be inferred?\nA. ∀x (C(x) → (U(x) ∧ W(x)))\nB. ∃x (¬T(x) ∧ S(x))\nC. ∀x (¬F(x) → W(x))\nD. ∀x (S(x) → ¬U(x))",
+    "premises": [
+      "If an e-commerce website offers competitive prices, then it has a secure payment system.",
+      "If an e-commerce website does not have a user-friendly interface, then it does not provide customer support.",
+      "If an e-commerce website does not have a secure payment system, then it does not have a user-friendly interface.",
+      "There is at least one e-commerce website that offers fast delivery.",
+      "If an e-commerce website provides customer support, then it has a wide product range.",
+      "Every e-commerce website offers competitive prices.",
+      "If an e-commerce website has a user-friendly interface, then it has a wide product range.",
+      "There is at least one e-commerce website that has a secure payment system.",
+      "If an e-commerce website does not provide customer support, then it does not have a secure payment system.",
+      "Every e-commerce website provides customer support.",
+      "If an e-commerce website does not have a wide product range, then it does not have a user-friendly interface.",
+      "If an e-commerce website provides customer support, then it offers fast delivery.",
+      "If an e-commerce website does not have a secure payment system, then it does not provide customer support.",
+      "Every e-commerce website has a secure payment system.",
+      "If an e-commerce website does not offer fast delivery, then it does not have a secure payment system.",
+      "There is at least one e-commerce website that provides customer support.",
+      "If an e-commerce website offers competitive prices, then it has a user-friendly interface.",
+      "If an e-commerce website does not have a secure payment system, then it does not have a wide product range.",
+      "If an e-commerce website provides customer support, then it offers competitive prices.",
+      "If an e-commerce website offers fast delivery, then it has a user-friendly interface.",
+      "There is at least one e-commerce website that offers competitive prices.",
+      "If every e-commerce website offers competitive prices, then if a website does not have a user-friendly interface, it does not provide customer support.",
+      "If the fact that every website offers competitive prices implies that lack of a user-friendly interface results in no customer support, then customer support implies fast delivery.",
+      "If every e-commerce website has a secure payment system, then every website provides customer support.",
+      "If customer support implies a wide product range, then lack of fast delivery implies lack of a secure payment system.",
+      "If the implication from competitive prices to (lack of user-friendly interface leading to no customer support) implies that customer support leads to fast delivery, then fast delivery implies a user-friendly interface.",
+      "If a user-friendly interface implies a wide product range, then customer support implies fast delivery.",
+      "If customer support implies a wide product range, then every website with a secure payment system provides customer support.",
+      "If fast delivery implies a user-friendly interface, then lack of a secure payment system implies lack of a wide product range.",
+      "If there is at least one website that offers competitive prices, then if it does not have a user-friendly interface, it does not provide customer support.",
+      "If lack of a wide product range implies lack of a user-friendly interface, then every website with a secure payment system provides customer support.",
+      "If an e-commerce website does not provide customer support, then it does not have a wide product range.",
+      "Every e-commerce website offers fast delivery.",
+      "There is at least one e-commerce website that has a wide product range.",
+      "If an e-commerce website offers competitive prices, then it has a wide product range.",
+      "There is at least one e-commerce website that has a user-friendly interface."
+    ],
+    "options": ["A", "B", "C", "D"]
+  }
+]
