@@ -15,14 +15,15 @@
 
 | Thanh phan | Port | Ghi chu |
 |---|---|---|
-| vLLM SFT (physics-v07c) | 18000 | served-name `physics`; primary Type-2 solver |
-| vLLM BASE (Qwen3.5-4B) | 18004 | served-name `base`; voter #2 **va** judge (chi mode `physics_ensemble`) |
+| vLLM BASE + 2 LoRA | 18000 | served-names `base`, `sft` (physics), `qa` (logic stage 2 = v04-QA-CoT) |
+| vLLM FOL (composite) | 18001 | served-name `fol`; logic stage 1 (NL->FOL), full finetune da graft |
 | gateway (FastAPI) | 9000 | `POST /predict` — BTC goi cai nay |
 
-> **Type 2 = ENSEMBLE** (mac dinh `SERVE_MODE=physics_ensemble`, xem muc rieng ben duoi):
-> SFT + BASE chay **song song** (2x4B = 8B active, BTC cho phep), self-consistency vote
-> moi con, trung thi xong / lech thi BASE lam judge. Moi vLLM co `/v1/models` rieng cho
-> BTC verify.
+> **Mac dinh `SERVE_MODE=combined`** (FULL stack ca 2 task type — DUNG CHO SUBMIT, xem muc
+> rieng ben duoi). 2 vLLM server tren 1 GPU: :18000 (base Qwen3.5-4B + 2 LoRA adapter
+> sft/qa) + :18001 (fol). Mac dinh `RESIDENT_ALL=1` -> ca 2 server awake (base 4B + fol 4B
+> = ~8B parallel, BTC §6.3 cho phep) -> KHONG swap, type1 nhanh. Moi vLLM server co
+> `/v1/models` rieng cho BTC verify (2 URL: :18000 liet ke base,sft,qa; :18001 liet ke fol).
 
 > **Vi sao BAT BUOC CUDA 13 / driver >=580:** model la `Qwen3_5ForConditionalGeneration`,
 > chi vLLM moi (>=0.21) nhan dien, ma ban do build tren **torch CUDA 13** (can driver
@@ -41,13 +42,13 @@
 
 ```bash
 curl -fsSL -o setup_env.sh \
-  https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/submition_v1/setup_env.sh
+  https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/Submission_v02/setup_env.sh
 chmod +x setup_env.sh
 bash setup_env.sh
 ```
 
 `setup_env.sh` (idempotent) se: cai vLLM cu13 + deps (qua `uv`, ben net yeu) ->
-clone repo -> chay `serve_all.sh` -> in **PUBLIC URL** `https://xxx.trycloudflare.com/ask`
+clone repo -> chay `serve_all.sh` -> in **PUBLIC URLs** `https://xxx.trycloudflare.com/predict` (+ 2 /v1/models)
 cho BTC. Doi gi trong setup chi can sua file tren GitHub, may moi tu keo ban moi nhat.
 
 ### Cach 2: Chay tay (da SSH vao box CUDA-13)
@@ -55,7 +56,7 @@ cho BTC. Doi gi trong setup chi can sua file tren GitHub, may moi tu keo ban moi
 ```bash
 ssh -o StrictHostKeyChecking=no -i ~/.ssh/vastai_key -p <PORT> root@<HOST>
 export HF_TOKEN=hf_...
-curl -fsSL -o setup_env.sh https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/submition_v1/setup_env.sh
+curl -fsSL -o setup_env.sh https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/Submission_v02/setup_env.sh
 bash setup_env.sh
 ```
 
@@ -65,8 +66,8 @@ bash setup_env.sh
 # tren box (hoac SSH -L 9000:localhost:9000 roi mo tu laptop):
 curl -s localhost:9000/health     # {"status":"ok",...}
 # vLLM model-info (BTC verify) — moi server 1 cai:
-curl -s localhost:18000/v1/models   # id: "physics"
-curl -s localhost:18004/v1/models   # id: "base"
+curl -s localhost:18000/v1/models   # ids: base, sft, qa
+curl -s localhost:18001/v1/models   # id:  fol
 # Type 2 (physics) — BTC /predict schema:
 curl -s -X POST localhost:9000/predict -H "Content-Type: application/json" -d '{
   "query_id":"T2_0001","type":"type2",
@@ -85,15 +86,16 @@ curl -s -X POST localhost:9000/predict -H "Content-Type: application/json" -d '{
 - **Luc serve, model nam o VRAM** (khong phai /dev/shm). HF cache mac dinh `/dev/shm`
   (RAM) cho load nhanh; de disk cung chay y het, chi cham lan load dau. shm bi cap =
   container_RAM/2 — muon to hon thi set `--shm-size` trong custom template.
-- **`SERVE_MODE=combined`** (FULL stack — CA 2 task type, dung cho submit): physics group
-  (base+LoRA :18000) + logic group (`fol` :18001 + `qa` :18002, deu la full Qwen3.5-4B da
-  **graft** sang composite), sleep-swap theo `type`. Xem muc rieng ben duoi.
+- **`SERVE_MODE=combined`** (FULL stack — CA 2 task type, dung cho submit, MAC DINH): :18000
+  = base Qwen3.5-4B + 2 LoRA (`sft` physics, `qa` logic-stage2) + :18001 = `fol` (full finetune
+  da **graft** sang composite). `RESIDENT_ALL=1` (mac dinh) -> ca 2 awake, ko swap. Xem muc rieng.
 - **`SERVE_MODE=physics_ensemble`** (chi Type-2, de test/benchmark): 1 vLLM :18000 = BASE +
   SFT-LoRA, CUDA graphs ON, KHONG swap. Xem muc rieng.
 - **`SERVE_MODE=shared`**: 1 con Qwen3.5-4B ~19GB VRAM lo ca 3 role (placeholder `physics-v04`).
-- **Expose BTC = CHI 1 URL (xong):** gateway :9000 proxy ca `/v1/models` (`app/api/routes/models.py`,
-  gom tat ca engine -> liet ke base,sft,fol,qa) LAN `/predict`. cloudflared chi can 1 tunnel toi
-  :9000. URL cloudflared **doi** moi lan restart. Fallback rate-limit: reverse-SSH sang VPS:
+- **Expose BTC = 3 URL (BTC §6.3 yeu cau /v1/models cho MOI vLLM server):** `serve_all.sh combined`
+  tao 3 cloudflared tunnel -> `submission/urls.txt`: gateway :9000 (`/predict`) + :18000 (`/v1/models`
+  = base,sft,qa) + :18001 (`/v1/models` = fol). Gateway cung proxy `/v1/models` gop tat ca (tien).
+  URL cloudflared **doi** moi lan restart -> lay urls.txt NGAY truoc grading slot. Fallback rate-limit: reverse-SSH sang VPS:
   ```bash
   ssh -fN -R <VPS_PORT>:localhost:9000 <user>@<vps_ip>
   # BTC goi: http://<vps_ip>:<VPS_PORT>/predict   (mo <VPS_PORT> tren firewall VPS)
@@ -103,32 +105,39 @@ curl -s -X POST localhost:9000/predict -H "Content-Type: application/json" -d '{
 
 ## SERVE_MODE=combined — FULL stack ca 2 task type (DUNG CHO SUBMIT)
 
-Mot GPU, 3 vLLM engine, sleep-swap theo `type` field cua `/predict`:
+Mot GPU, **2 vLLM server**. Model set khop `app/logic_solution/config.yaml` (chuan logic).
 
-| Group (type) | Engine | Model | VRAM khi awake |
-|---|---|---|---|
-| physics (type2) | :18000 | base `Qwen3.5-4B` + LoRA `sft` | ~4B |
-| logic (type1) | :18001 + :18002 | `fol` + `qa` (2 full Qwen3.5-4B) | ~8B (BTC cho 2×4B) |
+| vLLM server | Port | Model / adapter | Role | Params |
+|---|---|---|---|---|
+| base + 2 LoRA | :18000 | base `Qwen/Qwen3.5-4B` + `sft` + `qa` | type2 solver/judge; type1 stage-2 QA | ~4B (+adapter nho) |
+| fol | :18001 | `fol-v06-cot-augmented` (graft composite) | type1 stage-1 NL->FOL | ~4B |
 
-**GRAFT (mau chot):** ca 3 model finetune (physics-merged, fol-pretrain, qa) deu la arch
-text-only `Qwen3_5ForCausalLM` -> vLLM 0.22.1 KHONG serve duoc. Physics SFT serve = LoRA tren
-composite base. 2 model logic la full finetune (ko share base) -> **graft sang composite** bang
-`scripts/graft_text_to_composite.py`: giu base's `model.visual.*`+mtp+config, ghi de 426
-`model.language_model.*` bang weights cua finetune (keys khop 1:1) -> composite hop le, serve
-text-only ngon. `serve_all.sh combined` chay tu dong (idempotent -> `/dev/shm/models/{fol,qa}-composite`).
+- **`sft`** = `Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b` (LoRA, physics).
+- **`qa`**  = `Laplaces-Red-Devils/v04-QA-CoT` (LoRA, logic stage-2). Dung CHUNG :18000 voi physics
+  -> `qa_base_url` == physics endpoint, gateway chi swap `fol` (neu bat swap).
+- **`fol`** = `Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4` (full finetune).
+
+**GRAFT (mau chot):** FOL ship dang text-only `Qwen3_5ForCausalLM` -> vLLM 0.22.1 KHONG serve
+duoc. `scripts/graft_text_to_composite.py` ghi de `model.language_model.*` cua finetune len base
+composite (giu `model.visual.*`+mtp+config, keys khop 1:1) -> composite hop le. QA la LoRA adapter
+-> serve thang tren base (KHONG graft). `serve_all.sh combined` chay tu dong (idempotent ->
+`/dev/shm/models/fol-composite`).
 
 ```bash
 HF_TOKEN=hf_... SERVE_MODE=combined bash scripts/serve_all.sh start
 # env tuy chon (mac dinh):
 #   BASE_REPO=Qwen/Qwen3.5-4B  SFT_ADAPTER=Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b
-#   FOL_FT=Laplaces-Red-Devils/fol-pretrain-malls-qwen3.5-4b
-#   QA_FT=Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4
-#   GPU_UTIL=0.85 (physics awake) FOL_GPU=QA_GPU=0.45 (logic awake = 0.9)
+#   QA_ADAPTER=Laplaces-Red-Devils/v04-QA-CoT
+#   FOL_FT=Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4
+#   RESIDENT_ALL=1 (mac dinh: ca 2 awake, ko swap; base 4B + fol 4B = ~8B parallel, BTC §6.3 OK)
+#     -> FOL_GPU_RESIDENT=0.40  GPU_UTIL_RESIDENT=0.48 (co-resident tren 32GB)
+#   RESIDENT_ALL=0 -> fallback sleep-swap fol theo type (cho GPU nho hon)
+#   MAX_LORA_RANK=32 MAX_LORAS=2 (2 adapter sft+qa tren 1 base)
 ```
-Gateway env: `SLEEP_SWAP_ENABLED=1`, VLLM_MODEL=sft/:18000, FOL=fol/:18001, QA=qa/:18002.
-Start order = fol→sleep→qa→sleep→physics(awake); warmup CA 2 type. Eager (swap-safe) -> physics
-~17-18s, type1 ~2.6s ke ca swap. Verify: `curl :9000/v1/models` (base,sft,fol,qa) +
-`curl :9000/predict -d '{"type":"type1",...}'` / `'{"type":"type2",...}'`.
+Gateway env: `SLEEP_SWAP_ENABLED=0` (resident), VLLM_MODEL=sft/:18000, JUDGE=base/:18000,
+FOL=fol/:18001, QA=qa/:18000. Warmup CA 2 type. Da do (RTX 5090 32GB, qua tunnel public):
+type2 ~7-9s, type1 ~2-4s, ca 2 <60s; VRAM ~26.7/32GB. Verify: `curl :18000/v1/models` (base,sft,qa)
++ `curl :18001/v1/models` (fol) + `curl :9000/predict -d '{"type":"type1",...}'` / `'{"type":"type2",...}'`.
 
 ## SERVE_MODE=physics_ensemble — BASE + SFT-LoRA tren 1 vLLM (chi Type 2, test)
 
