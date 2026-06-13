@@ -12,6 +12,10 @@
 > unit, explanation, premises_used, reasoning}`). Endpoint cu `/ask` van con cho tooling.
 > Dung template **"NVIDIA CUDA Development Environment"** (bare, tu cai vLLM).
 > **BAT BUOC** driver CUDA 13 (>=580) — xem ben duoi.
+>
+> **URL cho BTC:** uu tien **named tunnel domain co dinh** (`https://fastapi.reddevillaplace.xyz/predict`
+> + `base.`/`fol.` cho `/v1/models`) — xem **"Named tunnel"** ben duoi. Quick `trycloudflare` chi la
+> fallback (doi URL moi lan restart).
 
 | Thanh phan | Port | Ghi chu |
 |---|---|---|
@@ -100,6 +104,45 @@ curl -s -X POST localhost:9000/predict -H "Content-Type: application/json" -d '{
   ssh -fN -R <VPS_PORT>:localhost:9000 <user>@<vps_ip>
   # BTC goi: http://<vps_ip>:<VPS_PORT>/predict   (mo <VPS_PORT> tren firewall VPS)
   ```
+
+### Named tunnel (domain co dinh — KHUYEN DUNG cho submit) — `*.reddevillaplace.xyz`
+
+> **URL ON DINH, KHONG doi moi lan restart** (khac han quick `trycloudflare` o tren).
+> Dung Cloudflare Zero Trust **named tunnel** + domain rieng. URL co dinh, BTC khong
+> can lay lai `urls.txt` truoc moi grading slot.
+
+**URL co dinh (hien tai):**
+
+| Cong | Service | URL co dinh |
+|---|---|---|
+| `:9000` | gateway `POST /predict` (BTC goi cai nay) | `https://fastapi.reddevillaplace.xyz` |
+| `:18000` | `/v1/models` = base, sft, qa | `https://base.reddevillaplace.xyz` |
+| `:18001` | `/v1/models` = fol | `https://fol.reddevillaplace.xyz` |
+
+**Cach hoat dong (vi sao thue may moi van **GIU NGUYEN** URL):**
+1. Tao **free Cloudflare Zero Trust account** + domain (`reddevillaplace.xyz`) tro ve account do.
+2. Tao **named tunnel** trong CF dashboard, cau hinh **Public Hostname** map
+   `fastapi.<domain>` -> `http://localhost:9000`, `base.<domain>` -> `localhost:18000`,
+   `fol.<domain>` -> `localhost:18001`. **Cau hinh routing nay nam o CF account, KHONG nam
+   o instance** — nen bat ky may moi nao chi can chay tunnel voi dung token la ra **y het URL**.
+3. Dat env **`CF_TUNNEL_TOKEN=<token cua tunnel>`** (luu o Vast *Account settings* hoac trong
+   template private). Vast **portal-aio** (`tunnel_manager`) tu chay
+   `cloudflared tunnel --run --token "$CF_TUNNEL_TOKEN"` luc boot — **KHONG can serve_all/setup_env
+   dung toi**, 2 thanh phan doc lap nhau. Verify: `pgrep -af cloudflared` thay 1 dong `... run --token`.
+4. Neu may **dang chay** ma chua co token: ghi vao `/etc/environment` roi **reboot** instance.
+
+**⚠️ Caveat (CF rule):** **1 token = 1 instance dang chay**. Khong duoc dung chung 1
+`CF_TUNNEL_TOKEN` cho >1 instance cung luc (se gay broken link). Thue them may -> tao **tunnel
++ token rieng** cho may do (vd `base2.<domain>`...).
+
+**Voi named tunnel thi quick tunnel cua `serve_all` la thua** (no van mo 3 con
+`trycloudflare` -> `urls.txt`, vo hai, chi la fallback). Muon tat cho gon: set
+**`SKIP_TUNNEL=1`** khi cold-start (`setup_env.sh`/`serve_all.sh`) — named tunnel da lo expose,
+BTC dung 3 URL `*.reddevillaplace.xyz` o tren.
+
+> **Cold-start tom tat (may CUDA-13 moi):** chi can (1) `HF_TOKEN` + (2) `CF_TUNNEL_TOKEN` set
+> san trong env Vast -> chay On-start `setup_env.sh` (co the kem `SKIP_TUNNEL=1`) -> stack len +
+> named tunnel tu noi -> BTC truy cap 3 URL co dinh ngay, khong phai copy URL moi.
 
 ---
 

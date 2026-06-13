@@ -86,6 +86,14 @@ See `app/physics_solution/README_GPU_SETUP.md` for the Vast AI vLLM setup.
 | `GET` | `/health` | Liveness (checks vLLM reachability) |
 | `POST` | `/logic/ask` | Task Type 1 logic route (mock) |
 
+> **Public URLs for BTC (named tunnel, stable):** the submission stack is exposed over a
+> Cloudflare **named tunnel** on a fixed domain — `https://fastapi.reddevillaplace.xyz/predict`
+> (gateway) + `https://base.reddevillaplace.xyz/v1/models` (:18000) +
+> `https://fol.reddevillaplace.xyz/v1/models` (:18001). These **don't change across
+> instance restarts** (unlike quick `trycloudflare` URLs). Drive it with `CF_TUNNEL_TOKEN`
+> in the box env — see [app/physics_solution/README_GPU_SETUP.md](app/physics_solution/README_GPU_SETUP.md)
+> → **"Named tunnel"**.
+
 **`POST /ask`**
 
 ```jsonc
