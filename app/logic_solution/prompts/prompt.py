@@ -143,6 +143,17 @@ Write every Rule:/Fact:/Derive: step in FOL notation (∀ ∃ → ¬ ∧ ∨ ↔
 Then, on the final line, output ONE JSON object with the "answer" field LAST:
 {"premises_used": [<0-based indices of premises used>], "explanation": "<concise justification>", "answer": "<answer>"}
 The "answer" MUST follow the "How to read options" convention above.
+
+### Handling premises that state information is absent/unknown
+Some FOL lines are NOT formulas but a marker such as
+"(no FOL — premise only states that information is absent/unknown)".
+Such a line is still a REAL premise and you MUST treat it as citable:
+- Treat the corresponding fact as UNDETERMINED — do NOT derive a negation from it.
+- If your conclusion relies on this absence of information, write a Fact: step that
+  references it in words, e.g. "Fact: premise i states whether <X> is unknown",
+  and INCLUDE that premise's 0-based index in "premises_used" (this is the one
+  allowed exception to the "FOL-notation only" rule above).
+- The answer is "Uncertain" unless OTHER premises decide the question.
 """
 
 USER_TEMPLATE_QA = """\

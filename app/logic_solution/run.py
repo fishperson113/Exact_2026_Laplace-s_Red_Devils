@@ -108,6 +108,7 @@ def main():
             reasoning_steps = out.reasoning.get("steps", []),
             options         = options,
             unit            = out.unit,
+            fol_list        = out.fol_list,   # bản neutralize từ ensemble.run
         )
         results.append(submission)
 

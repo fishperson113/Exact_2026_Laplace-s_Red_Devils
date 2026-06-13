@@ -23,7 +23,7 @@ from __future__ import annotations
 import time
 
 from app.core.config import settings
-from app.logic_solution.parsing import parse_fol, parse_qa_output
+from app.logic_solution.parsing import parse_fol, parse_qa_output, neutralize_epistemic_fol
 from app.logic_solution.prompts import (
     SYSTEM_PROMPT_FOL,
     USER_TEMPLATE_FOL,
@@ -65,6 +65,11 @@ async def run_logic_pipeline(
     )
     fol_list = parse_fol(fol_raw)
 
+    # Gỡ phủ định-giả ở mệnh đề epistemic ("No premise states whether X") trước
+    # khi đưa vào QA — đồng bộ HỆT bản in-process (ensemble.py). Quét NL gốc,
+    # giữ index n-to-n. fol_raw (debug) giữ nguyên; QA đọc bản đã neutralize.
+    fol_list = neutralize_epistemic_fol(premises_nl, fol_list)
+
     if time.time() >= deadline:
         return _timeout_result(t_start, fol_list)
 
@@ -93,7 +98,8 @@ async def run_logic_pipeline(
     return {
         "answer": answer,
         "explanation": explanation,
-        "fol": "\n".join(fol_list),
+        "fol": "\n".join(fol_list),     # string (legacy clients + steps fallback)
+        "fol_list": fol_list,           # list — feeds reasoning.fol (post-neutralize)
         "premises_used": premises_used,
         "reasoning_steps": reasoning_steps,
         "cot": "\n".join(reasoning_steps) if reasoning_steps else explanation,
@@ -109,6 +115,7 @@ def _timeout_result(t_start: float, fol_list: list[str]) -> dict:
         "answer": "",
         "explanation": "Request timed out before a result could be computed.",
         "fol": "\n".join(fol_list),
+        "fol_list": fol_list,
         "premises_used": [],
         "reasoning_steps": [],
         "cot": "",

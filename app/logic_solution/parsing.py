@@ -13,6 +13,49 @@ import re
 QA_STEP_PREFIXES = ("Rule:", "Fact:", "Derive:", "Conclusion:")
 
 
+# ── Epistemic / meta premises ("vắng mặt thông tin") ──────────────────────────
+# Mệnh đề kiểu "No premise states whether X" / "It is unknown whether X" nói về
+# bản thân tập tri thức (meta), KHÔNG về thế giới. FOL object-level không biểu
+# diễn được → FOL model hay bám từ khoá bề mặt và sinh phủ định GIẢ (¬X), khiến
+# QA suy ra No thay vì Uncertain. Ta phát hiện trên NL gốc rồi ghi đè ô FOL
+# tương ứng bằng note trung lập (giữ nguyên số dòng → index không lệch).
+#
+# REGEX HẸP — chỉ bắt cụm meta đặc trưng, KHÔNG bắt mọi "whether" (có premise
+# hợp lệ chứa "whether", vd "If a student passes whether or not they study...").
+_EPISTEMIC_PATTERNS = [
+    r"\bno premise\b.{0,40}\bwhether\b",
+    r"\bno premise (?:states|specifies|mentions|indicates)\b",
+    r"\bit is (?:un)?known whether\b",
+    r"\b(?:not|isn't|is not) (?:specified|stated|known|mentioned) whether\b",
+    r"\b(?:does not|doesn't|do not|don't) (?:state|specify|say) whether\b",
+    r"\bno (?:information|statement|fact)\b.{0,40}\bwhether\b",
+    r"\bunspecified whether\b",
+]
+_EPISTEMIC_RE = re.compile("|".join(_EPISTEMIC_PATTERNS), re.IGNORECASE)
+
+# Note trung lập đặt vào ô FOL của mệnh đề epistemic (thay cho phủ định giả).
+_EPISTEMIC_FOL_SENTINEL = "(no FOL — premise only states that information is absent/unknown)"
+
+
+def is_epistemic_premise(nl: str) -> bool:
+    """True nếu mệnh đề NL chỉ nêu sự VẮNG MẶT/không chắc chắn thông tin."""
+    return bool(_EPISTEMIC_RE.search(str(nl)))
+
+
+def neutralize_epistemic_fol(premises_nl: list[str], fol_list: list[str]) -> list[str]:
+    """Ghi đè TẠI CHỖ ô FOL của mệnh đề epistemic bằng note trung lập.
+
+    - Quét premises_nl GỐC (không quét fol_list — NL đáng tin hơn FOL output).
+    - GIỮ NGUYÊN số phần tử của fol_list (chỉ replace, không xoá) → index không lệch.
+    - Trả về list mới (không mutate input).
+    """
+    out = list(fol_list)
+    for i, nl in enumerate(premises_nl):
+        if i < len(out) and is_epistemic_premise(nl):
+            out[i] = _EPISTEMIC_FOL_SENTINEL
+    return out
+
+
 def parse_fol(text: str) -> list[str]:
     """Parse ``{"premises_fol": [...]}`` or fall back to line-by-line."""
     match = re.search(r"\{.*\}", text, re.DOTALL)

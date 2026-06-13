@@ -111,6 +111,7 @@ def format_submission(
     reasoning_steps: list[str] | None = None,
     options: list[str] | None = None,
     unit: str = "",
+    fol_list: list[str] | None = None,
 ) -> dict:
     """
     Trả về dict đúng Unified Output Schema BTC — 6 trường, đúng thứ tự:
@@ -118,6 +119,8 @@ def format_submission(
 
     - answer được snap về verbatim option nếu là choice question.
     - reasoning.type LUÔN "fol"; steps giữ NGUYÊN VĂN (không chế biến).
+    - reasoning.fol = bản FOL CUỐI (sau neutralize) mà QA đã đọc — tiện debug Stage 1.
+      BTC bỏ qua key dư nên để thường trực.
     - unit: chỉ Type 2 dùng; logic mặc định "".
     """
     return {
@@ -129,5 +132,6 @@ def format_submission(
         "reasoning": {
             "type":  "fol",
             "steps": list(reasoning_steps or []),
+            "fol":   list(fol_list or []),
         },
     }

@@ -16,6 +16,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 
+from parsing import neutralize_epistemic_fol
 from pipeline.fol_model import FOLModel
 from pipeline.qa_model  import QAModel
 
@@ -84,6 +85,12 @@ class EnsemblePipeline:
         t0 = time.perf_counter()
         fol_list, fol_raw = self.fol_model.generate(premises_nl, self.fol_max_tokens)
         fol_latency = time.perf_counter() - t0
+
+        # ── Gỡ phủ định-giả ở mệnh đề epistemic trước khi đưa vào QA ──────────
+        # FOL model dịch "No premise states whether X" thành ¬X (fact giả). Quét
+        # NL gốc, thay ô FOL đó bằng note trung lập (giữ index n-to-n). fol_raw
+        # (debug) giữ nguyên; chỉ fol_list đưa vào QA là bản đã neutralize.
+        fol_list = neutralize_epistemic_fol(premises_nl, fol_list)
 
         # ── Stage 2: NL + FOL + options + Q → steps + JSON ────────────────────
         t0 = time.perf_counter()

@@ -137,13 +137,21 @@ def _shape_type1(qid: str, res: dict, premises: list[str], options: list[str], q
     premises_used = res.get("premises_used") or (
         list(range(len(premises))) if premises else []
     )
+    # reasoning.fol: the FINAL FOL list (post-neutralize) the QA model reasoned over,
+    # surfaced alongside type/steps for Stage-1 debugging (BTC ignores extra keys).
+    fol_list = res.get("fol_list") or []
+    reasoning = None
+    if steps:
+        reasoning = {"type": "fol", "steps": steps}
+        if fol_list:
+            reasoning["fol"] = fol_list
     return {
         "query_id": qid,
         "answer": answer,
         "unit": "",
         "explanation": res.get("explanation") or "No explanation produced.",
         "premises_used": premises_used,
-        "reasoning": {"type": "fol", "steps": steps} if steps else None,
+        "reasoning": reasoning,
     }
 
 
