@@ -42,7 +42,7 @@
 
 ```bash
 curl -fsSL -o setup_env.sh \
-  https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/Submission_v02/setup_env.sh
+  https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/main/setup_env.sh
 chmod +x setup_env.sh
 bash setup_env.sh
 ```
@@ -56,7 +56,7 @@ cho BTC. Doi gi trong setup chi can sua file tren GitHub, may moi tu keo ban moi
 ```bash
 ssh -o StrictHostKeyChecking=no -i ~/.ssh/vastai_key -p <PORT> root@<HOST>
 export HF_TOKEN=hf_...
-curl -fsSL -o setup_env.sh https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/Nguyen/Submission_v02/setup_env.sh
+curl -fsSL -o setup_env.sh https://raw.githubusercontent.com/fishperson113/Exact_2026_Laplace-s_Red_Devils/main/setup_env.sh
 bash setup_env.sh
 ```
 
