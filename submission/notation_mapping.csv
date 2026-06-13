@@ -21,7 +21,7 @@ a^b,power / superscript,
 a_b,subscript,
 \sqrt{},square root,sqrt()
 \sqrt[n]{},nth root,()^(1/n)
-\times 10^{n},scientific notation,e-notation: 3e-6 for 3x10^-6
+\times 10^{n},scientific notation,
 \alpha,alpha,α
 \beta,beta,β
 \gamma,gamma,γ
