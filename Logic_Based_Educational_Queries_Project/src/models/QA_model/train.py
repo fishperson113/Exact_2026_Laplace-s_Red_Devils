@@ -209,6 +209,10 @@ def _parse_full_output(text: str) -> dict:
                     pass
         return out
 
+    def _from_expl(expl) -> list:
+        # premises_used CHUẨN = các "premise N" model tự trích trong explanation (0-based).
+        return sorted({int(n) for n in re.findall(r"premise\s+(\d+)", expl or "", re.I)})
+
     # 1. JSON CUỐI cùng có "answer" (reasoning đứng trước → lấy match cuối)
     for m in reversed(list(re.finditer(r"\{.*?\}", text, re.DOTALL))):
         try:
@@ -216,10 +220,12 @@ def _parse_full_output(text: str) -> dict:
         except json.JSONDecodeError:
             continue
         if "answer" in parsed:
+            expl = str(parsed.get("explanation", "")).strip()
+            pu_expl = _from_expl(expl)
             return {
                 "answer": str(parsed["answer"]).strip(),
-                "explanation": str(parsed.get("explanation", "")).strip(),
-                "premises_used": _premises(parsed),
+                "explanation": expl,
+                "premises_used": pu_expl if pu_expl else _premises(parsed),
                 "reasoning_steps": reasoning_steps,
             }
 
@@ -230,9 +236,10 @@ def _parse_full_output(text: str) -> dict:
         em = re.search(r'"explanation"\s*:\s*"(.*?)"\s*[,}]', text, re.DOTALL)
         explanation = em.group(1).strip() if em else ""
         pm = re.search(r'"premises_used"\s*:\s*\[([^\]]*)\]', text)
-        premises_used = [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else []
+        pu_model = [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else []
+        pu_expl = _from_expl(explanation)
         return {"answer": answer, "explanation": explanation,
-                "premises_used": premises_used, "reasoning_steps": reasoning_steps}
+                "premises_used": pu_expl if pu_expl else pu_model, "reasoning_steps": reasoning_steps}
 
     # 3. Last-resort: từ Conclusion: hoặc cue, KHÔNG đoán bừa A/B/C/D
     concl = next((s for s in reversed(reasoning_steps) if s.startswith("Conclusion:")), "")
