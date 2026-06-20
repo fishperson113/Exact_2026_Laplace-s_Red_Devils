@@ -319,7 +319,19 @@ class QAModel:
 
         def _from_expl(expl) -> list:
             # premises_used CHUẨN = các "premise N" model tự trích trong explanation (0-based).
-            return sorted({int(n) for n in re.findall(r"premise\s+(\d+)", expl or "", re.I)})
+            # Bắt cả số nhiều ("premises"), list ("1, 2 and 3") và range ("1-3", "1–3").
+            if not expl:
+                return []
+            out: set[int] = set()
+            for m in re.finditer(r"premises?\s+((?:\d+\s*(?:[-–—]\s*\d+)?\s*[,&]?\s*(?:and\s+)?)+)", expl, re.I):
+                chunk = m.group(1)
+                for a, b in re.findall(r"(\d+)\s*[-–—]\s*(\d+)", chunk):
+                    a, b = int(a), int(b)
+                    if a <= b and b - a < 100:
+                        out.update(range(a, b + 1))
+                chunk = re.sub(r"\d+\s*[-–—]\s*\d+", " ", chunk)
+                out.update(int(n) for n in re.findall(r"\d+", chunk))
+            return sorted(out)
 
         # 1. JSON CUỐI cùng có "answer"
         for m in reversed(list(re.finditer(r"\{.*?\}", text, re.DOTALL))):
