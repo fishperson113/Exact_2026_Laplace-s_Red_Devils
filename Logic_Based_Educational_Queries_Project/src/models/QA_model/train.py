@@ -37,6 +37,18 @@ from trl import SFTConfig, SFTTrainer
 from .prepare_data import build_qa_dataset_dict
 
 
+# ─── cuDNN SDPA workaround ────────────────────────────────────────────────────
+# Một số tổ hợp cuDNN 9.x + GPU + head_dim của Qwen3.5 khiến backend cuDNN của
+# scaled_dot_product_attention báo "No valid execution plans built" ngay step 0.
+# Tắt RIÊNG backend cuDNN-SDPA → PyTorch tự rơi về flash / mem-efficient / math
+# (vẫn nhanh, không phải eager). Các backend còn lại giữ nguyên.
+if torch.cuda.is_available():
+    try:
+        torch.backends.cuda.enable_cudnn_sdp(False)
+    except (AttributeError, RuntimeError):
+        pass
+
+
 # ─── Config ──────────────────────────────────────────────────────────────────
 
 def load_config(config_path: str) -> dict:
