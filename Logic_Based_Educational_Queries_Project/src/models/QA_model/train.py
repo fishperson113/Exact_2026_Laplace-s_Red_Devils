@@ -578,12 +578,12 @@ def benchmark_latency(model, tokenizer, dataset, cfg: dict):
 # ─── Full Evaluation (train + dev + test) ────────────────────────────────────
 
 def evaluate_all_splits(model, tokenizer, ds_dict: DatasetDict, cfg: dict, output_dir: Path):
-    """Tính accuracy các splits, ghi kết quả JSON (kèm per-sample predictions cho dev/test).
+    """Final eval sau training, ghi eval_results.json (kèm per-sample predictions cho dev/test).
 
-    Eval là generation-based (~500 token/mẫu) nên RẤT đắt — thiết kế để không chờ vô ích:
-      - Thứ tự test → dev → train: con số cần nhất (test) có TRƯỚC TIÊN.
-      - train chỉ sample `eval_train_sample` mẫu (default 50): đủ tín hiệu overfit-gap
-        (so với dev), không đốt 2+ giờ generate lại 620 mẫu đã học thuộc.
+    Eval là generation-based (~500 token/mẫu) nên RẤT đắt → MẶC ĐỊNH chỉ chạy "test" để khỏi
+    đốt thời gian generate lại dev/train. Per-epoch dev eval (AccuracyCallback) vẫn chạy mỗi epoch.
+      - Splits chạy: eval.final_eval_splits (default ["test"]; có thể thêm "dev","train").
+      - train (nếu bật) chỉ sample `eval_train_sample` mẫu (default 50) → tín hiệu overfit-gap.
       - dev/test lưu đầy đủ samples + detail_samples vào eval_results.json để soi lỗi.
     """
     max_new_tokens = cfg["model"].get("gen_max_new_tokens", 512)
@@ -596,8 +596,13 @@ def evaluate_all_splits(model, tokenizer, ds_dict: DatasetDict, cfg: dict, outpu
     # chậm thảm họa (recompute attention mỗi token). Bật lại trước khi eval.
     model.config.use_cache = True
 
-    # (split, max_samples) — test trước để có con số quan trọng nhất sớm nhất
-    plan = [("test", None), ("dev", None), ("train", train_sample_n)]
+    # (split, max_samples). MẶC ĐỊNH CHỈ "test" sau epoch cuối — KHÔNG chạy lại dev/train
+    # (generation-based, rất tốn time). Per-epoch dev eval (AccuracyCallback) VẪN chạy độc lập
+    # mỗi epoch nên log dev qua các epoch không mất. Muốn eval thêm dev/train ở bước cuối:
+    # đặt eval.final_eval_splits: ["test", "dev", "train"] trong config.
+    _plan_max = {"test": None, "dev": None, "train": train_sample_n}
+    final_splits = eval_cfg.get("final_eval_splits", ["test"])
+    plan = [(s, _plan_max[s]) for s in final_splits if s in _plan_max]
 
     results = {}
     eval_path = output_dir / "eval_results.json"
@@ -791,7 +796,7 @@ def train(cfg: dict, debug_max_samples: int | None = None):
     tokenizer.save_pretrained(str(final_dir))
     print(f"\n[Save] LoRA adapter saved to: {final_dir}")
 
-    # 9. Final evaluation trên cả 3 splits
+    # 9. Final evaluation — mặc định CHỈ test (xem eval.final_eval_splits để thêm dev/train)
     evaluate_all_splits(model, tokenizer, ds_dict, cfg, output_dir)
 
     # 10. Latency benchmark

@@ -1,0 +1,38 @@
+{
+  "train": {
+    "n_questions": 643,
+    "labels": {
+      "A": 153,
+      "C": 45,
+      "B": 53,
+      "No": 58,
+      "D": 21,
+      "Uncertain": 41,
+      "Yes": 272
+    }
+  },
+  "dev": {
+    "n_questions": 78,
+    "labels": {
+      "Uncertain": 11,
+      "C": 5,
+      "No": 16,
+      "A": 19,
+      "B": 7,
+      "D": 2,
+      "Yes": 18
+    }
+  },
+  "test": {
+    "n_questions": 78,
+    "labels": {
+      "Uncertain": 6,
+      "C": 9,
+      "B": 10,
+      "No": 6,
+      "D": 6,
+      "Yes": 23,
+      "A": 18
+    }
+  }
+}

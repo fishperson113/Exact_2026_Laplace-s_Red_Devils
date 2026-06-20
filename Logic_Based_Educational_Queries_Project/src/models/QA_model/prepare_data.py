@@ -24,7 +24,7 @@ SYSTEM_PROMPT_QA_COT = """\
 You are a logic-based educational QA system. You are given natural-language premises (indexed from 0), their First-Order Logic (FOL) translations, the answer options, and a question.
 
 ### How to read options (follow this convention ABSOLUTELY)
-- If options is non-empty, it is a choice question. Your answer must be exactly one of the listed options (copy the full option text verbatim — NOT the letter).
+- If options is non-empty, it is a choice question. Your answer MUST be EXACTLY one of the provided option entries, copied verbatim — add nothing, remove nothing, do not paraphrase or change wording, do not invent text that is not in the options. If the options are given as letters (A, B, C, D), answer with exactly that letter; if they are full statements, answer with exactly that statement; for a yes/no question answer exactly "Yes", "No", or "Uncertain".
 - If options is empty ([]), the answer is free-form (a number or a short text). Return the value directly in answer.
 For a yes/no question the options are ["Yes", "No", "Uncertain"]; choose "Uncertain" only when the premises are genuinely insufficient.
 
@@ -34,10 +34,46 @@ First, reason in ordered steps, working over the First-Order Logic (FOL) premise
 - Fact:        a ground FOL fact taken from a given FOL premise.
 - Derive:      an intermediate FOL inference (contrapositive, modus ponens, a numeric comparison, or combining earlier steps).
 - Conclusion:  the final result — exactly one, as the last step.
-Write every Rule:/Fact:/Derive: step in FOL notation (∀ ∃ → ¬ ∧ ∨ ↔ < > =). Every Rule:/Fact: must be taken from the given FOL premises only — never invent one. The "premises_used" list must contain exactly the 0-based indices of the FOL premises you cited in your Rule:/Fact: steps.
+Write every Rule:/Fact:/Derive: step in FOL notation (∀ ∃ → ¬ ∧ ∨ ↔ < > =). Every Rule:/Fact: must be taken from the given FOL premises only — never invent one.
 Then, on the final line, output ONE JSON object with the "answer" field LAST:
 {"premises_used": [<0-based indices of premises used>], "explanation": "<concise justification>", "answer": "<answer>"}
 The "answer" MUST follow the "How to read options" convention above.
+
+### premises_used and explanation (STRICT — both are graded)
+- "premises_used" must contain EXACTLY the 0-based indices of the FOL premises you cited in your Rule:/Fact: steps — no more, no less.
+- In "explanation", every premise you rely on MUST be cited explicitly with the keyword "premise" followed by its 0-based number (e.g. "premise 0", "premise 3"). Never refer to a premise without its number.
+- The set of "premise N" citations in "explanation" MUST be identical to "premises_used".
+- Do NOT cite a premise whose rule does not actually fire (e.g. a rule whose antecedent is not satisfied). If you only mention a premise to reject it, do not count it as used.
+
+### Closed-world decision procedure (apply to EVERY question)
+1. Identify the exact predicate X asked. Conclude ONLY about X — never substitute a different predicate you happen to be able to derive.
+2. A condition that is merely ABSENT (not mentioned, no fact) is UNKNOWN — neither true nor false. Never assume it true, and never derive its negation. To apply a rule, EVERY conjunct of its antecedent must have an explicit fact OR be previously derived. Never assume or invent a missing condition.
+3. Classify the question framing:
+   - PROVE-framing : "Do the premises prove/establish/show X?" or "Does X guarantee/ensure/meet ALL ... for Y?"
+   - VALUE-framing : "Is it true that X? / Is X true? / Does ... have X? / Are all/every ... ?"
+4. Decide IN THIS ORDER:
+   a. Is not-X derivable, or is X blocked/refuted? (an explicit false condition, a forbidding rule, or a counterexample to an "all" claim) -> No
+   b. Else, is X FULLY proven (every antecedent satisfied by facts/derivations)? -> Yes
+   c. Else (X neither proven nor refuted — a needed condition is only ABSENT):
+        - PROVE-framing -> No (the premises do not establish/guarantee X)
+        - VALUE-framing -> Uncertain
+Never output Yes when a required condition is only absent. Use Uncertain ONLY at step 4c and ONLY for VALUE-framing.
+
+### No vs Uncertain — quick rules
+- A required condition is explicitly false / a counterexample defeats an "all" claim / the negation is derivable -> No
+- "guarantee / ensure / meet ALL ... for Y?" with some needed condition not assured -> No
+- "Are all/every ...?" but premises give only "some / ∃", with no counterexample -> Uncertain
+- The queried predicate never appears in ANY premise -> Uncertain
+
+### Handling premises that state information is absent/unknown
+Some FOL lines are NOT formulas but the premise's original sentence prefixed with "[UNCERTAIN]"
+(e.g. "[UNCERTAIN] No premise states whether Linh has pharmacy training."). Such a line means the
+fact it mentions is UNKNOWN. It is still a REAL premise and you MUST treat it as citable:
+- Treat the mentioned fact as UNKNOWN — neither true nor false; do NOT derive a negation from it.
+- If your conclusion relies on this absence of information, write a Fact: step that references it
+  in words, e.g. "Fact: premise i states <X> is unknown", cite "premise i" in the explanation,
+  and INCLUDE index i in "premises_used" (the one allowed exception to "FOL-notation only").
+- The answer is "Uncertain" unless OTHER premises decide the question.
 """
 
 USER_TEMPLATE_QA_COT = """\
@@ -113,6 +149,57 @@ def escape_json_string(s: str) -> str:
     return s.replace("\\", "\\\\").replace('"', '\\"')
 
 
+# ─── Epistemic / meta premises ("vắng mặt thông tin") ────────────────────────
+# ĐỒNG BỘ 1:1 với app/logic_solution/parsing.py (regex + sentinel + 2 hàm).
+# Convention repo: KHÔNG import chéo app↔src để mỗi package tự chứa — copy lại.
+# Sửa một bên thì copy sang bên kia (giống cách SYSTEM_PROMPT_* đang đồng bộ).
+#
+# Mệnh đề kiểu "No premise states whether X" / "It is unknown whether X" nói về
+# bản thân tập tri thức (meta), KHÔNG về thế giới. FOL object-level không biểu
+# diễn được → FOL model hay sinh phủ định GIẢ (¬X). Ở INFERENCE production ta ghi
+# đè ô FOL đó bằng sentinel trung lập trước khi đưa vào QA. Để train KHỚP inference
+# (không lệch phân phối), ta áp CÙNG bước này lên premises_fol khi build sample.
+#
+# REGEX HẸP — chỉ bắt cụm meta đặc trưng, KHÔNG bắt mọi "whether".
+import re as _re
+
+_EPISTEMIC_PATTERNS = [
+    r"\bno premise\b.{0,40}\bwhether\b",
+    r"\bno premise (?:states|specifies|mentions|indicates)\b",
+    r"\bit is (?:un)?known whether\b",
+    r"\b(?:not|isn't|is not) (?:specified|stated|known|mentioned) whether\b",
+    r"\b(?:does not|doesn't|do not|don't) (?:state|specify|say) whether\b",
+    r"\bno (?:information|statement|fact)\b.{0,40}\bwhether\b",
+    r"\bunspecified whether\b",
+]
+_EPISTEMIC_RE = _re.compile("|".join(_EPISTEMIC_PATTERNS), _re.IGNORECASE)
+
+# Cờ đặt trước NL gốc của mệnh đề epistemic (thay cho phủ định giả ¬X từ FOL model).
+# Ta GIỮ NGUYÊN câu NL trong ô FOL — predicate vẫn còn dưới dạng chữ; QA model đọc trực tiếp.
+# PHẢI khớp ĐÚNG chuỗi cờ trong SYSTEM_PROMPT_QA_COT (khối "Handling premises...").
+_EPISTEMIC_FOL_TAG = "[UNCERTAIN]"
+
+
+def is_epistemic_premise(nl: str) -> bool:
+    """True nếu mệnh đề NL chỉ nêu sự VẮNG MẶT/không chắc chắn thông tin."""
+    return bool(_EPISTEMIC_RE.search(str(nl)))
+
+
+def neutralize_epistemic_fol(premises_nl: list[str], fol_list: list[str]) -> list[str]:
+    """Ghi đè TẠI CHỖ ô FOL của mệnh đề epistemic bằng chính câu NL gốc (gắn cờ [UNCERTAIN]).
+
+    - Quét premises_nl GỐC (không quét fol_list — NL đáng tin hơn FOL output).
+    - GIỮ NGUYÊN số phần tử của fol_list (chỉ replace, không xoá) → index không lệch.
+    - Giữ nguyên nội dung NL (còn predicate dưới dạng chữ) thay vì sentinel trống.
+    - Trả về list mới (không mutate input).
+    """
+    out = list(fol_list)
+    for i, nl in enumerate(premises_nl):
+        if i < len(out) and is_epistemic_premise(nl):
+            out[i] = f"{_EPISTEMIC_FOL_TAG} {str(nl).strip()}"
+    return out
+
+
 def build_messages_for_sample(
     premises_nl: list[str],
     premises_fol: list[str],
@@ -129,6 +216,9 @@ def build_messages_for_sample(
     query/premises/options, FOL do Model 1 sinh). Assistant target = reasoning steps
     (Rule:/Fact:/Derive:/Conclusion:) rồi JSON cuối với "answer" ĐỨNG CUỐI.
     """
+    # Train KHỚP inference: production neutralize ô FOL của mệnh đề epistemic giữa
+    # Stage 1→Stage 2, nên ở đây cũng áp CÙNG bước trước khi đưa FOL vào prompt.
+    premises_fol = neutralize_epistemic_fol(premises_nl, premises_fol)
     user_content = USER_TEMPLATE_QA_COT.format(
         premises_nl_block=format_premises_nl(premises_nl),
         premises_fol_block=format_premises_fol(premises_fol),

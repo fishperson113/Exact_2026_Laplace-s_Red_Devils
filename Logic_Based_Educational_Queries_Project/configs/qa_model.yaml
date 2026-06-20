@@ -19,13 +19,13 @@ training:
   # Số mẫu TRAIN dùng để chạy thử nhanh (chỉ cắt split train; dev/test giữ nguyên).
   # null = train full sample. Ví dụ 50 → chỉ train 50 mẫu đầu.
   train_sample: null
-  num_train_epochs: 10
+  num_train_epochs: 15
   # OOM fix: logits tensor = [batch, seq_len, vocab~152k] là chỗ ngốn VRAM nhất.
   # Hạ batch → giữ effective batch = 1×8 = 8 (bằng 4×2 cũ) qua grad accumulation.
-  per_device_train_batch_size: 2
+  per_device_train_batch_size: 4
   per_device_eval_batch_size: 10
-  gradient_accumulation_steps: 4
-  learning_rate: 2e-5
+  gradient_accumulation_steps: 2
+  learning_rate: 5e-5
   warmup_ratio: 0.05
   weight_decay: 0.01
   logging_steps: 10
@@ -34,17 +34,17 @@ training:
   train_seed: 42
   load_in_8bit: true
   # Liger kernel: fused cross-entropy KHÔNG materialize full logits → tiết kiệm
-  # VRAM lớn nhất cho vocab to. Bật sau khi: pip install liger-kernel
-  use_liger_kernel: false
+  # VRAM lớn nhất cho vocab to. Cần `liger-kernel` (đã có trong requirements.txt) + Triton/CUDA (Linux).
+  use_liger_kernel: true
   # Completion-only loss: chỉ tính loss trên phần assistant (JSON đáp án),
   # mask system+user. Khớp FOL train_on_responses_only.
   completion_only_loss: true
   # Early stopping
-  early_stopping_patience: 4
+  early_stopping_patience: 5
   load_best_model_at_end: true
   metric_for_best_model: eval_accuracy
   greater_is_better: true
-  save_total_limit: 2
+  save_total_limit: 1
 
 eval:
   # Số mẫu dev tối đa để tính accuracy mỗi epoch (null = cả dev, chậm)
@@ -64,7 +64,7 @@ inference:
 
 hub:
   org: Laplaces-Red-Devils
-  repo_version: v03
+  repo_version: v05
   type: QA
   method: CoT
   push_to_hub: true
