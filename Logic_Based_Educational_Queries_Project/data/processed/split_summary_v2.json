@@ -1,14 +1,14 @@
 {
   "train": {
-    "n_questions": 643,
+    "n_questions": 632,
     "labels": {
-      "A": 153,
+      "A": 151,
       "C": 45,
-      "B": 53,
-      "No": 58,
-      "D": 21,
+      "B": 51,
+      "No": 56,
+      "D": 20,
       "Uncertain": 41,
-      "Yes": 272
+      "Yes": 268
     }
   },
   "dev": {

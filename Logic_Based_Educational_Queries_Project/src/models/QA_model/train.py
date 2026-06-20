@@ -830,7 +830,11 @@ def train(cfg: dict, debug_max_samples: int | None = None):
         repo_name = f"{model_type.lower()}-{version}-{method.lower()}-{slug}"
         hub_repo_id = f"{org}/{repo_name}" if org else repo_name
         print(f"[Hub] Pushing to: {hub_repo_id}")
-        trainer.push_to_hub(repo_id=hub_repo_id, private=hub_cfg.get("hf_private", True))
+        # transformers 5.x: trainer.push_to_hub forward `repo_id` xuống create_model_card → TypeError.
+        # Push THẲNG thư mục adapter đã lưu (final_dir: adapter + tokenizer) bằng HfApi → ổn định mọi version.
+        from huggingface_hub import HfApi, create_repo
+        create_repo(hub_repo_id, private=hub_cfg.get("hf_private", True), exist_ok=True)
+        HfApi().upload_folder(folder_path=str(final_dir), repo_id=hub_repo_id, repo_type="model")
 
     # 13. Cleanup
     del model, trainer

@@ -4,7 +4,7 @@
 model:
   name: Qwen/Qwen3.5-4B
   trust_remote_code: true
-  max_seq_length: 3000
+  max_seq_length: 3600
   # reasoning steps + JSON cuối (answer LAST). Vì answer ở cuối, cắt sớm = MẤT answer.
   # Phân phối assistant target: P95~480, P99~600, max~793 token → 768 phủ ~99.x% an toàn.
   gen_max_new_tokens: 1000
@@ -23,7 +23,7 @@ training:
   # OOM fix: logits tensor = [batch, seq_len, vocab~152k] là chỗ ngốn VRAM nhất.
   # Hạ batch → giữ effective batch = 1×8 = 8 (bằng 4×2 cũ) qua grad accumulation.
   per_device_train_batch_size: 4
-  per_device_eval_batch_size: 10
+  per_device_eval_batch_size: 12
   gradient_accumulation_steps: 2
   learning_rate: 5e-5
   warmup_ratio: 0.05
@@ -50,7 +50,7 @@ eval:
   # Số mẫu dev tối đa để tính accuracy mỗi epoch (null = cả dev, chậm)
   eval_accuracy_max_samples: null
   # Số mẫu random in full JSON mỗi epoch (NL, FOL, question, gold, prediction)
-  eval_print_samples: 50
+  eval_print_samples: 78
   # Latency benchmark sau training
   inference_latency_benchmark_n: 50
   inference_latency_warmup: 2
@@ -64,7 +64,7 @@ inference:
 
 hub:
   org: Laplaces-Red-Devils
-  repo_version: v05
+  repo_version: v06
   type: QA
   method: CoT
   push_to_hub: true

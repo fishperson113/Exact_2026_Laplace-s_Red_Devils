@@ -47,7 +47,7 @@ The "answer" MUST follow the "How to read options" convention above.
 
 ### Closed-world decision procedure (apply to EVERY question)
 1. Identify the exact predicate X asked. Conclude ONLY about X — never substitute a different predicate you happen to be able to derive.
-2. A condition that is merely ABSENT (not mentioned, no fact) is UNKNOWN — neither true nor false. Never assume it true, and never derive its negation. To apply a rule, EVERY conjunct of its antecedent must have an explicit fact OR be previously derived. Never assume or invent a missing condition.
+2. A condition that is merely ABSENT (not mentioned, no fact) is UNKNOWN — neither true nor false. Never assume it true, and never derive its negation. To fire ANY rule — the final one OR any intermediate rule in a chain — EVERY conjunct of its antecedent must already be backed by an explicit Fact: or a previous Derive:. NEVER write a conjunct on the left side of a Derive: unless an earlier step established it. If a conjunct is missing, the rule does NOT fire: write a Derive: saying so (e.g. "Derive: premise i cannot fire — <conjunct> has no supporting fact") and treat its consequent as UNKNOWN. Never assume or invent a missing condition — not even to complete an otherwise-finished chain.
 3. Classify the question framing:
    - PROVE-framing : "Do the premises prove/establish/show X?" or "Does X guarantee/ensure/meet ALL ... for Y?"
    - VALUE-framing : "Is it true that X? / Is X true? / Does ... have X? / Are all/every ... ?"
@@ -59,11 +59,22 @@ The "answer" MUST follow the "How to read options" convention above.
         - VALUE-framing -> Uncertain
 Never output Yes when a required condition is only absent. Use Uncertain ONLY at step 4c and ONLY for VALUE-framing.
 
+### Before the Conclusion — run these checks on your FOL steps
+- Conjunct check: for EVERY rule you fired, re-verify each antecedent conjunct has an earlier Fact:/Derive:. If even one is only absent, the rule does NOT fire and its consequent stays UNKNOWN. Most over-confident wrong answers come from silently filling one missing conjunct to finish a chain — do not do this.
+- Blocking check: before answering Yes, scan ALL premises for a rule whose consequent negates or forbids X (¬X, "not", "should not", "without review", "not eligible"). If such a rule fires, the answer is No — do NOT stop at the first chain that happens to reach X.
+- One-hop-too-far check (choice questions): an option is supported only if the FULL chain yielding it has every conjunct backed. Reject any option that would need one MORE rule whose antecedent is not fully satisfied. Choose the deepest conclusion the premises ACTUALLY entail — never a stronger one that needs an unsupported condition.
+- Completeness check: before settling on Uncertain (or No for lack of proof), try the CONTRAPOSITIVE of each rule and combine it with universal facts (∀). A Yes is often reachable via contrapositive, not only by forward modus ponens.
+
 ### No vs Uncertain — quick rules
 - A required condition is explicitly false / a counterexample defeats an "all" claim / the negation is derivable -> No
 - "guarantee / ensure / meet ALL ... for Y?" with some needed condition not assured -> No
 - "Are all/every ...?" but premises give only "some / ∃", with no counterexample -> Uncertain
 - The queried predicate never appears in ANY premise -> Uncertain
+
+### Choice-question pitfalls (when options are full statements, not Yes/No)
+- Do NOT weaken a quantifier: if the premises entail a UNIVERSAL (∀ / "All"), pick the "All" option — never a "Some / ∃" option, and vice versa.
+- If several options are true, prefer the one that is a genuine MULTI-step consequence over an option that merely restates a single given premise verbatim — a restated premise is usually a distractor, not the intended inference.
+- Match the EXACT predicate the question targets; do not pick a related-but-different conclusion just because it is also derivable.
 
 ### Handling premises that state information is absent/unknown
 Some FOL lines are NOT formulas but the premise's original sentence prefixed with "[UNCERTAIN]"
