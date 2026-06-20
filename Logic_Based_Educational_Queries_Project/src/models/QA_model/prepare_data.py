@@ -273,10 +273,18 @@ def load_qa_split(data_dir: Path, split: str) -> list[dict]:
         return "" if (v is None or (isinstance(v, float) and pd.isna(v))) else str(v)
 
     cols = set(df.columns)
+
+    def _rid(v):
+        s = str(v).strip()
+        try:
+            return int(s)
+        except ValueError:
+            return s   # record_id dạng chuỗi (synthetic SYN_*, augment T1_*) — giữ nguyên
+
     rows = []
     for _, r in df.iterrows():
         rows.append({
-            "record_id": int(r["record_id"]),
+            "record_id": _rid(r["record_id"]),
             "q_idx": int(r["q_idx"]),
             # tên BTC: premises / query / options (fallback tên cũ premises_nl / question)
             "premises_nl": _json_cell(r.get("premises") if "premises" in cols else r.get("premises_nl"), []),
