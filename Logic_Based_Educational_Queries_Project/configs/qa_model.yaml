@@ -22,7 +22,7 @@ training:
   num_train_epochs: 15
   # OOM fix: logits tensor = [batch, seq_len, vocab~152k] là chỗ ngốn VRAM nhất.
   # Hạ batch → giữ effective batch = 1×8 = 8 (bằng 4×2 cũ) qua grad accumulation.
-  per_device_train_batch_size: 4
+  per_device_train_batch_size: 8
   per_device_eval_batch_size: 12
   gradient_accumulation_steps: 2
   learning_rate: 5e-5
