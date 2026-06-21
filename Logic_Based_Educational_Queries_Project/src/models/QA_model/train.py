@@ -37,6 +37,18 @@ from trl import SFTConfig, SFTTrainer
 from .prepare_data import build_qa_dataset_dict
 
 
+# ─── cuDNN SDPA workaround ────────────────────────────────────────────────────
+# Một số tổ hợp cuDNN 9.x + GPU + head_dim của Qwen3.5 khiến backend cuDNN của
+# scaled_dot_product_attention báo "No valid execution plans built" ngay step 0.
+# Tắt RIÊNG backend cuDNN-SDPA → PyTorch tự rơi về flash / mem-efficient / math
+# (vẫn nhanh, không phải eager). Các backend còn lại giữ nguyên.
+if torch.cuda.is_available():
+    try:
+        torch.backends.cuda.enable_cudnn_sdp(False)
+    except (AttributeError, RuntimeError):
+        pass
+
+
 # ─── Config ──────────────────────────────────────────────────────────────────
 
 def load_config(config_path: str) -> dict:
@@ -209,6 +221,22 @@ def _parse_full_output(text: str) -> dict:
                     pass
         return out
 
+    def _from_expl(expl) -> list:
+        # premises_used CHUẨN = các "premise N" model tự trích trong explanation (0-based).
+        # Bắt cả số nhiều ("premises"), list ("1, 2 and 3") và range ("1-3", "1–3").
+        if not expl:
+            return []
+        out: set[int] = set()
+        for m in re.finditer(r"premises?\s+((?:\d+\s*(?:[-–—]\s*\d+)?\s*[,&]?\s*(?:and\s+)?)+)", expl, re.I):
+            chunk = m.group(1)
+            for a, b in re.findall(r"(\d+)\s*[-–—]\s*(\d+)", chunk):
+                a, b = int(a), int(b)
+                if a <= b and b - a < 100:
+                    out.update(range(a, b + 1))
+            chunk = re.sub(r"\d+\s*[-–—]\s*\d+", " ", chunk)
+            out.update(int(n) for n in re.findall(r"\d+", chunk))
+        return sorted(out)
+
     # 1. JSON CUỐI cùng có "answer" (reasoning đứng trước → lấy match cuối)
     for m in reversed(list(re.finditer(r"\{.*?\}", text, re.DOTALL))):
         try:
@@ -216,10 +244,12 @@ def _parse_full_output(text: str) -> dict:
         except json.JSONDecodeError:
             continue
         if "answer" in parsed:
+            expl = str(parsed.get("explanation", "")).strip()
+            pu_expl = _from_expl(expl)
             return {
                 "answer": str(parsed["answer"]).strip(),
-                "explanation": str(parsed.get("explanation", "")).strip(),
-                "premises_used": _premises(parsed),
+                "explanation": expl,
+                "premises_used": pu_expl if pu_expl else _premises(parsed),
                 "reasoning_steps": reasoning_steps,
             }
 
@@ -230,9 +260,10 @@ def _parse_full_output(text: str) -> dict:
         em = re.search(r'"explanation"\s*:\s*"(.*?)"\s*[,}]', text, re.DOTALL)
         explanation = em.group(1).strip() if em else ""
         pm = re.search(r'"premises_used"\s*:\s*\[([^\]]*)\]', text)
-        premises_used = [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else []
+        pu_model = [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else []
+        pu_expl = _from_expl(explanation)
         return {"answer": answer, "explanation": explanation,
-                "premises_used": premises_used, "reasoning_steps": reasoning_steps}
+                "premises_used": pu_expl if pu_expl else pu_model, "reasoning_steps": reasoning_steps}
 
     # 3. Last-resort: từ Conclusion: hoặc cue, KHÔNG đoán bừa A/B/C/D
     concl = next((s for s in reversed(reasoning_steps) if s.startswith("Conclusion:")), "")
@@ -578,12 +609,12 @@ def benchmark_latency(model, tokenizer, dataset, cfg: dict):
 # ─── Full Evaluation (train + dev + test) ────────────────────────────────────
 
 def evaluate_all_splits(model, tokenizer, ds_dict: DatasetDict, cfg: dict, output_dir: Path):
-    """Tính accuracy các splits, ghi kết quả JSON (kèm per-sample predictions cho dev/test).
+    """Final eval sau training, ghi eval_results.json (kèm per-sample predictions cho dev/test).
 
-    Eval là generation-based (~500 token/mẫu) nên RẤT đắt — thiết kế để không chờ vô ích:
-      - Thứ tự test → dev → train: con số cần nhất (test) có TRƯỚC TIÊN.
-      - train chỉ sample `eval_train_sample` mẫu (default 50): đủ tín hiệu overfit-gap
-        (so với dev), không đốt 2+ giờ generate lại 620 mẫu đã học thuộc.
+    Eval là generation-based (~500 token/mẫu) nên RẤT đắt → MẶC ĐỊNH chỉ chạy "test" để khỏi
+    đốt thời gian generate lại dev/train. Per-epoch dev eval (AccuracyCallback) vẫn chạy mỗi epoch.
+      - Splits chạy: eval.final_eval_splits (default ["test"]; có thể thêm "dev","train").
+      - train (nếu bật) chỉ sample `eval_train_sample` mẫu (default 50) → tín hiệu overfit-gap.
       - dev/test lưu đầy đủ samples + detail_samples vào eval_results.json để soi lỗi.
     """
     max_new_tokens = cfg["model"].get("gen_max_new_tokens", 512)
@@ -596,8 +627,13 @@ def evaluate_all_splits(model, tokenizer, ds_dict: DatasetDict, cfg: dict, outpu
     # chậm thảm họa (recompute attention mỗi token). Bật lại trước khi eval.
     model.config.use_cache = True
 
-    # (split, max_samples) — test trước để có con số quan trọng nhất sớm nhất
-    plan = [("test", None), ("dev", None), ("train", train_sample_n)]
+    # (split, max_samples). MẶC ĐỊNH CHỈ "test" sau epoch cuối — KHÔNG chạy lại dev/train
+    # (generation-based, rất tốn time). Per-epoch dev eval (AccuracyCallback) VẪN chạy độc lập
+    # mỗi epoch nên log dev qua các epoch không mất. Muốn eval thêm dev/train ở bước cuối:
+    # đặt eval.final_eval_splits: ["test", "dev", "train"] trong config.
+    _plan_max = {"test": None, "dev": None, "train": train_sample_n}
+    final_splits = eval_cfg.get("final_eval_splits", ["test"])
+    plan = [(s, _plan_max[s]) for s in final_splits if s in _plan_max]
 
     results = {}
     eval_path = output_dir / "eval_results.json"
@@ -791,7 +827,7 @@ def train(cfg: dict, debug_max_samples: int | None = None):
     tokenizer.save_pretrained(str(final_dir))
     print(f"\n[Save] LoRA adapter saved to: {final_dir}")
 
-    # 9. Final evaluation trên cả 3 splits
+    # 9. Final evaluation — mặc định CHỈ test (xem eval.final_eval_splits để thêm dev/train)
     evaluate_all_splits(model, tokenizer, ds_dict, cfg, output_dir)
 
     # 10. Latency benchmark
@@ -818,7 +854,11 @@ def train(cfg: dict, debug_max_samples: int | None = None):
         repo_name = f"{model_type.lower()}-{version}-{method.lower()}-{slug}"
         hub_repo_id = f"{org}/{repo_name}" if org else repo_name
         print(f"[Hub] Pushing to: {hub_repo_id}")
-        trainer.push_to_hub(repo_id=hub_repo_id, private=hub_cfg.get("hf_private", True))
+        # transformers 5.x: trainer.push_to_hub forward `repo_id` xuống create_model_card → TypeError.
+        # Push THẲNG thư mục adapter đã lưu (final_dir: adapter + tokenizer) bằng HfApi → ổn định mọi version.
+        from huggingface_hub import HfApi, create_repo
+        create_repo(hub_repo_id, private=hub_cfg.get("hf_private", True), exist_ok=True)
+        HfApi().upload_folder(folder_path=str(final_dir), repo_id=hub_repo_id, repo_type="model")
 
     # 13. Cleanup
     del model, trainer

@@ -34,6 +34,7 @@ from .prepare_data import (
     format_options,
     format_premises_fol,
     format_premises_nl,
+    neutralize_epistemic_fol,
 )
 
 
@@ -86,6 +87,10 @@ class QACOTInference:
     def predict(self, premises_nl: list[str], premises_fol: list[str], question: str,
                 options: list[str] | None = None) -> QAResult:
         """Generate answer + explanation from NL + FOL + options + question."""
+        # Khớp production (ensemble/pipeline_logic neutralize giữa Stage 1→2) và khớp
+        # prepare_data: ô FOL của mệnh đề epistemic → sentinel trước khi vào prompt.
+        # Idempotent nếu FOL đã neutralize (quét trên NL, không quét FOL).
+        premises_fol = neutralize_epistemic_fol(premises_nl, premises_fol)
         user_content = USER_TEMPLATE_QA_COT.format(
             premises_nl_block=format_premises_nl(premises_nl),
             premises_fol_block=format_premises_fol(premises_fol),
@@ -170,6 +175,22 @@ class QACOTInference:
                 return out
             return []
 
+        def _from_expl(expl: str) -> list[int]:
+            # premises_used CHUẨN = các "premise N" model tự trích trong explanation (0-based).
+            # Bắt cả số nhiều ("premises"), list ("1, 2 and 3") và range ("1-3", "1–3").
+            if not expl:
+                return []
+            out: set[int] = set()
+            for m in re.finditer(r"premises?\s+((?:\d+\s*(?:[-–—]\s*\d+)?\s*[,&]?\s*(?:and\s+)?)+)", expl, re.I):
+                chunk = m.group(1)
+                for a, b in re.findall(r"(\d+)\s*[-–—]\s*(\d+)", chunk):
+                    a, b = int(a), int(b)
+                    if a <= b and b - a < 100:
+                        out.update(range(a, b + 1))
+                chunk = re.sub(r"\d+\s*[-–—]\s*\d+", " ", chunk)
+                out.update(int(n) for n in re.findall(r"\d+", chunk))
+            return sorted(out)
+
         # 1. JSON cuối cùng có "answer" (lấy match cuối, vì reasoning đứng trước)
         matches = list(re.finditer(r"\{.*?\}", text, re.DOTALL))
         for m in reversed(matches):
@@ -178,10 +199,12 @@ class QACOTInference:
             except json.JSONDecodeError:
                 continue
             if "answer" in parsed:
+                expl = str(parsed.get("explanation", "")).strip()
+                pu_expl = _from_expl(expl)
                 return {
                     "answer": str(parsed["answer"]).strip(),
-                    "explanation": str(parsed.get("explanation", "")).strip(),
-                    "premises_used": _premises(parsed),
+                    "explanation": expl,
+                    "premises_used": pu_expl if pu_expl else _premises(parsed),
                     "reasoning_steps": reasoning_steps,
                 }
 
@@ -192,10 +215,12 @@ class QACOTInference:
             em = re.search(r'"explanation"\s*:\s*"(.*?)"\s*[,}]', text, re.DOTALL)
             explanation = em.group(1).strip() if em else ""
             pm = re.search(r'"premises_used"\s*:\s*\[([^\]]*)\]', text)
-            premises_used = [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else []
+            pu_model = [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else []
+            pu_expl = _from_expl(explanation)
             return {
                 "answer": answer, "explanation": explanation,
-                "premises_used": premises_used, "reasoning_steps": reasoning_steps,
+                "premises_used": pu_expl if pu_expl else pu_model,
+                "reasoning_steps": reasoning_steps,
             }
 
         # 3. Last-resort: lấy label từ Conclusion: hoặc cue, KHÔNG đoán bừa A/B/C/D

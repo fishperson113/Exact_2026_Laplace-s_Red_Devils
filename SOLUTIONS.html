@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EXACT 2026 — Solution Description · Laplace's Red Devils</title>
+<style>
+  @page { size: A4; margin: 11mm 12mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.1px; line-height: 1.32; color: #1a1a1a;
+  }
+  h1 { font-size: 14px; margin: 0 0 4px; color: #b71c1c; border-bottom: 2px solid #b71c1c; padding-bottom: 3px; }
+  h2 { font-size: 10.5px; margin: 9px 0 3px; color: #c62828; border-bottom: 1px solid #e0a0a0; padding-bottom: 1px; }
+  h3 { font-size: 9px; margin: 6px 0 2px; color: #444; }
+  p { margin: 3px 0; }
+  hr { display: none; }
+  code {
+    font-family: "Consolas", "Courier New", monospace;
+    background: #f4f4f4; padding: 0 2px; border-radius: 2px; font-size: 7.5px; color: #035;
+  }
+  table {
+    border-collapse: collapse; width: 100%; margin: 3px 0 5px; table-layout: fixed;
+  }
+  th, td {
+    border: 1px solid #c4c4c4; padding: 2.5px 4px; text-align: left; vertical-align: top;
+    word-wrap: break-word; overflow-wrap: break-word;
+  }
+  th { background: #f7e7e7; font-weight: 600; color: #7a1414; }
+  tr:nth-child(even) td { background: #fafafa; }
+  blockquote {
+    margin: 4px 0; padding: 3px 7px; border-left: 3px solid #c62828;
+    background: #fbf4f4; font-size: 7.7px; color: #333;
+  }
+  strong { color: #000; }
+  .lead { font-size: 8.3px; margin: 4px 0 6px; }
+</style>
+</head>
+<body>
+
+<h1>EXACT 2026 — Solution Description · Team <strong>Laplace's Red Devils</strong></h1>
+
+<p class="lead"><strong>One</strong> endpoint <code>POST /predict</code>, routed by the <code>type</code> field:
+<code>type1</code> &rarr; Logic pipeline (FOL + QA), <code>type2</code> &rarr; Physics pipeline (compute + CoT).
+Returns a JSON <strong>list</strong> of <code>{query_id, answer, unit, explanation, premises_used, reasoning}</code>.
+Every LLM is <strong>Qwen3.5-4B</strong>, served via <strong>vLLM</strong> (each server exposes <code>/v1/models</code> for committee verification).</p>
+
+<h2>1. Datasets used</h2>
+<table>
+  <colgroup><col style="width:9%"><col style="width:18%"><col style="width:26%"><col style="width:21%"><col style="width:26%"></colgroup>
+  <thead><tr><th>Scenario</th><th>Dataset</th><th>Source / Origin</th><th>Samples used</th><th>Role</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Type 1</strong></td><td>EXACT 2026 official (logic)</td><td>Organizer — <code>train/dev/test.csv</code></td><td><strong>~630</strong> records (filtered <code>len(premises_nl)==len(premises_fol)&gt;0</code>)</td><td>Stage 2 target (gold FOL + answer)</td></tr>
+    <tr><td><strong>Type 1</strong></td><td>MALLS-v0.1 (NL&rarr;FOL)</td><td>External — HuggingFace (LogicLLaMA, ACL'24, arXiv:2305.15541)</td><td>28,284 normalized &rarr; <strong>random 5,000</strong> (seed 3407)</td><td>Stage 1 pretrain (FOL syntax warmup)</td></tr>
+    <tr><td><strong>Type 1</strong></td><td>Reasoning CoT (augmented)</td><td><strong>Synthetic — Claude Sonnet 4.6</strong></td><td><code>Rule/Fact/Derive/Conclusion</code> chain per train/dev/test question</td><td>Stage 2 QA target (validated, no invented predicates)</td></tr>
+    <tr><td><strong>Type 2</strong></td><td>EXACT 2026 official (physics)</td><td>Organizer (1318) + <strong>Vietjack</strong> crawl (353) &rarr; QC</td><td>1671 &rarr; <strong>1584</strong> clean (CLEAN+FIX, execution-grounded)</td><td>Source for trajectory generation</td></tr>
+    <tr><td><strong>Type 2</strong></td><td>SFT trajectories (PoT)</td><td><strong>Synthetic self-gen</strong> (Qwen3.5-4B, on-policy)</td><td><strong>2,846 traj / 1,505 problems</strong> (cap 2 diverse/problem)</td><td>SFT target (5–10 line reasoning + ONE code block)</td></tr>
+    <tr><td><strong>Type 2</strong></td><td><code>hint_code</code> (method hint)</td><td><strong>External</strong> — DeepSeek / Claude (<strong>only shown to the model on problems it solved INCORRECTLY itself</strong>; never used at inference)</td><td>1550/1584</td><td>Hinted route (residual) + QC verify</td></tr>
+    <tr><td><strong>Type 2</strong></td><td><code>val_56</code> / <code>golden_60</code></td><td>Organizer</td><td>56 / 60 (held-out) — <strong>these are the two test sets</strong></td><td>Evaluation, <strong>never</strong> trained on (leak-guarded)</td></tr>
+  </tbody>
+</table>
+<blockquote><em>Type 1 input sample:</em> <code>{premises:["A student with ≥120 credits is eligible.","Student A has 118 credits."], query:"Is Student A eligible?", options:["Yes","No","Uncertain"]}</code>. <em>Type 2 sample:</em> <code>{query:"A 2 µF capacitor charged to 12 V stores how much energy?"}</code> &rarr; <code>answer:"1.44e-4", unit:"J"</code>.</blockquote>
+
+<h2>2. Approach &amp; Method</h2>
+
+<h3>Type 1 — Logic (two fine-tuned models in series)</h3>
+<ul style="margin:2px 0; padding-left:14px;">
+  <li><strong>Model 1 — FOL Translator</strong> (<code>fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4</code>, full finetune): NL premises &rarr; <code>premises_fol</code>. Trained with a <strong>two-stage curriculum</strong>: <em>Stage 1</em> pretrain on MALLS 5K (general FOL syntax) &rarr; <em>Stage 2</em> fine-tune on the official set. Best model selected by <strong>RM = 0.6·LE + 0.4·BLEU</strong> (LE = logical equivalence via <strong>Z3</strong>; BLEU = n-gram overlap on FOL) instead of exact-match.</li>
+  <li><strong>Model 2 — QA CoT Reasoner</strong> (<code>v04-QA-CoT</code>, LoRA): takes NL + FOL + question &rarr; emits <code>Rule/Fact/Derive/Conclusion</code> steps, then a final <strong>JSON <code>{premises_used, explanation, answer}</code> last</strong> (reason first, commit the answer last). Reasoning steps augmented with <strong>Claude Sonnet 4.6</strong>.</li>
+  <li><strong>Core principle:</strong> both models are trained INDEPENDENTLY on <strong>GOLD FOL</strong> (teacher forcing); they are <strong>chained only at inference</strong> (Model 1 emits FOL &rarr; Model 2 consumes it). <code>premises_used</code> (0-based) comes from Model 2's output (50% of the Type 1 score).</li>
+</ul>
+
+<h3>Type 2 — Physics (SFT Program-of-Thought + self-consistency / ensemble)</h3>
+<ul style="margin:2px 0; padding-left:14px;">
+  <li><strong>Solver — <code>physics-v07c-sft-qwen3.5-4b</code></strong> (16-bit LoRA, r8 q/k/v/o; lossless merge): emits <strong>short reasoning (5–10 lines) + EXACTLY one Python block</strong> &rarr; executed in a sandbox (scipy/sympy, no GPU) &rarr; parse <code>FINAL ANSWER:</code> / <code>UNIT:</code>. Physical constants are hardcoded; computed values are <strong>never</strong> hardcoded.</li>
+  <li><strong>Serving pipeline (<code>v07_ensemble_vLLM</code>):</strong> classify (domain, answer_type) &rarr; <strong>BASE &amp; SFT each sample K=5 concurrently</strong> (one vLLM engine batches all 10 sequences) &rarr; execute all &rarr; <strong>pooled vote over 10 answers, majority cluster wins</strong> (predictions only, never the gold) &rarr; <strong>BASE writes the <code>explanation</code> + <code>cot</code></strong> for the chosen answer (does not change it). Deadline-safe &lt; 60 s.</li>
+  <li><strong>Results (RTX 5090):</strong> v07c + SC K=5 = <strong>val 0.875 / golden 0.817</strong>; pooled ensemble = <strong>0.869 / 0.789</strong> (kept: nearly free, raises the floor). Latency median ~6.5–9 s &Lt; 60 s. Remaining bottleneck: electrostatics vector-superposition (a data lever, not a serving issue).</li>
+</ul>
+
+<h2>3. Model size calculation (≤ 8B)</h2>
+<p style="margin:2px 0;">Serving mode <code>combined</code> — <strong>two vLLM servers on one GPU</strong>, every model is <strong>Qwen3.5-4B</strong>:</p>
+<table>
+  <colgroup><col style="width:13%"><col style="width:42%"><col style="width:16%"><col style="width:29%"></colgroup>
+  <thead><tr><th>vLLM server</th><th>Model / adapter</th><th>Params</th><th>Role</th></tr></thead>
+  <tbody>
+    <tr><td><code>:18000</code></td><td>base <strong>Qwen3.5-4B</strong> + LoRA <code>sft</code> (physics-v07c) + LoRA <code>qa</code> (v04-QA-CoT)</td><td>~<strong>4B</strong> (+ tiny PEFT adapters, not counted)</td><td>Type 2 solver/judge · Type 1 QA stage-2</td></tr>
+    <tr><td><code>:18001</code></td><td><code>fol</code> = <code>fol-v06-cot-augmented…</code> (full finetune, grafted composite)</td><td>~<strong>4B</strong></td><td>Type 1 stage-1 NL&rarr;FOL</td></tr>
+  </tbody>
+</table>
+<p style="margin:3px 0;"><strong>Peak concurrent = base 4B + fol 4B = ~8B</strong> (LoRA adapters are small deltas, not added) &rarr; <strong>within the 8B-class limit</strong> (Guide §6.3: "two 4B models in parallel" is allowed). Measured VRAM ~26.7/32 GB. Non-LLM tools (Z3 solver, code-execution sandbox) do not count toward the limit. The FastAPI gateway <code>:9000</code> exposes <code>/predict</code>; each vLLM server exposes its own <code>/v1/models</code> (<code>:18000</code> &rarr; base, sft, qa · <code>:18001</code> &rarr; fol) for committee verification.</p>
+
+</body>
+</html>

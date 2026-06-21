@@ -44,6 +44,7 @@ from models.QA_model.prepare_data import (
     format_options,
     format_premises_fol,
     format_premises_nl,
+    neutralize_epistemic_fol,
 )
 from models.QA_model.postprocess import clean_explanation, snap_answer_to_options
 
@@ -222,6 +223,9 @@ class QAModel:
                  options: list[str] | None = None,
                  max_new_tokens: int = 200) -> dict[str, str]:
         """NL + FOL + options + question → {answer, explanation, premises_used, reasoning_steps}."""
+        # Lưới an toàn: ô FOL của mệnh đề epistemic → giữ NL gắn cờ [UNCERTAIN] (khớp QA_model/inference
+        # + build SFT). Bất kể Model 1 sinh gì, QA không bao giờ suy ¬X từ "vắng mặt thông tin".
+        premises_fol = neutralize_epistemic_fol(premises_nl, premises_fol)
         user_content = USER_TEMPLATE_QA_COT.format(
             premises_nl_block=format_premises_nl(premises_nl),
             premises_fol_block=format_premises_fol(premises_fol),
@@ -266,6 +270,7 @@ class QAModel:
         for item in items:
             nl, fol, q = item[0], item[1], item[2]
             options = item[3] if len(item) > 3 else []   # (nl, fol, q, options) — options có thể rỗng
+            fol = neutralize_epistemic_fol(nl, fol)      # epistemic → giữ NL gắn cờ [UNCERTAIN]
             user_content = USER_TEMPLATE_QA_COT.format(
                 premises_nl_block=format_premises_nl(nl),
                 premises_fol_block=format_premises_fol(fol),
@@ -312,6 +317,22 @@ class QAModel:
                         pass
             return out
 
+        def _from_expl(expl) -> list:
+            # premises_used CHUẨN = các "premise N" model tự trích trong explanation (0-based).
+            # Bắt cả số nhiều ("premises"), list ("1, 2 and 3") và range ("1-3", "1–3").
+            if not expl:
+                return []
+            out: set[int] = set()
+            for m in re.finditer(r"premises?\s+((?:\d+\s*(?:[-–—]\s*\d+)?\s*[,&]?\s*(?:and\s+)?)+)", expl, re.I):
+                chunk = m.group(1)
+                for a, b in re.findall(r"(\d+)\s*[-–—]\s*(\d+)", chunk):
+                    a, b = int(a), int(b)
+                    if a <= b and b - a < 100:
+                        out.update(range(a, b + 1))
+                chunk = re.sub(r"\d+\s*[-–—]\s*\d+", " ", chunk)
+                out.update(int(n) for n in re.findall(r"\d+", chunk))
+            return sorted(out)
+
         # 1. JSON CUỐI cùng có "answer"
         for m in reversed(list(re.finditer(r"\{.*?\}", text, re.DOTALL))):
             try:
@@ -319,10 +340,12 @@ class QAModel:
             except json.JSONDecodeError:
                 continue
             if "answer" in parsed:
+                expl = str(parsed.get("explanation", "")).strip()
+                pu_expl = _from_expl(expl)
                 return {
                     "answer": str(parsed["answer"]).strip(),
-                    "explanation": str(parsed.get("explanation", "")).strip(),
-                    "premises_used": _premises(parsed),
+                    "explanation": expl,
+                    "premises_used": pu_expl if pu_expl else _premises(parsed),
                     "reasoning_steps": reasoning_steps,
                 }
 
@@ -331,10 +354,13 @@ class QAModel:
         if m:
             em = re.search(r'"explanation"\s*:\s*"(.*?)"\s*[,}]', text, re.DOTALL)
             pm = re.search(r'"premises_used"\s*:\s*\[([^\]]*)\]', text)
+            expl = em.group(1).strip() if em else ""
+            pu_model = [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else []
+            pu_expl = _from_expl(expl)
             return {
                 "answer": m.group(1).strip(),
-                "explanation": em.group(1).strip() if em else "",
-                "premises_used": [int(x) for x in re.findall(r"\d+", pm.group(1))] if pm else [],
+                "explanation": expl,
+                "premises_used": pu_expl if pu_expl else pu_model,
                 "reasoning_steps": reasoning_steps,
             }
 
