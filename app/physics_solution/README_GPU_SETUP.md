@@ -19,7 +19,7 @@
 
 | Thanh phan | Port | Ghi chu |
 |---|---|---|
-| vLLM BASE + 2 LoRA | 18000 | served-names `base`, `sft` (physics), `qa` (logic stage 2 = v04-QA-CoT) |
+| vLLM BASE + 2 LoRA | 18000 | served-names `base`, `sft` (physics), `qa` (logic stage 2 = qa-v05-cot) |
 | vLLM FOL (composite) | 18001 | served-name `fol`; logic stage 1 (NL->FOL), full finetune da graft |
 | gateway (FastAPI) | 9000 | `POST /predict` — BTC goi cai nay |
 
@@ -156,7 +156,8 @@ Mot GPU, **2 vLLM server**. Model set khop `app/logic_solution/config.yaml` (chu
 | fol | :18001 | `fol-v06-cot-augmented` (graft composite) | type1 stage-1 NL->FOL | ~4B |
 
 - **`sft`** = `Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b` (LoRA, physics).
-- **`qa`**  = `Laplaces-Red-Devils/v04-QA-CoT` (LoRA, logic stage-2). Dung CHUNG :18000 voi physics
+- **`qa`**  = `Laplaces-Red-Devils/qa-v05-cot-Qwen3.5-4B` (LoRA, logic stage-2; default = config.yaml,
+  override `QA_ADAPTER`). Dung CHUNG :18000 voi physics
   -> `qa_base_url` == physics endpoint, gateway chi swap `fol` (neu bat swap).
 - **`fol`** = `Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4` (full finetune).
 
@@ -170,7 +171,7 @@ composite (giu `model.visual.*`+mtp+config, keys khop 1:1) -> composite hop le. 
 HF_TOKEN=hf_... SERVE_MODE=combined bash scripts/serve_all.sh start
 # env tuy chon (mac dinh):
 #   BASE_REPO=Qwen/Qwen3.5-4B  SFT_ADAPTER=Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b
-#   QA_ADAPTER=Laplaces-Red-Devils/v04-QA-CoT
+#   QA_ADAPTER=Laplaces-Red-Devils/qa-v05-cot-Qwen3.5-4B
 #   FOL_FT=Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4
 #   RESIDENT_ALL=1 (mac dinh: ca 2 awake, ko swap; base 4B + fol 4B = ~8B parallel, BTC §6.3 OK)
 #     -> FOL_GPU_RESIDENT=0.40  GPU_UTIL_RESIDENT=0.48 (co-resident tren 32GB)

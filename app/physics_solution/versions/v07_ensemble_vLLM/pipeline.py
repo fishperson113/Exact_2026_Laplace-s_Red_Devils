@@ -165,7 +165,7 @@ async def _explain(question: str, rep: dict, deadline: float) -> tuple[str, list
     )
     try:
         out = await physics_base_llm.chat([{"role": "user", "content": user}],
-                                          temperature=0.0, max_tokens=512)
+                                          temperature=0.0, max_tokens=settings.explain_max_tokens)
         return out.strip(), _split_steps(out)
     except Exception:  # noqa: BLE001
         steps = _reasoning_steps(rep["comp"])

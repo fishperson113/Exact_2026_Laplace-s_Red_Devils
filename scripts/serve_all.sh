@@ -221,7 +221,8 @@ if [ "$SERVE_MODE" = "physics_ensemble" ]; then
 elif [ "$SERVE_MODE" = "combined" ]; then
     # FULL competition stack on ONE GPU, both task types. Model layout matches the
     # authoritative logic config (app/logic_solution/config.yaml):
-    #   :18000 base Qwen3.5-4B + LoRA(sft=physics) + LoRA(qa=v04-QA-CoT)   ids: base, sft, qa
+    #   :18000 base Qwen3.5-4B + LoRA(sft=physics) + LoRA(qa=qa-v05-cot)   ids: base, sft, qa
+    #          (qa default tracks app/logic_solution/config.yaml; override via $QA_ADAPTER)
     #          Serves physics (sft) AND logic stage-2 QA (qa adapter).
     #   :18001 fol = fol-v06-cot-augmented (full finetune, grafted)        id: fol  (logic stage 1)
     #
@@ -236,7 +237,7 @@ elif [ "$SERVE_MODE" = "combined" ]; then
     # engine exactly like the physics sft adapter (no graft).
     BASE_REPO="${BASE_REPO:-Qwen/Qwen3.5-4B}"
     SFT_ADAPTER="${SFT_ADAPTER:-Laplaces-Red-Devils/physics-v07c-sft-qwen3.5-4b}"
-    QA_ADAPTER="${QA_ADAPTER:-Laplaces-Red-Devils/v04-QA-CoT}"
+    QA_ADAPTER="${QA_ADAPTER:-Laplaces-Red-Devils/qa-v05-cot-Qwen3.5-4B}"
     MAX_LORA_RANK="${MAX_LORA_RANK:-32}"     # must cover BOTH adapters (sft + qa)
     MAX_LORAS="${MAX_LORAS:-2}"              # 2 registered adapters on one base engine
     FOL_FT="${FOL_FT:-Laplaces-Red-Devils/fol-v06-cot-augmented-fol-pretrain-malls-qwen3.5-4}"
@@ -265,8 +266,9 @@ elif [ "$SERVE_MODE" = "combined" ]; then
 
     # Re-key the LoRA adapters to the COMPOSITE namespace (idempotent). A LoRA trained on the
     # text-only Qwen3.5-4B exports keys without `language_model`, which vLLM silently binds to
-    # nothing on the composite base = a NO-OP (serving id == base output). v04-QA-CoT needs this;
-    # physics-v07c-sft is already composite-namespace (0 keys re-keyed). Serve the local dirs.
+    # nothing on the composite base = a NO-OP (serving id == base output). A text-only-trained
+    # QA adapter (e.g. qa-v05-cot / v04-QA-CoT) needs this; physics-v07c-sft is already
+    # composite-namespace (0 keys re-keyed; re-key is idempotent either way). Serve local dirs.
     for spec in "sft:$SFT_ADAPTER" "qa:$QA_ADAPTER"; do
         nm="${spec%%:*}"; rp="${spec#*:}"
         HF_HOME="$HF_HOME" HF_TOKEN="${HF_TOKEN:-}" HUGGING_FACE_HUB_TOKEN="${HF_TOKEN:-}" \

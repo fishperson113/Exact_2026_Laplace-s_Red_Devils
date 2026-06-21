@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 
     The qa LoRA shares :18000 with physics, so the gateway only sleep-swaps fol
     (:18001) by type; :18000 stays awake. Model set matches app/logic_solution/
-    config.yaml (fol=fol-v06-cot-augmented, qa=v04-QA-CoT adapter).
+    config.yaml (fol=fol-v06-cot-augmented, qa=qa-v05-cot adapter).
 
     Override any field via env var (UPPER_SNAKE of the field name) or .env.
     """
@@ -33,12 +33,16 @@ class Settings(BaseSettings):
     ensemble_temperature: float = 0.7
     ensemble_top_p: float = 0.95
     ensemble_max_tokens: int = 2048
+    # explanation+CoT written by the BASE model for the already-chosen answer (separate
+    # budget from the solve step above). Bump if explanations get truncated. The whole
+    # call still runs inside the 60s deadline, so keep it sane. Env: EXPLAIN_MAX_TOKENS.
+    explain_max_tokens: int = 1024
 
     # ---- Logic (Task Type 1) — two-stage FOL -> QA ----
     # FOL (stage 1, NL->FOL) is a FULL finetune (fol-v06-cot-augmented) grafted onto
     # the composite base and served standalone on :18001 (text-only Qwen3_5ForCausalLM
     # isn't vLLM-servable; the graft makes it composite). QA (stage 2) is a LoRA adapter
-    # (v04-QA-CoT) served on the SAME :18000 engine as physics — so qa_base_url == the
+    # (qa-v05-cot) served on the SAME :18000 engine as physics — so qa_base_url == the
     # physics endpoint and only fol gets sleep-swapped. Values are vLLM served-model
     # NAMES ("fol"/"qa"), not repo ids. max_tokens match app/logic_solution/config.yaml.
     fol_model: str = "fol"
